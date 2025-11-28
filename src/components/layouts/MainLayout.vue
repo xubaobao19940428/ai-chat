@@ -23,7 +23,7 @@
       </div>
 
       <!-- 主内容 -->
-      <div class="flex-1 overflow-hidden">
+      <div class="flex-1 flex flex-col overflow-hidden relative">
         <router-view />
       </div>
     </div>

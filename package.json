@@ -11,8 +11,12 @@
   "dependencies": {
     "@headlessui/vue": "^1.7.23",
     "@heroicons/vue": "^2.2.0",
+    "@tailwindcss/typography": "^0.5.19",
+    "@types/markdown-it": "^14.1.2",
     "autoprefixer": "^10.4.22",
     "axios": "^1.13.2",
+    "highlight.js": "^11.11.1",
+    "markdown-it": "^14.1.0",
     "pinia": "^3.0.4",
     "postcss": "^8.5.6",
     "sass": "^1.94.2",
