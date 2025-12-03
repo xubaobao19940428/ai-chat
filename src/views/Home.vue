@@ -1,19 +1,19 @@
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4 sm:p-6">
+    <div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4 sm:p-6 transition-colors">
         <div class="max-w-4xl w-full text-center">
-            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
                 AI 聚合聊天
             </h1>
-            <p class="text-base sm:text-lg md:text-xl text-gray-600 mb-8 sm:mb-12 px-4">
+            <p class="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-8 sm:mb-12 px-4">
                 与多个 AI 模型进行智能对话 - GPT-4、Claude、Gemini 等
             </p>
     
             <!-- AI 模型卡片 -->
             <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8 sm:mb-12 px-2">
-                <div v-for="model in featuredModels" :key="model.id" class="bg-white rounded-xl p-3 sm:p-4 shadow-md hover:shadow-lg transition-shadow">
+                <div v-for="model in featuredModels" :key="model.id" class="bg-white dark:bg-[#2f2f2f] rounded-xl p-3 sm:p-4 shadow-md hover:shadow-lg transition-all">
                     <div class="text-3xl sm:text-4xl mb-2">{{ model.icon }}</div>
-                    <div class="font-semibold text-gray-900 text-sm sm:text-base">{{ model.name }}</div>
-                    <div class="text-xs text-gray-500 mt-1">{{ model.provider }}</div>
+                    <div class="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{{ model.name }}</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ model.provider }}</div>
                 </div>
             </div>
     

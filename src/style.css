@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+@variant dark (.dark &);
+
 @source "../**/*.{vue,js,ts,jsx,tsx}";
 @source "../../index.html";
 
@@ -15,11 +17,17 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #212121;
-  color: #ffffff;
+  background-color: #fcfbfb;
+  color: #1f2937;
   /* 移动端优化 */
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+html.dark body {
+  background-color: #000000;
+  color: #ffffff;
 }
 
 #app {
@@ -93,6 +101,11 @@ a, button {
   padding: 0.2em 0.4em;
   border-radius: 0.25rem;
   font-weight: 500;
+}
+
+.dark .prose :where(code):not(:where([class~="not-prose"] *)) {
+  color: #e5e7eb;
+  background-color: #374151;
 }
 
 .prose pre code {

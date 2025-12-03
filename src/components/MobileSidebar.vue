@@ -26,7 +26,7 @@
               leave-to="-translate-x-full"
             >
               <DialogPanel class="pointer-events-auto w-screen max-w-[280px]">
-                <div class="flex h-full flex-col overflow-y-auto bg-[#171717] shadow-xl border-r border-gray-800">
+                <div class="flex h-full flex-col overflow-y-auto bg-[#f8f7f6] dark:bg-[#111111] shadow-xl border-r border-gray-200 dark:border-[#1a1a1a] transition-colors">
                   <!-- 顶部：标题和关闭按钮 -->
                   <div class="p-4 border-b border-gray-800">
                     <div class="flex items-center justify-between mb-4">

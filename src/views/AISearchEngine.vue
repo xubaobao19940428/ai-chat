@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-1 flex flex-col overflow-hidden bg-white">
+  <div class="flex-1 flex flex-col overflow-hidden bg-[#fcfbfb] dark:bg-[#000000] transition-colors">
     <!-- 右上角 Go Pro 按钮（桌面端） -->
     <div class="hidden lg:flex justify-end p-4">
       <button class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium">
@@ -20,8 +20,8 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
-          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">AI Search Engine</h1>
-          <p class="text-sm sm:text-base lg:text-lg text-gray-600">Get instant answers with smart AI search</p>
+          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">AI Search Engine</h1>
+          <p class="text-sm sm:text-base lg:text-lg text-gray-600 dark:text-gray-400">Get instant answers with smart AI search</p>
         </div>
 
         <!-- 搜索输入框 -->
@@ -31,7 +31,7 @@
               v-model="searchQuery"
               type="text"
               placeholder="Search the web"
-              class="w-full px-3 sm:px-4 py-3 sm:py-4 pr-10 sm:pr-14 pl-20 sm:pl-32 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-indigo-500 text-sm bg-white"
+              class="w-full px-3 sm:px-4 py-3 sm:py-4 pr-10 sm:pr-14 pl-20 sm:pl-32 border-2 border-gray-300 dark:border-[#2a2a2a] rounded-xl focus:outline-none focus:border-indigo-500 text-sm bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white transition-colors"
               @keydown.enter="performSearch"
             />
             
@@ -53,7 +53,7 @@
               <!-- Speed 下拉菜单 -->
               <div
                 v-if="showSpeedMenu"
-                class="absolute top-full left-0 mt-1 w-36 sm:w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-20"
+                class="absolute top-full left-0 mt-1 w-36 sm:w-40 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#2a2a2a] rounded-lg shadow-lg z-20 transition-colors"
               >
                 <button
                   v-for="speed in speedOptions"
@@ -99,7 +99,7 @@
             <div
               v-for="(result, index) in searchResults"
               :key="index"
-              class="p-3 sm:p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+              class="p-3 sm:p-4 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#2a2a2a] rounded-lg hover:shadow-md transition-all cursor-pointer"
               @click="openResult(result.url)"
             >
               <div class="flex items-start gap-2 sm:gap-3">
@@ -109,8 +109,8 @@
                   </svg>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <h3 class="text-sm sm:text-base font-semibold text-gray-900 mb-1 line-clamp-1">{{ result.title }}</h3>
-                  <p class="text-xs sm:text-sm text-gray-600 mb-2 line-clamp-2">{{ result.description }}</p>
+                  <h3 class="text-sm sm:text-base font-semibold text-gray-900 dark:text-white mb-1 line-clamp-1">{{ result.title }}</h3>
+                  <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">{{ result.description }}</p>
                   <div class="text-xs text-indigo-600 truncate">{{ result.url }}</div>
                 </div>
               </div>

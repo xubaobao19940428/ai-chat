@@ -1,42 +1,113 @@
 <template>
-  <div class="flex-1 flex flex-col overflow-hidden bg-[#212121]">
+  <div class="flex-1 flex flex-col overflow-hidden bg-[#fcfbfb] dark:bg-[#000000] transition-colors">
     <!-- 主内容区域 -->
     <div class="flex-1 overflow-y-auto px-3 sm:px-4 pb-4 sm:pb-6">
       <!-- 如果无消息，显示欢迎界面 -->
-      <div v-if="!conversationStore.currentConversation || conversationStore.currentConversation.messages.length === 0" class="max-w-4xl mx-auto pt-10 sm:pt-20">
+      <div v-if="!conversationStore.currentConversation || conversationStore.currentConversation.messages.length === 0" class="max-w-4xl mx-auto pt-10 sm:pt-20 pb-8">
         <!-- 问候语 -->
         <div class="text-center mb-8 sm:mb-12">
-          <h2 class="text-2xl sm:text-4xl font-semibold text-white mb-2">Good afternoon</h2>
+          <h2 class="text-2xl sm:text-4xl font-semibold text-gray-900 dark:text-white mb-2">Good afternoon</h2>
+        </div>
+
+        <!-- 输入框（在欢迎界面中） -->
+        <div class="max-w-3xl mx-auto mb-8">
+          <div class="relative bg-gray-50 dark:bg-[#1a1a1a] rounded-2xl border border-gray-200 dark:border-[#2a2a2a] focus-within:border-indigo-500 dark:focus-within:border-[#333333] transition-colors">
+            <textarea
+              v-model="inputMessage"
+              placeholder="Type a message..."
+              rows="1"
+              class="w-full px-12 py-4 bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none resize-none max-h-32 overflow-y-auto text-base"
+              :disabled="chatStore.isLoading"
+              @keydown.enter.exact.prevent="sendMessage"
+              @keydown.enter.shift.exact="inputMessage += '\n'"
+              @input="autoResize"
+              ref="textareaRef"
+            ></textarea>
+            
+            <!-- Attachment Icon -->
+            <button class="absolute left-3 top-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+              </svg>
+            </button>
+
+            <!-- Bottom Actions -->
+            <div class="flex items-center justify-between px-3 pb-3">
+              <div class="flex items-center gap-2">
+                 <button class="flex items-center gap-2 px-3 py-2 sm:py-1.5 bg-gray-100 dark:bg-[#1a1a1a] hover:bg-gray-200 dark:hover:bg-[#222222] text-gray-700 dark:text-gray-300 rounded-lg transition-colors text-xs font-medium">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span class="hidden sm:inline">Create an image</span>
+                </button>
+                <button class="flex items-center gap-2 px-3 py-2 sm:py-1.5 bg-gray-100 dark:bg-[#1a1a1a] hover:bg-gray-200 dark:hover:bg-[#222222] text-gray-700 dark:text-gray-300 rounded-lg transition-colors text-xs font-medium">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                  </svg>
+                  <span class="hidden sm:inline">Search the web</span>
+                </button>
+              </div>
+              
+              <div class="flex items-center gap-2">
+                 <div class="relative">
+                   <select
+                    v-model="selectedModel"
+                    @change="handleModelChange"
+                    class="appearance-none pl-3 pr-8 py-2 sm:py-1.5 bg-gray-100 dark:bg-[#1a1a1a] hover:bg-gray-200 dark:hover:bg-[#222222] text-gray-700 dark:text-gray-300 rounded-lg focus:outline-none text-xs font-medium cursor-pointer max-w-[120px] sm:max-w-none truncate"
+                  >
+                    <option v-for="model in AI_MODELS" :key="model.id" :value="model.id">
+                      {{ model.name }}
+                    </option>
+                  </select>
+                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500 dark:text-gray-400">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                 </div>
+
+                <button
+                  @click="sendMessage"
+                  :disabled="!inputMessage.trim() || chatStore.isLoading"
+                  class="p-2 bg-white dark:bg-[#1a1a1a] text-black dark:text-white rounded-full hover:bg-gray-200 dark:hover:bg-[#222222] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- 功能按钮行 -->
         <div class="max-w-3xl mx-auto mb-8">
           <div class="flex flex-wrap justify-center gap-3">
-             <button class="flex items-center gap-2 px-4 py-2 bg-[#2f2f2f] hover:bg-[#424242] text-gray-200 rounded-full transition-colors text-sm border border-gray-700">
+             <button class="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-[#1a1a1a] hover:bg-gray-100 dark:hover:bg-[#222222] text-gray-700 dark:text-gray-200 rounded-full transition-colors text-sm border border-gray-200 dark:border-[#2a2a2a]">
               <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
               </svg>
               <span>Help me write</span>
             </button>
-            <button class="flex items-center gap-2 px-4 py-2 bg-[#2f2f2f] hover:bg-[#424242] text-gray-200 rounded-full transition-colors text-sm border border-gray-700">
-              <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button class="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-[#1a1a1a] hover:bg-gray-100 dark:hover:bg-[#222222] text-gray-700 dark:text-gray-200 rounded-full transition-colors text-sm border border-gray-200 dark:border-[#2a2a2a]">
+              <svg class="w-4 h-4 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
               <span>Learn about</span>
             </button>
-            <button class="flex items-center gap-2 px-4 py-2 bg-[#2f2f2f] hover:bg-[#424242] text-gray-200 rounded-full transition-colors text-sm border border-gray-700">
-              <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button class="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-[#1a1a1a] hover:bg-gray-100 dark:hover:bg-[#222222] text-gray-700 dark:text-gray-200 rounded-full transition-colors text-sm border border-gray-200 dark:border-[#2a2a2a]">
+              <svg class="w-4 h-4 text-green-500 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <span>Analyze Image</span>
             </button>
-            <button class="flex items-center gap-2 px-4 py-2 bg-[#2f2f2f] hover:bg-[#424242] text-gray-200 rounded-full transition-colors text-sm border border-gray-700">
+            <button class="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-[#1a1a1a] hover:bg-gray-100 dark:hover:bg-[#222222] text-gray-700 dark:text-gray-200 rounded-full transition-colors text-sm border border-gray-200 dark:border-[#2a2a2a]">
               <svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
               <span>Summarize text</span>
             </button>
-             <button class="flex items-center gap-2 px-4 py-2 bg-[#2f2f2f] hover:bg-[#424242] text-gray-200 rounded-full transition-colors text-sm border border-gray-700">
+             <button class="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-[#1a1a1a] hover:bg-gray-100 dark:hover:bg-[#222222] text-gray-700 dark:text-gray-200 rounded-full transition-colors text-sm border border-gray-200 dark:border-[#2a2a2a]">
               <span>See More</span>
             </button>
           </div>
@@ -47,7 +118,7 @@
           <div class="flex items-center justify-between mb-4 px-2">
             <div class="flex items-center gap-2">
               <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span class="text-sm font-medium text-gray-300">Available Models</span>
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Available Models</span>
             </div>
           </div>
 
@@ -58,10 +129,10 @@
                 v-for="model in AI_MODELS"
                 :key="model.id"
                 :class="[
-                  'flex-shrink-0 w-64 p-4 bg-[#2f2f2f] border rounded-xl cursor-pointer transition-all',
+                  'flex-shrink-0 w-64 p-4 bg-white dark:bg-[#1a1a1a] border rounded-xl cursor-pointer transition-all',
                   selectedModel === model.id
                     ? 'border-indigo-500 ring-1 ring-indigo-500'
-                    : 'border-gray-700 hover:border-gray-600'
+                    : 'border-gray-200 dark:border-[#2a2a2a] hover:border-gray-300 dark:hover:border-[#333333]'
                 ]"
                 @click="selectModel(model.id)"
               >
@@ -69,11 +140,11 @@
                   <div class="flex items-center gap-3 flex-1 min-w-0">
                     <div class="text-2xl flex-shrink-0">{{ model.icon }}</div>
                     <div class="min-w-0 flex-1">
-                      <div class="font-medium text-white text-sm truncate">{{ model.provider }} {{ model.name }}</div>
+                      <div class="font-medium text-gray-900 dark:text-white text-sm truncate">{{ model.provider }} {{ model.name }}</div>
                     </div>
                   </div>
                 </div>
-                <p class="text-xs text-gray-400 line-clamp-2">{{ model.description }}</p>
+                <p class="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">{{ model.description }}</p>
               </div>
             </div>
           </div>
@@ -94,7 +165,7 @@
                 'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium',
                 message.role === 'user'
                   ? 'bg-indigo-600 text-white'
-                  : 'bg-[#2f2f2f] text-white border border-gray-700'
+                  : 'bg-gray-100 dark:bg-[#1a1a1a] text-gray-900 dark:text-white border border-gray-200 dark:border-[#2a2a2a]'
               ]"
             >
               <span v-if="message.role === 'user'">U</span>
@@ -106,8 +177,8 @@
                 :class="[
                   'rounded-2xl px-4 py-3',
                   message.role === 'user'
-                    ? 'bg-[#2f2f2f] text-white ml-auto'
-                    : 'text-gray-100'
+                    ? 'bg-indigo-600 dark:bg-[#1a1a1a] text-white ml-auto'
+                    : 'text-gray-900 dark:text-gray-100'
                 ]"
                 :style="message.role === 'user' ? 'max-width: 85%; margin-left: auto;' : 'max-width: 100%;'"
               >
@@ -122,7 +193,7 @@
           </div>
           
           <div v-if="chatStore.isLoading && chatStore.loadingConversationId === conversationStore.currentConversationId" class="flex gap-4">
-            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#2f2f2f] text-white border border-gray-700 flex items-center justify-center text-sm">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 dark:bg-[#1a1a1a] text-gray-900 dark:text-white border border-gray-200 dark:border-[#2a2a2a] flex items-center justify-center text-sm">
               {{ getModelById(conversationStore.currentConversation.model)?.icon || '🤖' }}
             </div>
             <div class="px-4 py-3">
@@ -138,15 +209,15 @@
       </div>
     </div>
 
-    <!-- 底部输入框 -->
-    <div class="bg-[#212121] pb-6 pt-2">
+    <!-- 底部输入框（仅当有消息时显示） -->
+    <div v-if="conversationStore.currentConversation && conversationStore.currentConversation.messages.length > 0" class="flex-shrink-0 bg-[#fcfbfb] dark:bg-[#000000] border-t border-gray-200 dark:border-[#1a1a1a] pb-6 pt-2 transition-colors">
       <div class="max-w-3xl mx-auto px-4">
-        <div class="relative bg-[#2f2f2f] rounded-2xl border border-gray-700 focus-within:border-gray-600 transition-colors">
+        <div class="relative bg-gray-50 dark:bg-[#1a1a1a] rounded-2xl border border-gray-200 dark:border-[#2a2a2a] focus-within:border-indigo-500 dark:focus-within:border-[#333333] transition-colors">
           <textarea
             v-model="inputMessage"
             placeholder="Type a message..."
             rows="1"
-            class="w-full px-12 py-4 bg-transparent text-white placeholder-gray-500 focus:outline-none resize-none max-h-32 overflow-y-auto text-base"
+            class="w-full px-12 py-4 bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none resize-none max-h-32 overflow-y-auto text-base"
             :disabled="chatStore.isLoading"
             @keydown.enter.exact.prevent="sendMessage"
             @keydown.enter.shift.exact="inputMessage += '\n'"
@@ -155,7 +226,7 @@
           ></textarea>
           
           <!-- Attachment Icon -->
-          <button class="absolute left-3 top-4 text-gray-400 hover:text-white transition-colors">
+          <button class="absolute left-3 top-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
             </svg>
@@ -164,13 +235,13 @@
           <!-- Bottom Actions -->
           <div class="flex items-center justify-between px-3 pb-3">
             <div class="flex items-center gap-2">
-               <button class="flex items-center gap-2 px-3 py-2 sm:py-1.5 bg-[#383838] hover:bg-[#424242] text-gray-300 rounded-lg transition-colors text-xs font-medium">
+               <button class="flex items-center gap-2 px-3 py-2 sm:py-1.5 bg-gray-100 dark:bg-[#1a1a1a] hover:bg-gray-200 dark:hover:bg-[#222222] text-gray-700 dark:text-gray-300 rounded-lg transition-colors text-xs font-medium">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <span class="hidden sm:inline">Create an image</span>
               </button>
-              <button class="flex items-center gap-2 px-3 py-2 sm:py-1.5 bg-[#383838] hover:bg-[#424242] text-gray-300 rounded-lg transition-colors text-xs font-medium">
+              <button class="flex items-center gap-2 px-3 py-2 sm:py-1.5 bg-gray-100 dark:bg-[#1a1a1a] hover:bg-gray-200 dark:hover:bg-[#222222] text-gray-700 dark:text-gray-300 rounded-lg transition-colors text-xs font-medium">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                 </svg>
@@ -183,13 +254,13 @@
                  <select
                   v-model="selectedModel"
                   @change="handleModelChange"
-                  class="appearance-none pl-3 pr-8 py-2 sm:py-1.5 bg-[#383838] hover:bg-[#424242] text-gray-300 rounded-lg focus:outline-none text-xs font-medium cursor-pointer max-w-[120px] sm:max-w-none truncate"
+                  class="appearance-none pl-3 pr-8 py-2 sm:py-1.5 bg-gray-100 dark:bg-[#1a1a1a] hover:bg-gray-200 dark:hover:bg-[#222222] text-gray-700 dark:text-gray-300 rounded-lg focus:outline-none text-xs font-medium cursor-pointer max-w-[120px] sm:max-w-none truncate"
                 >
                   <option v-for="model in AI_MODELS" :key="model.id" :value="model.id">
                     {{ model.name }}
                   </option>
                 </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500 dark:text-gray-400">
                   <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                   </svg>
@@ -199,7 +270,7 @@
               <button
                 @click="sendMessage"
                 :disabled="!inputMessage.trim() || chatStore.isLoading"
-                class="p-2 bg-white text-black rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+                class="p-2 bg-white dark:bg-[#1a1a1a] text-black dark:text-white rounded-full hover:bg-gray-200 dark:hover:bg-[#222222] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
@@ -209,7 +280,7 @@
           </div>
         </div>
         <div class="text-center mt-2">
-           <p class="text-xs text-gray-500">AI can make mistakes. Check important info.</p>
+           <p class="text-xs text-gray-500 dark:text-gray-500">AI can make mistakes. Check important info.</p>
         </div>
       </div>
     </div>

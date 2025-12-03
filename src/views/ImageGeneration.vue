@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-1 flex flex-col overflow-hidden bg-[#212121]">
+  <div class="flex-1 flex flex-col overflow-hidden bg-[#fcfbfb] dark:bg-[#000000] transition-colors">
     <!-- 主内容区域 -->
     <div class="flex-1 overflow-y-auto">
       <div class="max-w-6xl mx-auto px-4 py-8 min-h-full flex flex-col">
@@ -8,8 +8,8 @@
         <div :class="['flex-1 flex flex-col', generatedImages.length === 0 ? 'justify-center' : '']">
           <!-- 标题和副标题 -->
           <div class="text-center mb-12">
-            <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4 tracking-tight">AI Art & Image Generator</h1>
-            <p class="text-lg text-gray-400 max-w-2xl mx-auto">What would you like to create today?</p>
+            <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight">AI Art & Image Generator</h1>
+            <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">What would you like to create today?</p>
           </div>
 
           <!-- 示例图片网格 -->
@@ -17,7 +17,7 @@
             <button
               v-for="(example, index) in exampleImages"
               :key="index"
-              class="group relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer border border-gray-700 hover:border-gray-500 transition-all text-left bg-[#2f2f2f]"
+              class="group relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer border border-gray-200 dark:border-[#2a2a2a] hover:border-gray-300 dark:hover:border-[#333333] transition-all text-left bg-white dark:bg-[#1a1a1a]"
               @click="useExample(example.prompt)"
             >
               <!-- 背景图片/渐变 -->
@@ -34,10 +34,10 @@
         <!-- 生成历史 -->
         <div v-if="generatedImages.length > 0" class="w-full mb-24">
           <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
               Your Creations
             </h2>
-            <button @click="clearHistory" class="text-sm text-gray-400 hover:text-red-400 transition-colors">
+            <button @click="clearHistory" class="text-sm text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors">
               Clear History
             </button>
           </div>
@@ -46,7 +46,7 @@
             <div
               v-for="(image, index) in generatedImages"
               :key="index"
-              class="group relative aspect-square rounded-2xl overflow-hidden bg-[#2f2f2f] border border-gray-700"
+              class="group relative aspect-square rounded-2xl overflow-hidden bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#2a2a2a]"
             >
               <img :src="image.url" :alt="image.prompt" class="w-full h-full object-cover" />
               <!-- 悬停覆盖层 -->
@@ -61,9 +61,9 @@
             </div>
             
             <!-- 生成中占位符 -->
-            <div v-if="isGenerating" class="aspect-square rounded-2xl bg-[#2f2f2f] flex flex-col items-center justify-center p-6 animate-pulse border border-gray-700">
+            <div v-if="isGenerating" class="aspect-square rounded-2xl bg-gray-50 dark:bg-[#1a1a1a] flex flex-col items-center justify-center p-6 animate-pulse border border-gray-200 dark:border-[#2a2a2a]">
               <div class="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-              <p class="text-sm font-medium text-gray-400">Generating...</p>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Generating...</p>
             </div>
           </div>
         </div>
@@ -71,20 +71,20 @@
     </div>
 
     <!-- 底部输入框 -->
-    <div class="flex-shrink-0 bg-[#212121] p-6 z-10">
+    <div class="flex-shrink-0 bg-[#fcfbfb] dark:bg-[#000000] border-t border-gray-200 dark:border-[#1a1a1a] p-6 z-10 transition-colors">
       <div class="max-w-4xl mx-auto">
-        <div class="relative bg-[#2f2f2f] rounded-2xl border border-gray-700 focus-within:border-gray-600 transition-colors">
+        <div class="relative bg-gray-50 dark:bg-[#1a1a1a] rounded-2xl border border-gray-200 dark:border-[#2a2a2a] focus-within:border-indigo-500 dark:focus-within:border-[#333333] transition-colors">
           <textarea
             v-model="prompt"
             rows="1"
             placeholder="Type and describe your image idea here to generate"
-            class="w-full pl-12 pr-16 py-4 bg-transparent text-white placeholder-gray-500 focus:outline-none resize-none max-h-32 overflow-y-auto text-base"
+            class="w-full pl-12 pr-16 py-4 bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none resize-none max-h-32 overflow-y-auto text-base"
             @keydown.enter.prevent="generateImage"
             style="min-height: 60px;"
           ></textarea>
           
           <!-- Attachment Icon -->
-          <button class="absolute left-4 top-4 text-gray-400 hover:text-white transition-colors">
+          <button class="absolute left-4 top-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
             </svg>
@@ -94,7 +94,7 @@
           <button
             @click="generateImage"
             :disabled="!prompt.trim() || isGenerating"
-            class="absolute right-2 top-2 p-2 bg-white text-black rounded-xl hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            class="absolute right-2 top-2 p-2 bg-indigo-600 dark:bg-white text-white dark:text-black rounded-xl hover:bg-indigo-700 dark:hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
              <svg v-if="!isGenerating" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
