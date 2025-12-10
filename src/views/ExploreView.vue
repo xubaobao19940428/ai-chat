@@ -1,7 +1,7 @@
 <template>
     <div class="flex-1 flex flex-col h-full bg-[#fcfbfb] dark:bg-[#000000] overflow-hidden">
         <!-- Header Area -->
-        <div class="flex-shrink-0 px-2 pt-5 pb-2">
+        <div class="flex-shrink-0 px-2 pt-2 md:pt-5 pb-2">
             <div class="max-w-6xl mx-auto w-full flex items-center justify-between gap-6">
                 <!-- Left: Tabs -->
                 <div class="flex items-center gap-1 bg-gray-100 dark:bg-[#1a1a1a] p-1 rounded-full">
@@ -18,7 +18,7 @@
                 </div>
 
                 <!-- Middle: Header Tags -->
-                <div class="flex-1 flex justify-center overflow-hidden px-4">
+                <div class="flex-1 hidden md:flex justify-center overflow-hidden px-4">
                     <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide mask-fade-x bg-[#0000000a] dark:bg-[#1a1a1a] px-2 py-1 rounded-full">
                         <button v-for="tag in headerSearchTags" :key="tag"
                             class="text-sm font-medium whitespace-nowrap transition-colors px-6 py-2 rounded-full"
@@ -31,7 +31,7 @@
 
                 <!-- Right: Search & Create -->
                 <div class="flex items-center gap-4">
-                    <div class="w-64 relative group">
+                    <div class="w-64 relative group hidden md:block">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -50,7 +50,7 @@
         </div>
 
         <!-- Original Page Modules (Search & Tags) -->
-        <div class="flex-shrink-0 px-6 pt-2 pb-2">
+        <div class="flex-shrink-0 px-4 md:px-6 pt-2 pb-2">
             <div class="max-w-5xl mx-auto w-full">
                 <!-- Search Bar -->
                 <div class="relative group mb-8">
@@ -81,35 +81,35 @@
         </div>
 
         <!-- Scrollable Content -->
-        <div class="flex-1 overflow-y-auto px-6 pb-12">
+        <div class="flex-1 overflow-y-auto px-4 md:px-6 pb-12">
             <div class="max-w-5xl mx-auto w-full">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 md:grid-cols-2 gap-3 md:gap-4">
                     <div v-for="bot in filteredBots" :key="bot.id"
-                        class="flex items-start gap-4 p-5 rounded-[20px] bg-white dark:bg-[#1a1a1a] border border-transparent hover:border-gray-200 dark:hover:border-[#333333] shadow-sm hover:shadow-lg transition-all cursor-pointer group"
+                        class="flex flex-col md:flex-row items-center md:items-start gap-3 md:gap-4 p-4 md:p-5 rounded-[20px] bg-white dark:bg-[#1a1a1a] border border-transparent hover:border-gray-200 dark:hover:border-[#333333] shadow-sm hover:shadow-lg transition-all cursor-pointer group text-center md:text-left"
                         @click="handleBotClick(bot)">
                         <!-- Icon -->
                         <div
-                            class="flex-shrink-0 w-[60px] h-[60px] rounded-[16px] overflow-hidden bg-[#f8f9fa] dark:bg-[#2a2a2a] flex items-center justify-center text-3xl shadow-inner">
+                            class="flex-shrink-0 w-[50px] h-[50px] md:w-[60px] md:h-[60px] rounded-[16px] overflow-hidden bg-[#f8f9fa] dark:bg-[#2a2a2a] flex items-center justify-center text-2xl md:text-3xl shadow-inner">
                             <img v-if="bot.icon.startsWith('http')" :src="bot.icon"
                                 class="w-full h-full object-cover" />
                             <span v-else>{{ bot.icon }}</span>
                         </div>
 
                         <!-- Content -->
-                        <div class="flex-1 min-w-0 pt-0.5">
-                            <div class="flex items-center justify-between mb-1">
-                                <h3 class="text-[16px] font-bold text-gray-900 dark:text-white truncate">{{ bot.name }}
+                        <div class="flex-1 min-w-0 pt-0.5 w-full">
+                            <div class="flex flex-col md:flex-row items-center md:items-center md:justify-between mb-1 gap-1">
+                                <h3 class="text-[14px] md:text-[16px] font-bold text-gray-900 dark:text-white truncate w-full md:w-auto">{{ bot.name }}
                                 </h3>
                                 <span v-if="bot.type === 'official'"
-                                    class="px-2 py-0.5 rounded-md bg-[#f3f4f6] dark:bg-[#2a2a2a] text-[#4b5563] dark:text-gray-300 text-[10px] font-bold uppercase tracking-wider">
+                                    class="px-1.5 py-0.5 rounded-md bg-[#f3f4f6] dark:bg-[#2a2a2a] text-[#4b5563] dark:text-gray-300 text-[10px] font-bold uppercase tracking-wider flex-shrink-0">
                                     Official
                                 </span>
                             </div>
-                            <p class="text-[14px] text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed mb-3">
+                            <p class="text-[12px] md:text-[14px] text-gray-500 dark:text-gray-400 line-clamp-1 md:line-clamp-2 leading-relaxed mb-2 md:mb-3">
                                 {{ bot.detailedDescription || bot.description || 'No description available.' }}
                             </p>
 
-                            <div class="flex items-center gap-2" v-if="bot.provider">
+                            <div class="hidden md:flex items-center gap-2" v-if="bot.provider">
                                 <span class="text-xs text-gray-400">By {{ bot.provider }}</span>
                             </div>
                         </div>
