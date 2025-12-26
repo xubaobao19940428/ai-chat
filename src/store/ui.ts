@@ -124,11 +124,23 @@ export const useUIStore = defineStore('ui', () => {
     mobileMenuOpen.value = !mobileMenuOpen.value
   }
 
+  // 登录弹窗控制
+  const showLoginModal = ref(false)
+
+  const openLoginModal = () => {
+    showLoginModal.value = true
+  }
+
+  const closeLoginModal = () => {
+    showLoginModal.value = false
+  }
+
   return {
     sidebarCollapsed,
     mobileMenuOpen,
     themeMode,
     currentTheme,
+    showLoginModal,
     toggleSidebar,
     setSidebarCollapsed,
     openMobileMenu,
@@ -136,6 +148,8 @@ export const useUIStore = defineStore('ui', () => {
     toggleMobileMenu,
     setThemeMode,
     initTheme,
+    openLoginModal,
+    closeLoginModal,
   }
 })
 

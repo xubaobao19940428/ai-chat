@@ -40,6 +40,7 @@ const routes: RouteRecordRaw[] = [
         name: 'Home',
         component: () => import('@/views/Home.vue'),
     },
+    // Login/Register routes removed in favor of Modal
 ]
 
 const router = createRouter({
@@ -47,5 +48,27 @@ const router = createRouter({
     routes,
 })
 
+router.beforeEach((to, from, next) => {
+    // We cannot import store here directly if Pinia isn't active, but store is active when router is used.
+    // However, it's safer to import inside.
+    const publicPages = ['/home'];
+    const authRequired = !publicPages.includes(to.path);
+    const token = localStorage.getItem('token');
+
+    if (authRequired && !token) {
+        // Instead of redirecting to /login, we stop navigation (or allow it but show modal? 
+        // For 'chat' apps, usually you redirect to Home or show Modal OVER current view. 
+        // Let's redirect to Home AND show modal.
+        
+        // Dynamically import store to avoid early init issues
+        import('@/store/ui').then(({ useUIStore }) => {
+            const uiStore = useUIStore()
+            uiStore.openLoginModal()
+        })
+        
+        return next('/home');
+    }
+    next();
+});
 export default router
 
