@@ -3,7 +3,7 @@ import type { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'a
 
 // 创建axios实例
 const service: AxiosInstance = axios.create({
-  baseURL: import.meta.client ? useRuntimeConfig().public.apiBase : 'https://api.example.com/v1', // Fallback or direct use
+  baseURL: import.meta.client ? useRuntimeConfig().public.apiBase : 'http://ai-test.iappdaily.com', // Fallback or direct use
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',

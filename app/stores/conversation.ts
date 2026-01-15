@@ -102,6 +102,22 @@ export const useConversationStore = defineStore('conversation', () => {
     }
   }
 
+  // 更新最后一条消息内容（用于流式渲染）
+  const updateLastMessage = (conversationId: string, content: string, append = true) => {
+    const conversation = conversations.value.find(c => c.id === conversationId)
+    if (conversation && conversation.messages.length > 0) {
+      const lastMessage = conversation.messages[conversation.messages.length - 1]
+      if (lastMessage && lastMessage.role === 'assistant') {
+        if (append) {
+          lastMessage.content += content
+        } else {
+          lastMessage.content = content
+        }
+        conversation.updatedAt = Date.now()
+      }
+    }
+  }
+
   return {
     conversations,
     currentConversationId,
@@ -113,5 +129,6 @@ export const useConversationStore = defineStore('conversation', () => {
     addMessage,
     clearMessages,
     switchModel,
+    updateLastMessage,
   }
 })

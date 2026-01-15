@@ -36,27 +36,35 @@ const handleWelcomeSendMessage = async (content: string, model: string) => {
     chatStore.setLoading(true, conversation.id)
     try {
         const messages = conversation.messages.map(msg => ({
-            role: msg.role,
+            role: msg.role as any,
             content: msg.content,
         }))
 
         // 我们需要引入 api
-        // 注意：这里需要 import sendChatMessage
-        const { sendChatMessage } = await import('~/utils/api') // Dynamic import to avoid top-level if needed, or static
+        const { fetchChatStream } = await import('~/utils/api')
 
-        const response = await sendChatMessage(messages, conversation.model)
-
+        // Add empty assistant message
         conversationStore.addMessage(conversation.id, {
             role: 'assistant',
-            content: response.message || '抱歉，我无法理解您的问题。',
+            content: ''
+        })
+
+        await fetchChatStream({
+            messages,
+            model: conversation.model,
+            onMessage: (content) => {
+                conversationStore.updateLastMessage(conversation.id, content)
+            },
+            onError: (error) => {
+                console.error('发送消息失败:', error)
+                conversationStore.updateLastMessage(conversation.id, '抱歉，发生了错误，请稍后再试。', false)
+            },
+            onFinish: () => {
+                chatStore.setLoading(false)
+            }
         })
     } catch (error) {
         console.error('发送消息失败:', error)
-        conversationStore.addMessage(conversation.id, {
-            role: 'assistant',
-            content: '抱歉，发生了错误，请稍后再试。',
-        })
-    } finally {
         chatStore.setLoading(false)
     }
 }

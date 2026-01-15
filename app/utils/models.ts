@@ -5,48 +5,63 @@ export interface AIModel {
   provider: string
   icon: string
   color: string
+  isPro?: boolean
 }
 
 export const AI_MODELS: AIModel[] = [
   {
-    id: 'gpt-4o-mini',
-    name: 'GPT-4o mini',
-    description: 'GPT-4o mini, developed by OpenAI, stands as one of the most advanced AI models available, offering exceptional performance and capabilities.',
-    provider: 'OpenAI',
-    icon: '🤖',
-    color: 'bg-green-500',
-  },
-  {
     id: 'gpt-5',
-    name: 'GPT-5',
-    description: 'OpenAI\'s GPT-5 sets a new standard in artificial intelligence, providing cutting-edge language understanding and generation capabilities.',
+    name: 'OpenAI GPT-5',
+    description: "OpenAI's Most Advanced Model",
     provider: 'OpenAI',
     icon: '🤖',
-    color: 'bg-green-600',
+    color: 'bg-indigo-500',
+    isPro: true,
   },
   {
     id: 'gpt-5.1',
-    name: 'GPT-5.1',
-    description: 'GPT-5.1 delivers OpenAI\'s most advanced capabilities, featuring improved reasoning, creativity, and problem-solving skills.',
+    name: 'OpenAI GPT-5.1',
+    description: "OpenAI's advanced unified AI model",
     provider: 'OpenAI',
     icon: '🤖',
-    color: 'bg-green-600',
+    color: 'bg-indigo-500',
+    isPro: true,
+  },
+  {
+    id: 'gpt-4o-mini',
+    name: 'OpenAI GPT-4o mini',
+    description: "OpenAI's Fastest Model",
+    provider: 'OpenAI',
+    icon: '🤖',
+    color: 'bg-green-500',
+    isPro: false,
+  },
+  {
+    id: 'gpt-4o',
+    name: 'OpenAI GPT-4o',
+    description: "OpenAI's Most Accurate Model",
+    provider: 'OpenAI',
+    icon: '🤖',
+    color: 'bg-indigo-500',
+    isPro: true,
   },
   {
     id: 'gemini-3-pro',
-    name: 'Gemini 3 Pro',
-    description: 'Gemini 3 Pro is Google\'s newest flagship model, designed to provide state-of-the-art performance across a wide range of tasks.',
+    name: 'Google Gemini 3 Pro',
+    description: "Google's newest flagship model",
     provider: 'Google',
     icon: '💎',
     color: 'bg-blue-500',
+    isPro: true,
   },
   {
     id: 'claude-3-opus',
-    name: 'Claude 3 Opus',
-    description: 'Anthropic\'s most powerful model, offering exceptional reasoning capabilities and safety features.',
+    name: 'Anthropic Claude 3 Opus',
+    description: "Anthropic's most powerful reasoning model",
     provider: 'Anthropic',
     icon: '🧠',
     color: 'bg-purple-500',
+    isPro: true,
   },
 ]
 

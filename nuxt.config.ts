@@ -10,7 +10,25 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      apiBase: 'https://api.example.com'
+      apiBase: 'http://ai-test.iappdaily.com'
+    }
+  },
+  app: {
+    head: {
+      script: [
+        {
+          innerHTML: `
+            (function() {
+              try {
+                const savedTheme = localStorage.getItem('theme-mode');
+                const isDark = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                if (isDark) document.documentElement.classList.add('dark');
+              } catch (e) {}
+            })();
+          `,
+          type: 'text/javascript'
+        }
+      ]
     }
   }
 })

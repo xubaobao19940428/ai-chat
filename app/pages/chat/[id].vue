@@ -93,21 +93,7 @@
                         </div>
 
                         <div class="flex items-center gap-2">
-                            <div class="relative">
-                                <select v-model="selectedModel" @change="handleModelChange"
-                                    class="appearance-none pl-3 pr-8 py-2 sm:py-1.5 bg-gray-100 dark:bg-[#1a1a1a] hover:bg-gray-200 dark:hover:bg-[#222222] text-gray-700 dark:text-gray-300 rounded-lg focus:outline-none text-xs font-medium cursor-pointer max-w-[120px] sm:max-w-none truncate">
-                                    <option v-for="model in AI_MODELS" :key="model.id" :value="model.id">
-                                        {{ model.name }}
-                                    </option>
-                                </select>
-                                <div
-                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500 dark:text-gray-400">
-                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </div>
-                            </div>
+                            <ModelSelector v-model:modelId="selectedModel" @change="handleModelSelectorChange" />
 
                             <button @click="sendMessage" :disabled="!inputMessage.trim() || chatStore.isLoading"
                                 class="p-2 bg-white dark:bg-[#1a1a1a] text-black dark:text-white rounded-full hover:bg-gray-200 dark:hover:bg-[#222222] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0">
@@ -119,6 +105,43 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Prompt Suggestions Pill Bar -->
+                <div class="mt-4 overflow-x-auto no-scrollbar">
+                    <div class="flex items-center gap-2 pb-1">
+                        <button
+                            v-for="suggestion in PROMPT_SUGGESTIONS"
+                            :key="suggestion.id"
+                            @click="handleApplyPrompt(suggestion)"
+                            class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-[#1a1a1a] hover:bg-gray-50 dark:hover:bg-[#222222] text-gray-600 dark:text-gray-400 rounded-full border border-gray-100 dark:border-gray-800 transition-all text-xs font-medium shadow-sm active:scale-95"
+                        >
+                            <span class="text-sm">{{ suggestion.icon }}</span>
+                            <span>{{ suggestion.label }}</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sub-prompts Selection -->
+                <Transition
+                    enter-active-class="transition duration-200 ease-out"
+                    enter-from-class="transform -translate-y-2 opacity-0"
+                    enter-to-class="transform translate-y-0 opacity-100"
+                >
+                    <div v-if="activeSubPrompts.length > 0" class="mt-2 flex flex-wrap gap-2 p-3 bg-gray-50/50 dark:bg-gray-900/20 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800">
+                        <button
+                            v-for="sub in activeSubPrompts"
+                            :key="sub"
+                            @click="handleApplySubPrompt(sub)"
+                            class="px-2.5 py-1.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-lg text-xs font-medium hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors"
+                        >
+                            {{ sub }}
+                        </button>
+                        <button @click="activeSubPrompts = []" class="px-2 py-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs">
+                            ✕
+                        </button>
+                    </div>
+                </Transition>
+
                 <div class="text-center mt-2">
                     <p class="text-xs text-gray-500 dark:text-gray-500">AI can make mistakes. Check important info.</p>
                 </div>
@@ -130,9 +153,10 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { sendChatMessage } from '~/utils/api'
-import { AI_MODELS, getModelById } from '~/utils/models'
+import { fetchChatStream } from '~/utils/api'
+import { AI_MODELS, getModelById, type AIModel } from '~/utils/models'
 import { renderMarkdown } from '~/utils/markdown'
+import { PROMPT_SUGGESTIONS, type PromptSuggestion } from '~/utils/prompts'
 
 const route = useRoute()
 const conversationStore = useConversationStore()
@@ -141,12 +165,31 @@ const messagesContainer = ref<HTMLElement | null>(null)
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 const inputMessage = ref('')
 const selectedModel = ref('gpt-4o-mini')
+const activeSubPrompts = ref<string[]>([])
 
 const currentConversationId = computed(() => route.params.id as string)
 const currentConversation = computed(() => conversationStore.currentConversation)
 
 const getModelIcon = (modelId?: string) => {
     return getModelById(modelId || '')?.icon || '🤖'
+}
+
+const handleApplyPrompt = (suggestion: PromptSuggestion) => {
+    inputMessage.value = suggestion.prompt
+    if (suggestion.subPrompts) {
+        activeSubPrompts.value = suggestion.subPrompts
+    } else {
+        activeSubPrompts.value = []
+    }
+    autoResize()
+    if (textareaRef.value) textareaRef.value.focus()
+}
+
+const handleApplySubPrompt = (sub: string) => {
+    inputMessage.value = sub
+    activeSubPrompts.value = []
+    autoResize()
+    if (textareaRef.value) textareaRef.value.focus()
 }
 
 onMounted(() => {
@@ -188,11 +231,10 @@ const autoResize = () => {
     })
 }
 
-const handleModelChange = (e: Event) => {
-    const target = e.target as HTMLSelectElement
-    selectedModel.value = target.value
+const handleModelSelectorChange = (val: string) => {
+    selectedModel.value = val
     if (currentConversationId.value) {
-        conversationStore.switchModel(currentConversationId.value, selectedModel.value)
+        conversationStore.switchModel(currentConversationId.value, val)
     }
 }
 
@@ -200,36 +242,48 @@ const sendMessage = async () => {
     if (!inputMessage.value.trim() || chatStore.isLoading || !currentConversation.value) return
 
     const conversationId = currentConversation.value.id
+    const model = currentConversation.value.model
     const userMessage = inputMessage.value.trim()
     inputMessage.value = ''
     if (textareaRef.value) textareaRef.value.style.height = 'auto'
 
+    // Add user message
     conversationStore.addMessage(conversationId, {
         role: 'user',
         content: userMessage
     })
 
+    // Add empty assistant message for streaming
+    conversationStore.addMessage(conversationId, {
+        role: 'assistant',
+        content: ''
+    })
+
     chatStore.setLoading(true, conversationId)
 
     try {
-        const messages = currentConversation.value.messages.map(msg => ({
-            role: msg.role,
+        const messages = currentConversation.value.messages.slice(0, -1).map(msg => ({
+            role: msg.role as any,
             content: msg.content
         }))
 
-        const response = await sendChatMessage(messages, currentConversation.value.model)
-
-        conversationStore.addMessage(conversationId, {
-            role: 'assistant',
-            content: response.message || 'Error.'
+        await fetchChatStream({
+            messages,
+            model,
+            onMessage: (content) => {
+                conversationStore.updateLastMessage(conversationId, content)
+            },
+            onError: (error) => {
+                console.error('Stream error:', error)
+                conversationStore.updateLastMessage(conversationId, '\n[Error: Connection failed]', true)
+            },
+            onFinish: () => {
+                chatStore.setLoading(false)
+            }
         })
     } catch (error) {
         console.error(error)
-        conversationStore.addMessage(conversationId, {
-            role: 'assistant',
-            content: 'Error sending message.'
-        })
-    } finally {
+        conversationStore.updateLastMessage(conversationId, '\n[Error: Failed to start stream]', true)
         chatStore.setLoading(false)
     }
 }
