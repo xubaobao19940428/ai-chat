@@ -9,7 +9,6 @@ export interface LoginParams {
 export interface RegisterParams {
   email: string
   password: string
-  nickname?: string
 }
 
 export interface UserProfile {
@@ -84,6 +83,8 @@ export const fetchChatStream = async (params: {
     const response = await fetch(`${apiBase}/v1/chat/completions`, {
       method: 'POST',
       headers: {
+        'x-app-id': runtimeConfig.public.appId,
+        'x-app-key': runtimeConfig.public.appKey,
         'Content-Type': 'application/json',
         'Authorization': token ? `Bearer ${token}` : '',
       },

@@ -167,14 +167,7 @@
                                   </button>
                               </div>
 
-                              <div v-if="isRegistering">
-                                <input
-                                      type="text"
-                                      v-model="nickname"
-                                      class="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-black/20 text-gray-900 dark:text-white focus:border-indigo-500 outline-none transition-all mb-4 font-medium"
-                                      placeholder="Nickname (Optional)"
-                                  >
-                              </div>
+
                               
                               <div>
                                   <input
@@ -230,7 +223,7 @@ const authStep = ref<'email' | 'password'>('email')
 const isRegistering = ref(false)
 const email = ref('')
 const password = ref('')
-const nickname = ref('')
+
 const loading = ref(false)
 const errorMsg = ref('')
 const successMsg = ref('')
@@ -275,10 +268,8 @@ const handleAuth = async () => {
         if (isRegistering.value) {
             await userStore.register({
                 email: email.value,
-                password: password.value,
-                nickname: nickname.value
+                password: password.value
             })
-            successMsg.value = 'Registration successful! Please login.'
             isRegistering.value = false
             password.value = ''
         } else {
