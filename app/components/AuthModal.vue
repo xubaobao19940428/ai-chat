@@ -278,6 +278,7 @@ const handleAuth = async () => {
                 password: password.value
             })
             if (success) {
+                console.log('success',success)
                 uiStore.closeLoginModal()
                 authStep.value = 'email'
                 email.value = ''

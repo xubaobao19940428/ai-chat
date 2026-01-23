@@ -1,7 +1,7 @@
 <template>
     <div class="flex-1 flex flex-col overflow-hidden bg-[#fcfbfb] dark:bg-[#000000] transition-colors">
         <!-- 欢迎界面 -->
-        <div class="flex-1 overflow-y-auto px-3 sm:px-4 pb-4 sm:pb-6">
+        <div class="flex-1 h-full overflow-hidden">
             <WelcomeScreen mode="chat" :is-loading="chatStore.isLoading" @send-message="handleWelcomeSendMessage" />
         </div>
     </div>
@@ -13,27 +13,27 @@ const conversationStore = useConversationStore()
 const chatStore = useChatStore()
 
 const handleWelcomeSendMessage = async (content: string, model: string) => {
-    // 创建新会话
-    const conversation = conversationStore.createConversation(model)
+    // 创建新会话 (默认助手 ID 为 1)
+    const conversationId = await conversationStore.createConversation({ 
+        character_id: 1,
+        model: model
+    })
+    
+    // 获取新创建的会话对象
+    const conversation = conversationStore.conversations.find(c => c.id == conversationId)
+    if (!conversation) return
+
     // 添加用户消息
-    conversationStore.addMessage(conversation.id, {
+    conversationStore.addMessage(conversationId, {
         role: 'user',
         content: content,
     })
 
     // 跳转到会话页面
-    await router.push(`/chat/${conversation.id}`)
+    router.push(`/chat/${conversationId}`)
 
-    // 触发发送逻辑 (由 [id].vue 处理，或在此处处理)
-    // 这里我们在此处只负责跳转，实际的数据发送逻辑应由 [id].vue 的 onMounted 或 watch 处理，
-    // 或者我们可以直接调用 store action 来发送，但这通常涉及到 UI 状态 (isLoading 等)。
-    // 更好的做法是：在 createConversation 后，跳转过去。
-    // 但是这里需要传递 "刚刚发送的消息触发了 API 调用" 的意图。
-    // 简单做法：在此处调用 API，store 会更新状态，跳转后 [id].vue 会渲染 store 中的消息。
-    // 唯一的问题是 isLoading 状态的同步。
-
-    // 为了简单起见，我们在此处调用发送逻辑，与 ChatView.vue 保持一致
-    chatStore.setLoading(true, conversation.id)
+    // 触发发送逻辑
+    chatStore.setLoading(true, conversationId)
     try {
         const messages = conversation.messages.map(msg => ({
             role: msg.role as any,
@@ -44,20 +44,20 @@ const handleWelcomeSendMessage = async (content: string, model: string) => {
         const { fetchChatStream } = await import('~/utils/api')
 
         // Add empty assistant message
-        conversationStore.addMessage(conversation.id, {
+        conversationStore.addMessage(conversationId, {
             role: 'assistant',
             content: ''
         })
 
         await fetchChatStream({
             messages,
-            model: conversation.model,
+            model: model,
             onMessage: (content) => {
-                conversationStore.updateLastMessage(conversation.id, content)
+                conversationStore.updateLastMessage(conversationId, content)
             },
             onError: (error) => {
                 console.error('发送消息失败:', error)
-                conversationStore.updateLastMessage(conversation.id, '抱歉，发生了错误，请稍后再试。', false)
+                conversationStore.updateLastMessage(conversationId, '抱歉，发生了错误，请稍后再试。', false)
             },
             onFinish: () => {
                 chatStore.setLoading(false)

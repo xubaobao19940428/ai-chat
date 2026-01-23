@@ -10,9 +10,9 @@ export interface Message {
 
 export const useChatStore = defineStore('chat', () => {
   const isLoading = ref(false)
-  const loadingConversationId = ref<string | null>(null)
+  const loadingConversationId = ref<string | number | null>(null)
 
-  const setLoading = (loading: boolean, conversationId?: string) => {
+  const setLoading = (loading: boolean, conversationId?: string | number) => {
     isLoading.value = loading
     loadingConversationId.value = loading ? (conversationId || null) : null
   }

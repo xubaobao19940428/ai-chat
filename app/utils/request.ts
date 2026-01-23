@@ -21,11 +21,10 @@ const randomString = (code: number) => {
 
 // 创建axios实例
 const service: AxiosInstance = axios.create({
-  baseURL: import.meta.client ? useRuntimeConfig().public.apiBase : 'http://ai-test.iappdaily.com',
+  baseURL: 'http://ai-test.iappdaily.com',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
-    'x-app-id': import.meta.client ? useRuntimeConfig().public.appId : '1',
     'x-app-domain': 'ai-test.iappdaily.com',
   },
 })
@@ -33,6 +32,14 @@ const service: AxiosInstance = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    const runtimeConfig = useRuntimeConfig().public
+    
+    // Dynamic config setup
+    config.baseURL = import.meta.client ? runtimeConfig.apiBase : 'http://ai-test.iappdaily.com'
+    if (config.headers) {
+      config.headers['x-app-id'] = import.meta.client ? runtimeConfig.appId : '1'
+    }
+
     // Basic headers setup
     if (import.meta.client) {
       const token = localStorage.getItem('token')
@@ -41,7 +48,6 @@ service.interceptors.request.use(
       }
     }
 
-    const runtimeConfig = useRuntimeConfig().public
     const timestamp = Math.floor(Date.now() / 1000);
     const nonce = randomString(16);
 

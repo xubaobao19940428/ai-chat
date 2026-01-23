@@ -55,36 +55,161 @@
                   <div class="flex-1 overflow-y-auto py-4">
                     <!-- My Tools -->
                     <div class="px-4 mb-6">
-                      <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-3 px-2">My Tools</div>
+                      <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3 px-2 flex items-center gap-2">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                        </svg>
+                        <span>我的工具</span>
+                      </div>
                       <div class="space-y-1">
                         <NuxtLink
                           to="/chat"
                           :class="[
-                            'flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-sm',
-                            $route.path.startsWith('/chat') ? 'bg-indigo-50 dark:bg-[#1a1a1a] text-indigo-600 dark:text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1a1a1a] hover:text-gray-900 dark:hover:text-white'
+                            'flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm group',
+                            $route.path === '/chat' ? 'bg-indigo-50 dark:bg-[#1a1a1a] text-indigo-600 dark:text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1a1a1a]'
                           ]"
                           @click="uiStore.closeMobileMenu"
                         >
-                          <span class="text-xl">🤖</span>
-                          <span>AI Chat</span>
+                          <div class="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20">
+                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                          </div>
+                          <span class="font-medium">AI 聊天</span>
                         </NuxtLink>
                         <NuxtLink
                           to="/image-generation"
                           :class="[
-                            'flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-sm',
-                            $route.path === '/image-generation' ? 'bg-indigo-50 dark:bg-[#1a1a1a] text-indigo-600 dark:text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1a1a1a] hover:text-gray-900 dark:hover:text-white'
+                            'flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm group',
+                            $route.path === '/image-generation' ? 'bg-purple-50 dark:bg-[#1a1a1a] text-indigo-600 dark:text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1a1a1a]'
                           ]"
                           @click="uiStore.closeMobileMenu"
                         >
-                          <span class="text-xl">🎨</span>
-                          <span>Image Generator</span>
+                          <div class="w-8 h-8 rounded-full bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                          <span class="font-medium">图片生成</span>
                         </NuxtLink>
+                        <NuxtLink
+                          to="/ai-search"
+                          :class="[
+                            'flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm group',
+                            $route.path === '/ai-search' ? 'bg-blue-50 dark:bg-[#1a1a1a] text-indigo-600 dark:text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1a1a1a]'
+                          ]"
+                          @click="uiStore.closeMobileMenu"
+                        >
+                          <div class="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                          </div>
+                          <span class="font-medium">AI 搜索引擎</span>
+                        </NuxtLink>
+                        <NuxtLink
+                          to="/chat?model=gpt-5"
+                          :class="[
+                            'flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm group',
+                            $route.fullPath.includes('gpt-5') ? 'bg-gray-50 dark:bg-[#1a1a1a] text-indigo-600 dark:text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1a1a1a]'
+                          ]"
+                          @click="uiStore.closeMobileMenu"
+                        >
+                          <div class="w-8 h-8 rounded-full bg-gray-50 dark:bg-gray-500/10 flex items-center justify-center text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-500/20">
+                            <span class="text-[10px] font-bold">GPT</span>
+                          </div>
+                          <span class="font-medium">GPT-5</span>
+                        </NuxtLink>
+                      </div>
+                    </div>
+
+                    <!-- Projects -->
+                    <div class="px-4 mb-6">
+                      <button 
+                        @click="toggleProjects"
+                        class="w-full text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3 px-2 flex items-center justify-between group"
+                      >
+                        <div class="flex items-center gap-2">
+                           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                          </svg>
+                          <span>项目</span>
+                        </div>
+                        <svg class="w-3 h-3 transition-transform duration-200" :class="{ 'rotate-180': !projectsCollapsed }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+                      
+                      <div v-show="!projectsCollapsed" class="space-y-1">
+                        <!-- All Chats -->
+                        <button 
+                          @click="selectProject(null)"
+                          :class="[
+                            'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm',
+                            conversationStore.selectedGroupId === null ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1a1a1a]'
+                          ]"
+                        >
+                          <div :class="[
+                            'w-8 h-8 rounded-lg flex items-center justify-center border shrink-0',
+                            conversationStore.selectedGroupId === null ? 'bg-indigo-100 dark:bg-indigo-500/20 border-indigo-200 dark:border-indigo-500/30' : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+                          ]">
+                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                            </svg>
+                          </div>
+                          <span class="font-medium">所有聊天</span>
+                        </button>
+
+                        <button 
+                          @click="openCreateProjectModal"
+                          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1a1a1a]"
+                        >
+                          <div class="w-8 h-8 rounded-lg bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
+                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                            </svg>
+                          </div>
+                          <span class="font-medium">新项目</span>
+                        </button>
+                        
+                        <div 
+                          v-for="project in projectStore.projects" 
+                          :key="project.id"
+                          @click="selectProject(project.id)"
+                          :class="[
+                            'flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm cursor-pointer',
+                            conversationStore.selectedGroupId === project.id ? 'bg-gray-50 dark:bg-[#1a1a1a] shadow-sm ring-1 ring-gray-200 dark:ring-gray-800 text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1a1a1a]'
+                          ]"
+                        >
+                           <div :class="[
+                              'w-8 h-8 rounded-lg flex items-center justify-center border shrink-0',
+                              project.color === 'green' ? 'bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border-green-100 dark:border-green-500/20' : 
+                              project.color === 'red' ? 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border-red-100 dark:border-red-500/20' :
+                              project.color === 'purple' ? 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-100 dark:border-purple-500/20' :
+                              project.color === 'orange' ? 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-100 dark:border-orange-500/20' :
+                              project.color === 'cyan' ? 'bg-cyan-50 dark:bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-100 dark:border-cyan-500/20' :
+                              'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-500/20'
+                           ]">
+                             <svg v-if="project.name === '投资'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                             <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                            </svg>
+                          </div>
+                          <span class="font-medium truncate">{{ project.name }}</span>
+                        </div>
                       </div>
                     </div>
 
                     <!-- Chats -->
                     <div class="px-4 mb-6">
-                      <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-3 px-2">Chats</div>
+                      <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3 px-2 flex items-center gap-2">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                        </svg>
+                        <span>你的聊天</span>
+                      </div>
                       <div class="space-y-1">
                          <div v-if="conversationStore.conversations.length === 0" class="px-3 py-2 text-sm text-gray-400 dark:text-gray-500 italic">
                           No Chat History
@@ -161,6 +286,13 @@
     </Dialog>
   </TransitionRoot>
 
+  <!-- Project Creation Modal -->
+  <ProjectModal 
+    :show="showCreateProjectModal" 
+    @close="showCreateProjectModal = false"
+    @create="handleProjectCreated"
+  />
+
   <ConfirmDialog
     :show="showDeleteConfirm"
     title="Delete Chat"
@@ -175,35 +307,59 @@ import { ref } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { useRouter } from 'vue-router'
 import ConfirmDialog from './ConfirmDialog.vue'
+import ProjectModal from './ProjectModal.vue'
 
 const router = useRouter()
 const conversationStore = useConversationStore()
 const uiStore = useUIStore()
 const userStore = useUserStore()
+const projectStore = useProjectStore()
 
 const showDeleteConfirm = ref(false)
-const deleteId = ref<string | null>(null)
+const deleteId = ref<number | string | null>(null)
+const projectsCollapsed = ref(false)
+const showCreateProjectModal = ref(false)
 
-const handleNewChat = () => {
-  const conversation = conversationStore.createConversation()
-  router.push(`/chat/${conversation.id}`)
-  uiStore.closeMobileMenu()
+const toggleProjects = () => {
+    projectsCollapsed.value = !projectsCollapsed.value
 }
 
-const handleSelectConversation = (id: string) => {
+const openCreateProjectModal = () => {
+    showCreateProjectModal.value = true
+}
+
+const handleProjectCreated = () => {
+    projectsCollapsed.value = false
+}
+
+const selectProject = (id: number | null) => {
+    conversationStore.setSelectedGroupId(id)
+}
+
+const handleNewChat = async () => {
+  try {
+    const id = await conversationStore.createConversation({ character_id: 1 })
+    router.push(`/chat/${id}`)
+    uiStore.closeMobileMenu()
+  } catch (e) {
+    console.error('Failed to create chat:', e)
+  }
+}
+
+const handleSelectConversation = (id: number | string) => {
   conversationStore.switchConversation(id)
   router.push(`/chat/${id}`)
   uiStore.closeMobileMenu()
 }
 
-const confirmDelete = (id: string) => {
+const confirmDelete = (id: number | string) => {
   deleteId.value = id
   showDeleteConfirm.value = true
 }
 
-const handleDelete = () => {
+const handleDelete = async () => {
   if (deleteId.value) {
-    conversationStore.deleteConversation(deleteId.value)
+    await conversationStore.deleteConversation(deleteId.value)
     if (conversationStore.conversations.length > 0) {
       const firstConversation = conversationStore.conversations[0]
       if (firstConversation) {

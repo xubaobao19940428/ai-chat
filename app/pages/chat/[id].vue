@@ -93,7 +93,9 @@
                         </div>
 
                         <div class="flex items-center gap-2">
-                            <ModelSelector v-model:modelId="selectedModel" @change="handleModelSelectorChange" />
+                        <div class="flex items-center gap-2">
+                            <ModelSelector />
+                        </div>
 
                             <button @click="sendMessage" :disabled="!inputMessage.trim() || chatStore.isLoading"
                                 class="p-2 bg-white dark:bg-[#1a1a1a] text-black dark:text-white rounded-full hover:bg-gray-200 dark:hover:bg-[#222222] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0">
@@ -154,24 +156,30 @@
 import { ref, onMounted, nextTick, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchChatStream } from '~/utils/api'
-import { AI_MODELS, getModelById, type AIModel } from '~/utils/models'
 import { renderMarkdown } from '~/utils/markdown'
 import { PROMPT_SUGGESTIONS, type PromptSuggestion } from '~/utils/prompts'
 
 const route = useRoute()
 const conversationStore = useConversationStore()
 const chatStore = useChatStore()
+const modelStore = useModelStore()
 const messagesContainer = ref<HTMLElement | null>(null)
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 const inputMessage = ref('')
-const selectedModel = ref('gpt-4o-mini')
 const activeSubPrompts = ref<string[]>([])
 
 const currentConversationId = computed(() => route.params.id as string)
 const currentConversation = computed(() => conversationStore.currentConversation)
 
 const getModelIcon = (modelId?: string) => {
-    return getModelById(modelId || '')?.icon || '🤖'
+    const model = modelStore.models.find(m => m.model === modelId)
+    if (!model) return '🤖'
+    const provider = model.provider.toLowerCase()
+    if (provider.includes('openai')) return '🤖'
+    if (provider.includes('google')) return '💎'
+    if (provider.includes('anthropic')) return '🧠'
+    if (provider.includes('deepseek')) return '🐋'
+    return '🌟'
 }
 
 const handleApplyPrompt = (suggestion: PromptSuggestion) => {
@@ -196,7 +204,7 @@ onMounted(() => {
     if (currentConversationId.value) {
         conversationStore.switchConversation(currentConversationId.value)
         if (currentConversation.value) {
-            selectedModel.value = currentConversation.value.model
+            modelStore.selectModel(currentConversation.value.model || '')
             nextTick(() => scrollToBottom())
         }
     }
@@ -206,7 +214,7 @@ watch(() => currentConversationId.value, (newId) => {
     if (newId) {
         conversationStore.switchConversation(newId)
         if (currentConversation.value) {
-            selectedModel.value = currentConversation.value.model
+            modelStore.selectModel(currentConversation.value.model || '')
         }
         nextTick(() => scrollToBottom())
     }
@@ -231,18 +239,17 @@ const autoResize = () => {
     })
 }
 
-const handleModelSelectorChange = (val: string) => {
-    selectedModel.value = val
-    if (currentConversationId.value) {
-        conversationStore.switchModel(currentConversationId.value, val)
+watch(() => modelStore.selectedModelId, (newId) => {
+    if (newId && currentConversationId.value) {
+        conversationStore.switchModel(currentConversationId.value, newId)
     }
-}
+})
 
 const sendMessage = async () => {
     if (!inputMessage.value.trim() || chatStore.isLoading || !currentConversation.value) return
 
     const conversationId = currentConversation.value.id
-    const model = currentConversation.value.model
+    const model = currentConversation.value.model || 'gpt-4o-mini'
     const userMessage = inputMessage.value.trim()
     inputMessage.value = ''
     if (textareaRef.value) textareaRef.value.style.height = 'auto'

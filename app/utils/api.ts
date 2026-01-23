@@ -136,3 +136,137 @@ export const fetchChatStream = async (params: {
   }
 }
 
+// Conversation Types
+export interface CreateConversationParams {
+  character_id: number
+  title?: string
+  model_id?: number
+  group_id?: number
+  meta?: any
+}
+
+export interface ConversationListItem {
+  id: number
+  title: string
+  character_id: number
+  last_message?: string
+  updated_at: number
+  group_id: number
+}
+
+export interface UpdateConversationParams {
+  id: number
+  title?: string
+  model_id?: number
+  meta?: any
+  group_id?: number
+}
+
+// Conversation API
+export const createConversation = (data: CreateConversationParams) => {
+  return request.post('/v1/conversations', data)
+}
+
+export const getConversations = (params: { character_id?: number, group_id?: number, page?: number, page_size?: number }) => {
+  return request.get('/v1/conversations', { params })
+}
+
+export const getConversationDetail = (id: number) => {
+  return request.get(`/v1/conversations/${id}`)
+}
+
+export const updateConversation = (data: UpdateConversationParams) => {
+  return request.post('/v1/conversations/update', data)
+}
+
+export const deleteConversation = (id: number) => {
+  return request.post('/v1/conversations/delete', { id })
+}
+
+export const getConversationMessages = (id: number, limit: number = 0) => {
+  return request.get(`/v1/conversations/${id}/messages`, { params: { limit } })
+}
+
+export const getRecentConversations = (limit: number = 10) => {
+  return request.get('/v1/conversations/recent', { params: { limit } })
+}
+
+// Model Types
+export interface AIModel {
+  provider: string
+  model: string
+  display_name: string
+  description: string
+  capabilities: string[]
+  context_length: number
+  max_output_tokens: number
+  is_default: boolean
+  execution_mode: string
+}
+
+// Model API
+export const getModels = (params: { provider?: string, capability?: string } = {}) => {
+  return request.get('/v1/models', { params })
+}
+
+// Discovery Types
+export interface DiscoveryItem {
+  id: number
+  group_id: number
+  type: 'character' | 'model' | 'url'
+  related_id: number
+  title: string
+  subtitle: string
+  cover: string
+  action_url: string
+  params: Record<string, any>
+  related_data: any
+}
+
+export interface DiscoveryGroup {
+  id: number
+  title: string
+  layout: 'row' | 'grid' | 'list' | 'banner'
+  has_more: boolean
+  items: DiscoveryItem[]
+}
+
+// Discovery API
+export const getDiscovery = (params: { placement?: string, country_code?: string, page?: number, page_size?: number, item_limit?: number } = {}) => {
+  return request.get('/v1/discovery', { params })
+}
+
+// Project/Group Types
+export interface ProjectGroup {
+  id: number
+  name: string
+  description?: string
+  icon?: string
+  color?: string
+  sort_order?: number
+}
+
+export interface CreateProjectParams {
+  name: string
+  description?: string
+  icon?: string
+  color?: string
+  sort_order?: number
+}
+
+// Project/Group API
+export const getProjectGroups = () => {
+  return request.get('/v1/conversations/groups')
+}
+
+export const createProjectGroup = (data: CreateProjectParams) => {
+  return request.post('/v1/conversations/groups/create', data)
+}
+
+export const updateProjectGroup = (data: Partial<ProjectGroup> & { id: number }) => {
+  return request.post('/v1/conversations/groups/update', data)
+}
+
+export const deleteProjectGroup = (id: number) => {
+  return request.post('/v1/conversations/groups/delete', { id })
+}

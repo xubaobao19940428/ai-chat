@@ -9,8 +9,20 @@ export const useUserStore = defineStore('user', () => {
   // Initialize from storage on client mount if needed, or use a separate init action or persist plugin.
   // We'll use a hydrate action or just check localStorage in actions for token init, 
   // but better to initialize state if possible.
-  if (import.meta.client) {
-    token.value = localStorage.getItem('token') || ''
+  const initialize = () => {
+    if (import.meta.client) {
+      const storedToken = localStorage.getItem('token')
+      if (storedToken) token.value = storedToken
+      
+      const storedUserInfo = localStorage.getItem('userInfo')
+      if (storedUserInfo) {
+        try {
+          userInfo.value = JSON.parse(storedUserInfo)
+        } catch (e) {
+          console.error('Failed to parse stored userInfo', e)
+        }
+      }
+    }
   }
 
   const setToken = (t: string) => {
@@ -25,6 +37,7 @@ export const useUserStore = defineStore('user', () => {
     userInfo.value = null
     if (import.meta.client) {
       localStorage.removeItem('token')
+      localStorage.removeItem('userInfo')
     }
   }
   
@@ -36,7 +49,7 @@ export const useUserStore = defineStore('user', () => {
       if (res.data?.token) {
         setToken(res.data.token)
         await fetchUserInfo()
-        return true
+        return res.data
       }
       return false
     } catch (error) {
@@ -59,6 +72,9 @@ export const useUserStore = defineStore('user', () => {
     try {
        const res: any = await getUserProfile()
        userInfo.value = res.data
+       if (import.meta.client) {
+         localStorage.setItem('userInfo', JSON.stringify(res.data))
+       }
     } catch (error) {
        console.error('Fetch user info failed:', error)
     }
@@ -83,6 +99,7 @@ export const useUserStore = defineStore('user', () => {
   return {
     token,
     userInfo,
+    initialize,
     login,
     register,
     logout,

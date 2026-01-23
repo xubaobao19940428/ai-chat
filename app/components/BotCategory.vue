@@ -81,8 +81,9 @@ const handleBotClick = (bot: Bot) => {
         router.push('/ai-search') 
     } else {
         // Chat
-        const conversation = conversationStore.createConversation(bot.id)
-        router.push(`/chat/${conversation.id}`)
+        conversationStore.createConversation({ character_id: Number(bot.id) }).then(id => {
+            router.push(`/chat/${id}`)
+        })
     }
 }
 
