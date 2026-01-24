@@ -7,7 +7,12 @@ export default defineNuxtConfig({
   devServer: {
     port: 4000,
     host: '0.0.0.0',
-    
+  },
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
   },
   routeRules: {
     '/api/**': { proxy: 'http://ai-test.iappdaily.com/**' },
