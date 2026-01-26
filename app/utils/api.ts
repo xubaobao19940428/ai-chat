@@ -59,6 +59,17 @@ export interface ChatResponse {
   }
 }
 
+export interface ChatContext {
+  max_history?: number
+  user_id?: number
+  app_id?: number
+  check_balance?: boolean
+  estimated_credits?: number
+  auto_billing?: boolean
+  conversation_id?: number | string
+  character_id?: number
+}
+
 // Chat API Options
 export interface ChatModelOptions {
   temperature?: number
@@ -71,6 +82,8 @@ export interface ChatModelOptions {
   web_search_depth?: number
   web_search_query?: string
   stream?: boolean
+  processor?: string
+  context?: ChatContext
   onMessage?: (content: string) => void
   onError?: (error: any) => void
   onFinish?: () => void
@@ -101,13 +114,32 @@ const randomString = (code: number) => {
   return pwd
 }
 
-export const sendChatMessage = async (messages: ChatMessage[], model?: string, options: ChatModelOptions = {}): Promise<any> => {
+const processStreamLine = (line: string, options: ChatModelOptions) => {
+  const trimmedLine = line.trim();
+  if (!trimmedLine || trimmedLine === 'data: [DONE]') return;
+  
+  if (trimmedLine.startsWith('data: ')) {
+    try {
+      const json = JSON.parse(trimmedLine.substring(6));
+      const content = json.content ?? json.choices?.[0]?.delta?.content ?? '';
+      if (content) {
+        options.onMessage?.(content);
+      }
+    } catch (e) {
+      console.error('Error parsing stream line:', trimmedLine, e);
+    }
+  }
+}
+
+export const sendChatMessage = async (message: string, messages: ChatMessage[] = [], model?: string, options: ChatModelOptions = {}): Promise<any> => {
   const isStream = options.stream ?? false
   const runtimeConfig = useRuntimeConfig().public
 
   const body = {
-    messages,
     model: model || 'openai:gpt-4o-mini',
+    message,
+    messages,
+    processor: options.processor || 'chat',
     ...DEFAULT_CHAT_OPTIONS,
     ...options,
     stream: isStream
@@ -189,29 +221,26 @@ export const sendChatMessage = async (messages: ChatMessage[], model?: string, o
     if (isStream && response.body) {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
+      let buffer = '';
 
       while (true) {
         const { done, value } = await reader.read();
-        if (done) break;
+        if (done) {
+          // Process any remaining buffer content
+          if (buffer) {
+            processStreamLine(buffer, options);
+          }
+          break;
+        }
 
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        
+        // Keep the last partial line in the buffer
+        buffer = lines.pop() || '';
         
         for (const line of lines) {
-          const trimmedLine = line.trim();
-          if (!trimmedLine || trimmedLine === 'data: [DONE]') continue;
-          
-          if (trimmedLine.startsWith('data: ')) {
-             try {
-              const json = JSON.parse(trimmedLine.substring(6));
-              const content = json.content ?? json.choices?.[0]?.delta?.content ?? '';
-              if (content) {
-                options.onMessage?.(content);
-              }
-            } catch (e) {
-              console.error('Error parsing stream line:', trimmedLine, e);
-            }
-          }
+          processStreamLine(line, options);
         }
       }
 
@@ -233,14 +262,15 @@ export const sendChatMessage = async (messages: ChatMessage[], model?: string, o
 
 // Fetch-based streaming wrapper (kept for compatibility)
 export const fetchChatStream = async (params: {
-  messages: ChatMessage[],
+  message: string,
+  messages?: ChatMessage[],
   model?: string,
   options?: ChatModelOptions,
   onMessage: (content: string) => void,
   onError: (error: any) => void,
   onFinish: () => void
 }) => {
-  return sendChatMessage(params.messages, params.model, {
+  return sendChatMessage(params.message, params.messages || [], params.model, {
     ...params.options,
     stream: true,
     onMessage: params.onMessage,

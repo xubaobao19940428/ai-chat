@@ -5,7 +5,7 @@
         <div class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-500/5 dark:bg-purple-500/10 blur-[120px] rounded-full pointer-events-none"></div>
 
         <!-- 聊天内容区域 -->
-        <div class="flex-1 overflow-y-auto px-4 pb-32 pt-4 custom-scrollbar relative z-10" ref="messagesContainer">
+        <div class="flex-1 overflow-y-auto px-4 pb-60 pt-4 custom-scrollbar relative z-10" ref="messagesContainer">
             <div class="max-w-3xl mx-auto py-6">
                 <TransitionGroup 
                     tag="div" 
@@ -70,45 +70,48 @@
             </div>
         </div>
 
-        <!-- 底部输入框 (Floating Glass Design) -->
-        <div class="absolute bottom-6 left-0 right-0 z-20 pointer-events-none">
-            <div class="max-w-3xl mx-auto px-4">
-                <div class="pointer-events-auto shadow-2xl rounded-[1.5rem]">
-                    <div class="glass-effect dark:bg-zinc-900/80 p-1 rounded-[1.5rem]">
-                        <div class="relative bg-white/60 dark:bg-black/40 rounded-2xl focus-within:ring-2 focus-within:ring-indigo-500/30 transition-all duration-300 border border-transparent dark:border-white/10 shadow-inner">
+        <!-- 底部输入框 (Premium Floating Design) -->
+        <div class="absolute bottom-4 left-0 right-0 z-20 pointer-events-none">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6">
+                <div class="pointer-events-auto transform transition-all duration-500 hover:translate-y-[-2px]">
+                    <div class="glass-effect dark:bg-zinc-900/40 p-1.5 rounded-[1.8rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/40 dark:border-white/5">
+                        <div class="relative bg-white/70 dark:bg-black/40 rounded-[1.4rem] focus-within:ring-2 focus-within:ring-indigo-500/30 transition-all duration-300 border border-white/60 dark:border-white/10 shadow-inner overflow-hidden">
                             <!-- Input Area -->
                             <div class="flex flex-col">
-                                <textarea v-model="inputMessage" placeholder="Ask me anything..." rows="1"
-                                    class="w-full px-5 pt-4 pb-2 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-zinc-600 focus:outline-none resize-none max-h-48 overflow-y-auto text-base font-medium leading-relaxed"
+                                <textarea v-model="inputMessage" placeholder="Ask anything you want..." rows="1"
+                                    class="w-full px-6 pt-5 pb-3 bg-transparent text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-600 focus:outline-none resize-none max-h-48 overflow-y-auto text-base font-medium leading-relaxed"
                                     :disabled="chatStore.isLoading" @keydown.enter.exact.prevent="sendMessage"
                                     @keydown.enter.shift.exact="inputMessage += '\n'" @input="autoResize"
                                     ref="textareaRef"></textarea>
 
-                                <!-- Bottom Row -->
-                                <div class="flex items-center justify-between px-4 pb-3 pt-1">
-                                    <div class="flex items-center gap-1.5">
-                                        <!-- Actions -->
-                                        <button class="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-all" title="Upload Image">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                            </svg>
-                                        </button>
-                                        <button class="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-all" title="Search the Web">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                                            </svg>
-                                        </button>
-                                        <div class="w-px h-4 bg-gray-200 dark:bg-zinc-800 mx-1"></div>
+                                <!-- Bottom Toolbar Row -->
+                                <div class="flex items-center justify-between px-5 pb-4 pt-1">
+                                    <div class="flex items-center gap-1">
+                                        <!-- Actions Group -->
+                                        <div class="flex items-center p-1 bg-gray-100/50 dark:bg-white/5 rounded-xl border border-gray-200/50 dark:border-white/5">
+                                            <button class="p-2 text-gray-500 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-white/10 rounded-lg transition-all" title="Upload Media">
+                                                <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </button>
+                                            <button class="p-2 text-gray-500 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-white/10 rounded-lg transition-all" title="Intelligent Search">
+                                                <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="w-px h-5 bg-gray-200 dark:bg-zinc-800 mx-2"></div>
                                         <ModelSelector />
                                     </div>
 
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center">
                                         <button @click="sendMessage" :disabled="!inputMessage.trim() || chatStore.isLoading"
-                                            class="flex items-center justify-center p-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-lg shadow-indigo-200 dark:shadow-none transition-all active:scale-90 disabled:opacity-40 disabled:grayscale disabled:scale-100">
-                                            <svg v-if="!chatStore.isLoading" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                            class="group relative flex items-center justify-center w-11 h-11 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-[0_8px_20px_-4px_rgba(79,70,229,0.5)] transition-all active:scale-90 disabled:opacity-40 disabled:grayscale disabled:scale-100 overflow-hidden">
+                                            <div class="absolute inset-0 bg-gradient-to-tr from-indigo-600 to-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                            <svg v-if="!chatStore.isLoading" class="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 12h14M13 5l7 7-7 7" />
                                             </svg>
-                                            <div v-else class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                            <div v-else class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin relative z-10"></div>
                                         </button>
                                     </div>
                                 </div>
@@ -265,8 +268,16 @@ const sendMessage = async () => {
         }))
 
         await fetchChatStream({
+            message: userMessage,
             messages,
             model,
+            options: {
+                context: {
+                    conversation_id: conversationId,
+                    character_id: currentConversation.value.characterId,
+                    max_history: 20
+                }
+            },
             onMessage: (content) => {
                 conversationStore.updateLastMessage(conversationId, content)
             },
