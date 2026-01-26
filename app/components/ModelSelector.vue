@@ -5,7 +5,9 @@
       @click="isOpen = !isOpen"
       class="flex items-center gap-2.5 px-3 py-2 bg-gray-100 dark:bg-zinc-800/80 hover:bg-gray-200 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-200 rounded-xl transition-all text-[11px] font-bold cursor-pointer border border-gray-200 dark:border-white/10 active:scale-95 shadow-sm"
     >
-      <span class="truncate max-w-[100px] sm:max-w-[120px]">{{ modelStore.selectedModel?.display_name || 'Select Model' }}</span>
+      <ClientOnly>
+        <span class="truncate max-w-[100px] sm:max-w-[120px]">{{ modelStore.selectedModel?.display_name || 'Select Model' }}</span>
+      </ClientOnly>
       <svg
         class="w-3.5 h-3.5 text-gray-400 dark:text-zinc-500 transition-transform duration-300"
         :class="{ 'rotate-180': isOpen }"

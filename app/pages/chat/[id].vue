@@ -42,7 +42,9 @@
                             
                             <!-- Message Info/Actions (Optional: add time or copy button) -->
                             <div class="mt-1.5 px-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-3 text-[10px] text-gray-400 font-medium">
-                                <span>{{ formatMessageTime(message.timestamp) }}</span>
+                                <ClientOnly>
+                                    <span>{{ formatMessageTime(message.timestamp) }}</span>
+                                </ClientOnly>
                             </div>
                         </div>
                     </div>
@@ -71,48 +73,54 @@
         </div>
 
         <!-- 底部输入框 (Premium Floating Design) -->
-        <div class="absolute bottom-4 left-0 right-0 z-20 pointer-events-none">
+        <div class="absolute bottom-6 left-0 right-0 z-30 pointer-events-none">
             <div class="max-w-3xl mx-auto px-4 sm:px-6">
-                <div class="pointer-events-auto transform transition-all duration-500 hover:translate-y-[-2px]">
-                    <div class="glass-effect dark:bg-zinc-900/40 p-1.5 rounded-[1.8rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/40 dark:border-white/5">
-                        <div class="relative bg-white/70 dark:bg-black/40 rounded-[1.4rem] focus-within:ring-2 focus-within:ring-indigo-500/30 transition-all duration-300 border border-white/60 dark:border-white/10 shadow-inner overflow-hidden">
-                            <!-- Input Area -->
-                            <div class="flex flex-col">
-                                <textarea v-model="inputMessage" placeholder="Ask anything you want..." rows="1"
-                                    class="w-full px-6 pt-5 pb-3 bg-transparent text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-600 focus:outline-none resize-none max-h-48 overflow-y-auto text-base font-medium leading-relaxed"
-                                    :disabled="chatStore.isLoading" @keydown.enter.exact.prevent="sendMessage"
-                                    @keydown.enter.shift.exact="inputMessage += '\n'" @input="autoResize"
-                                    ref="textareaRef"></textarea>
+                <div class="pointer-events-auto transform transition-all duration-500 ease-out hover:translate-y-[-2px]">
+                    <div class="relative group">
+                         <!-- Glowing Backdrop -->
+                        <div class="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-[2rem] opacity-20 group-hover:opacity-40 blur-xl transition duration-1000 group-hover:duration-200"></div>
+                        
+                        <!-- Main Container -->
+                        <div class="relative glass-effect dark:bg-[#0a0a0a]/80 backdrop-blur-2xl p-2 rounded-[1.8rem] shadow-[0_8px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.3)] border border-white/60 dark:border-white/10 ring-1 ring-white/50 dark:ring-white/5">
+                            <div class="relative bg-white/50 dark:bg-black/40 rounded-[1.4rem] transition-all duration-300 border border-white/40 dark:border-white/5">
+                                <!-- Input Area -->
+                                <div class="flex flex-col">
+                                    <textarea v-model="inputMessage" placeholder="Ask anything..." rows="1"
+                                        class="w-full px-6 pt-5 pb-3 bg-transparent text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-600 focus:outline-none resize-none max-h-48 overflow-y-auto text-[15px] font-medium leading-relaxed tracking-wide"
+                                        :disabled="chatStore.isLoading" @keydown.enter.exact.prevent="sendMessage"
+                                        @keydown.enter.shift.exact="inputMessage += '\n'" @input="autoResize"
+                                        ref="textareaRef"></textarea>
 
-                                <!-- Bottom Toolbar Row -->
-                                <div class="flex items-center justify-between px-5 pb-4 pt-1">
-                                    <div class="flex items-center gap-1">
-                                        <!-- Actions Group -->
-                                        <div class="flex items-center p-1 bg-gray-100/50 dark:bg-white/5 rounded-xl border border-gray-200/50 dark:border-white/5">
-                                            <button class="p-2 text-gray-500 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-white/10 rounded-lg transition-all" title="Upload Media">
-                                                <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    <!-- Bottom Toolbar Row -->
+                                    <div class="flex items-center justify-between px-5 pb-4 pt-2">
+                                        <div class="flex items-center gap-2">
+                                            <!-- Actions Group -->
+                                            <div class="flex items-center p-1 bg-gray-100/50 dark:bg-white/5 rounded-xl border border-gray-200/50 dark:border-white/5">
+                                                <button class="p-2 text-gray-400 hover:text-indigo-600 dark:text-zinc-500 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-white/10 rounded-lg transition-all" title="Upload Media">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                    </svg>
+                                                </button>
+                                                <button class="p-2 text-gray-400 hover:text-indigo-600 dark:text-zinc-500 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-white/10 rounded-lg transition-all" title="Intelligent Search">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <div class="w-px h-5 bg-gray-200 dark:bg-zinc-800 mx-1"></div>
+                                            <ModelSelector />
+                                        </div>
+
+                                        <div class="flex items-center">
+                                            <button @click="sendMessage" :disabled="!inputMessage.trim() || chatStore.isLoading"
+                                                class="group relative flex items-center justify-center w-10 h-10 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-[0_4px_12px_rgba(79,70,229,0.3)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.4)] transition-all active:scale-95 disabled:opacity-50 disabled:shadow-none overflow-hidden">
+                                                <div class="absolute inset-0 bg-gradient-to-tr from-indigo-600 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                                <svg v-if="!chatStore.isLoading" class="w-5 h-5 relative z-10 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 12h14M12 5l7 7-7 7" />
                                                 </svg>
-                                            </button>
-                                            <button class="p-2 text-gray-500 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-white/10 rounded-lg transition-all" title="Intelligent Search">
-                                                <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                                                </svg>
+                                                <div v-else class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin relative z-10"></div>
                                             </button>
                                         </div>
-                                        <div class="w-px h-5 bg-gray-200 dark:bg-zinc-800 mx-2"></div>
-                                        <ModelSelector />
-                                    </div>
-
-                                    <div class="flex items-center">
-                                        <button @click="sendMessage" :disabled="!inputMessage.trim() || chatStore.isLoading"
-                                            class="group relative flex items-center justify-center w-11 h-11 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-[0_8px_20px_-4px_rgba(79,70,229,0.5)] transition-all active:scale-90 disabled:opacity-40 disabled:grayscale disabled:scale-100 overflow-hidden">
-                                            <div class="absolute inset-0 bg-gradient-to-tr from-indigo-600 to-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                            <svg v-if="!chatStore.isLoading" class="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 12h14M13 5l7 7-7 7" />
-                                            </svg>
-                                            <div v-else class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin relative z-10"></div>
-                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -127,9 +135,9 @@
                             v-for="suggestion in PROMPT_SUGGESTIONS.slice(0, 4)"
                             :key="suggestion.id"
                             @click="handleApplyPrompt(suggestion)"
-                            class="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 bg-white/70 dark:bg-zinc-800/60 hover:bg-white dark:hover:bg-zinc-700 backdrop-blur-xl text-gray-700 dark:text-zinc-200 rounded-full border border-white/50 dark:border-white/10 transition-all text-[11px] font-bold shadow-md hover:-translate-y-0.5 active:scale-95"
+                            class="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-white/60 dark:bg-zinc-800/60 hover:bg-white dark:hover:bg-zinc-700 backdrop-blur-md text-gray-600 dark:text-zinc-300 rounded-full border border-white/50 dark:border-white/5 transition-all text-[11px] font-semibold hover:-translate-y-0.5 active:scale-95"
                         >
-                            <span class="text-sm">{{ suggestion.icon }}</span>
+                            <span class="text-xs opacity-70">{{ suggestion.icon }}</span>
                             <span>{{ suggestion.label }}</span>
                         </button>
                     </div>
