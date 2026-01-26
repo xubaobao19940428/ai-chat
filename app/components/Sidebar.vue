@@ -196,15 +196,44 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                         </svg>
-                        <span v-show="!uiStore.sidebarCollapsed" class="flex-1 truncate">{{ conversation.title }}</span>
-                        <button v-show="!uiStore.sidebarCollapsed"
-                            @click.stop="handleDeleteConversation(conversation.id)"
-                            class="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-200 dark:hover:bg-[#222222] rounded transition-all text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
+                        
+                        <!-- Title / Edit Input -->
+                        <template v-if="!uiStore.sidebarCollapsed">
+                            <input
+                                v-if="editingId === conversation.id"
+                                v-model="editingTitle"
+                                @blur="saveTitle(conversation.id)"
+                                @keyup.enter="saveTitle(conversation.id)"
+                                @keyup.esc="cancelEditing"
+                                @click.stop
+                                ref="editInput"
+                                class="flex-1 min-w-0 bg-white dark:bg-[#2a2a2a] text-sm border-none focus:ring-1 focus:ring-indigo-500 rounded px-1 -ml-1 outline-none"
+                            />
+                            <span v-else class="flex-1 truncate">{{ conversation.title }}</span>
+                            
+                            <!-- Action Buttons -->
+                            <div class="flex items-center opacity-0 group-hover:opacity-100 transition-all">
+                                <button
+                                    v-if="editingId !== conversation.id"
+                                    @click.stop="startEditing(conversation)"
+                                    class="p-1 hover:bg-gray-200 dark:hover:bg-[#222222] rounded text-gray-400 hover:text-indigo-600 transition-colors"
+                                    title="Rename"
+                                >
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                    </svg>
+                                </button>
+                                <button
+                                    @click.stop="handleDeleteConversation(conversation.id)"
+                                    class="p-1 hover:bg-gray-200 dark:hover:bg-[#222222] rounded transition-all text-gray-500 dark:text-gray-400 hover:text-red-500"
+                                >
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -297,6 +326,39 @@ const projectStore = useProjectStore()
 const projectsCollapsed = ref(false)
 const showCreateProjectModal = ref(false)
 
+// Renaming State
+const editingId = ref<number | string | null>(null)
+const editingTitle = ref('')
+const editInput = ref<HTMLInputElement | null>(null)
+
+const startEditing = (conversation: any) => {
+    editingId.value = conversation.id
+    editingTitle.value = conversation.title
+    nextTick(() => {
+        // In Vue 3, refs inside v-for are arrays
+        const input = Array.isArray(editInput.value) ? editInput.value[0] : editInput.value
+        input?.focus()
+        input?.select()
+    })
+}
+
+const cancelEditing = () => {
+    editingId.value = null
+    editingTitle.value = ''
+}
+
+const saveTitle = async (id: number | string) => {
+    if (!editingTitle.value.trim() || editingTitle.value === conversations.value.find(c => c.id === id)?.title) {
+        cancelEditing()
+        return
+    }
+    
+    await conversationStore.updateTitle(id, editingTitle.value.trim())
+    cancelEditing()
+}
+
+const conversations = computed(() => conversationStore.conversations)
+
 const toggleProjects = () => {
     projectsCollapsed.value = !projectsCollapsed.value
 }
@@ -315,7 +377,10 @@ const selectProject = (id: number | null) => {
 
 const handleNewChat = async () => {
     try {
-        const id = await conversationStore.createConversation({ character_id: 1 })
+        const id = await conversationStore.createConversation({ 
+            character_id: 1,
+            group_id: conversationStore.selectedGroupId || 0
+        })
         router.push(`/chat/${id}`)
         uiStore.closeMobileMenu()
     } catch (e) {
