@@ -30,6 +30,7 @@ const service: AxiosInstance = axios.create({
 })
 
 // 请求拦截器
+
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const runtimeConfig = useRuntimeConfig().public
@@ -82,22 +83,25 @@ service.interceptors.request.use(
       nonce
     };
 
-    // Sort params
+    // Sort params and EXCLUDE objects/arrays from signature to avoid serialization mismatch
+    // This is most likely the standard for this backend
     const sortedParams = Object.keys(params).sort().reduce((acc: Params, key: string) => {
       const val = params[key]
-      if (val !== undefined) {
+      if (val !== undefined && val !== null && typeof val !== 'object') {
         acc[key] = val
       }
       return acc;
     }, {} as Params);
 
     // Construct full path for signing
-    // Use the explicit target domain as the backend likely expects the full original URL in signature
-    // TRY HTTPS: commonly APIs expects https in signature even if proxied
-    const signingBase = 'https://ai-test.iappdaily.com';
-    const fullPath = signingBase + baseUrl;
+    const productionDomain = 'http://ai-test.iappdaily.com';
+    let signingPath = baseUrl;
+    if (signingPath.startsWith('/api')) {
+      signingPath = signingPath.substring(4);
+    }
+    const fullPath = productionDomain.replace(/\/$/, '') + '/' + signingPath.replace(/^\//, '');
 
-    // Generate query string (simulating PHP http_build_query)
+    // Generate query string
     const queryString = Object.entries(sortedParams)
       .map(([key, value]) => {
         const encodedKey = encodeURIComponent(key).replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase());
@@ -107,19 +111,12 @@ service.interceptors.request.use(
       .join('&');
 
     const encodedFullPath = fullPath.replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase());
-    
-    // App Key as Secret
     const secretKey = runtimeConfig.appKey || '49f68a5c8493ec2c0bf489821c21fc3b';
+    // Back to original concatenation style
     const sign = md5(encodedFullPath + queryString + secretKey);
 
-    // Debug Logs
-    // console.log('=== Signature Debug ===');
-    // console.log('Original Config URL:', config.url); // Check if it includes /api
-    // console.log('Full Path:', fullPath);
-    // console.log('Sorted Params:', sortedParams);
-    // console.log('String to Sign:', encodedFullPath + queryString + secretKey);
-    // console.log('Generated Sign:', sign);
-    // console.log('=======================');
+    // Debug Logs (Enabled for debugging)
+
 
     // Update config
     config.url = baseUrl;

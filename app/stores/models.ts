@@ -8,7 +8,7 @@ export const useModelStore = defineStore('model', () => {
   const selectedModelId = ref<string | null>(null)
 
   const selectedModel = computed(() => {
-    return models.value.find(m => m.model === selectedModelId.value) || 
+    return models.value.find(m => m.model === selectedModelId.value || `${m.provider}:${m.model}` === selectedModelId.value) || 
            models.value.find(m => m.is_default) || 
            models.value[0] || null
   })
@@ -22,7 +22,10 @@ export const useModelStore = defineStore('model', () => {
       // Initial default model selection
       if (!selectedModelId.value && models.value.length > 0) {
         const defaultModel = models.value.find(m => m.is_default)
-        selectedModelId.value = defaultModel ? defaultModel.model : models.value[0]!.model
+        const targetModel = defaultModel || models.value[0]
+        if (targetModel) {
+            selectedModelId.value = `${targetModel.provider}:${targetModel.model}`
+        }
       }
     } catch (error) {
       console.error('Fetch models failed:', error)

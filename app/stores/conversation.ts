@@ -7,6 +7,7 @@ import {
   deleteConversation as apiDeleteConversation,
   updateConversation as apiUpdateConversation,
   getConversationMessages,
+  getConversationDetail,
   type ConversationListItem
 } from '~/utils/api'
 
@@ -31,6 +32,35 @@ export const useConversationStore = defineStore('conversation', () => {
     if (!currentConversationId.value) return null
     return conversations.value.find(c => c.id == currentConversationId.value) || null
   })
+
+  // 获取单个会话详情 (用于直接跳转页面时)
+  const fetchConversationDetail = async (id: number | string) => {
+    try {
+      const res: any = await getConversationDetail(Number(id))
+      const item = res.data
+      if (item) {
+        const conversation: Conversation = {
+          id: item.id,
+          title: item.title,
+          messages: [],
+          groupId: item.group_id,
+          characterId: item.character_id,
+          updatedAt: item.updated_at * 1000
+        }
+        
+        // 检查是否已存在
+        const existingIndex = conversations.value.findIndex(c => c.id == id)
+        if (existingIndex > -1) {
+          conversations.value[existingIndex] = { ...conversations.value[existingIndex], ...conversation }
+        } else {
+          conversations.value.push(conversation)
+        }
+        return conversation
+      }
+    } catch (error) {
+      console.error('Fetch conversation detail failed:', error)
+    }
+  }
 
   // 获取会话列表
   const fetchConversations = async (groupId?: number) => {
@@ -66,7 +96,15 @@ export const useConversationStore = defineStore('conversation', () => {
       const res: any = await getConversationMessages(Number(conversationId))
       const conversation = conversations.value.find(c => c.id == conversationId)
       if (conversation) {
-        conversation.messages = res.data || []
+        // 后端返回的消息格式可能在 data 或 data.list 中
+        const rawMessages = Array.isArray(res.data) ? res.data : (res.data?.list || [])
+        const messages = rawMessages.map((m: any) => ({
+          id: String(m.id),
+          role: m.role,
+          content: m.content,
+          timestamp: m.created_at * 1000
+        }))
+        conversation.messages = messages
       }
     } catch (error) {
       console.error('Fetch messages failed:', error)
@@ -111,7 +149,14 @@ export const useConversationStore = defineStore('conversation', () => {
   // 切换会话
   const switchConversation = async (id: number | string) => {
     currentConversationId.value = id
-    const conversation = conversations.value.find(c => c.id == id)
+    
+    // 确保元数据存在
+    let conversation = conversations.value.find(c => c.id == id)
+    if (!conversation) {
+      conversation = await fetchConversationDetail(id)
+    }
+    
+    // 只要消息为空就抓取一次，确保持久化
     if (conversation && conversation.messages.length === 0) {
       await fetchMessages(id)
     }
@@ -198,6 +243,7 @@ export const useConversationStore = defineStore('conversation', () => {
     isLoading,
     fetchConversations,
     setSelectedGroupId,
+    fetchConversationDetail,
     fetchMessages,
     createConversation,
     deleteConversation,

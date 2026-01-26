@@ -1,76 +1,70 @@
 <template>
-  <div class="flex flex-col h-full bg-[#fcfbfb] dark:bg-[#000000]">
+  <div class="flex flex-col h-full bg-[#f8f9fa] dark:bg-[#050505] relative overflow-hidden">
+    <!-- Background Decoration -->
+    <div class="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/5 dark:bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+    <div class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-500/5 dark:bg-purple-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+
     <!-- Fixed Top Area: Greeting & Input -->
-    <div class="flex-shrink-0 w-full z-10 bg-[#fcfbfb] dark:bg-[#000000] pt-6 sm:pt-10 px-4 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_20px_-10px_rgba(255,255,255,0.02)]">
+    <div class="flex-shrink-0 w-full z-10 pt-12 sm:pt-20 px-4">
       <div class="max-w-4xl mx-auto">
-        <!-- Scrollable content usually starts below this -->
-        
         <!-- Greeting -->
-        <div class="text-center mb-6 sm:mb-8">
-          <div class="flex justify-center mb-4">
-             <div class="w-12 h-12 text-gray-400">
-                <svg viewBox="0 0 24 24" fill="none" class="w-12 h-12 animate-pulse" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2L15 8L21 9L16.5 13.5L18 19.5L12 16.5L6 19.5L7.5 13.5L3 9L9 8L12 2Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <div class="text-center mb-10 sm:mb-14">
+          <div class="flex justify-center mb-6">
+             <div class="w-16 h-16 text-indigo-500 dark:text-indigo-400">
+                <svg viewBox="0 0 24 24" fill="none" class="w-16 h-16 animate-pulse" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L15 8L21 9L16.5 13.5L18 19.5L12 16.5L6 19.5L7.5 13.5L3 9L9 8L12 2Z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
              </div>
           </div>
-          <h2 class="text-2xl sm:text-4xl font-semibold text-gray-900 dark:text-white mb-2">{{ title }}</h2>
-          <p class="text-lg text-gray-500 dark:text-gray-400">{{ subtitle }}</p>
+          <h2 class="text-3xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight">{{ title }}</h2>
+          <p class="text-lg sm:text-xl text-gray-500 dark:text-gray-400 font-medium pb-2 transition-all duration-700">{{ subtitle }}</p>
         </div>
     
-        <!-- Input Area -->
-        <div class="max-w-3xl mx-auto mb-6">
-          <div class="relative bg-gray-50 dark:bg-[#1a1a1a] rounded-2xl border border-gray-200 dark:border-[#2a2a2a] focus-within:border-indigo-500 dark:focus-within:border-[#333333] transition-colors">
-            <textarea
-              v-model="inputMessage"
-              :placeholder="placeholder"
-              rows="1"
-              class="w-full px-12 py-4 bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none resize-none max-h-32 overflow-y-auto text-base"
-              :disabled="isLoading"
-              @keydown.enter.exact.prevent="handleSubmit"
-              @keydown.enter.shift.exact="inputMessage += '\n'"
-              @input="autoResize"
-              ref="textareaRef"
-            ></textarea>
-            
-            <!-- Attachment Icon -->
-            <button class="absolute left-3 top-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-              </svg>
-            </button>
-    
-            <!-- Bottom Actions -->
-            <div class="flex items-center justify-between px-3 pb-3">
-              <div class="flex items-center gap-2">
-                 <button class="flex items-center gap-2 px-3 py-2 sm:py-1.5 bg-gray-100 dark:bg-[#1a1a1a] hover:bg-gray-200 dark:hover:bg-[#222222] text-gray-700 dark:text-gray-300 rounded-lg transition-colors text-xs font-medium">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <span class="hidden sm:inline">Create an image</span>
-                </button>
-                <button class="flex items-center gap-2 px-3 py-2 sm:py-1.5 bg-gray-100 dark:bg-[#1a1a1a] hover:bg-gray-200 dark:hover:bg-[#222222] text-gray-700 dark:text-gray-300 rounded-lg transition-colors text-xs font-medium">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                  </svg>
-                  <span class="hidden sm:inline">Search the web</span>
-                </button>
-              </div>
+        <!-- Floating Input Area -->
+        <div class="max-w-3xl mx-auto mb-12 shadow-2xl rounded-[1.5rem]">
+          <div class="glass-effect dark:bg-gray-900/60 p-1 rounded-[1.5rem]">
+            <div class="relative bg-white/60 dark:bg-black/40 rounded-2xl focus-within:ring-2 focus-within:ring-indigo-500/30 transition-all duration-300 border border-transparent dark:border-white/5 shadow-inner">
+              <textarea
+                v-model="inputMessage"
+                :placeholder="placeholder"
+                rows="1"
+                class="w-full px-5 pt-4 pb-2 bg-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none resize-none max-h-48 overflow-y-auto text-base font-medium leading-relaxed"
+                :disabled="isLoading"
+                @keydown.enter.exact.prevent="handleSubmit"
+                @keydown.enter.shift.exact="inputMessage += '\n'"
+                @input="autoResize"
+                ref="textareaRef"
+              ></textarea>
               
-              <div class="flex items-center gap-2">
-              <div class="flex items-center gap-2">
-                <ModelSelector />
-              </div>
-    
-                <button
-                  @click="handleSubmit"
-                  :disabled="!inputMessage.trim() || isLoading"
-                  class="p-2 bg-white dark:bg-[#1a1a1a] text-black dark:text-white rounded-full hover:bg-gray-200 dark:hover:bg-[#222222] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                  </svg>
-                </button>
+              <!-- Bottom Row -->
+              <div class="flex items-center justify-between px-4 pb-3 pt-1">
+                <div class="flex items-center gap-1.5">
+                  <button class="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-all" title="Create Image">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </button>
+                  <button class="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-all" title="Search World">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                    </svg>
+                  </button>
+                  <div class="w-px h-4 bg-gray-200 dark:bg-gray-800 mx-1"></div>
+                  <ModelSelector />
+                </div>
+                
+                <div class="flex items-center gap-2">
+                  <button
+                    @click="handleSubmit"
+                    :disabled="!inputMessage.trim() || isLoading"
+                    class="flex items-center justify-center p-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-lg shadow-indigo-200 dark:shadow-none transition-all active:scale-90 disabled:opacity-40"
+                  >
+                    <svg v-if="!isLoading" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                    </svg>
+                    <div v-else class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -79,56 +73,56 @@
     </div>
 
     <!-- Scrollable Bottom Area: Suggestions & Bots -->
-    <div class="flex-1 overflow-y-auto px-4 pb-8 custom-scrollbar">
+    <div class="flex-1 overflow-y-auto px-4 pb-20 custom-scrollbar z-10">
       <div class="max-w-4xl mx-auto pt-4">
         <!-- Suggestions -->
-        <div class="mb-8 px-4">
-          <div class="flex flex-wrap justify-center gap-2">
+        <div class="mb-12 px-4">
+          <div class="flex flex-wrap justify-center gap-2.5">
             <button
               v-for="suggestion in visibleSuggestions"
               :key="suggestion.id"
               @click="handleApplyPrompt(suggestion)"
-              class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1a1a1a] hover:bg-gray-50 dark:hover:bg-[#222222] text-gray-700 dark:text-gray-300 rounded-full border border-gray-100 dark:border-gray-800 transition-all text-sm font-medium shadow-sm active:scale-95"
+              class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-[#111111] hover:bg-gray-50 dark:hover:bg-[#1a1a1a] text-gray-700 dark:text-gray-300 rounded-full border border-gray-100 dark:border-gray-800 transition-all text-sm font-semibold shadow-sm hover:translate-y-[-1px] active:scale-95 premium-shadow"
             >
-              <span>{{ suggestion.icon }}</span>
+              <span class="text-base">{{ suggestion.icon }}</span>
               <span>{{ suggestion.label }}</span>
             </button>
             <button
               v-if="!showAllSuggestions && PROMPT_SUGGESTIONS.length > 5"
               @click="showAllSuggestions = true"
-              class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1a1a1a] hover:bg-gray-50 dark:hover:bg-[#222222] text-gray-500 dark:text-gray-400 rounded-full border border-gray-100 dark:border-gray-800 transition-all text-sm font-medium shadow-sm"
+              class="flex items-center gap-2 px-4 py-2.5 bg-white/50 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 text-gray-500 dark:text-gray-400 rounded-full border border-gray-100/50 dark:border-gray-800 transition-all text-sm font-semibold shadow-sm"
             >
-              <span>See All</span>
+              <span>See More</span>
             </button>
           </div>
     
           <!-- Sub-prompts Selection -->
           <Transition
-            enter-active-class="transition duration-200 ease-out"
-            enter-from-class="transform -translate-y-2 opacity-0"
-            enter-to-class="transform translate-y-0 opacity-100"
+            enter-active-class="transition duration-300 ease-out"
+            enter-from-class="transform -translate-y-4 opacity-0 scale-95"
+            enter-to-class="transform translate-y-0 opacity-100 scale-100"
           >
-            <div v-if="activeSubPrompts.length > 0" class="mt-4 flex flex-wrap justify-center gap-2 p-3 bg-gray-50/50 dark:bg-gray-900/20 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800">
+            <div v-if="activeSubPrompts.length > 0" class="mt-8 flex flex-wrap justify-center gap-2.5 p-5 glass-effect dark:bg-gray-900/30 rounded-2xl border border-dashed border-indigo-200 dark:border-indigo-500/20">
               <button
                 v-for="sub in activeSubPrompts"
                 :key="sub"
                 @click="handleApplySubPrompt(sub)"
-                class="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-lg text-xs font-medium hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors"
+                class="px-3.5 py-2 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-xl text-xs sm:text-sm font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-all active:scale-95"
               >
                 {{ sub }}
               </button>
-              <button @click="activeSubPrompts = []" class="px-2 py-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs">
-                Clear
+              <button @click="activeSubPrompts = []" class="px-3 py-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs font-bold uppercase tracking-wider">
+                ✕
               </button>
             </div>
           </Transition>
         </div>
     
         <!-- Bot Categories -->
-        <div class="space-y-8 px-2">
+        <div class="space-y-12 px-2 pb-10">
           <template v-if="discoveryStore.isLoading">
-             <div class="flex justify-center py-10">
-                <div class="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+             <div class="flex justify-center py-20">
+                <div class="w-10 h-10 border-[3px] border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
              </div>
           </template>
           <template v-else>
@@ -137,6 +131,7 @@
               :key="group.id" 
               :title="group.title" 
               :bots="mapGroupToBots(group)" 
+              class="animate-in fade-in slide-in-from-bottom-4 duration-700"
             />
           </template>
         </div>

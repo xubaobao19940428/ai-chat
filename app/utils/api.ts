@@ -1,4 +1,5 @@
 import request from './request'
+import { md5 } from 'js-md5'
 
 // Auth Types
 export interface LoginParams {
@@ -58,82 +59,194 @@ export interface ChatResponse {
   }
 }
 
-// Chat API
-export const sendChatMessage = (messages: ChatMessage[], model?: string, stream: boolean = false): Promise<any> => {
-  return request.post('/v1/chat/completions', {
-    messages,
-    model: model || 'gpt-4o-mini',
-    stream
-  })
+// Chat API Options
+export interface ChatModelOptions {
+  temperature?: number
+  top_p?: number
+  top_k?: number
+  max_tokens?: number
+  presence_penalty?: number
+  frequency_penalty?: number
+  enable_web_search?: boolean
+  web_search_depth?: number
+  web_search_query?: string
+  stream?: boolean
+  onMessage?: (content: string) => void
+  onError?: (error: any) => void
+  onFinish?: () => void
 }
 
-// Fetch-based streaming for browser SSE
+const DEFAULT_CHAT_OPTIONS: ChatModelOptions = {
+  temperature: 0.7,
+  top_p: 0.9,
+  top_k: 0,
+  max_tokens: 2048,
+  presence_penalty: 0,
+  frequency_penalty: 0,
+  enable_web_search: false,
+  web_search_depth: 3
+}
+
+// Chat API (sendChatMessage updated to use Axios for reliable signing)
+
+// Helper for random string
+const randomString = (code: number) => {
+  const len = code;
+  const chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz123456789';
+  const maxLen = chars.length;
+  let pwd = '';
+  for (let i = 0; i < len; i++) {
+    pwd += chars.charAt(Math.floor(Math.random() * maxLen))
+  }
+  return pwd
+}
+
+export const sendChatMessage = async (messages: ChatMessage[], model?: string, options: ChatModelOptions = {}): Promise<any> => {
+  const isStream = options.stream ?? false
+  const runtimeConfig = useRuntimeConfig().public
+
+  const body = {
+    messages,
+    model: model || 'openai:gpt-4o-mini',
+    ...DEFAULT_CHAT_OPTIONS,
+    ...options,
+    stream: isStream
+  }
+  
+  // Clean up callbacks from body
+  const { onMessage, onError, onFinish, ...requestBody } = body as any
+
+
+  // Prepare Signature Params
+  const timestamp = Math.floor(Date.now() / 1000);
+  const nonce = randomString(16);
+  
+  const params: Record<string, any> = {
+    ...requestBody,
+    timestamp,
+    nonce
+  };
+
+
+  // Sort params and EXCLUDE objects/arrays from signature to avoid serialization mismatch
+  const sortedParams = Object.keys(params).sort().reduce((acc: any, key: string) => {
+    const val = params[key]
+    if (val !== undefined && val !== null && typeof val !== 'object') {
+      acc[key] = val
+    }
+    return acc;
+  }, {});
+
+  // Construct full path for signing
+  const productionDomain = 'http://ai-test.iappdaily.com';
+  const signingPath = 'v1/chat/completions'; 
+  const signingUrl = productionDomain.replace(/\/$/, '') + '/' + signingPath;
+  
+  // Generate query string
+  const queryString = Object.entries(sortedParams)
+    .map(([key, value]) => {
+      const encodedKey = encodeURIComponent(key).replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase());
+      const encodedValue = encodeURIComponent(String(value)).replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase());
+      return `${encodedKey}=${encodedValue}`;
+    })
+    .join('&');
+
+  const encodedFullPath = signingUrl.replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase());
+  const secretKey = runtimeConfig.appKey || '49f68a5c8493ec2c0bf489821c21fc3b';
+  
+  // Back to original concatenation style
+  const sign = md5(encodedFullPath + queryString + secretKey);
+
+  // Prepare URL with query params
+  const apiBase = runtimeConfig.apiBase || '/api';
+
+
+  const url = `${apiBase}/v1/chat/completions?timestamp=${timestamp}&nonce=${nonce}&sign=${sign}`;
+
+  try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'x-app-domain': 'ai-test.iappdaily.com',
+      'x-app-id': runtimeConfig.appId || '1'
+    };
+
+    const token = localStorage.getItem('token');
+    if (token) {
+      headers['Authorization'] = `${token}`;
+    }
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+    }
+
+    if (isStream && response.body) {
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+        
+        for (const line of lines) {
+          const trimmedLine = line.trim();
+          if (!trimmedLine || trimmedLine === 'data: [DONE]') continue;
+          
+          if (trimmedLine.startsWith('data: ')) {
+             try {
+              const json = JSON.parse(trimmedLine.substring(6));
+              const content = json.content ?? json.choices?.[0]?.delta?.content ?? '';
+              if (content) {
+                options.onMessage?.(content);
+              }
+            } catch (e) {
+              console.error('Error parsing stream line:', trimmedLine, e);
+            }
+          }
+        }
+      }
+
+      options.onFinish?.();
+      return; 
+    } else {
+      const data = await response.json();
+      return data;
+    }
+
+  } catch (error) {
+    if (isStream && options.onError) {
+      options.onError(error)
+    } else {
+        throw error;
+    }
+  }
+}
+
+// Fetch-based streaming wrapper (kept for compatibility)
 export const fetchChatStream = async (params: {
   messages: ChatMessage[],
   model?: string,
+  options?: ChatModelOptions,
   onMessage: (content: string) => void,
   onError: (error: any) => void,
   onFinish: () => void
 }) => {
-  const runtimeConfig = useRuntimeConfig()
-  const apiBase = runtimeConfig.public.apiBase
-  const token = localStorage.getItem('token')
-
-  try {
-    const response = await fetch(`${apiBase}/v1/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'x-app-id': runtimeConfig.public.appId,
-        'x-app-key': runtimeConfig.public.appKey,
-        'Content-Type': 'application/json',
-        'Authorization': token ? `Bearer ${token}` : '',
-      },
-      body: JSON.stringify({
-        messages: params.messages,
-        model: params.model || 'gpt-4o-mini',
-        stream: true
-      }),
-    })
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    const reader = response.body?.getReader()
-    const decoder = new TextDecoder()
-    let buffer = ''
-
-    if (reader) {
-        while (true) {
-            const { done, value } = await reader.read()
-            if (done) break
-
-            buffer += decoder.decode(value, { stream: true })
-            const lines = buffer.split('\n')
-            buffer = lines.pop() || ''
-
-            for (const line of lines) {
-                const trimmedLine = line.trim()
-                if (!trimmedLine || trimmedLine === 'data: [DONE]') continue
-                
-                if (trimmedLine.startsWith('data: ')) {
-                    try {
-                        const json = JSON.parse(trimmedLine.substring(6))
-                        const content = json.choices?.[0]?.delta?.content || ''
-                        if (content) {
-                            params.onMessage(content)
-                        }
-                    } catch (e) {
-                        console.error('Error parsing stream line:', trimmedLine, e)
-                    }
-                }
-            }
-        }
-    }
-    params.onFinish()
-  } catch (error) {
-    params.onError(error)
-  }
+  return sendChatMessage(params.messages, params.model, {
+    ...params.options,
+    stream: true,
+    onMessage: params.onMessage,
+    onError: params.onError,
+    onFinish: params.onFinish
+  })
 }
 
 // Conversation Types
@@ -170,7 +283,11 @@ export const createConversation = (data: CreateConversationParams) => {
 export const getConversations = (params: { character_id?: number, group_id?: number, page?: number, page_size?: number }) => {
   return request.get('/v1/conversations', { params })
 }
-
+/**
+ * 获取对话详情
+ * @param id 对话id
+ * @returns 
+ */
 export const getConversationDetail = (id: number) => {
   return request.get(`/v1/conversations/${id}`)
 }

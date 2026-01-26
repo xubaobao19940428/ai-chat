@@ -1,35 +1,48 @@
 <template>
-    <div class="flex-1 flex flex-col overflow-hidden bg-[#fcfbfb] dark:bg-[#000000] transition-colors">
+    <div class="flex-1 flex flex-col overflow-hidden bg-[#f8f9fa] dark:bg-[#050505] transition-colors relative">
+        <!-- Background Decoration -->
+        <div class="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/5 dark:bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+        <div class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-500/5 dark:bg-purple-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+
         <!-- 聊天内容区域 -->
-        <div class="flex-1 overflow-y-auto px-3 sm:px-4 pb-4 sm:pb-6" ref="messagesContainer">
-            <div class="max-w-3xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
-                <div class="space-y-6">
-                    <div v-for="message in currentConversation?.messages" :key="message.id" class="group flex gap-4"
+        <div class="flex-1 overflow-y-auto px-4 pb-32 pt-4 custom-scrollbar relative z-10" ref="messagesContainer">
+            <div class="max-w-3xl mx-auto py-6">
+                <TransitionGroup 
+                    tag="div" 
+                    name="message-list" 
+                    class="space-y-8"
+                >
+                    <div v-for="message in currentConversation?.messages" :key="message.id" class="flex gap-4"
                         :class="message.role === 'user' ? 'flex-row-reverse' : ''">
                         <!-- Avatar -->
                         <div :class="[
-                            'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium',
+                            'flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-sm font-semibold transition-transform duration-300 hover:scale-110 premium-shadow',
                             message.role === 'user'
-                                ? 'bg-indigo-600 text-white'
-                                : 'bg-gray-100 dark:bg-[#1a1a1a] text-gray-900 dark:text-white border border-gray-200 dark:border-[#2a2a2a]'
+                                ? 'bg-indigo-600 shadow-indigo-200 dark:shadow-none bg-gradient-to-br from-indigo-500 to-indigo-700 text-white'
+                                : 'bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white border border-gray-100 dark:border-[#2a2a2a]'
                         ]">
                             <span v-if="message.role === 'user'">U</span>
-                            <span v-else class="text-sm">{{ getModelIcon(currentConversation?.model) }}</span>
+                            <span v-else class="text-base">{{ getModelIcon(currentConversation?.model) }}</span>
                         </div>
 
-                        <!-- Message Bubble -->
-                        <div class="flex-1 min-w-0 pt-1">
+                        <!-- Message Content -->
+                        <div class="flex flex-col max-w-[85%] sm:max-w-[75%]" :class="message.role === 'user' ? 'items-end' : 'items-start'">
                             <div :class="[
-                                'rounded-2xl px-4 py-3',
+                                'rounded-2xl px-5 py-3.5 transition-all duration-300 premium-shadow',
                                 message.role === 'user'
-                                    ? 'bg-indigo-600 dark:bg-[#1a1a1a] text-white ml-auto'
-                                    : 'text-gray-900 dark:text-gray-100'
-                            ]" :style="message.role === 'user' ? 'max-width: 85%; margin-left: auto;' : 'max-width: 100%;'">
+                                    ? 'bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-tr-none'
+                                    : 'bg-white dark:bg-[#111111] text-gray-800 dark:text-gray-100 border border-gray-100 dark:border-[#222222] rounded-tl-none'
+                            ]">
                                 <div v-if="message.role === 'user'"
-                                    class="whitespace-pre-wrap text-sm leading-relaxed break-words">{{ message.content
+                                    class="whitespace-pre-wrap text-sm leading-relaxed break-words font-medium">{{ message.content
                                     }}</div>
-                                <div v-else class="prose prose-invert prose-sm max-w-none break-words leading-relaxed"
+                                <div v-else class="prose dark:prose-invert prose-sm max-w-none break-words leading-relaxed"
                                     v-html="renderMarkdown(message.content)"></div>
+                            </div>
+                            
+                            <!-- Message Info/Actions (Optional: add time or copy button) -->
+                            <div class="mt-1.5 px-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-3 text-[10px] text-gray-400 font-medium">
+                                <span>{{ formatMessageTime(message.timestamp) }}</span>
                             </div>
                         </div>
                     </div>
@@ -38,114 +51,85 @@
                     <div v-if="chatStore.isLoading && chatStore.loadingConversationId === currentConversationId"
                         class="flex gap-4">
                         <div
-                            class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 dark:bg-[#1a1a1a] text-gray-900 dark:text-white border border-gray-200 dark:border-[#2a2a2a] flex items-center justify-center text-sm">
+                            class="flex-shrink-0 w-9 h-9 rounded-xl bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white border border-gray-100 dark:border-[#222222] flex items-center justify-center text-base premium-shadow">
                             {{ getModelIcon(currentConversation?.model) }}
                         </div>
-                        <div class="px-4 py-3">
+                        <div class="bg-white dark:bg-[#111111] border border-gray-100 dark:border-[#222222] rounded-2xl px-5 py-4 premium-shadow">
                             <div class="flex space-x-1.5">
-                                <div class="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                                <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce"
                                     style="animation-delay: 0s"></div>
-                                <div class="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                                <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce"
                                     style="animation-delay: 0.15s"></div>
-                                <div class="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                                <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce"
                                     style="animation-delay: 0.3s"></div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </TransitionGroup>
                 <div class="h-6"></div>
             </div>
         </div>
 
-        <!-- 底部输入框 -->
-        <div
-            class="flex-shrink-0 bg-[#fcfbfb] dark:bg-[#000000] border-t border-gray-200 dark:border-[#1a1a1a] pb-6 pt-2 transition-colors">
+        <!-- 底部输入框 (Floating Glass Design) -->
+        <div class="absolute bottom-6 left-0 right-0 z-20 pointer-events-none">
             <div class="max-w-3xl mx-auto px-4">
-                <div
-                    class="relative bg-gray-50 dark:bg-[#1a1a1a] rounded-2xl border border-gray-200 dark:border-[#2a2a2a] focus-within:border-indigo-500 dark:focus-within:border-[#333333] transition-colors">
-                    <textarea v-model="inputMessage" placeholder="Type a message..." rows="1"
-                        class="w-full px-12 py-4 bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none resize-none max-h-32 overflow-y-auto text-base"
-                        :disabled="chatStore.isLoading" @keydown.enter.exact.prevent="sendMessage"
-                        @keydown.enter.shift.exact="inputMessage += '\n'" @input="autoResize"
-                        ref="textareaRef"></textarea>
+                <div class="pointer-events-auto shadow-2xl rounded-[1.5rem]">
+                    <div class="glass-effect dark:bg-zinc-900/80 p-1 rounded-[1.5rem]">
+                        <div class="relative bg-white/60 dark:bg-black/40 rounded-2xl focus-within:ring-2 focus-within:ring-indigo-500/30 transition-all duration-300 border border-transparent dark:border-white/10 shadow-inner">
+                            <!-- Input Area -->
+                            <div class="flex flex-col">
+                                <textarea v-model="inputMessage" placeholder="Ask me anything..." rows="1"
+                                    class="w-full px-5 pt-4 pb-2 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-zinc-600 focus:outline-none resize-none max-h-48 overflow-y-auto text-base font-medium leading-relaxed"
+                                    :disabled="chatStore.isLoading" @keydown.enter.exact.prevent="sendMessage"
+                                    @keydown.enter.shift.exact="inputMessage += '\n'" @input="autoResize"
+                                    ref="textareaRef"></textarea>
 
-                    <!-- Attachment Icon -->
-                    <button
-                        class="absolute left-3 top-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                        </svg>
-                    </button>
+                                <!-- Bottom Row -->
+                                <div class="flex items-center justify-between px-4 pb-3 pt-1">
+                                    <div class="flex items-center gap-1.5">
+                                        <!-- Actions -->
+                                        <button class="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-all" title="Upload Image">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                        </button>
+                                        <button class="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-all" title="Search the Web">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                            </svg>
+                                        </button>
+                                        <div class="w-px h-4 bg-gray-200 dark:bg-zinc-800 mx-1"></div>
+                                        <ModelSelector />
+                                    </div>
 
-                    <!-- Bottom Actions -->
-                    <div class="flex items-center justify-between px-3 pb-3">
-                        <div class="flex items-center gap-2">
-                            <!-- Actions Buttons (Image/Search) -->
-                            <button
-                                class="flex items-center gap-2 px-3 py-2 sm:py-1.5 bg-gray-100 dark:bg-[#1a1a1a] hover:bg-gray-200 dark:hover:bg-[#222222] text-gray-700 dark:text-gray-300 rounded-lg transition-colors text-xs font-medium">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                <span class="hidden sm:inline">Create an image</span>
-                            </button>
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                        <div class="flex items-center gap-2">
-                            <ModelSelector />
-                        </div>
-
-                            <button @click="sendMessage" :disabled="!inputMessage.trim() || chatStore.isLoading"
-                                class="p-2 bg-white dark:bg-[#1a1a1a] text-black dark:text-white rounded-full hover:bg-gray-200 dark:hover:bg-[#222222] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                                </svg>
-                            </button>
+                                    <div class="flex items-center gap-3">
+                                        <button @click="sendMessage" :disabled="!inputMessage.trim() || chatStore.isLoading"
+                                            class="flex items-center justify-center p-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-lg shadow-indigo-200 dark:shadow-none transition-all active:scale-90 disabled:opacity-40 disabled:grayscale disabled:scale-100">
+                                            <svg v-if="!chatStore.isLoading" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                            </svg>
+                                            <div v-else class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Prompt Suggestions Pill Bar -->
-                <div class="mt-4 overflow-x-auto no-scrollbar">
-                    <div class="flex items-center gap-2 pb-1">
+                <!-- Suggestions Pill Bar -->
+                <div class="mt-4 overflow-x-auto no-scrollbar pointer-events-auto">
+                    <div class="flex items-center gap-2 justify-center pb-2">
                         <button
-                            v-for="suggestion in PROMPT_SUGGESTIONS"
+                            v-for="suggestion in PROMPT_SUGGESTIONS.slice(0, 4)"
                             :key="suggestion.id"
                             @click="handleApplyPrompt(suggestion)"
-                            class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-[#1a1a1a] hover:bg-gray-50 dark:hover:bg-[#222222] text-gray-600 dark:text-gray-400 rounded-full border border-gray-100 dark:border-gray-800 transition-all text-xs font-medium shadow-sm active:scale-95"
+                            class="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 bg-white/70 dark:bg-zinc-800/60 hover:bg-white dark:hover:bg-zinc-700 backdrop-blur-xl text-gray-700 dark:text-zinc-200 rounded-full border border-white/50 dark:border-white/10 transition-all text-[11px] font-bold shadow-md hover:-translate-y-0.5 active:scale-95"
                         >
                             <span class="text-sm">{{ suggestion.icon }}</span>
                             <span>{{ suggestion.label }}</span>
                         </button>
                     </div>
-                </div>
-
-                <!-- Sub-prompts Selection -->
-                <Transition
-                    enter-active-class="transition duration-200 ease-out"
-                    enter-from-class="transform -translate-y-2 opacity-0"
-                    enter-to-class="transform translate-y-0 opacity-100"
-                >
-                    <div v-if="activeSubPrompts.length > 0" class="mt-2 flex flex-wrap gap-2 p-3 bg-gray-50/50 dark:bg-gray-900/20 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800">
-                        <button
-                            v-for="sub in activeSubPrompts"
-                            :key="sub"
-                            @click="handleApplySubPrompt(sub)"
-                            class="px-2.5 py-1.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-lg text-xs font-medium hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors"
-                        >
-                            {{ sub }}
-                        </button>
-                        <button @click="activeSubPrompts = []" class="px-2 py-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs">
-                            ✕
-                        </button>
-                    </div>
-                </Transition>
-
-                <div class="text-center mt-2">
-                    <p class="text-xs text-gray-500 dark:text-gray-500">AI can make mistakes. Check important info.</p>
                 </div>
             </div>
         </div>
@@ -174,12 +158,18 @@ const currentConversation = computed(() => conversationStore.currentConversation
 const getModelIcon = (modelId?: string) => {
     const model = modelStore.models.find(m => m.model === modelId)
     if (!model) return '🤖'
-    const provider = model.provider.toLowerCase()
+    const provider = (model.provider || '').toLowerCase()
     if (provider.includes('openai')) return '🤖'
     if (provider.includes('google')) return '💎'
     if (provider.includes('anthropic')) return '🧠'
     if (provider.includes('deepseek')) return '🐋'
     return '🌟'
+}
+
+const formatMessageTime = (timestamp?: number) => {
+    if (!timestamp) return ''
+    const date = new Date(timestamp * 1000)
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
 const handleApplyPrompt = (suggestion: PromptSuggestion) => {
@@ -200,9 +190,9 @@ const handleApplySubPrompt = (sub: string) => {
     if (textareaRef.value) textareaRef.value.focus()
 }
 
-onMounted(() => {
+onMounted(async () => {
     if (currentConversationId.value) {
-        conversationStore.switchConversation(currentConversationId.value)
+        await conversationStore.switchConversation(currentConversationId.value)
         if (currentConversation.value) {
             modelStore.selectModel(currentConversation.value.model || '')
             nextTick(() => scrollToBottom())
@@ -210,9 +200,9 @@ onMounted(() => {
     }
 })
 
-watch(() => currentConversationId.value, (newId) => {
+watch(() => currentConversationId.value, async (newId) => {
     if (newId) {
-        conversationStore.switchConversation(newId)
+        await conversationStore.switchConversation(newId)
         if (currentConversation.value) {
             modelStore.selectModel(currentConversation.value.model || '')
         }
@@ -298,8 +288,37 @@ const sendMessage = async () => {
 
 <style scoped>
 /* Scrollbar styles same as before */
-.overflow-y-auto {
+.custom-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: rgba(156, 163, 175, 0.3) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.2);
+    border-radius: 10px;
+}
+
+/* Message List Animations */
+.message-list-enter-active,
+.message-list-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.message-list-enter-from,
+.message-list-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.message-list-move {
+  transition: transform 0.4s ease;
 }
 </style>
