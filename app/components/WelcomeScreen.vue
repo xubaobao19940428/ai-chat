@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-full bg-[#f8f9fa] dark:bg-[#050505] relative overflow-hidden">
+  <div class="flex flex-col h-full bg-[#f8f9fa] dark:bg-[#050505] relative">
     <!-- Background Decoration -->
     <div class="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/5 dark:bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none"></div>
     <div class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-500/5 dark:bg-purple-500/10 blur-[120px] rounded-full pointer-events-none"></div>
@@ -20,57 +20,59 @@
           <p class="text-lg sm:text-xl text-gray-500 dark:text-gray-400 font-medium pb-2 transition-all duration-700">{{ subtitle }}</p>
         </div>
     
-        <!-- Floating Input Area -->
-        <div class="max-w-3xl mx-auto mb-12 shadow-2xl rounded-[1.8rem]">
-          <div class="glass-effect dark:bg-zinc-900/40 p-1.5 rounded-[1.8rem] border border-white/40 dark:border-white/5">
-            <div class="relative bg-white/70 dark:bg-black/40 rounded-[1.4rem] focus-within:ring-2 focus-within:ring-indigo-500/30 transition-all duration-300 border border-white/60 dark:border-white/10 shadow-inner overflow-hidden">
-              <textarea
-                v-model="inputMessage"
-                :placeholder="placeholder"
-                rows="1"
-                class="w-full px-6 pt-5 pb-3 bg-transparent text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-600 focus:outline-none resize-none max-h-48 overflow-y-auto text-base font-medium leading-relaxed"
-                :disabled="isLoading"
-                @keydown.enter.exact.prevent="handleSubmit"
-                @keydown.enter.shift.exact="inputMessage += '\n'"
-                @input="autoResize"
-                ref="textareaRef"
-              ></textarea>
-              
-              <!-- Bottom Row -->
-              <div class="flex items-center justify-between px-5 pb-4 pt-1">
-                <div class="flex items-center gap-1">
-                  <div class="flex items-center p-1 bg-gray-100/50 dark:bg-white/5 rounded-xl border border-gray-200/50 dark:border-white/5">
-                    <button class="p-2 text-gray-500 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-white/10 rounded-lg transition-all" title="Create Image">
-                      <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    </button>
-                    <button class="p-2 text-gray-500 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-white/10 rounded-lg transition-all" title="Search World">
-                      <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                      </svg>
-                    </button>
-                  </div>
-                  <div class="w-px h-5 bg-gray-200 dark:bg-zinc-800 mx-2"></div>
-                  <ModelSelector />
+        <div class="max-w-3xl mx-auto mb-12">
+            <div class="glass-effect dark:bg-[#0f0f0f]/90 backdrop-blur-3xl rounded-[2rem] shadow-2xl dark:shadow-black/50 border border-white/60 dark:border-white/10 overflow-visible transition-all duration-300 ring-1 ring-black/5 dark:ring-white/5">
+                <!-- Input Section -->
+                <div class="flex flex-col">
+                    <!-- Textarea -->
+                    <textarea
+                        v-model="inputMessage"
+                        :placeholder="placeholder"
+                        rows="1"
+                        class="w-full px-5 pt-4 pb-1 bg-transparent text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-600 focus:outline-none resize-none max-h-48 overflow-y-auto text-[15px] font-medium leading-relaxed"
+                        :disabled="isLoading"
+                        @keydown.enter.exact.prevent="handleSubmit"
+                        @keydown.enter.shift.exact="inputMessage += '\n'"
+                        @input="autoResize"
+                        ref="textareaRef"
+                    ></textarea>
+
+                    <!-- Integrated Toolbar Row -->
+                    <div class="flex items-center justify-between px-4 pb-3 pt-1">
+                        <div class="flex items-center gap-1.5">
+                            <ModelSelector />
+                            
+                            <div class="w-px h-4 bg-gray-200 dark:bg-zinc-800 mx-1"></div>
+                            
+                            <!-- Tool Buttons -->
+                            <div class="flex items-center gap-0.5">
+                                <button class="p-2 text-gray-400 hover:text-indigo-600 dark:text-zinc-500 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-all" title="Upload Media">
+                                    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </button>
+                                <button class="p-2 text-gray-400 hover:text-indigo-600 dark:text-zinc-500 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-all" title="Intelligent Search">
+                                    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Send Button -->
+                        <button
+                            @click="handleSubmit"
+                            :disabled="!inputMessage.trim() || isLoading"
+                            class="group flex items-center justify-center w-9 h-9 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-500/20 transition-all active:scale-95 disabled:opacity-40 disabled:shadow-none"
+                        >
+                            <svg v-if="!isLoading" class="w-4.5 h-4.5 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                            <div v-else class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        </button>
+                    </div>
                 </div>
-                
-                <div class="flex items-center">
-                  <button
-                    @click="handleSubmit"
-                    :disabled="!inputMessage.trim() || isLoading"
-                    class="group relative flex items-center justify-center w-11 h-11 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-[0_8px_20px_-4px_rgba(79,70,229,0.5)] transition-all active:scale-90 disabled:opacity-40 disabled:grayscale disabled:scale-100 overflow-hidden"
-                  >
-                    <div class="absolute inset-0 bg-gradient-to-tr from-indigo-600 to-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <svg v-if="!isLoading" class="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 12h14M13 5l7 7-7 7" />
-                    </svg>
-                    <div v-else class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin relative z-10"></div>
-                  </button>
-                </div>
-              </div>
             </div>
-          </div>
         </div>
       </div>
     </div>
@@ -145,9 +147,9 @@
 
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
-import { type Bot } from '~/utils/bots'
-import { PROMPT_SUGGESTIONS, type PromptSuggestion } from '~/utils/prompts'
-import { type DiscoveryGroup } from '~/utils/api'
+import { type Bot } from '../utils/bots'
+import { PROMPT_SUGGESTIONS, type PromptSuggestion } from '../utils/prompts'
+import { type DiscoveryGroup } from '../utils/api'
 
 // Props
 interface Props {

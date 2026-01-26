@@ -34,10 +34,38 @@ export const useProjectStore = defineStore('project', () => {
     }
   }
 
+  const updateProject = async (id: number, params: Partial<ProjectGroup>) => {
+    isLoading.value = true
+    try {
+      await updateProjectGroup({ id, ...params })
+      await fetchProjects()
+    } catch (error) {
+      console.error('Update project failed:', error)
+      throw error
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  const deleteProject = async (id: number) => {
+    isLoading.value = true
+    try {
+      await deleteProjectGroup(id)
+      await fetchProjects()
+    } catch (error) {
+      console.error('Delete project failed:', error)
+      throw error
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     projects,
     isLoading,
     fetchProjects,
-    createProject
+    createProject,
+    updateProject,
+    deleteProject
   }
 })

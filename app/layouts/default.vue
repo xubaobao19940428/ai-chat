@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen bg-[#fcfbfb] dark:bg-[#000000] overflow-hidden transition-colors">
+  <div class="flex h-screen bg-[#fcfbfb] dark:bg-[#000000] transition-colors">
     <!-- 桌面端侧边栏 -->
     <Sidebar />
     
@@ -7,7 +7,7 @@
     <MobileSidebar />
 
     <!-- 主内容区 -->
-    <div class="flex-1 flex flex-col overflow-hidden min-w-0">
+    <div class="flex-1 flex flex-col min-w-0">
       <!-- 移动端顶部导航栏 -->
       <div class="lg:hidden flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-[#1a1a1a] bg-[#fcfbfb] dark:bg-[#000000] transition-colors">
         <button
@@ -23,7 +23,7 @@
       </div>
 
       <!-- 主内容 -->
-      <div class="flex-1 flex flex-col overflow-hidden relative">
+      <div class="flex-1 flex flex-col relative">
         <slot />
         <AuthModal />
       </div>

@@ -38,11 +38,11 @@
                                 <div class="text-center sm:text-left">
                                     <DialogTitle as="h3"
                                         class="text-xl font-bold leading-6 text-gray-900 dark:text-white">
-                                        新建项目
+                                        {{ editingProject ? '编辑项目' : '新建项目' }}
                                     </DialogTitle>
                                     <div class="mt-2">
                                         <p class="text-sm text-gray-500 dark:text-gray-400">
-                                            创建一个项目来整理你的对话和资源。
+                                            {{ editingProject ? '修改项目信息以更好地管理你的对话。' : '创建一个项目来整理你的对话和资源。' }}
                                         </p>
                                     </div>
                                 </div>
@@ -80,8 +80,8 @@
                             <div class="mt-8 flex flex-col sm:flex-row-reverse gap-3">
                                 <button type="button"
                                     class="inline-flex w-full justify-center rounded-xl bg-indigo-600 px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-indigo-700 focus:outline-none transition-all disabled:opacity-50"
-                                    :disabled="!projectName.trim() || isLoading" @click="handleCreate">
-                                    {{ isLoading ? '创建中...' : '创建项目' }}
+                                    :disabled="!projectName.trim() || isLoading" @click="handleSubmit">
+                                    {{ isLoading ? (editingProject ? '保存中...' : '创建中...') : (editingProject ? '保存修改' : '创建项目') }}
                                 </button>
                                 <button type="button"
                                     class="inline-flex w-full justify-center rounded-xl bg-white dark:bg-transparent px-6 py-3 text-sm font-bold text-gray-700 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all sm:mt-0"
@@ -98,20 +98,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import type { ProjectGroup } from '../utils/api'
 
 const props = defineProps<{
     show: boolean
+    editingProject?: ProjectGroup | null
 }>()
 
-const emit = defineEmits(['close', 'create'])
+const emit = defineEmits(['close', 'success'])
 
 const projectName = ref('')
 const projectDesc = ref('')
 const selectedColor = ref('blue')
 const isLoading = ref(false)
 const projectStore = useProjectStore()
+
+watch(() => props.show, (newVal) => {
+    if (newVal && props.editingProject) {
+        projectName.value = props.editingProject.name
+        projectDesc.value = props.editingProject.description || ''
+        selectedColor.value = props.editingProject.color || 'blue'
+    } else if (newVal) {
+        projectName.value = ''
+        projectDesc.value = ''
+        selectedColor.value = 'blue'
+    }
+})
 
 const colorPresets = [
     { label: '蓝色', value: 'blue', hex: '#3b82f6' },
@@ -123,26 +137,31 @@ const colorPresets = [
 ]
 
 const handleClose = () => {
-    projectName.value = ''
-    projectDesc.value = ''
-    selectedColor.value = 'blue'
     emit('close')
 }
 
-const handleCreate = async () => {
+const handleSubmit = async () => {
     if (!projectName.value.trim()) return
 
     isLoading.value = true
     try {
-        await projectStore.createProject({
-            name: projectName.value,
-            description: projectDesc.value,
-            color: selectedColor.value
-        })
+        if (props.editingProject) {
+            await projectStore.updateProject(props.editingProject.id, {
+                name: projectName.value,
+                description: projectDesc.value,
+                color: selectedColor.value
+            })
+        } else {
+            await projectStore.createProject({
+                name: projectName.value,
+                description: projectDesc.value,
+                color: selectedColor.value
+            })
+        }
+        emit('success')
         handleClose()
-        emit('create')
     } catch (e) {
-        console.error('Failed to create project:', e)
+        console.error('Failed to submit project:', e)
     } finally {
         isLoading.value = false
     }

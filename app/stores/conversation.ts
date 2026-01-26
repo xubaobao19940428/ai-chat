@@ -16,6 +16,7 @@ export interface Conversation {
   title: string
   messages: Message[]
   model?: string
+  params?: Record<string, any>
   groupId: number
   characterId?: number
   updatedAt: number
@@ -43,6 +44,8 @@ export const useConversationStore = defineStore('conversation', () => {
           id: item.id,
           title: item.title,
           messages: [],
+          model: item.model || '',
+          params: item.meta?.params || item.params || {},
           groupId: item.group_id,
           characterId: item.character_id,
           updatedAt: item.updated_at * 1000
@@ -72,10 +75,12 @@ export const useConversationStore = defineStore('conversation', () => {
       conversations.value = list.map((item: any) => ({
         id: item.id,
         title: item.title,
-        messages: [], // 消息通常需要单独获取
+        messages: [],
+        model: item.model || '',
+        params: item.meta?.params || item.params || {},
         groupId: item.group_id,
         characterId: item.character_id,
-        updatedAt: item.updated_at * 1000 // 后端秒转毫秒
+        updatedAt: item.updated_at * 1000
       }))
     } catch (error) {
       console.error('Fetch conversations failed:', error)
@@ -191,17 +196,19 @@ export const useConversationStore = defineStore('conversation', () => {
   }
 
   // 切换会话模型
-  const switchModel = async (conversationId: number | string, model: string) => {
-    try {
-      // 注意：模型切换在后端可能需要 model_id (int)，但目前前端只有 model (string)
-      // 暂时只更新本地状态，或如果后端支持则调用 API
-      const conversation = conversations.value.find(c => c.id == conversationId)
-      if (conversation) {
-        conversation.model = model
-        // await apiUpdateConversation({ id: Number(conversationId), model_id: ... })
-      }
-    } catch (error) {
-      console.error('Switch model failed:', error)
+  const switchModel = (conversationId: number | string, model: string) => {
+    const conversation = conversations.value.find(c => c.id == conversationId)
+    if (conversation) {
+      conversation.model = model
+    }
+  }
+
+  // 更新模型参数
+  const updateModelParams = (conversationId: number | string, params: Record<string, any>) => {
+    const conversation = conversations.value.find(c => c.id == conversationId)
+    if (conversation) {
+      conversation.params = params
+      conversation.updatedAt = Date.now()
     }
   }
 
@@ -253,5 +260,6 @@ export const useConversationStore = defineStore('conversation', () => {
     moveToProject,
     addMessage,
     updateLastMessage,
+    updateModelParams,
   }
 })

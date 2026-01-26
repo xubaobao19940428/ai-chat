@@ -87,6 +87,7 @@ export interface ChatModelOptions {
   onMessage?: (content: string) => void
   onError?: (error: any) => void
   onFinish?: () => void
+  [key: string]: any // Support dynamic fields from model_input
 }
 
 const DEFAULT_CHAT_OPTIONS: ChatModelOptions = {
@@ -339,6 +340,22 @@ export const getRecentConversations = (limit: number = 10) => {
 }
 
 // Model Types
+export interface ModelInputField {
+  key: string
+  type: 'number' | 'string' | 'boolean' | 'select'
+  label?: string
+  description?: string
+  default?: any
+  min?: number
+  max?: number
+  step?: number
+  options?: { label: string, value: any }[]
+}
+
+export interface ModelInput {
+  fields: Record<string, ModelInputField>
+}
+
 export interface AIModel {
   provider: string
   model: string
@@ -349,6 +366,7 @@ export interface AIModel {
   max_output_tokens: number
   is_default: boolean
   execution_mode: string
+  model_input?: ModelInput
 }
 
 // Model API

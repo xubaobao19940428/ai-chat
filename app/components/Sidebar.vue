@@ -80,7 +80,7 @@
                         </div>
                         <span v-show="!uiStore.sidebarCollapsed" class="font-medium">AI 搜索引擎</span>
                     </NuxtLink>
-                    <NuxtLink to="/chat?model=gpt-5" :class="[
+                    <!-- <NuxtLink to="/chat?model=gpt-5" :class="[
                         'flex items-center gap-3 rounded-xl transition-all text-sm group',
                         uiStore.sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-3 py-2',
                         $route.fullPath.includes('gpt-5')
@@ -91,7 +91,7 @@
                             <span class="text-[10px] font-bold">GPT</span>
                         </div>
                         <span v-show="!uiStore.sidebarCollapsed" class="font-medium">GPT-5</span>
-                    </NuxtLink>
+                    </NuxtLink> -->
                 </div>
             </div>
 
@@ -162,7 +162,21 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                             </svg>
                         </div>
-                        <span v-show="!uiStore.sidebarCollapsed" class="font-medium truncate">{{ project.name }}</span>
+                        <span v-show="!uiStore.sidebarCollapsed" class="font-medium truncate flex-1">{{ project.name }}</span>
+                        
+                        <!-- Project Actions -->
+                        <div v-show="!uiStore.sidebarCollapsed" class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button @click.stop="openEditProjectModal(project)" class="p-1 hover:bg-gray-200 dark:hover:bg-white/10 rounded-md text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                </svg>
+                            </button>
+                            <button @click.stop="confirmDeleteProject(project)" class="p-1 hover:bg-gray-200 dark:hover:bg-white/10 rounded-md text-gray-400 hover:text-red-500">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -304,13 +318,24 @@
         <!-- Project Creation Modal -->
         <ProjectModal 
             :show="showCreateProjectModal" 
-            @close="showCreateProjectModal = false"
-            @create="handleProjectCreated"
+            :editing-project="editingProject"
+            @close="handleCloseProjectModal"
+            @success="handleProjectSuccess"
+        />
+
+        <!-- Group Delete Confirmation -->
+        <ConfirmDialog
+            :show="showDeleteConfirm"
+            title="删除项目"
+            :message="'确定要删除项目 ' + (projectToDelete?.name || '') + ' 吗？此操作不可撤销，项目内的对话将被取消关联。'"
+            @confirm="handleDeleteProject"
+            @cancel="showDeleteConfirm = false"
         />
     </aside>
 </template>
 
 <script setup lang="ts">
+import { ref, computed, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -321,6 +346,9 @@ const projectStore = useProjectStore()
 
 const projectsCollapsed = ref(false)
 const showCreateProjectModal = ref(false)
+const editingProject = ref<any>(null)
+const showDeleteConfirm = ref(false)
+const projectToDelete = ref<any>(null)
 
 // Renaming State
 const editingId = ref<number | string | null>(null)
@@ -360,11 +388,44 @@ const toggleProjects = () => {
 }
 
 const openCreateProjectModal = () => {
+    editingProject.value = null
     showCreateProjectModal.value = true
 }
 
-const handleProjectCreated = () => {
+const openEditProjectModal = (project: any) => {
+    editingProject.value = project
+    showCreateProjectModal.value = true
+}
+
+const handleCloseProjectModal = () => {
+    showCreateProjectModal.value = false
+    editingProject.value = null
+}
+
+const handleProjectSuccess = () => {
     projectsCollapsed.value = false
+}
+
+const confirmDeleteProject = (project: any) => {
+    projectToDelete.value = project
+    showDeleteConfirm.value = true
+}
+
+const handleDeleteProject = async () => {
+    if (!projectToDelete.value) return
+    
+    try {
+        await projectStore.deleteProject(projectToDelete.value.id)
+        // If the deleted project was selected, clear the filter
+        if (conversationStore.selectedGroupId === projectToDelete.value.id) {
+            conversationStore.setSelectedGroupId(null)
+        }
+        
+        showDeleteConfirm.value = false
+        projectToDelete.value = null
+    } catch (e) {
+        console.error('Delete project failed:', e)
+    }
 }
 
 const selectProject = (id: number | null) => {
