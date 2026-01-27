@@ -1,5 +1,5 @@
 <template>
-	<div class="flex-1 flex flex-col bg-[#f8f9fa] dark:bg-[#050505] transition-colors relative">
+	<div class="flex-1 flex flex-col h-full bg-[#f8f9fa] dark:bg-[#050505] transition-colors relative overflow-hidden">
 		<!-- Background Decoration -->
 		<div class="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/5 dark:bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none"></div>
 		<div class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-500/5 dark:bg-purple-500/10 blur-[120px] rounded-full pointer-events-none"></div>
@@ -10,9 +10,9 @@
 				<TransitionGroup tag="div" name="message-list" class="space-y-8">
 					<div v-for="message in currentConversation?.messages" :key="message.id" class="flex gap-4" :class="message.role === 'user' ? 'flex-row-reverse' : ''">
 						<!-- Avatar -->
-						<div :class="['flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-sm font-semibold transition-transform duration-300 hover:scale-110 premium-shadow', message.role === 'user' ? 'bg-indigo-600 shadow-indigo-200 dark:shadow-none bg-gradient-to-br from-indigo-500 to-indigo-700 text-white' : 'bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white border border-gray-100 dark:border-[#2a2a2a]']">
+						<div :class="['flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-sm font-semibold transition-transform duration-300 hover:scale-110 premium-shadow overflow-hidden', message.role === 'user' ? 'bg-indigo-600 shadow-indigo-200 dark:shadow-none bg-gradient-to-br from-indigo-500 to-indigo-700 text-white' : 'bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white border border-gray-100 dark:border-[#2a2a2a]']">
 							<span v-if="message.role === 'user'">U</span>
-							<span v-else class="text-base">{{ getModelIcon(currentConversation?.model) }}</span>
+							<img v-else :src="getModelIcon(currentConversation?.model)" class="w-5 h-5 object-contain dark:invert" :alt="currentConversation?.model" />
 						</div>
 
 						<!-- Message Content -->
@@ -33,8 +33,8 @@
 
 					<!-- Loading Indicator -->
 					<div v-if="chatStore.isLoading && chatStore.loadingConversationId === currentConversationId" class="flex gap-4">
-						<div class="flex-shrink-0 w-9 h-9 rounded-xl bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white border border-gray-100 dark:border-[#222222] flex items-center justify-center text-base premium-shadow">
-							{{ getModelIcon(currentConversation?.model) }}
+						<div class="flex-shrink-0 w-9 h-9 rounded-xl bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white border border-gray-100 dark:border-[#222222] flex items-center justify-center text-base premium-shadow overflow-hidden">
+							<img :src="getModelIcon(currentConversation?.model)" class="w-5 h-5 object-contain dark:invert" :alt="currentConversation?.model" />
 						</div>
 						<div class="bg-white dark:bg-[#111111] border border-gray-100 dark:border-[#222222] rounded-2xl px-5 py-4 premium-shadow">
 							<div class="flex space-x-1.5">
@@ -183,14 +183,22 @@ const getParamIcon = (key: string, type: 'min' | 'max') => {
 }
 
 const getModelIcon = (modelId?: string) => {
+	const id = (modelId || '').toLowerCase()
 	const model = modelStore.models.find((m) => m.model === modelId)
-	if (!model) return '🤖'
-	const provider = (model.provider || '').toLowerCase()
-	if (provider.includes('openai')) return '🤖'
-	if (provider.includes('google')) return '💎'
-	if (provider.includes('anthropic')) return '🧠'
-	if (provider.includes('deepseek')) return '🐋'
-	return '🌟'
+	const provider = (model?.provider || '').toLowerCase()
+	
+	if (provider.includes('openai') || id.includes('gpt') || id.includes('o1')) return '/icons/openai.svg'
+	if (provider.includes('google') || id.includes('gemini')) return '/icons/gemini.svg'
+	if (provider.includes('anthropic') || id.includes('claude')) return '/icons/anthropic.svg'
+	if (provider.includes('deepseek')) return '/icons/deepseek.svg'
+	if (provider.includes('meta') || id.includes('llama')) return '/icons/meta.svg'
+	if (provider.includes('zhipu') || id.includes('glm') || id.includes('chatglm')) return '/icons/zhipu.svg'
+	if (provider.includes('bytedance') || id.includes('doubao')) return '/icons/doubao.svg'
+	if (provider.includes('xai') || id.includes('grok')) return '/icons/grok.svg'
+	if (provider.includes('moonshot') || id.includes('kimi')) return '/icons/kimi.svg'
+	if (id.includes('fastgpt')) return '/icons/fastgpt.svg'
+	
+	return '/icons/openai.svg'
 }
 
 const formatMessageTime = (timestamp?: number) => {

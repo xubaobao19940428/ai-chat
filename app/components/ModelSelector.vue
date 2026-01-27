@@ -6,7 +6,10 @@
       class="flex items-center gap-2.5 px-3 py-2 bg-gray-100 dark:bg-zinc-800/80 hover:bg-gray-200 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-200 rounded-xl transition-all text-[11px] font-bold cursor-pointer border border-gray-200 dark:border-white/10 active:scale-95 shadow-sm"
     >
       <ClientOnly>
-        <span class="truncate max-w-[100px] sm:max-w-[120px]">{{ modelStore.selectedModel?.display_name || 'Select Model' }}</span>
+        <div class="flex items-center gap-2 max-w-[140px] sm:max-w-[170px]">
+        <img :src="getModelIcon(modelStore.selectedModel)" class="w-4 h-4 object-contain dark:invert" alt="Model" />
+        <span class="truncate">{{ modelStore.selectedModel?.display_name || 'Select Model' }}</span>
+      </div>
       </ClientOnly>
       <svg
         class="w-3.5 h-3.5 text-gray-400 dark:text-zinc-500 transition-transform duration-300"
@@ -46,8 +49,8 @@
             >
             <!-- Provider Icon -->
             <div class="flex-shrink-0">
-              <div class="w-8 h-8 rounded-lg bg-white dark:bg-black/40 border border-gray-100 dark:border-white/5 flex items-center justify-center text-base group-hover:scale-110 transition-transform shadow-sm">
-                {{ getModelIcon(model) }}
+              <div class="w-8 h-8 rounded-lg bg-white dark:bg-black/40 border border-gray-100 dark:border-white/5 flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm overflow-hidden">
+                <img :src="getModelIcon(model)" class="w-5 h-5 object-contain dark:invert" :alt="model.display_name" />
               </div>
             </div>
 
@@ -77,12 +80,22 @@ const isOpen = ref(false)
 const containerRef = ref<HTMLElement | null>(null)
 
 const getModelIcon = (model: any) => {
-  const provider = model.provider.toLowerCase()
-  if (provider.includes('openai')) return '🤖'
-  if (provider.includes('google')) return '💎'
-  if (provider.includes('anthropic')) return '🧠'
-  if (provider.includes('deepseek')) return '🐋'
-  return '🌟'
+	if (!model) return '/icons/openai.svg'
+	const id = (model.model || '').toLowerCase()
+	const provider = (model.provider || '').toLowerCase()
+	
+	if (provider.includes('openai') || id.includes('gpt') || id.includes('o1')) return '/icons/openai.svg'
+	if (provider.includes('google') || id.includes('gemini')) return '/icons/gemini.svg'
+	if (provider.includes('anthropic') || id.includes('claude')) return '/icons/anthropic.svg'
+	if (provider.includes('deepseek')) return '/icons/deepseek.svg'
+	if (provider.includes('meta') || id.includes('llama')) return '/icons/meta.svg'
+	if (provider.includes('zhipu') || id.includes('glm') || id.includes('chatglm')) return '/icons/zhipu.svg'
+	if (provider.includes('bytedance') || id.includes('doubao')) return '/icons/doubao.svg'
+	if (provider.includes('xai') || id.includes('grok')) return '/icons/grok.svg'
+	if (provider.includes('moonshot') || id.includes('kimi')) return '/icons/kimi.svg'
+	if (id.includes('fastgpt')) return '/icons/fastgpt.svg'
+	
+	return '/icons/openai.svg'
 }
 
 const selectModel = (id: string) => {

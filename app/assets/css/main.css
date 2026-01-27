@@ -17,13 +17,34 @@
     --glass-border: rgba(55, 65, 81, 0.5);
   }
 
+  html, 
   body {
-    @apply bg-gray-50 text-gray-900 selection:bg-indigo-100 selection:text-indigo-900;
+    height: 100%;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    @apply text-gray-900 selection:bg-indigo-100 selection:text-indigo-900;
   }
   html.dark body {
-    @apply bg-[#000000] text-gray-100 selection:bg-indigo-500/30 selection:text-indigo-200;
+    @apply text-gray-100 selection:bg-indigo-500/30 selection:text-indigo-200;
   }
 }
+
+/* Custom- Added SVG files to `public/icons/` for major AI models (OpenAI, Anthropic, Gemini, Meta, DeepSeek).
+- Updated `getModelIcon` in `chat/[id].vue` to return the new SVG paths.
+- Updated message avatars and loading indicators to render the brand logos.
+
+### Global CSS & Root
+- [x] Added `overflow: hidden` to `html`, `body` in `main.css`.
+- [x] Added `h-screen overflow-hidden` to the root `div` in `app.vue`.
+
+### Layout Refinement (Internal Scrolling)
+- [x] **`layouts/default.vue`**: Added `min-h-0 h-full` to the main content slot wrapper.
+- [x] **`pages/chat/[id].vue`**: Added `h-full` and `overflow-hidden` to the page root.
+  }
 
 /* Custom styles adapted from legacy */
 body {

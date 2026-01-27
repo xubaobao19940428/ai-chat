@@ -23,7 +23,7 @@
       </div>
 
       <!-- 主内容 -->
-      <div class="flex-1 flex flex-col relative">
+      <div class="flex-1 flex flex-col relative min-h-0 h-full">
         <slot />
         <AuthModal />
       </div>
