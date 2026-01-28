@@ -4,9 +4,9 @@ import { ref, computed, watch } from 'vue'
 export type ThemeMode = 'light' | 'dark' | 'system'
 
 export const useUIStore = defineStore('ui', () => {
-  const sidebarCollapsed = ref(false)
+  const sidebarCollapsed = useCookie('sidebar-collapsed', { default: () => false })
   const mobileMenuOpen = ref(false)
-  const themeMode = ref<ThemeMode>('system')
+  const themeMode = useCookie<ThemeMode>('theme-mode', { default: () => 'system' })
   const systemTheme = ref<'light' | 'dark'>('light')
 
   // 计算实际主题
@@ -56,9 +56,6 @@ export const useUIStore = defineStore('ui', () => {
   // 设置主题模式
   const setThemeMode = (mode: ThemeMode) => {
     themeMode.value = mode
-    if (import.meta.client) {
-      localStorage.setItem('theme-mode', mode)
-    }
     // 立即应用主题
     const themeToApply = getCurrentTheme()
     applyTheme(themeToApply)
@@ -67,11 +64,6 @@ export const useUIStore = defineStore('ui', () => {
   // 初始化主题
   const initTheme = () => {
     if (!import.meta.client) return
-    // 从 localStorage 读取保存的主题
-    const savedTheme = localStorage.getItem('theme-mode') as ThemeMode | null
-    if (savedTheme && ['light', 'dark', 'system'].includes(savedTheme)) {
-      themeMode.value = savedTheme
-    }
 
     // 检测系统主题
     detectSystemTheme()

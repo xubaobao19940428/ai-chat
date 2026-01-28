@@ -1,99 +1,104 @@
 <template>
-    <div class="flex-1 flex flex-col overflow-hidden bg-[#fcfbfb] dark:bg-[#000000] transition-colors">
-        <!-- 欢迎界面 -->
-        <div class="flex-1 h-full overflow-hidden">
-            <WelcomeScreen mode="chat" :is-loading="chatStore.isLoading" @send-message="handleWelcomeSendMessage" />
-        </div>
-    </div>
+	<div class="flex-1 flex flex-col overflow-hidden bg-[var(--background-gray-main)] transition-colors">
+		<!-- 欢迎界面 -->
+		<div class="flex-1 h-full overflow-hidden">
+			<WelcomeScreen mode="chat" :is-loading="chatStore.isLoading" @send-message="handleWelcomeSendMessage" />
+		</div>
+	</div>
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
+import { onMounted } from 'vue'
+import { useConversationStore } from '../../stores/conversation'
+import { useChatStore } from '../../stores/chat'
+
 const router = useRouter()
 const conversationStore = useConversationStore()
 const chatStore = useChatStore()
 
 const handleWelcomeSendMessage = async (content: string, model: string) => {
-    // 创建新会话 (默认助手 ID 为 1)
-    const conversationId = await conversationStore.createConversation({ 
-        character_id: 1,
-        model: model,
-        group_id: conversationStore.selectedGroupId || 0
-    })
-    
-    // 获取新创建的会话对象
-    const conversation = conversationStore.conversations.find(c => c.id == conversationId)
-    if (!conversation) return
+	// 创建新会话 (默认助手 ID 为 1)
+	const conversationId = await conversationStore.createConversation({
+		character_id: 1,
+		model: model,
+		group_id: conversationStore.selectedGroupId || 0,
+	})
 
-    // 添加用户消息
-    conversationStore.addMessage(conversationId, {
-        role: 'user',
-        content: content,
-    })
+	// 获取新创建的会话对象
+	const conversation = conversationStore.conversations.find((c) => c.id == conversationId)
+	if (!conversation) return
 
-    // 跳转到会话页面
-    router.push(`/chat/${conversationId}`)
+	// 添加用户消息
+	conversationStore.addMessage(conversationId, {
+		role: 'user',
+		content: content,
+	})
 
-    // 触发发送逻辑
-    chatStore.setLoading(true, conversationId)
-    try {
-        const messages = conversation.messages.map(msg => ({
-            role: msg.role as any,
-            content: msg.content,
-        }))
+	// 跳转到会话页面
+	router.push(`/chat/${conversationId}`)
 
-        // 我们需要引入 api
-        const { fetchChatStream } = await import('~/utils/api')
+	// 触发发送逻辑
+	chatStore.setLoading(true, conversationId)
+	try {
+		const messages = conversation.messages.map((msg) => ({
+			role: msg.role as any,
+			content: msg.content,
+		}))
 
-        // Add empty assistant message
-        conversationStore.addMessage(conversationId, {
-            role: 'assistant',
-            content: ''
-        })
+		// 我们需要引入 api
+		const { fetchChatStream } = await import('../../utils/api')
 
-        await fetchChatStream({
-            message: content,
-            messages,
-            model: model,
-            options: {
-                context: {
-                    conversation_id: conversationId,
-                    character_id: 1,
-                    max_history: 20
-                }
-            },
-            onMessage: (content) => {
-                conversationStore.updateLastMessage(conversationId, content)
-            },
-            onError: (error) => {
-                console.error('发送消息失败:', error)
-                conversationStore.updateLastMessage(conversationId, '抱歉，发生了错误，请稍后再试。', false)
-            },
-            onFinish: () => {
-                chatStore.setLoading(false)
-            }
-        })
-    } catch (error) {
-        console.error('发送消息失败:', error)
-        chatStore.setLoading(false)
-    }
+		// Add empty assistant message
+		conversationStore.addMessage(conversationId, {
+			role: 'assistant',
+			content: '',
+		})
+
+		await fetchChatStream({
+			message: content,
+			messages,
+			model: model,
+			options: {
+				context: {
+					conversation_id: conversationId,
+					character_id: 1,
+					max_history: 20,
+				},
+			},
+			onMessage: (content) => {
+				conversationStore.updateLastMessage(conversationId, content)
+			},
+			onError: (error) => {
+				console.error('发送消息失败:', error)
+				conversationStore.updateLastMessage(conversationId, '抱歉，发生了错误，请稍后再试。', false)
+			},
+			onFinish: () => {
+				chatStore.setLoading(false)
+			},
+		})
+	} catch (error) {
+		console.error('发送消息失败:', error)
+		chatStore.setLoading(false)
+	}
 }
 
 onMounted(() => {
-    // 如果有历史会话，跳转到第一个 (类似于 Home.vue 的逻辑)
-    // 但是，如果用户显式访问 /chat (比如点击 "New Chat" -> /chat)，则不应该跳转。
-    // 我们需要区分 "进入应用默认跳转" 和 "点击新建会话"。
-    // "New Chat" 按钮通常做 router.push('/chat')。
-    // 如果我们在这里 redirect，那 "New Chat" 就无法工作了（会跳回旧会话）。
-    // 所以，ChatView.vue 的逻辑是：
-    // if (conversationId) ...
-    // else if (conversations.length > 0) ...
-    // 这意味着在 Legacy 中，访问 /chat 会自动跳到最近的会话，除非... 实际上 Legacy 的 New Chat 是怎么做的？
-    // Sidebar.vue: handleNewChat -> conversationStore.createConversation() -> router.push('/chat/:id').
-    // 所以 New Chat 是创建 ID 此时跳转。
-    // 只有访问 Home (/) 会跳转。
-    // 所以 /chat 应该是 "New Chat" / "Empty State"。
-    // 所以这里不需要自动跳转到第一个会话。
-    // 除非是根路径跳转过来的。
-    // 让我们保持简单：/chat 显示 WelcomeScreen。
+	// 如果有历史会话，跳转到第一个 (类似于 Home.vue 的逻辑)
+	// 但是，如果用户显式访问 /chat (比如点击 "New Chat" -> /chat)，则不应该跳转。
+	// 我们需要区分 "进入应用默认跳转" 和 "点击新建会话"。
+	// "New Chat" 按钮通常做 router.push('/chat')。
+	// 如果我们在这里 redirect，那 "New Chat" 就无法工作了（会跳回旧会话）。
+	// 所以，ChatView.vue 的逻辑是：
+	// if (conversationId) ...
+	// else if (conversations.length > 0) ...
+	// 这意味着在 Legacy 中，访问 /chat 会自动跳到最近的会话，除非... 实际上 Legacy 的 New Chat 是怎么做的？
+	// Sidebar.vue: handleNewChat -> conversationStore.createConversation() -> router.push('/chat/:id').
+	// 所以 New Chat 是创建 ID 此时跳转。
+	// 只有访问 Home (/) 会跳转。
+	// 所以 /chat 应该是 "New Chat" / "Empty State"。
+	// 所以这里不需要自动跳转到第一个会话。
+	// 除非是根路径跳转过来的。
+	// 让我们保持简单：/chat 显示 WelcomeScreen。
 })
 </script>
