@@ -7,7 +7,7 @@ export default defineConfig({
     server: {
         proxy: {
             '/api': {
-                target: 'http://ai-test.iappdaily.com',
+                target: 'https://ai-test.iappdaily.com',
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api/, ''),
             },

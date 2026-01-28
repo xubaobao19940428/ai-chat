@@ -234,6 +234,8 @@
 
 <script setup lang="ts">
 import { ref, onUnmounted } from 'vue'
+import { useUIStore } from '../stores/ui'
+import { useUserStore } from '../stores/user'
 
 const uiStore = useUIStore()
 const userStore = useUserStore()
