@@ -19,11 +19,15 @@ const discoveryStore = useDiscoveryStore()
 onMounted(() => {
   uiStore.initTheme()
   userStore.initialize()
+  
+  // Publicly available data
+  modelStore.fetchModels()
+  discoveryStore.fetchDiscovery()
+
+  // User-specific data
   if (userStore.token) {
     userStore.fetchUserInfo()
     projectStore.fetchProjects()
-    modelStore.fetchModels()
-    discoveryStore.fetchDiscovery()
     conversationStore.fetchConversations()
   }
 })
