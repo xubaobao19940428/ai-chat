@@ -4,13 +4,14 @@ import { md5 } from 'js-md5'
 // Auth Types
 export interface LoginParams {
   email: string
-  code: string
+  code?: string
+  password?: string
 }
 
 export interface RegisterParams {
   email: string
   code: string
-  password?: string
+  password: string
 }
 
 export interface UserProfile {
@@ -30,7 +31,7 @@ export const sendLoginCode = (email: string) => {
 }
 
 export const sendRegisterCode = (email: string) => {
-  return request.post('/v1/sso/send-email', { email, type: 'activation' })
+  return request.post('/v1/sso/send-email', { email, type: 'register' })
 }
 
 export const register = (data: RegisterParams) => {
