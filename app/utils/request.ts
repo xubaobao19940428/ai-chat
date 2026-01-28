@@ -21,7 +21,7 @@ const randomString = (code: number) => {
 
 // 创建axios实例
 const service: AxiosInstance = axios.create({
-  baseURL: 'https://ai-test.iappdaily.com',
+  baseURL: 'http://ai-test.iappdaily.com',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ service.interceptors.request.use(
     const runtimeConfig = useRuntimeConfig().public
     
     // Dynamic config setup
-    config.baseURL = import.meta.client ? runtimeConfig.apiBase : 'https://ai-test.iappdaily.com'
+    config.baseURL = import.meta.client ? runtimeConfig.apiBase : 'http://ai-test.iappdaily.com'
     if (config.headers) {
       config.headers['x-app-id'] = import.meta.client ? runtimeConfig.appId : '1'
     }
@@ -94,7 +94,7 @@ service.interceptors.request.use(
     }, {} as Params);
 
     // Construct full path for signing
-    const productionDomain = 'https://ai-test.iappdaily.com';
+    const productionDomain = 'http://ai-test.iappdaily.com';
     let signingPath = baseUrl;
     if (signingPath.startsWith('/api')) {
       signingPath = signingPath.substring(4);

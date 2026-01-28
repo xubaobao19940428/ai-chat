@@ -185,7 +185,7 @@ export const sendChatMessage = async (message: string, messages: ChatMessage[] =
   }, {});
 
   // Construct full path for signing
-  const productionDomain = 'https://ai-test.iappdaily.com';
+  const productionDomain = 'http://ai-test.iappdaily.com';
   const signingPath = 'v1/chat/completions'; 
   const signingUrl = productionDomain.replace(/\/$/, '') + '/' + signingPath;
   
