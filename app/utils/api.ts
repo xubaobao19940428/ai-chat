@@ -137,14 +137,18 @@ export const sendChatMessage = async (message: string, messages: ChatMessage[] =
   const runtimeConfig = useRuntimeConfig().public
 
   const body = {
+    ...DEFAULT_CHAT_OPTIONS,
+    ...options,
     model: model || 'openai:gpt-4o-mini',
     message,
     messages,
     processor: options.processor || 'chat',
-    ...DEFAULT_CHAT_OPTIONS,
-    ...options,
     stream: isStream
   }
+
+  // Debug log to verify request body
+  console.log('Chat API Request Body:', JSON.stringify(body, null, 2))
+  console.log('Messages count:', messages?.length || 0)
   
   // Clean up callbacks from body
   const { onMessage, onError, onFinish, ...requestBody } = body as any

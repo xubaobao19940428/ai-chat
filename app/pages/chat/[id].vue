@@ -300,25 +300,24 @@ const sendMessage = async () => {
 	inputMessage.value = ''
 	if (textareaRef.value) textareaRef.value.style.height = 'auto'
 
-	// Add user message
-	conversationStore.addMessage(conversationId, {
-		role: 'user',
-		content: userMessage,
-	})
-
-	// Add empty assistant message for streaming
-	conversationStore.addMessage(conversationId, {
-		role: 'assistant',
-		content: '',
-	})
-
-	chatStore.setLoading(true, conversationId)
-
 	try {
-		const messages = currentConversation.value.messages.slice(0, -1).map((msg) => ({
+		// History should be all messages before the current ones we're about to add
+		const messages = currentConversation.value.messages.map((msg) => ({
 			role: msg.role as any,
 			content: msg.content,
 		}))
+
+		// Add user message to store for UI
+		conversationStore.addMessage(conversationId, {
+			role: 'user',
+			content: userMessage,
+		})
+
+		// Add empty assistant message for streaming UI
+		conversationStore.addMessage(conversationId, {
+			role: 'assistant',
+			content: '',
+		})
 
 		// Prepare Model Parameters
 		const modelInput = modelStore.selectedModel?.model_input

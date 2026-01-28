@@ -2,8 +2,8 @@
     <div class="flex-1 flex flex-col h-full bg-[#fcfbfb] dark:bg-[#000000] overflow-hidden">
         <!-- Header Area -->
         <div class="flex-shrink-0 px-2 pt-2 md:pt-5 pb-2">
-            <div class="max-w-6xl mx-auto w-full flex items-center justify-between gap-6">
-                <!-- Left: Tabs -->
+            <!-- <div class="max-w-6xl mx-auto w-full flex items-center justify-between gap-6">
+                
                 <div class="flex items-center gap-1 bg-gray-100 dark:bg-[#1a1a1a] p-1 rounded-full">
                     <button class="px-5 py-1.5 rounded-full font-bold text-sm transition-all"
                         :class="activeTab === 'explore' ? 'bg-white dark:bg-[#2a2a2a] text-black dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'"
@@ -15,10 +15,10 @@
                         @click="activeTab = 'my-creation'">
                         My Creation
                     </button>
-                </div>
+                </div> -->
 
                 <!-- Middle: Header Tags -->
-                <div class="flex-1 hidden md:flex justify-center overflow-hidden px-4">
+                <!-- <div class="flex-1 hidden md:flex justify-center overflow-hidden px-4">
                     <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide mask-fade-x bg-[#0000000a] dark:bg-[#1a1a1a] px-2 py-1 rounded-full">
                         <button v-for="tag in headerSearchTags" :key="tag"
                             class="text-sm font-medium whitespace-nowrap transition-colors px-6 py-2 rounded-full"
@@ -27,10 +27,10 @@
                             {{ tag }}
                         </button>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Right: Search & Create -->
-                <div class="flex items-center gap-4">
+                <!-- <div class="flex items-center gap-4">
                     <div class="w-64 relative group hidden md:block">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,7 +42,7 @@
                             class="block w-full pl-10 pr-4 py-2 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#2a2a2a] rounded-full text-sm shadow-sm focus:ring-2 focus:ring-gray-100 focus:border-gray-300 transition-all placeholder-gray-400" />
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <!-- Original Page Modules (Search & Tags) -->
