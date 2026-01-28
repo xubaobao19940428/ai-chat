@@ -167,16 +167,24 @@
                                   </button>
                               </div>
 
-
-                              
-                              <div>
-                                  <input
-                                      type="password"
-                                      v-model="password"
-                                      required
-                                      class="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-black/20 text-gray-900 dark:text-white focus:border-indigo-500 outline-none transition-all font-medium"
-                                      placeholder="Password"
+                              <div class="flex gap-2 mb-4">
+                                  <div class="flex-1">
+                                      <input
+                                          type="text"
+                                          v-model="code"
+                                          required
+                                          class="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-black/20 text-gray-900 dark:text-white focus:border-indigo-500 outline-none transition-all font-medium"
+                                          placeholder="Verification Code"
+                                      >
+                                  </div>
+                                  <button 
+                                      type="button" 
+                                      @click="handleSendCode" 
+                                      :disabled="countdown > 0 || sendingCode"
+                                      class="px-5 py-4 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl font-bold transition-all disabled:opacity-50 whitespace-nowrap min-w-[120px]"
                                   >
+                                      {{ countdown > 0 ? `${countdown}s` : 'Send Code' }}
+                                  </button>
                               </div>
 
                               <div v-if="errorMsg" class="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-bold rounded-xl border border-red-100 dark:border-red-900/30">
@@ -191,7 +199,7 @@
                               </button>
                               
                               <div class="text-center mt-6">
-                                  <button type="button" @click="isRegistering = !isRegistering" class="text-sm font-bold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
+                                  <button type="button" @click="toggleAuthMode" class="text-sm font-bold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
                                       {{ isRegistering ? 'Already have an account? Log in' : 'Don\'t have an account? Sign up' }}
                                   </button>
                               </div>
@@ -214,15 +222,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onUnmounted } from 'vue'
 
 const uiStore = useUIStore()
 const userStore = useUserStore()
 
-const authStep = ref<'email' | 'password'>('email')
+const authStep = ref<'email' | 'code'>('email')
 const isRegistering = ref(false)
 const email = ref('')
-const password = ref('')
+const code = ref('')
+const countdown = ref(0)
+const sendingCode = ref(false)
+let timer: any = null
 
 const loading = ref(false)
 const errorMsg = ref('')
@@ -255,10 +266,51 @@ const testimonials = [
     }
 ]
 
+const toggleAuthMode = () => {
+    isRegistering.value = !isRegistering.value
+    errorMsg.value = ''
+    successMsg.value = ''
+}
+
+const startCountdown = () => {
+    countdown.value = 60
+    timer = setInterval(() => {
+        countdown.value--
+        if (countdown.value <= 0) {
+            clearInterval(timer)
+        }
+    }, 1000)
+}
+
+onUnmounted(() => {
+    if (timer) clearInterval(timer)
+})
+
+const handleSendCode = async () => {
+    if (!email.value || sendingCode.value || countdown.value > 0) return
+    sendingCode.value = true
+    errorMsg.value = ''
+    successMsg.value = ''
+    try {
+        if (isRegistering.value) {
+            await userStore.sendCode(email.value)
+        } else {
+            await userStore.sendLoginCodeAction(email.value)
+        }
+        successMsg.value = 'Verification code sent!'
+        startCountdown()
+    } catch (err: any) {
+        errorMsg.value = err.message || 'Failed to send code.'
+    } finally {
+        sendingCode.value = false
+    }
+}
+
 const handleCheckEmail = () => {
     if (!email.value) return
-    authStep.value = 'password'
+    authStep.value = 'code'
     errorMsg.value = ''
+    successMsg.value = ''
 }
 
 const handleAuth = async () => {
@@ -268,23 +320,24 @@ const handleAuth = async () => {
         if (isRegistering.value) {
             await userStore.register({
                 email: email.value,
-                password: password.value
+                code: code.value
             })
+            successMsg.value = 'Registration successful! You can now log in.'
             isRegistering.value = false
-            password.value = ''
+            code.value = ''
+            authStep.value = 'code'
         } else {
             const success = await userStore.login({
                 email: email.value,
-                password: password.value
+                code: code.value
             })
             if (success) {
-                console.log('success',success)
                 uiStore.closeLoginModal()
                 authStep.value = 'email'
                 email.value = ''
-                password.value = ''
+                code.value = ''
             } else {
-                errorMsg.value = 'Login failed. Invalid credentials.'
+                errorMsg.value = 'Login failed. Invalid code.'
             }
         }
     } catch (err: any) {

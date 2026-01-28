@@ -68,6 +68,26 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  const sendCode = async (email: string) => {
+    try {
+      await sendRegisterCode(email)
+      return true
+    } catch (error) {
+      console.error('Send code failed:', error)
+      throw error
+    }
+  }
+
+  const sendLoginCodeAction = async (email: string) => {
+    try {
+      await sendLoginCode(email)
+      return true
+    } catch (error) {
+      console.error('Send login code failed:', error)
+      throw error
+    }
+  }
+
   const fetchUserInfo = async () => {
     try {
        const res: any = await getUserProfile()
@@ -102,6 +122,8 @@ export const useUserStore = defineStore('user', () => {
     initialize,
     login,
     register,
+    sendCode,
+    sendLoginCodeAction,
     logout,
     fetchUserInfo
   }
