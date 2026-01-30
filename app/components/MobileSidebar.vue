@@ -106,7 +106,7 @@
 													v-for="conversation in conversationStore.conversations.slice(0, 10)"
 													:key="conversation.id"
 													@click="handleSelectConversation(conversation.id)"
-													:class="['flex items-center gap-3 px-3 py-2.5 rounded-2xl cursor-pointer transition-colors text-sm font-bold', conversationStore.currentConversationId === conversation.id ? 'bg-[var(--fill-tsp-white-main)] text-[var(--text-primary)] shadow-[var(--shadow-XS)] ring-1 ring-[var(--border-main)]' : 'text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-white-main)]']">
+													:class="['flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors text-sm font-bold', conversationStore.currentConversationId === conversation.id ? 'bg-[var(--fill-tsp-white-main)] text-[var(--text-primary)] shadow-[var(--shadow-XS)] ring-1 ring-[var(--border-main)]' : 'text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-white-main)]']">
 													<svg class="w-4 h-4 flex-shrink-0 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
 													</svg>

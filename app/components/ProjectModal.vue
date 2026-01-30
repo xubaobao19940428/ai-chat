@@ -8,9 +8,9 @@
 			<div class="fixed inset-0 z-10 overflow-y-auto">
 				<div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
 					<TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 sm:scale-100" leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
-						<DialogPanel class="relative transform overflow-hidden rounded-2xl bg-[var(--background-white-main)] px-4 pb-4 pt-5 text-left shadow-[var(--shadow-XL)] transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6 border border-[var(--border-main)]">
+						<DialogPanel class="relative transform overflow-hidden rounded-[16px] bg-[var(--background-white-main)] px-4 pb-4 pt-5 text-left shadow-[var(--shadow-XL)] transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6 border border-[var(--border-main)]">
 							<div class="absolute right-0 top-0 pr-4 pt-4">
-								<button type="button" class="rounded-lg bg-[var(--fill-tsp-white-main)] p-2 text-[var(--icon-disable)] hover:text-[var(--icon-primary)] focus:outline-none transition-colors" @click="handleClose">
+								<button type="button" class="rounded-full bg-[var(--fill-tsp-white-main)] p-2 text-[var(--icon-disable)] hover:text-[var(--icon-primary)] focus:outline-none transition-colors border border-transparent hover:border-[var(--border-main)]" @click="handleClose">
 									<span class="sr-only">Close</span>
 									<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
 										<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -19,7 +19,7 @@
 							</div>
 
 							<div>
-								<div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--fill-blue)] mb-4">
+								<div class="mx-auto flex h-12 w-12 items-center justify-center rounded-[14px] bg-[var(--fill-blue)] mb-4">
 									<svg class="h-6 w-6 text-[var(--text-blue)]" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
 										<path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
 									</svg>
@@ -39,12 +39,12 @@
 							<div class="mt-6 space-y-4">
 								<div>
 									<label for="projectName" class="block text-sm font-bold text-[var(--text-primary)] mb-1">项目名称</label>
-									<input type="text" id="projectName" v-model="projectName" placeholder="输入项目名称，例如：投资分析" class="block w-full rounded-xl border border-[var(--border-main)] bg-[var(--fill-tsp-white-main)] py-3 px-4 text-[var(--text-primary)] placeholder:text-[var(--text-disable)] focus:border-[var(--border-blue)] outline-none sm:text-sm transition-all font-bold tracking-tight" />
+									<input type="text" id="projectName" v-model="projectName" placeholder="输入项目名称，例如：投资分析" class="block w-full rounded-[10px] border border-[var(--border-main)] bg-[var(--fill-tsp-white-main)] py-3 px-4 text-[var(--text-primary)] placeholder:text-[var(--text-disable)] focus:border-[var(--border-blue)] outline-none sm:text-sm transition-all font-bold tracking-tight" />
 								</div>
 
 								<div>
 									<label for="projectDesc" class="block text-sm font-bold text-[var(--text-primary)] mb-1">项目描述</label>
-									<textarea id="projectDesc" v-model="projectDesc" rows="3" placeholder="简要描述项目用途..." class="block w-full rounded-xl border border-[var(--border-main)] bg-[var(--fill-tsp-white-main)] py-3 px-4 text-[var(--text-primary)] placeholder:text-[var(--text-disable)] focus:border-[var(--border-blue)] outline-none sm:text-sm transition-all resize-none font-bold tracking-tight"></textarea>
+									<textarea id="projectDesc" v-model="projectDesc" rows="3" placeholder="简要描述项目用途..." class="block w-full rounded-[10px] border border-[var(--border-main)] bg-[var(--fill-tsp-white-main)] py-3 px-4 text-[var(--text-primary)] placeholder:text-[var(--text-disable)] focus:border-[var(--border-blue)] outline-none sm:text-sm transition-all resize-none font-bold tracking-tight"></textarea>
 								</div>
 
 								<div>
@@ -56,10 +56,10 @@
 							</div>
 
 							<div class="mt-8 flex flex-col sm:flex-row-reverse gap-3">
-								<button type="button" class="inline-flex w-full justify-center rounded-xl bg-[var(--Button-primary-black)] px-6 py-3 text-sm font-bold text-[var(--text-onblack)] shadow-[var(--shadow-S)] hover:opacity-90 transition-all disabled:opacity-50" :disabled="!projectName.trim() || isLoading" @click="handleSubmit">
+								<button type="button" class="inline-flex w-full justify-center rounded-[10px] bg-[var(--Button-primary-black)] px-6 py-3 text-sm font-bold text-[var(--text-onblack)] shadow-[var(--shadow-S)] hover:opacity-90 transition-all disabled:opacity-50" :disabled="!projectName.trim() || isLoading" @click="handleSubmit">
 									{{ isLoading ? (editingProject ? '保存中...' : '创建中...') : editingProject ? '保存修改' : '创建项目' }}
 								</button>
-								<button type="button" class="inline-flex w-full justify-center rounded-xl bg-[var(--background-white-main)] px-6 py-3 text-sm font-bold text-[var(--text-primary)] shadow-[var(--shadow-S)] ring-1 ring-inset ring-[var(--border-main)] hover:bg-[var(--fill-tsp-white-main)] transition-all sm:mt-0" @click="handleClose">取消</button>
+								<button type="button" class="inline-flex w-full justify-center rounded-[10px] bg-[var(--background-white-main)] px-6 py-3 text-sm font-bold text-[var(--text-primary)] shadow-[var(--shadow-S)] ring-1 ring-inset ring-[var(--border-main)] hover:bg-[var(--fill-tsp-white-main)] transition-all sm:mt-0" @click="handleClose">取消</button>
 							</div>
 						</DialogPanel>
 					</TransitionChild>

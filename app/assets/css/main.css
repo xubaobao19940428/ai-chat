@@ -141,7 +141,7 @@
     --bg-hover: var(--fill-tsp-gray-main);
     --border-light: var(--border-main);
     --shadow-card: var(--shadow-M);
-    --shadow-pill: var(--shadow-L);
+    --shadow-pill: 0 12px 36px -8px rgba(0, 0, 0, 0.1);
   }
 
   html.dark {
@@ -270,7 +270,7 @@
     --bg-hover: var(--fill-tsp-gray-main);
     --border-light: var(--border-main);
     --shadow-card: var(--shadow-M);
-    --shadow-pill: var(--shadow-L);
+    --shadow-pill: 0 12px 36px -8px rgba(0, 0, 0, 0.2);
   }
 
   html,
