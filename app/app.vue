@@ -30,5 +30,13 @@ onMounted(() => {
     projectStore.fetchProjects()
     conversationStore.fetchConversations()
   }
+
+  // Global Keyboard Shortcuts
+  window.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault()
+      uiStore.openSearchModal()
+    }
+  })
 })
 </script>

@@ -68,19 +68,9 @@
 				<!-- Input Container -->
 				<div class="bg-[var(--bg-main)] rounded-[26px] shadow-[var(--shadow-pill)] border border-[var(--border-light)] transition-all duration-300 focus-within:shadow-lg focus-within:border-[var(--text-disable)] relative p-2">
 					<div class="flex flex-col">
-						<textarea 
-                            v-model="inputMessage" 
-                            placeholder="Message..." 
-                            rows="1" 
-                            class="w-full px-4 py-3 bg-transparent text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none resize-none max-h-48 overflow-y-auto text-[15px] font-medium leading-relaxed" 
-                            :disabled="chatStore.isLoading" 
-                            @keydown.enter.exact.prevent="sendMessage" 
-                            @keydown.enter.shift.exact="inputMessage += '\n'" 
-                            @input="autoResize" 
-                            ref="textareaRef"
-                        ></textarea>
+						<editor-content :editor="editor" class="w-full max-h-48 overflow-y-auto custom-scrollbar" />
 
-						<div class="flex items-center justify-between px-2 pb-1">
+						<div class="flex items-center justify-between px-2 pb-1 bg-[var(--bg-main)]">
 							<div class="flex items-center gap-1">
                                 <!-- Attach Button -->
                                 <button class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors">
@@ -120,7 +110,7 @@
                             <!-- Send Button -->
 							<button 
                                 @click="sendMessage" 
-                                :disabled="!inputMessage.trim() || chatStore.isLoading" 
+                                :disabled="!hasContent || chatStore.isLoading" 
                                 class="flex items-center justify-center w-8 h-8 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full transition-transform active:scale-90 disabled:opacity-20 disabled:scale-100 dark:bg-[var(--text-white)] dark:text-[var(--bg-main)]"
                             >
 								<svg v-if="!chatStore.isLoading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -146,7 +136,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick, h } from 'vue'
+import { ref, computed, onMounted, watch, nextTick, h, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchChatStream } from '../../utils/api'
 import { renderMarkdown } from '../../utils/markdown'
@@ -155,18 +145,88 @@ import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
 import { useConversationStore } from '../../stores/conversation'
 import { useChatStore } from '../../stores/chat'
 import { useModelStore } from '../../stores/models'
+import { useEditor, EditorContent } from '@tiptap/vue-3'
+import StarterKit from '@tiptap/starter-kit'
+import Placeholder from '@tiptap/extension-placeholder'
 
 const route = useRoute()
 const conversationStore = useConversationStore()
 const chatStore = useChatStore()
 const modelStore = useModelStore()
 const messagesContainer = ref<HTMLElement | null>(null)
-const textareaRef = ref<HTMLTextAreaElement | null>(null)
 const inputMessage = ref('')
 const activeSubPrompts = ref<string[]>([])
 
 const currentConversationId = computed(() => route.params.id as string)
 const currentConversation = computed(() => conversationStore.currentConversation)
+
+const editor = useEditor({
+  content: '',
+  extensions: [
+    StarterKit.configure({
+        heading: false,
+        bulletList: false,
+        orderedList: false,
+        blockquote: false,
+        codeBlock: false,
+        horizontalRule: false,
+    }),
+    Placeholder.configure({
+      placeholder: 'Ask anything...',
+    }),
+  ],
+  editorProps: {
+    attributes: {
+      class: 'prose dark:prose-invert focus:outline-none min-h-[44px] px-4 py-3 text-[15px] font-medium leading-relaxed text-[var(--text-primary)]',
+    },
+  },
+  onUpdate: ({ editor }) => {
+    inputMessage.value = editor.getText()
+  },
+})
+
+// Custom key handler for Enter
+const handleEnter = (e: KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault()
+        sendMessage()
+    }
+}
+
+// Add event listener to editor DOM element when mounted
+watch(() => editor.value, (newEditor) => {
+    if (newEditor) {
+        // Tiptap doesn't expose raw keydown easily without extension, but we can bind to the view's dom
+        // Or better yet, we can use the extension, but for simplicity here since we are inside a component, we can try to bind to the wrapper event if possible,
+        // but editor-content doesn't forward events directly.
+        // Actually, Tiptap suggests using Extension.create for keymaps.
+        // Let's stick to a simpler approach: add a listener to the window/document focused element or modify the extension config if needed.
+        // Wait, 'keydown' is simpler if we just intercept it on the wrapper or rely on custom extension.
+        // However, standard contenteditable behavior is fine, we just need to intercept Enter.
+        // Let's add a custom extension for keymap or just use a directive if available.
+        // Simplest: use EditorProps.handleKeyDown
+        newEditor.setOptions({
+            editorProps: {
+                handleKeyDown: (view, event) => {
+                    if (event.key === 'Enter' && !event.shiftKey) {
+                        event.preventDefault()
+                        sendMessage()
+                        return true
+                    }
+                    return false
+                },
+                attributes: {
+                     class: 'prose dark:prose-invert focus:outline-none min-h-[44px] px-4 py-3 text-[15px] font-medium leading-relaxed text-[var(--text-primary)]',
+                }
+            }
+        })
+    }
+}, { immediate: true })
+
+
+const hasContent = computed(() => {
+    return inputMessage.value.trim().length > 0
+})
 
 const getModelIcon = (modelId?: string) => {
 	const id = (modelId || '').toLowerCase()
@@ -206,9 +266,11 @@ const resetParams = () => {
 }
 
 const handleApplyPrompt = (suggestion: PromptSuggestion) => {
-	inputMessage.value = suggestion.prompt
-	autoResize()
-	if (textareaRef.value) textareaRef.value.focus()
+    if (editor.value) {
+        editor.value.commands.setContent(suggestion.prompt)
+        inputMessage.value = suggestion.prompt
+        editor.value.commands.focus()
+    }
 }
 
 onMounted(async () => {
@@ -219,6 +281,10 @@ onMounted(async () => {
 			nextTick(() => scrollToBottom())
 		}
 	}
+})
+
+onBeforeUnmount(() => {
+    editor.value?.destroy()
 })
 
 watch(
@@ -247,23 +313,16 @@ const scrollToBottom = () => {
 	}
 }
 
-const autoResize = () => {
-	nextTick(() => {
-		if (textareaRef.value) {
-			textareaRef.value.style.height = 'auto'
-			textareaRef.value.style.height = `${Math.min(textareaRef.value.scrollHeight, 128)}px`
-		}
-	})
-}
-
 const sendMessage = async () => {
 	if (!inputMessage.value.trim() || chatStore.isLoading || !currentConversation.value) return
 
 	const conversationId = currentConversation.value.id
 	const model = currentConversation.value.model || 'gpt-4o-mini'
 	const userMessage = inputMessage.value.trim()
-	inputMessage.value = ''
-	if (textareaRef.value) textareaRef.value.style.height = 'auto'
+	
+    // Clear editor
+    inputMessage.value = ''
+    editor.value?.commands.clearContent()
 
 	try {
 		const messages = currentConversation.value.messages.map((msg) => ({
@@ -356,5 +415,18 @@ const sendMessage = async () => {
 .prose {
     /* Improve prose readability */
 	@apply dark:text-[var(--text-primary)] leading-relaxed;
+}
+
+/* Tiptap Styles */
+.tiptap {
+    outline: none !important;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  color: var(--text-tertiary);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
 }
 </style>

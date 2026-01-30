@@ -31,7 +31,7 @@ export const useUIStore = defineStore('ui', () => {
     if (!import.meta.client) return
     const root = document.documentElement
     const body = document.body
-    
+
     if (theme === 'dark') {
       root.classList.add('dark')
       body.style.backgroundColor = '#000000'
@@ -77,7 +77,7 @@ export const useUIStore = defineStore('ui', () => {
           applyTheme(getCurrentTheme())
         }
       }
-      
+
       // 使用 addEventListener 如果支持，否则使用 addListener
       if (mediaQuery.addEventListener) {
         mediaQuery.addEventListener('change', handleChange)
@@ -131,12 +131,59 @@ export const useUIStore = defineStore('ui', () => {
     showLoginModal.value = false
   }
 
+  // Settings Modal Control
+  const showSettingsModal = ref(false)
+  const openSettingsModal = () => {
+    showSettingsModal.value = true
+  }
+  const closeSettingsModal = () => {
+    showSettingsModal.value = false
+  }
+
+  // Download Modal Control
+  const showDownloadModal = ref(false)
+  const openDownloadModal = () => {
+    showDownloadModal.value = true
+  }
+  const closeDownloadModal = () => {
+    showDownloadModal.value = false
+  }
+
+  // Project Modal Control
+  const showProjectModal = ref(false)
+  const setProjectModal = (show: boolean) => {
+    showProjectModal.value = show
+  }
+
+  // Search Modal Control
+  const showSearchModal = ref(false)
+  const openSearchModal = () => {
+    showSearchModal.value = true
+  }
+  const closeSearchModal = () => {
+    showSearchModal.value = false
+  }
+
+  // Rename Modal Control
+  const showRenameModal = ref(false)
+  const renameConversation = ref<any>(null)
+  const openRenameModal = (conversation: any) => {
+    renameConversation.value = conversation
+    showRenameModal.value = true
+  }
+  const closeRenameModal = () => {
+    showRenameModal.value = false
+    renameConversation.value = null
+  }
+
   return {
     sidebarCollapsed,
     mobileMenuOpen,
     themeMode,
     currentTheme,
     showLoginModal,
+    showSettingsModal,
+    showDownloadModal,
     toggleSidebar,
     setSidebarCollapsed,
     openMobileMenu,
@@ -146,5 +193,18 @@ export const useUIStore = defineStore('ui', () => {
     initTheme,
     openLoginModal,
     closeLoginModal,
+    openSettingsModal,
+    closeSettingsModal,
+    openDownloadModal,
+    closeDownloadModal,
+    showProjectModal,
+    setProjectModal,
+    showSearchModal,
+    openSearchModal,
+    closeSearchModal,
+    showRenameModal,
+    renameConversation,
+    openRenameModal,
+    closeRenameModal,
   }
 })

@@ -14,8 +14,11 @@
 			<!-- Page Specific Content -->
 			<main class="flex-1 relative min-h-0 overflow-y-auto custom-scrollbar">
 				<slot />
-				<!-- Global Auth Modal -->
+				<!-- Global Modals -->
 				<AuthModal />
+				<SettingsModal />
+				<SearchModal />
+				<RenameModal />
 			</main>
 		</div>
 	</div>
