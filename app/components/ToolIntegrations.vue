@@ -16,7 +16,7 @@
     <!-- Illustrations (Mockup) -->
     <div class="absolute right-0 bottom-0 pointer-events-none">
         <!-- Abstract UI representation -->
-         <img src="/integrations.png" alt="Integrations" class="h-[120px] w-auto opacity-90 object-contain translate-y-2 translate-x-2" />
+         <img src="/webPageHomePower.png" alt="Integrations" class="h-[120px] w-auto opacity-90 object-contain translate-y-2 translate-x-2" />
     </div>
   </div>
 </template>
@@ -24,6 +24,6 @@
 <script setup lang="ts">
 const tags = [
     'LLM', 'Stripe integration', 'Database', 'Image generation', 
-    'Authentication', 'Analytics', 'Vector store', 'Deployment'
+    'Maps', 'Notification', 'File storage', 'Data API', 'Voice-to-Text'
 ]
 </script>

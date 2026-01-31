@@ -43,7 +43,17 @@
                                                 <button @click.stop="activeTool = null" class="hover:bg-blue-100 rounded-full p-0.5 transition-colors">
                                                     <XMarkIcon class="w-3.5 h-3.5" />
                                                 </button>
-                                                <span class="text-[13px] font-medium leading-none pb-[1px]">{{ currentTool?.name }}</span>
+                                                <div class="flex items-center gap-1">
+                                                    <component :is="currentTool?.icon" v-if="currentTool?.icon" class="w-3.5 h-3.5" />
+                                                    <!-- Special case for Slides if icon is null in config -->
+                                                    <svg v-else-if="activeTool === 'slides'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="w-3.5 h-3.5" stroke="currentColor" stroke-width="2">
+                                                        <path d="M6.99976 5.9974V4.26406C6.99976 3.38041 7.7161 2.66406 8.59976 2.66406H15.3998C16.2834 2.66406 16.9998 3.38041 16.9998 4.26406V5.9974" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        <path d="M5.00024 10V8C5.00024 6.89543 5.89567 6 7.00024 6H17.0002C18.1048 6 19.0002 6.89543 19.0002 8V10" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        <path d="M19 10H5C3.89543 10 3 10.8954 3 12V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V12C21 10.8954 20.1046 10 19 10Z" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    </svg>
+                                                    <span class="text-[13px] font-medium leading-none pb-[1px]">{{ currentTool?.name }}</span>
+                                                    <span v-if="activeTool === 'app'" class="ml-1 text-[11px] text-blue-400 font-normal">Beta</span>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -71,7 +81,7 @@
                             </div>
 
                             <!-- "Connect your tools" Banner (Matches user screenshot) -->
-                            <div v-if="!activeTool" class="mx-3 mt-1 mb-1 py-2 px-3 flex items-center justify-between group animate-fade-in-up" style="animation-delay: 0.1s;">
+                            <div v-if="!activeTool || activeTool === 'website'" class="mx-3 mt-1 mb-1 py-2 px-3 flex items-center justify-between group animate-fade-in-up" style="animation-delay: 0.1s;">
                                 <div class="flex items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="w-4 h-4 text-[var(--text-tertiary)]" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M5 12h2" />
@@ -139,9 +149,32 @@
                         <span class="text-[var(--text-primary)] text-[14px]">Design</span>
                     </button>
 
-                    <button class="h-10 px-[14px] text-sm py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center clickable hover:bg-[var(--fill-tsp-white-light)] text-[var(--text-primary)] transition-colors">
-                        More
-                    </button>
+                    <div class="relative" ref="moreMenuRef">
+                        <button 
+                            @click.stop="isMoreMenuOpen = !isMoreMenuOpen"
+                            class="h-10 px-[14px] text-sm py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center clickable hover:bg-[var(--fill-tsp-white-light)] text-[var(--text-primary)] transition-colors"
+                            :class="{ 'bg-[var(--fill-tsp-white-light)]': isMoreMenuOpen }"
+                        >
+                            More
+                        </button>
+                        
+                        <!-- More Dropdown Menu -->
+                        <div 
+                            v-if="isMoreMenuOpen"
+                            class="absolute bottom-full mb-2 right-0 w-[220px] bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] py-2 z-50 animate-slide-up"
+                        >
+                            <div 
+                                v-for="item in moreMenuItems" 
+                                :key="item.name"
+                                class="flex items-center gap-3 px-4 py-[10px] hover:bg-[var(--fill-tsp-white-light)] cursor-pointer group transition-colors"
+                                @click="handleToolSelect(item.id || item.name)"
+                            >
+                                <component :is="item.icon" class="w-[18px] h-[18px] text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
+                                <span class="text-[14px] text-[var(--text-primary)] font-normal flex-1">{{ item.name }}</span>
+                                <ArrowUpRightIcon v-if="item.name === 'Playbook'" class="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Expanded Tool View -->
@@ -159,11 +192,46 @@
                         <ToolIntegrations v-if="currentTool.showIntegrations" />
                     </div>
 
+                    <!-- Schedule Layout -->
+                    <div v-if="activeTool === 'schedule'" class="flex flex-col gap-6 w-full">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-[14px] font-medium text-[var(--text-primary)]">Get started with</h3>
+                            <div class="flex items-center gap-2">
+                                <button class="h-8 w-8 rounded-lg border border-[var(--border-main)] flex items-center justify-center hover:bg-[var(--fill-tsp-white-light)] transition-colors">
+                                    <CalendarIcon class="w-4 h-4 text-[var(--text-secondary)]" />
+                                </button>
+                                <button class="h-8 px-3 rounded-lg border border-[var(--border-main)] flex items-center gap-1.5 hover:bg-[var(--fill-tsp-white-light)] transition-colors">
+                                    <PlusIcon class="w-4 h-4 text-[var(--text-secondary)]" />
+                                    <span class="text-[13px] font-medium text-[var(--text-primary)]">New schedule</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <button 
+                                v-for="(item, index) in currentTool.prompts" 
+                                :key="index"
+                                @click="handlePromptSelect(item.text)"
+                                class="flex items-center justify-between p-4 px-5 rounded-2xl border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] transition-colors group text-left"
+                            >
+                                <div class="flex items-center gap-4 min-w-0">
+                                    <div class="w-5 h-5 flex items-center justify-center flex-shrink-0">
+                                        <component :is="item.icon" class="w-4 h-4 text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
+                                    </div>
+                                    <span class="text-[14px] text-[var(--text-primary)] truncate font-normal">{{ item.text }}</span>
+                                </div>
+                                <ArrowUpRightIcon class="w-3.5 h-3.5 text-[var(--text-tertiary)] flex-shrink-0" />
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Default Tool Layout (Slides, App, Design) -->
                     <div v-else class="flex flex-col gap-8 w-full">
                         <SamplePrompts 
                             v-if="currentTool.prompts && currentTool.prompts.length" 
                             :prompts="currentTool.prompts" 
+                            :title="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? '' : 'Sample prompts'"
+                            :layout="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? 'list' : 'grid'"
                             @select="handlePromptSelect" 
                         />
                         
@@ -202,7 +270,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onBeforeUnmount, computed } from 'vue'
+import { ref, watch, onMounted, onBeforeUnmount, computed, nextTick, h } from 'vue'
 import { useRouter } from 'vue-router'
 import { useConversationStore } from '../stores/conversation'
 import { useUserStore } from '../stores/user'
@@ -219,7 +287,24 @@ import {
     MicrophoneIcon,
     ArrowUpIcon,
     LinkIcon,
-    EnvelopeIcon
+    EnvelopeIcon,
+    DevicePhoneMobileIcon,
+    PaintBrushIcon,
+    SparklesIcon,
+    CalendarIcon,
+    MagnifyingGlassIcon,
+    TableCellsIcon,
+    ChartBarIcon as ChartBarIconOutline,
+    VideoCameraIcon,
+    SpeakerWaveIcon,
+    ChatBubbleLeftRightIcon,
+    ArrowUpRightIcon,
+    SignalIcon,
+    NewspaperIcon,
+    ChartBarIcon as ChartBarIconSolid,
+    CakeIcon,
+    AdjustmentsHorizontalIcon,
+    PresentationChartLineIcon
 } from '@heroicons/vue/24/outline'
 import ModelSelector from './ModelSelector.vue'
 import SamplePrompts from './SamplePrompts.vue'
@@ -234,11 +319,36 @@ import {
     CloudIcon,
     UserIcon,
     LinkIcon as LinkIconSolid,
-    PhotoIcon
+    PhotoIcon,
+    CodeBracketIcon,
+    ShoppingBagIcon
 } from '@heroicons/vue/24/solid'
 
+// --- Custom Icons ---
+const FigmaIcon = () => h('svg', {
+  viewBox: '0 0 64 64',
+  fill: 'none',
+  xmlns: 'http://www.w3.org/2000/svg',
+  width: '14',
+  height: '14',
+}, [
+  h('path', { d: 'M0 12C0 5.37258 5.37258 0 12 0H52C58.6274 0 64 5.37258 64 12V52C64 58.6274 58.6274 64 52 64H12C5.37258 64 0 58.6274 0 52V12Z', fill: '#1A1A19' }),
+  h('g', { clipPath: 'url(#4cad070dcef6f451302f6d4293cb31e20)' }, [
+    h('path', { d: 'M32.1387 31.9163C32.1387 27.7816 35.4905 24.4297 39.6253 24.4297C43.76 24.4297 47.1119 27.7816 47.1119 31.9163C47.1119 36.0511 43.76 39.403 39.6253 39.403C35.4905 39.403 32.1387 36.0511 32.1387 31.9163Z', fill: '#1ABCFE' }),
+    h('path', { d: 'M17.166 46.887C17.166 42.7523 20.5179 39.4004 24.6526 39.4004H32.1393V46.887C32.1393 51.0218 28.7874 54.3737 24.6526 54.3737C20.5179 54.3737 17.166 51.0218 17.166 46.887Z', fill: '#0ACF83' }),
+    h('path', { d: 'M32.1406 9.45508V24.4283H39.6273C43.762 24.4283 47.1139 21.0765 47.1139 16.9417C47.1139 12.807 43.762 9.45508 39.6273 9.45508H32.1406Z', fill: '#FF7262' }),
+    h('path', { d: 'M17.166 16.9417C17.166 21.0765 20.5179 24.4283H32.1393V9.45508H24.6526C20.5179 9.45508 17.166 12.807 17.166 16.9417Z', fill: '#F24E1E' }),
+    h('path', { d: 'M17.166 31.9163C17.166 36.0511 20.5179 39.403 24.6526 39.403H32.1393V24.4297H24.6526C20.5179 24.4297 17.166 27.7816 17.166 31.9163Z', fill: '#A259FF' })
+  ]),
+  h('defs', [
+    h('clipPath', { id: '4cad070dcef6f451302f6d4293cb31e20' }, [
+      h('rect', { width: '45.3818', height: '45.3818', fill: 'white', transform: 'translate(9.30859 9.30859)' })
+    ])
+  ])
+])
+
 // --- Types ---
-type ToolType = 'slides' | 'website' | 'app' | 'design' | null
+type ToolType = 'slides' | 'website' | 'app' | 'design' | 'schedule' | 'research' | 'spreadsheet' | null
 
 interface ToolConfig {
     id: ToolType
@@ -246,7 +356,7 @@ interface ToolConfig {
     icon: any
     color: string
     placeholder: string
-    prompts?: Array<{ text: string }>
+    prompts?: Array<{ text: string, icon?: any }>
     templates?: Array<any>
     chips?: Array<{ text: string, icon?: any }>
     links?: Array<{ text: string, icon?: any }>
@@ -258,14 +368,41 @@ const conversationStore = useConversationStore()
 const userStore = useUserStore()
 const emit = defineEmits(['send-message'])
 
+const activeTool = ref<ToolType>(null)
+const hasContent = ref(false)
+
+const isMoreMenuOpen = ref(false)
+const moreMenuRef = ref<HTMLElement | null>(null)
+
+const moreMenuItems = [
+    { name: 'Schedule task', id: 'schedule', icon: CalendarIcon },
+    { name: 'Wide Research', id: 'research', icon: MagnifyingGlassIcon },
+    { name: 'Spreadsheet', id: 'spreadsheet', icon: TableCellsIcon },
+    { name: 'Visualization', icon: ChartBarIconOutline },
+    { name: 'Video', icon: VideoCameraIcon },
+    { name: 'Audio', icon: SpeakerWaveIcon },
+    { name: 'Chat mode', icon: ChatBubbleLeftRightIcon },
+    { name: 'Playbook', icon: ArrowUpRightIcon }
+]
+
+const handleClickOutside = (event: MouseEvent) => {
+    if (moreMenuRef.value && !moreMenuRef.value.contains(event.target as Node)) {
+        isMoreMenuOpen.value = false
+    }
+}
+
+onMounted(() => {
+    document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+    document.removeEventListener('click', handleClickOutside)
+})
+
 const props = defineProps<{
     mode?: string,
     isLoading?: boolean
 }>()
-
-// --- State ---
-const activeTool = ref<ToolType>(null)
-const hasContent = ref(false)
 
 // --- Tool Configurations ---
 const tools: Record<string, ToolConfig> = {
@@ -274,12 +411,12 @@ const tools: Record<string, ToolConfig> = {
         name: 'Slides',
         icon: null, // Dynamic in template
         color: 'text-blue-500',
-        placeholder: 'Describe the presentation you want to create...',
+        placeholder: 'Describe your presentation topic',
         prompts: [
-            { text: 'Create a presentation on the impact of AI on the future of work' },
-            { text: 'Create a sales presentation for a B2B software solution' },
             { text: 'Design a pitch deck for a startup seeking funding' },
-            { text: 'Prepare a training module on cybersecurity best practices' }
+            { text: 'Create a sales presentation for a B2B software solution' },
+            { text: 'Prepare a training module on cybersecurity best practices' },
+            { text: 'Create a presentation on the impact of AI on the future of work' }
         ],
         templates: [
             { id: 't1', name: 'The Golden Age of Jazz', image: 'https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=400&h=300&fit=crop' },
@@ -290,20 +427,21 @@ const tools: Record<string, ToolConfig> = {
     website: {
         id: 'website',
         name: 'Website',
-        icon: GlobeAltIcon,
+        icon: CodeBracketIcon,
         color: 'text-purple-500',
-        placeholder: 'Describe the website you want to build...',
+        placeholder: 'Describe the website you want to build',
         chips: [
             { text: 'Landing page', icon: DocumentTextIcon },
             { text: 'Dashboard', icon: ChartBarIcon },
             { text: 'Portfolio', icon: BriefcaseIcon },
             { text: 'Corporate', icon: BuildingOfficeIcon },
             { text: 'SaaS', icon: CloudIcon },
-            { text: 'Link in bio', icon: UserIcon }
+            { text: 'Link in bio', icon: UserIcon },
+            { text: 'E-commerce', icon: ShoppingBagIcon }
         ],
         links: [
-            { text: 'Add website reference', icon: LinkIcon },
-            { text: 'Import from Figma', icon: PhotoIcon }
+            { text: 'Add website reference', icon: LinkIconSolid },
+            { text: 'Import from Figma', icon: FigmaIcon }
         ],
         showIntegrations: true,
         prompts: [],
@@ -311,29 +449,78 @@ const tools: Record<string, ToolConfig> = {
     },
     app: {
         id: 'app',
-        name: 'App',
-        icon: null,
+        name: 'Develop apps',
+        icon: DevicePhoneMobileIcon,
         color: 'text-green-500',
-        placeholder: 'Describe the app functionality...',
+        placeholder: 'Describe the mobile app you want to build',
         prompts: [
-            { text: 'Develop a todo list app with local storage' },
-            { text: 'Create a weather dashboard using public API' },
-            { text: 'Build a pomodoro timer with notifications' },
-            { text: 'Design a chat interface for customer support' }
+            { text: 'Make a scheduling tool with events, reminders, and calendar view' },
+            { text: 'Make a weather app showing current conditions and forecasts' },
+            { text: 'Make a habit-building tool with daily tracking' },
+            { text: 'Build a personal expense tracker with categories and monthly summaries' },
+            { text: 'Build a shopping list tool with item adding and check-off' }
         ],
         templates: []
     },
     design: {
         id: 'design',
         name: 'Design',
-        icon: null,
+        icon: PaintBrushIcon,
         color: 'text-pink-500',
-        placeholder: 'Describe what you want to design...',
+        placeholder: 'Describe the image you want to create',
         prompts: [
-            { text: 'Design a modern logo for a tech startup' },
-            { text: 'Create social media posts for a product launch' },
-            { text: 'Design a dashboard UI for analytics' },
-            { text: 'Create an infographic about climate change' }
+            { icon: SparklesIcon, text: 'Try Nano Banana' },
+            { text: 'Meditation app UI/UX' },
+            { text: 'Coffee brand design' },
+            { text: 'Music festival print materials' },
+            { text: 'Data infographic' },
+            { text: 'App illustrations' }
+        ],
+        templates: []
+    },
+    schedule: {
+        id: 'schedule',
+        name: 'Schedule task',
+        icon: CalendarIcon,
+        color: 'text-blue-500',
+        placeholder: 'Describe the task you want to schedule',
+        prompts: [
+            { text: 'Daily tech briefing', icon: SignalIcon },
+            { text: '24 hours hot topics feed', icon: NewspaperIcon },
+            { text: 'Monthly market trend analysis', icon: ChartBarIconSolid },
+            { text: 'Weekly picks for food and fun', icon: CakeIcon },
+            { text: 'Track weekly industry trends', icon: AdjustmentsHorizontalIcon },
+            { text: 'Market insights before the bell', icon: PresentationChartLineIcon }
+        ],
+        templates: []
+    },
+    research: {
+        id: 'research',
+        name: 'Wide Research',
+        icon: MagnifyingGlassIcon,
+        color: 'text-blue-500',
+        placeholder: 'Search for anything you want to know',
+        prompts: [
+            { text: 'Map 250 NeurIPS researchers with areas affiliations citations and mobility insights' },
+            { text: 'Compare 100 sneakers across features pricing segments aesthetics resale metrics performance' },
+            { text: 'Profile 20 NASA legends with biographies missions ages quotes and notable milestones' },
+            { text: 'Create 50 New York event posters in diverse energetic visual styles' },
+            { text: 'Extract 100 prompts and build structured Notion database entries' }
+        ],
+        templates: []
+    },
+    spreadsheet: {
+        id: 'spreadsheet',
+        name: 'Spreadsheet',
+        icon: TableCellsIcon,
+        color: 'text-blue-500',
+        placeholder: 'Search for anything you want to know',
+        prompts: [
+            { text: 'Calculate IRR for Anysphere investment with cash flows' },
+            { text: 'Create a discounted cash flow model with formulas' },
+            { text: 'Track project tasks across lifecycle with clean design' },
+            { text: 'Analyze North America natural gas data from IMF' },
+            { text: 'Track personal finances with daily logs and categories' }
         ],
         templates: []
     }
@@ -341,12 +528,18 @@ const tools: Record<string, ToolConfig> = {
 
 const currentTool = computed(() => activeTool.value ? tools[activeTool.value] : null)
 
+const genericPlaceholder = 'Assign a task or ask anything'
+
 const editor = useEditor({
   content: '',
   extensions: [
     StarterKit,
     Placeholder.configure({
-      placeholder: 'Assign a task or ask anything',
+      placeholder: () => {
+        const toolId = activeTool.value
+        const tool = toolId ? tools[toolId] : null
+        return tool ? tool.placeholder : genericPlaceholder
+      },
     }),
   ],
   editorProps: {
@@ -361,13 +554,10 @@ const editor = useEditor({
   },
 })
 
-// Update placeholder when tool changes
-watch(currentTool, (tool) => {
-    if (editor.value) {
-        // We can't easily update placeholder dynamically with this setup, 
-        // but typically you'd reconfigure the extension.
-        // For now, we'll keep the generic one or assume simple text update.
-    }
+// Update decorations when activeTool changes
+watch(activeTool, () => {
+    // No explicit dispatch needed here as focus() or user interaction 
+    // will naturally trigger a re-render of decorations.
 })
 
 const modelStore = useModelStore()
@@ -390,19 +580,40 @@ function handleSendMessage(directContent?: string) {
 	}
 }
 
+
 // Handle clicking a tool suggestion
-function handleToolSelect(toolId: ToolType) {
-    activeTool.value = toolId
-    // Clear content when switching tools if needed
-    editor.value?.commands.focus()
+function handleToolSelect(toolId: string) {
+    activeTool.value = toolId as ToolType
+    isMoreMenuOpen.value = false
+    
+    // The input wrapper has a 300ms transition (duration-300).
+    // We wait for the layout to settle before focusing to avoid cursor jumping.
+    setTimeout(() => {
+        if (editor.value) {
+            // Ensure focus and move cursor to the end
+            editor.value.commands.focus()
+            const { size } = editor.value.state.doc.content
+            editor.value.commands.setTextSelection(size)
+            // Secondary focus command as a fallback
+            editor.value.commands.focus('end')
+        }
+    }, 350)
 }
 
 // Handle clicking a sample prompt
 function handlePromptSelect(text: string) {
     if (!editor.value) return
     editor.value.commands.setContent(text)
+    // Focus first to ensure the editor is ready for selection
     editor.value.commands.focus()
-    editor.value.commands.setTextSelection(text.length)
+    // Small delay to ensure Tiptap has processed the content update
+    nextTick(() => {
+        if (editor.value) {
+            const { size } = editor.value.state.doc.content
+            editor.value.commands.setTextSelection(size)
+            editor.value.commands.focus('end')
+        }
+    })
 }
 
 // Set up key handler when editor is ready
