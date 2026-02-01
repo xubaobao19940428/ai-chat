@@ -93,7 +93,7 @@
 
 					<!-- Project List -->
 					<div v-show="!projectsCollapsed" class="flex flex-col gap-px mb-4">
-						<div @click="selectProject(null)" :class="['w-full flex items-center rounded-[10px] h-[36px] ps-[10px] pe-[8px] gap-[8px] transition-colors clickable', conversationStore.selectedGroupId === null ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]']">
+						<div @click="selectProject(null)" :class="['w-full flex items-center rounded-[10px] h-[36px] ps-[10px] pe-[8px] gap-[8px] transition-colors clickable', (conversationStore.selectedGroupId === null || conversationStore.selectedGroupId === 0) ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]']">
 							<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)] opacity-80">
 								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 									<path d="M4 6h16M4 12h16M4 18h7" />
@@ -103,7 +103,7 @@
 								<span class="truncate">All Sessions</span>
 							</div>
 						</div>
-						<div v-for="group in projectStore.projects" :key="group.id" @click="selectProject(group.id)" :class="['w-full group flex items-center rounded-[10px] h-[36px] ps-[10px] pe-[8px] gap-[8px] transition-colors clickable relative', conversationStore.selectedGroupId === group.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]']">
+						<div v-for="group in projectStore.projects" :key="group.id" @click="selectProject(group.id)" :class="['w-full group flex items-center rounded-[10px] h-[36px] ps-[10px] pe-[8px] gap-[8px] transition-colors clickable relative', conversationStore.selectedGroupId == group.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]']">
 							<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)] opacity-80">
 								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 									<path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />

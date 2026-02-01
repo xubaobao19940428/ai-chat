@@ -125,20 +125,50 @@ const randomString = (code: number) => {
   return pwd
 }
 
-const processStreamLine = (line: string, options: ChatModelOptions) => {
+interface StreamState {
+  lastEvent: string;
+}
+
+const processStreamLine = (line: string, options: ChatModelOptions, state: StreamState) => {
   const trimmedLine = line.trim();
-  if (!trimmedLine || trimmedLine === 'data: [DONE]') return;
+  if (!trimmedLine) return;
+
+  if (trimmedLine.startsWith('event: ')) {
+    state.lastEvent = trimmedLine.substring(7);
+    console.log('Stream event:', state.lastEvent);
+    return;
+  }
+
+  if (trimmedLine === 'data: [DONE]') {
+    console.log('Stream received [DONE]');
+    return;
+  }
   
   if (trimmedLine.startsWith('data: ')) {
+    const dataStr = trimmedLine.substring(6);
     try {
-      const json = JSON.parse(trimmedLine.substring(6));
+      const json = JSON.parse(dataStr);
+      
+      // Handle error event or error in data
+      if (state.lastEvent === 'error' || json.error) {
+        console.error('Stream Error Data:', json);
+        const errorMsg = json.error?.message || json.message || dataStr;
+        options.onError?.(new Error(errorMsg));
+        return;
+      }
+
       const content = json.content ?? json.choices?.[0]?.delta?.content ?? '';
       if (content) {
         options.onMessage?.(content);
       }
     } catch (e) {
       console.error('Error parsing stream line:', trimmedLine, e);
+      if (state.lastEvent === 'error') {
+        options.onError?.(new Error(dataStr));
+      }
     }
+  } else {
+    console.log('Non-data stream line:', trimmedLine);
   }
 }
 
@@ -222,14 +252,22 @@ export const sendChatMessage = async (message: string, messages: ChatMessage[] =
       headers['Authorization'] = `${token}`;
     }
 
+    console.log('Fetching URL:', url);
+    console.log('Request Headers:', JSON.stringify(headers, null, 2));
+    console.log('Final Request Body:', JSON.stringify(requestBody, null, 2));
+
     const response = await fetch(url, {
       method: 'POST',
       headers,
       body: JSON.stringify(requestBody)
     });
 
+    console.log('Chat API Response Status:', response.status);
+    console.log('Chat API Response Content-Type:', response.headers.get('Content-Type'));
+
     if (!response.ok) {
         const errorText = await response.text();
+        console.error('Chat API Error Body:', errorText);
         throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
     }
 
@@ -237,25 +275,29 @@ export const sendChatMessage = async (message: string, messages: ChatMessage[] =
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let buffer = '';
+      const state: StreamState = { lastEvent: '' };
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
+          console.log('Stream reader done');
           // Process any remaining buffer content
           if (buffer) {
-            processStreamLine(buffer, options);
+            processStreamLine(buffer, options, state);
           }
           break;
         }
 
-        buffer += decoder.decode(value, { stream: true });
+        const chunk = decoder.decode(value, { stream: true });
+        // console.log('Received chunk:', chunk);
+        buffer += chunk;
         const lines = buffer.split('\n');
         
         // Keep the last partial line in the buffer
         buffer = lines.pop() || '';
         
         for (const line of lines) {
-          processStreamLine(line, options);
+          processStreamLine(line, options, state);
         }
       }
 

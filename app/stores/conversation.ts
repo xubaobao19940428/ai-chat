@@ -50,7 +50,10 @@ export const useConversationStore = defineStore('conversation', () => {
           characterId: item.character_id,
           updatedAt: item.updated_at * 1000
         }
-        
+
+        console.log('Fetched conversation detail:', conversation)
+        console.log('Group ID from API:', item.group_id, 'Type:', typeof item.group_id)
+
         // 检查是否已存在
         const existingIndex = conversations.value.findIndex(c => c.id == id)
         if (existingIndex > -1) {
@@ -72,16 +75,38 @@ export const useConversationStore = defineStore('conversation', () => {
       const gid = groupId !== undefined ? groupId : selectedGroupId.value
       const res: any = await getConversations({ group_id: gid || 0 })
       const list = res.data.list || []
-      conversations.value = list.map((item: any) => ({
-        id: item.id,
-        title: item.title,
-        messages: [],
-        model: item.model || '',
-        params: item.meta?.params || item.params || {},
-        groupId: item.group_id,
-        characterId: item.character_id,
-        updatedAt: item.updated_at * 1000
-      }))
+
+      // 保留已加载的消息，而不是清空
+      const newConversations = list.map((item: any) => {
+        // 查找已存在的会话
+        const existing = conversations.value.find(c => c.id == item.id)
+        return {
+          id: String(item.id),
+          title: item.title,
+          messages: existing?.messages || [], // 保留已加载的消息
+          model: item.model || '',
+          params: item.meta?.params || item.params || {},
+          groupId: item.group_id,
+          characterId: item.character_id,
+          updatedAt: item.updated_at * 1000
+        }
+      })
+
+      // CRITICAL: Ensure current conversation is preserved if it's not in the list (e.g. pagination or delay)
+      // Otherwise the current view will blank out
+      if (currentConversationId.value) {
+        const currentInNew = newConversations.find((c: Conversation) => c.id == currentConversationId.value)
+        if (!currentInNew) {
+           const currentInOld = conversations.value.find(c => c.id == currentConversationId.value)
+           if (currentInOld) {
+              console.log('Preserving current conversation in list even though not in fetch result:', currentInOld.id)
+              newConversations.push(currentInOld)
+           }
+        }
+      }
+
+      conversations.value = newConversations
+      console.log('Conversations fetched, preserved messages for existing items')
     } catch (error) {
       console.error('Fetch conversations failed:', error)
     } finally {
@@ -91,8 +116,12 @@ export const useConversationStore = defineStore('conversation', () => {
 
   // 切换分组过滤
   const setSelectedGroupId = async (id: number | null) => {
+    console.log('setSelectedGroupId called with:', id)
+    console.log('Previous selectedGroupId:', selectedGroupId.value)
     selectedGroupId.value = id
+    console.log('Fetching conversations for group:', id)
     await fetchConversations()
+    console.log('Conversations loaded, count:', conversations.value.length)
   }
 
   // 获取消息列表并同步到 store
@@ -153,16 +182,22 @@ export const useConversationStore = defineStore('conversation', () => {
 
   // 切换会话
   const switchConversation = async (id: number | string) => {
+    console.log('switchConversation called with id:', id)
     currentConversationId.value = id
-    
+
     // 确保元数据存在
     let conversation = conversations.value.find(c => c.id == id)
     if (!conversation) {
+      console.log('Conversation not found in store, fetching details...')
       conversation = await fetchConversationDetail(id)
+      console.log('Fetched conversation:', conversation)
+    } else {
+      console.log('Conversation found in store:', conversation)
     }
-    
+
     // 只要消息为空就抓取一次，确保持久化
     if (conversation && conversation.messages.length === 0) {
+      console.log('Fetching messages for conversation...')
       await fetchMessages(id)
     }
   }

@@ -18,6 +18,10 @@ const conversationStore = useConversationStore()
 const chatStore = useChatStore()
 
 const handleWelcomeSendMessage = async (content: string, model: string) => {
+	console.log('=== Welcome screen: Creating new conversation ===')
+	console.log('Content:', content)
+	console.log('Model:', model)
+
 	// 创建新会话 (默认助手 ID 为 1)
 	const conversationId = await conversationStore.createConversation({
 		character_id: 1,
@@ -25,9 +29,14 @@ const handleWelcomeSendMessage = async (content: string, model: string) => {
 		group_id: conversationStore.selectedGroupId || 0,
 	})
 
+	console.log('Conversation created, ID:', conversationId)
+
 	// 获取新创建的会话对象
 	const conversation = conversationStore.conversations.find((c) => c.id == conversationId)
-	if (!conversation) return
+	if (!conversation) {
+		console.error('Conversation not found after creation!')
+		return
+	}
 
 	// 添加用户消息
 	conversationStore.addMessage(conversationId, {
@@ -35,16 +44,24 @@ const handleWelcomeSendMessage = async (content: string, model: string) => {
 		content: content,
 	})
 
+	// 自动更新标题 (取前 40 个字符)
+	const newTitle = content.length > 40 ? content.substring(0, 40) + '...' : content
+	conversationStore.updateTitle(conversationId, newTitle)
+
 	// 跳转到会话页面
 	router.push(`/chat/${conversationId}`)
 
 	// 触发发送逻辑
 	chatStore.setLoading(true, conversationId)
+	console.log('Loading state set, starting message send...')
+
 	try {
 		const messages = conversation.messages.map((msg) => ({
 			role: msg.role as any,
 			content: msg.content,
 		}))
+
+		console.log('Message history count:', messages.length)
 
 		// 我们需要引入 api
 		const { fetchChatStream } = await import('../../utils/api')
@@ -54,6 +71,8 @@ const handleWelcomeSendMessage = async (content: string, model: string) => {
 			role: 'assistant',
 			content: '',
 		})
+
+		console.log('Starting stream...')
 
 		await fetchChatStream({
 			message: content,
@@ -67,6 +86,7 @@ const handleWelcomeSendMessage = async (content: string, model: string) => {
 				},
 			},
 			onMessage: (content) => {
+				console.log('Stream chunk:', content.substring(0, 50))
 				conversationStore.updateLastMessage(conversationId, content)
 			},
 			onError: (error) => {
@@ -74,6 +94,7 @@ const handleWelcomeSendMessage = async (content: string, model: string) => {
 				conversationStore.updateLastMessage(conversationId, '抱歉，发生了错误，请稍后再试。', false)
 			},
 			onFinish: () => {
+				console.log('Stream finished')
 				chatStore.setLoading(false)
 			},
 		})
