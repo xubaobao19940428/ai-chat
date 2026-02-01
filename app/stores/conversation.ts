@@ -36,6 +36,7 @@ export const useConversationStore = defineStore('conversation', () => {
 
   // 获取单个会话详情 (用于直接跳转页面时)
   const fetchConversationDetail = async (id: number | string) => {
+    isLoading.value = true
     try {
       const res: any = await getConversationDetail(Number(id))
       const item = res.data
@@ -52,7 +53,6 @@ export const useConversationStore = defineStore('conversation', () => {
         }
 
         console.log('Fetched conversation detail:', conversation)
-        console.log('Group ID from API:', item.group_id, 'Type:', typeof item.group_id)
 
         // 检查是否已存在
         const existingIndex = conversations.value.findIndex(c => c.id == id)
@@ -65,6 +65,8 @@ export const useConversationStore = defineStore('conversation', () => {
       }
     } catch (error) {
       console.error('Fetch conversation detail failed:', error)
+    } finally {
+      isLoading.value = false
     }
   }
 
@@ -126,6 +128,7 @@ export const useConversationStore = defineStore('conversation', () => {
 
   // 获取消息列表并同步到 store
   const fetchMessages = async (conversationId: number | string) => {
+    isLoading.value = true
     try {
       const res: any = await getConversationMessages(Number(conversationId))
       const conversation = conversations.value.find(c => c.id == conversationId)
@@ -142,6 +145,8 @@ export const useConversationStore = defineStore('conversation', () => {
       }
     } catch (error) {
       console.error('Fetch messages failed:', error)
+    } finally {
+      isLoading.value = false
     }
   }
 

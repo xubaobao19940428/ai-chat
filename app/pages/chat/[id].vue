@@ -13,7 +13,13 @@
 		<!-- Main Chat Area -->
 		<div class="flex-1 overflow-y-auto px-4 pb-48 pt-20 custom-scrollbar relative z-10" ref="messagesContainer">
 			<div class="max-w-[840px] mx-auto py-6">
-				<TransitionGroup tag="div" name="message-list" class="space-y-10">
+				<!-- Initial Loading State -->
+				<div v-if="conversationStore.isLoading && (!currentConversation?.messages || currentConversation.messages.length === 0)" class="flex flex-col items-center justify-center py-20 space-y-4">
+					<div class="w-10 h-10 border-4 border-[var(--border-light)] border-t-[var(--text-primary)] rounded-full animate-spin"></div>
+					<p class="text-[var(--text-tertiary)] text-sm font-medium animate-pulse">Loading messages...</p>
+				</div>
+
+				<TransitionGroup v-else tag="div" name="message-list" class="space-y-10">
 					<div v-for="message in currentConversation?.messages" :key="message.id" class="flex gap-4 group" :class="message.role === 'user' ? 'flex-row-reverse' : ''">
 						<!-- Avatar -->
 						<div class="flex-shrink-0 mt-1">
