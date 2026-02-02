@@ -163,11 +163,7 @@
 
 										<transition enter-active-class="transition duration-100 ease-out" enter-from-class="transform scale-95 opacity-0" enter-to-class="transform scale-100 opacity-100" leave-active-class="transition duration-75 ease-in" leave-from-class="transform scale-100 opacity-100" leave-to-class="transform scale-95 opacity-0">
 											<Teleport to="body">
-												<MenuItems
-													v-if="activeMenuId === conversation.id"
-													:style="menuPosition"
-													class="fixed z-[9999] w-48 origin-top-right rounded-[12px] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] focus:outline-none py-1.5 overflow-hidden"
-												>
+												<MenuItems v-if="activeMenuId === conversation.id" :style="menuPosition" class="fixed z-[9999] w-48 origin-top-right rounded-[12px] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] focus:outline-none py-1.5 overflow-hidden">
 													<div class="px-1 py-1">
 														<MenuItem v-slot="{ active }">
 															<button @click="handleShare(conversation)" :class="[active ? 'bg-[var(--fill-tsp-white-main)]' : '', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm text-[var(--text-primary)] transition-colors']">
@@ -188,11 +184,11 @@
 																Rename
 															</button>
 														</MenuItem>
-														
+
 														<!-- Move to Project -->
 														<div class="h-px bg-[var(--border-main)] my-1"></div>
 														<div class="px-3 py-1.5 text-[11px] font-bold text-[var(--text-tertiary)] uppercase tracking-tight">Move to Project</div>
-														
+
 														<template v-if="projectStore.projects.length > 0">
 															<MenuItem v-for="proj in projectStore.projects" :key="proj.id" v-slot="{ active }">
 																<button @click="handleMoveToProject(conversation.id, proj.id)" :class="[active ? 'bg-[var(--fill-tsp-white-main)]' : '', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm text-[var(--text-primary)] transition-colors']">
@@ -396,10 +392,13 @@ const handleDeleteProject = async (id: string | number) => {
 	}
 }
 
-onMounted(() => {
-	if (conversationStore.conversations.length === 0) {
-		conversationStore.fetchConversations()
-	}
+onMounted(async () => {
+	// Load from local storage first for instant UI
+	await conversationStore.initFromLocalStorage()
+
+	// Always fetch from server to sync state
+	conversationStore.fetchConversations()
+
 	if (projectStore.projects.length === 0) {
 		projectStore.projects = [] // Initialize if empty
 	}

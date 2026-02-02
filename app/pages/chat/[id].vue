@@ -74,17 +74,17 @@
 									</div>
 								</div>
 								<div v-else class="prose dark:prose-invert prose-neutral max-w-none break-words" v-html="renderMarkdown(message.content)"></div>
-                  
-                  <!-- Assistant Action Bar -->
-                  <div class="mt-2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button @click.stop="copyMessage(message.content)" class="p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded transition-colors" title="Copy Message">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
-                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
-                      </svg>
-                    </button>
-                    <!-- Add more actions here like Regenerate if needed -->
-                  </div>
+
+								<!-- Assistant Action Bar -->
+								<div class="mt-2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+									<button @click.stop="copyMessage(message.content)" class="p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded transition-colors" title="Copy Message">
+										<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+											<rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+											<path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+										</svg>
+									</button>
+									<!-- Add more actions here like Regenerate if needed -->
+								</div>
 							</div>
 
 							<!-- Time/Meta (Hidden by default, shown on hover) -->
@@ -96,8 +96,6 @@
 							</div>
 						</div>
 					</div>
-
-
 				</TransitionGroup>
 			</div>
 		</div>
@@ -137,7 +135,7 @@
 										</svg>
 									</PopoverButton>
 									<Transition enter-active-class="transition duration-200 ease-out" enter-from-class="translate-y-2 opacity-0" enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-150 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-2 opacity-0">
-										<PopoverPanel class="absolute bottom-full left-0 mb-3 z-50 w-80 bg-[var(--bg-main)] rounded-2xl shadow-[var(--shadow-card)] border border-[var(--border-light)] overflow-hidden">
+										<PopoverPanel class="absolute bottom-full left-0 mb-3 z-50 w-[440px] bg-[var(--bg-main)] rounded-2xl shadow-[var(--shadow-card)] border border-[var(--border-light)] overflow-hidden">
 											<div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
 												<span class="text-[11px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Parameters</span>
 												<button @click="resetParams" class="text-[11px] text-[var(--text-blue)] hover:underline font-semibold">Reset</button>
@@ -321,27 +319,17 @@ const handleApplyPrompt = (suggestion: PromptSuggestion) => {
 
 onMounted(async () => {
 	console.log('=== Chat page mounted ===')
-	console.log('Current conversation ID:', currentConversationId.value)
+	// 1. 初始化本地存储
+	await conversationStore.initFromLocalStorage()
 
-	if (currentConversationId.value) {
-		await conversationStore.switchConversation(currentConversationId.value)
+	const conversationId = currentConversationId.value
+	if (conversationId) {
+		// 2. 切换会话（Store 内部会处理分组同步、消息同步和详情拉取）
+		const conversation = await conversationStore.switchConversation(conversationId)
 
-		console.log('After switchConversation, currentConversation:', currentConversation.value)
-
-		if (currentConversation.value) {
-			console.log('Conversation groupId:', currentConversation.value.groupId)
-			console.log('Current selectedGroupId:', conversationStore.selectedGroupId)
-
-			modelStore.selectModel(currentConversation.value.model || '')
-
-			// 同步 selectedGroupId 并刷新列表（现在 Store 已经处理了保留当前会话逻辑）
-			if (currentConversation.value.groupId !== conversationStore.selectedGroupId) {
-				console.log('Syncing selectedGroupId to:', currentConversation.value.groupId)
-				await conversationStore.setSelectedGroupId(currentConversation.value.groupId)
-			}
+		if (conversation) {
+			modelStore.selectModel(conversation.model || '')
 			nextTick(() => scrollToBottom())
-		} else {
-			console.warn('Current conversation not found after switchConversation!')
 		}
 	}
 })
@@ -478,7 +466,7 @@ const sendMessage = async () => {
 
 		await fetchChatStream({
 			message: userMessage,
-			messages: history,
+			// messages: history,
 			model,
 			options: {
 				...options,
@@ -543,12 +531,12 @@ const handleMessageClick = (e: MouseEvent) => {
 	const target = e.target as HTMLElement
 	// Check if clicked element or parent is .copy-code-btn
 	const btn = target.closest('.copy-code-btn') as HTMLElement
-	
+
 	if (btn) {
 		const code = btn.getAttribute('data-code')
 		if (code) {
 			copyMessage(code)
-			
+
 			// Optional: Visual feedback on button
 			const originalContent = btn.innerHTML
 			btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500"><path d="M20 6 9 17l-5-5"/></svg><span class="text-green-500 text-xs">Copied!</span>`
@@ -558,8 +546,6 @@ const handleMessageClick = (e: MouseEvent) => {
 		}
 	}
 }
-
-
 </script>
 
 <style scoped lang="scss">
@@ -608,28 +594,36 @@ const handleMessageClick = (e: MouseEvent) => {
 
 /* Code Block Styles */
 :deep(.code-block-wrapper) {
-	margin: 1rem 0;
-	border-radius: 0.5rem;
+	margin: 0.5rem 0 1rem 0; /* Reduced top margin further */
+	border-radius: 0.75rem;
 	overflow: hidden;
-	background-color: #1e1e2e; /* Setup specific dark bg or variable */
+	background-color: #1a1a1b; /* Sleeker dark background */
 	border: 1px solid var(--border-light);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+:deep(.code-block-wrapper pre) {
+	margin: 0 !important; /* Reset default prose margins */
+	padding: 1.25rem;
 }
 
 :deep(.code-block-header) {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 0.5rem 1rem;
-	background-color: rgba(255, 255, 255, 0.05);
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-	font-size: 0.75rem;
-	color: #a1a1aa;
+	padding: 0.625rem 1rem;
+	background-color: rgba(255, 255, 255, 0.03);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+	font-size: 0.7rem;
+	color: var(--text-tertiary);
+	font-weight: 500;
+	letter-spacing: 0.025em;
 }
 
 :deep(.code-lang) {
-	font-family: monospace;
+	font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 	text-transform: uppercase;
-	font-weight: 600;
+	opacity: 0.8;
 }
 
 :deep(.copy-code-btn) {
@@ -637,80 +631,31 @@ const handleMessageClick = (e: MouseEvent) => {
 	align-items: center;
 	gap: 0.375rem;
 	cursor: pointer;
-	padding: 0.25rem 0.5rem;
-	border-radius: 0.25rem;
-	transition: background-color 0.2s;
-	color: inherit;
-	background: transparent;
-	border: none;
+	padding: 0.25rem 0.625rem;
+	border-radius: 0.375rem;
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	color: var(--text-tertiary);
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid transparent;
 }
 
 :deep(.copy-code-btn:hover) {
 	background-color: rgba(255, 255, 255, 0.1);
-	color: white;
+	color: var(--text-primary);
+	border-color: rgba(255, 255, 255, 0.1);
+}
+
+:deep(.copy-code-btn:active) {
+	transform: scale(0.96);
 }
 
 :deep(.hljs) {
-	padding: 1rem;
+	padding: 1.25rem;
 	margin: 0 !important;
-	background: transparent !important; /* Let wrapper handle bg */
-	font-family: 'JetBrains Mono', monospace;
-	font-size: 0.875rem;
-	line-height: 1.5;
-	overflow-x: auto;
-}
-
-/* Code Block Styles */
-:deep(.code-block-wrapper) {
-	margin: 1rem 0;
-	border-radius: 0.5rem;
-	overflow: hidden;
-	background-color: #1e1e2e; /* Setup specific dark bg or variable */
-	border: 1px solid var(--border-light);
-}
-
-:deep(.code-block-header) {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 0.5rem 1rem;
-	background-color: rgba(255, 255, 255, 0.05);
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-	font-size: 0.75rem;
-	color: #a1a1aa;
-}
-
-:deep(.code-lang) {
-	font-family: monospace;
-	text-transform: uppercase;
-	font-weight: 600;
-}
-
-:deep(.copy-code-btn) {
-	display: flex;
-	align-items: center;
-	gap: 0.375rem;
-	cursor: pointer;
-	padding: 0.25rem 0.5rem;
-	border-radius: 0.25rem;
-	transition: background-color 0.2s;
-	color: inherit;
-	background: transparent;
-	border: none;
-}
-
-:deep(.copy-code-btn:hover) {
-	background-color: rgba(255, 255, 255, 0.1);
-	color: white;
-}
-
-:deep(.hljs) {
-	padding: 1rem;
-	margin: 0 !important;
-	background: transparent !important; /* Let wrapper handle bg */
-	font-family: 'JetBrains Mono', monospace;
-	font-size: 0.875rem;
-	line-height: 1.5;
+	background: transparent !important;
+	font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+	font-size: 0.825rem;
+	line-height: 1.6;
 	overflow-x: auto;
 }
 </style>

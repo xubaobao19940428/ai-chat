@@ -1,8 +1,8 @@
 <template>
-	<div class="px-3 py-2 space-y-0.5 max-h-[480px] overflow-y-auto no-scrollbar">
-		<div v-for="field in numericFields" :key="field.key" class="flex items-center gap-3 px-3 py-1 rounded-xl transition-all hover:bg-[var(--fill-tsp-white-main)] group/row">
+	<div class="px-3 py-3 space-y-1 max-h-[520px] overflow-y-auto no-scrollbar">
+		<div v-for="field in numericFields" :key="field.key" class="flex items-center gap-4 px-3.5 py-1.5 rounded-xl transition-all hover:bg-[var(--fill-tsp-white-main)] group/row">
 			<!-- Left side: Checkbox + Label -->
-			<div class="flex items-center gap-3 w-36 flex-shrink-0">
+			<div class="flex items-center gap-3 w-40 flex-shrink-0">
 				<!-- Professional Checkbox -->
 				<label class="relative flex-shrink-0 flex items-center cursor-pointer">
 					<input type="checkbox" :checked="isOverridden(field.key)" @change="toggleOverride(field.key, field.default)" class="peer sr-only" />
@@ -41,7 +41,7 @@
 			</div>
 
 			<!-- Right side: Numeric Input -->
-			<div class="w-16 flex-shrink-0">
+			<div class="w-18 flex-shrink-0">
 				<input type="number" :value="getValue(field.key, field.default)" @input="onInput(field.key, $event)" :min="field.min" :max="field.max" :step="field.step || 0.1" class="w-full px-1.5 py-0.5 bg-[var(--fill-tsp-white-main)] border border-[var(--border-main)] rounded text-[11px] font-mono text-center text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--border-blue)] transition-all font-bold" :class="{ 'opacity-30': !isOverridden(field.key) }" />
 			</div>
 		</div>
