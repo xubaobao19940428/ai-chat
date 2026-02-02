@@ -129,32 +129,32 @@ interface StreamState {
   lastEvent: string;
 }
 
-const processStreamLine = (line: string, options: ChatModelOptions, state: StreamState) => {
+const processStreamLine = (line: string, options: ChatModelOptions, state: StreamState): boolean => {
   const trimmedLine = line.trim();
-  if (!trimmedLine) return;
+  if (!trimmedLine) return false;
 
   if (trimmedLine.startsWith('event: ')) {
     state.lastEvent = trimmedLine.substring(7);
     console.log('Stream event:', state.lastEvent);
-    return;
+    return false;
   }
 
   if (trimmedLine === 'data: [DONE]') {
     console.log('Stream received [DONE]');
-    return;
+    return true; // Signal completion
   }
-  
+
   if (trimmedLine.startsWith('data: ')) {
     const dataStr = trimmedLine.substring(6);
     try {
       const json = JSON.parse(dataStr);
-      
+
       // Handle error event or error in data
       if (state.lastEvent === 'error' || json.error) {
         console.error('Stream Error Data:', json);
         const errorMsg = json.error?.message || json.message || dataStr;
         options.onError?.(new Error(errorMsg));
-        return;
+        return false;
       }
 
       const content = json.content ?? json.choices?.[0]?.delta?.content ?? '';
@@ -170,6 +170,7 @@ const processStreamLine = (line: string, options: ChatModelOptions, state: Strea
   } else {
     console.log('Non-data stream line:', trimmedLine);
   }
+  return false;
 }
 
 export const sendChatMessage = async (message: string, messages: ChatMessage[] = [], model?: string, options: ChatModelOptions = {}): Promise<any> => {
@@ -189,7 +190,7 @@ export const sendChatMessage = async (message: string, messages: ChatMessage[] =
   // Debug log to verify request body
   console.log('Chat API Request Body:', JSON.stringify(body, null, 2))
   console.log('Messages count:', messages?.length || 0)
-  
+
   // Clean up callbacks from body
   const { onMessage, onError, onFinish, ...requestBody } = body as any
 
@@ -197,7 +198,7 @@ export const sendChatMessage = async (message: string, messages: ChatMessage[] =
   // Prepare Signature Params
   const timestamp = Math.floor(Date.now() / 1000);
   const nonce = randomString(16);
-  
+
   const params: Record<string, any> = {
     ...requestBody,
     timestamp,
@@ -216,9 +217,9 @@ export const sendChatMessage = async (message: string, messages: ChatMessage[] =
 
   // Construct full path for signing
   const productionDomain = 'https://ai-test.iappdaily.com';
-  const signingPath = 'v1/chat/completions'; 
+  const signingPath = 'v1/chat/completions';
   const signingUrl = productionDomain.replace(/\/$/, '') + '/' + signingPath;
-  
+
   // Generate query string
   const queryString = Object.entries(sortedParams)
     .map(([key, value]) => {
@@ -230,9 +231,16 @@ export const sendChatMessage = async (message: string, messages: ChatMessage[] =
 
   const encodedFullPath = signingUrl.replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase());
   const secretKey = runtimeConfig.appKey || '49f68a5c8493ec2c0bf489821c21fc3b';
-  
+
   // Back to original concatenation style
   const sign = md5(encodedFullPath + queryString + secretKey);
+
+  console.log('--- Signature Debug ---');
+  console.log('Encoded Full Path:', encodedFullPath);
+  console.log('Query String:', queryString);
+  console.log('Secret Key (last 4):', secretKey.slice(-4));
+  console.log('Generated Sign:', sign);
+  console.log('-----------------------');
 
   // Prepare URL with query params
   const apiBase = runtimeConfig.apiBase || '/api';
@@ -259,16 +267,17 @@ export const sendChatMessage = async (message: string, messages: ChatMessage[] =
     const response = await fetch(url, {
       method: 'POST',
       headers,
-      body: JSON.stringify(requestBody)
+      body: JSON.stringify(requestBody),
+      // Use signal to avoid abandoned requests if needed
     });
 
     console.log('Chat API Response Status:', response.status);
     console.log('Chat API Response Content-Type:', response.headers.get('Content-Type'));
 
     if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Chat API Error Body:', errorText);
-        throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+      const errorText = await response.text();
+      console.error('Chat API Error Body:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
     }
 
     if (isStream && response.body) {
@@ -277,32 +286,54 @@ export const sendChatMessage = async (message: string, messages: ChatMessage[] =
       let buffer = '';
       const state: StreamState = { lastEvent: '' };
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-          console.log('Stream reader done');
-          // Process any remaining buffer content
-          if (buffer) {
-            processStreamLine(buffer, options, state);
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) {
+            console.log('Stream reader done');
+            // Process any remaining buffer content
+            if (buffer) {
+              processStreamLine(buffer, options, state);
+            }
+            break;
           }
-          break;
-        }
 
-        const chunk = decoder.decode(value, { stream: true });
-        // console.log('Received chunk:', chunk);
-        buffer += chunk;
-        const lines = buffer.split('\n');
-        
-        // Keep the last partial line in the buffer
-        buffer = lines.pop() || '';
-        
-        for (const line of lines) {
-          processStreamLine(line, options, state);
+
+
+          const chunk = decoder.decode(value, { stream: true });
+          buffer += chunk;
+          const lines = buffer.split('\n');
+
+          buffer = lines.pop() || '';
+
+          let shouldBreak = false;
+          for (const line of lines) {
+            if (processStreamLine(line, options, state)) {
+              shouldBreak = true;
+              break;
+            }
+          }
+          if (shouldBreak) {
+            console.log('Stream done signal received. Cancelling reader (fire-and-forget).');
+            // Fire and forget cancellation to avoid hanging
+            void reader.cancel();
+            break;
+          }
         }
+      } catch (e) {
+        console.error('Reader loop error:', e);
+        try {
+          void reader.cancel();
+        } catch (err) {
+          console.error('Error cancelling reader:', err);
+        }
+        throw e;
+      } finally {
+        reader.releaseLock();
       }
 
       options.onFinish?.();
-      return; 
+      return;
     } else {
       const data = await response.json();
       return data;
@@ -311,9 +342,8 @@ export const sendChatMessage = async (message: string, messages: ChatMessage[] =
   } catch (error) {
     if (isStream && options.onError) {
       options.onError(error)
-    } else {
-        throw error;
     }
+    throw error;
   }
 }
 

@@ -16,11 +16,10 @@
                 <div class="items-center px-5 pt-5 pb-3 flex">
                   <div class="flex gap-0.5 text-black dark:text-white">
                      <!-- Manus Logo SVG from HTML -->
-                     <svg height="30" width="23" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-black dark:text-white">
-                        <path d="M17.6 22.6C19.3 21.5 20.4 15.9 20.2 14.2C20.2 14.2 19.9 13.3 19.3 13.3C18.6 13.3 18.4 14 18.4 14C18.4 14 17.3 18 16.3 18.5C15.3 19 14.3 18.5 14.3 18.5C15 21.2 16 23.6 17.6 22.6Z" fill="currentColor"/>
-                        <path d="M14.9 9.4L13.2 9.1L13.2 9L13.2 9L14.9 9.4ZM15.1 8.4L16.8 8.7L16.8 8.7L16.8 8.8L15.1 8.4ZM14.9 7.6L15.3 6L15.5 6L15.7 6.1L14.9 7.6ZM13.6 8L12.2 6.9L12.3 6.8L12.4 6.7L13.6 8ZM12.4 9.6L14 10.4L13.8 10.7L13.6 10.9L12.4 9.6ZM11.8 10.5L13.5 10.2L14.2 13.5L11.1 12L11.8 10.5ZM7.7 14.1L6 14.5H6L7.7 14.1ZM8.6 14.8L8.5 13.1C9.1 13.1 9.7 13.4 10 13.8C10.3 14.3 10.4 14.9 10.2 15.4L8.6 14.8ZM8.4 16.1L10.1 16H10.1L8.4 16.1ZM15.6 12.2L17.1 11.3H17.1L15.6 12.2ZM12.8 18.2L12.3 19.8L12.3 19.8L12.2 19.8L12.8 18.2ZM15.9 18.9L16.2 17.2L16.2 17.2L16.3 17.2L15.9 18.9ZM17.9 15.5L18.4 13.9H18.4L17.9 15.5ZM18.2 15.7L18.9 14.1L20 14.6L19.9 15.7L18.2 15.7ZM17.3 17.8L15.9 16.8H15.9L17.3 17.8ZM4.9 9L3.4 8.2H3.4L4.9 9ZM8.1 11.1L8.8 9.6H8.8L8.1 11.1ZM7.9 8.8L7.4 10.4H7.4L7.9 8.8ZM13.2 9L13.5 7.9L16.8 8.8L16.6 9.9L13.2 9Z" fill="currentColor"/>
-                     </svg>
-                     <span class="font-bold text-lg tracking-tight ml-2">manus</span>
+                      <div class="flex items-center size-8 justify-center shrink-0">
+                        <img src="/favicon.svg" class="size-6 pointer-events-none" alt="Aura Logo" />
+                      </div>
+                     <span class="font-bold text-lg tracking-tight ml-2">aura</span>
                   </div>
                 </div>
 
@@ -371,7 +370,7 @@ const menuItems = [
     { name: 'Settings', icon: AdjustmentsHorizontalIcon },
     { name: 'Usage', icon: ChartBarIcon },
     { name: 'Scheduled tasks', icon: CalendarIcon },
-    { name: 'Mail Manus', icon: EnvelopeIcon },
+    { name: 'Mail Aura', icon: EnvelopeIcon },
     { name: 'Data controls', icon: CircleStackIcon },
     { name: 'Cloud browser', icon: GlobeAltIcon },
     { name: 'Personalization', icon: Squares2X2Icon },

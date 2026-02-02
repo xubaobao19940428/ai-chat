@@ -176,6 +176,15 @@ export const useUIStore = defineStore('ui', () => {
     renameConversation.value = null
   }
 
+  // Website Reference Modal Control
+  const showWebsiteReferenceModal = ref(false)
+  const openWebsiteReferenceModal = () => {
+    showWebsiteReferenceModal.value = true
+  }
+  const closeWebsiteReferenceModal = () => {
+    showWebsiteReferenceModal.value = false
+  }
+
   return {
     sidebarCollapsed,
     mobileMenuOpen,
@@ -206,5 +215,8 @@ export const useUIStore = defineStore('ui', () => {
     renameConversation,
     openRenameModal,
     closeRenameModal,
+    showWebsiteReferenceModal,
+    openWebsiteReferenceModal,
+    closeWebsiteReferenceModal,
   }
 })

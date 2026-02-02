@@ -87,7 +87,7 @@
 										<path d="M4 10a2 2 0 0 1-2-2V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2a2 2 0 0 1-2 2z"></path>
 										<path d="M7 5V3"></path>
 									</svg>
-									<span class="text-[13px] text-[var(--text-secondary)] font-medium">Connect your tools to Manus</span>
+									<span class="text-[13px] text-[var(--text-secondary)] font-medium">Connect your tools to Aura</span>
 								</div>
 								<div class="flex items-center gap-2">
 									<div class="flex items-center -space-x-1">
@@ -161,7 +161,7 @@
 				<div v-if="activeTool && currentTool" class="mt-8 flex flex-col gap-8 w-full animate-fade-in-up">
 					<!-- Website Layout -->
 					<div v-if="activeTool === 'website'" class="flex flex-col gap-6 w-full">
-						<ToolChips title="What would you like to build?" :chips="currentTool.chips || []" :links="currentTool.links || []" @select="handlePromptSelect" />
+						<ToolChips title="What would you like to build?" :chips="currentTool.chips || []" :links="currentTool.links || []" @select="handlePromptSelect" @link-click="handleLinkClick" />
 
 						<ToolIntegrations v-if="currentTool.showIntegrations" />
 					</div>
@@ -232,6 +232,7 @@
 import { ref, watch, onMounted, onBeforeUnmount, computed, nextTick, h } from 'vue'
 import { useRouter } from 'vue-router'
 import { useConversationStore } from '../stores/conversation'
+import { useUIStore } from '../stores/ui'
 import { useUserStore } from '../stores/user'
 import { useModelStore } from '../stores/models'
 import { useEditor, EditorContent as TiptapEditorContent } from '@tiptap/vue-3'
@@ -289,7 +290,7 @@ const FigmaIcon = () =>
 				h('path', { d: 'M32.1387 31.9163C32.1387 27.7816 35.4905 24.4297 39.6253 24.4297C43.76 24.4297 47.1119 27.7816 47.1119 31.9163C47.1119 36.0511 43.76 39.403 39.6253 39.403C35.4905 39.403 32.1387 36.0511 32.1387 31.9163Z', fill: '#1ABCFE' }),
 				h('path', { d: 'M17.166 46.887C17.166 42.7523 20.5179 39.4004 24.6526 39.4004H32.1393V46.887C32.1393 51.0218 28.7874 54.3737 24.6526 54.3737C20.5179 54.3737 17.166 51.0218 17.166 46.887Z', fill: '#0ACF83' }),
 				h('path', { d: 'M32.1406 9.45508V24.4283H39.6273C43.762 24.4283 47.1139 21.0765 47.1139 16.9417C47.1139 12.807 43.762 9.45508 39.6273 9.45508H32.1406Z', fill: '#FF7262' }),
-				h('path', { d: 'M17.166 16.9417C17.166 21.0765 20.5179 24.4283H32.1393V9.45508H24.6526C20.5179 9.45508 17.166 12.807 17.166 16.9417Z', fill: '#F24E1E' }),
+				h('path', { d: 'M17.166 16.9417C17.166 21.0765 20.5179 24.4283 24.6526 24.4283H32.1393V9.45508H24.6526C20.5179 9.45508 17.166 12.807 17.166 16.9417Z', fill: '#F24E1E' }),
 				h('path', { d: 'M17.166 31.9163C17.166 36.0511 20.5179 39.403 24.6526 39.403H32.1393V24.4297H24.6526C20.5179 24.4297 17.166 27.7816 17.166 31.9163Z', fill: '#A259FF' }),
 			]),
 			h('defs', [h('clipPath', { id: '4cad070dcef6f451302f6d4293cb31e20' }, [h('rect', { width: '45.3818', height: '45.3818', fill: 'white', transform: 'translate(9.30859 9.30859)' })])]),
@@ -314,6 +315,7 @@ interface ToolConfig {
 
 const router = useRouter()
 const conversationStore = useConversationStore()
+const uiStore = useUIStore()
 const userStore = useUserStore()
 const emit = defineEmits(['send-message'])
 
@@ -573,6 +575,12 @@ watch(editor, (instance) => {
 		})
 	}
 })
+
+function handleLinkClick(text: string) {
+	if (text === 'Add website reference') {
+		uiStore.openWebsiteReferenceModal()
+	}
+}
 
 onBeforeUnmount(() => {
 	editor.value?.destroy()

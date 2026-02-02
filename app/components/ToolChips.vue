@@ -4,7 +4,7 @@
         <h3 class="text-[14px] font-medium text-[var(--text-primary)]">{{ title }}</h3>
         
         <div class="flex items-center gap-4" v-if="links && links.length">
-            <button v-for="(link, i) in links" :key="i" class="flex items-center gap-1.5 text-[13px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
+            <button v-for="(link, i) in links" :key="i" @click="$emit('link-click', link.text)" class="flex items-center gap-1.5 text-[13px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
                 <component :is="link.icon" v-if="link.icon" class="w-4 h-4" />
                 <span>{{ link.text }}</span>
             </button>
@@ -77,7 +77,7 @@ defineProps<{
   links?: Array<Link>
 }>()
 
-defineEmits(['select'])
+defineEmits(['select', 'link-click'])
 
 const scrollContainer = ref<HTMLElement | null>(null)
 const canScrollLeft = ref(false)

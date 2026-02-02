@@ -15,10 +15,13 @@
 			<main class="flex-1 relative min-h-0 overflow-y-auto custom-scrollbar">
 				<slot />
 				<!-- Global Modals -->
-				<AuthModal />
-				<SettingsModal />
-				<SearchModal />
-				<RenameModal />
+				<ClientOnly>
+					<AuthModal />
+					<SettingsModal />
+					<SearchModal />
+					<RenameModal />
+					<WebsiteReferenceModal />
+				</ClientOnly>
 			</main>
 		</div>
 	</div>

@@ -20,7 +20,7 @@
 				</div>
 
 				<TransitionGroup v-else tag="div" name="message-list" class="space-y-10">
-					<div v-for="message in currentConversation?.messages" :key="message.id" class="flex gap-4 group" :class="message.role === 'user' ? 'flex-row-reverse' : ''">
+					<div v-for="message in currentConversation?.messages" :key="message.id" class="flex gap-4 group" :class="message.role === 'user' ? 'flex-row-reverse' : ''" @click="handleMessageClick">
 						<!-- Avatar -->
 						<div class="flex-shrink-0 mt-1">
 							<div class="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden bg-[var(--bg-main)] border border-[var(--border-light)] shadow-sm">
@@ -66,7 +66,25 @@
 
 							<!-- Bot Message -->
 							<div v-else class="text-[var(--text-primary)] px-1 py-1 text-[15px] leading-relaxed tracking-tight break-words font-normal">
-								<div class="prose dark:prose-invert prose-neutral max-w-none break-words" v-html="renderMarkdown(message.content)"></div>
+								<div v-if="!message.content && chatStore.isLoading && chatStore.loadingConversationId === currentConversationId && currentConversation?.messages[currentConversation.messages.length - 1]?.id === message.id" class="py-2">
+									<div class="flex space-x-1.5">
+										<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce" style="animation-delay: 0s"></div>
+										<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
+										<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+									</div>
+								</div>
+								<div v-else class="prose dark:prose-invert prose-neutral max-w-none break-words" v-html="renderMarkdown(message.content)"></div>
+                  
+                  <!-- Assistant Action Bar -->
+                  <div class="mt-2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button @click.stop="copyMessage(message.content)" class="p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded transition-colors" title="Copy Message">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                      </svg>
+                    </button>
+                    <!-- Add more actions here like Regenerate if needed -->
+                  </div>
 							</div>
 
 							<!-- Time/Meta (Hidden by default, shown on hover) -->
@@ -79,19 +97,7 @@
 						</div>
 					</div>
 
-					<!-- Loading Indicator -->
-					<div v-if="chatStore.isLoading && chatStore.loadingConversationId === currentConversationId" class="flex gap-4">
-						<div class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--bg-main)] border border-[var(--border-light)] flex items-center justify-center shadow-sm overflow-hidden mt-1">
-							<img :src="getModelIcon(currentConversation?.model)" class="w-5 h-5 object-contain" :alt="currentConversation?.model" />
-						</div>
-						<div class="py-2">
-							<div class="flex space-x-1.5">
-								<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce" style="animation-delay: 0s"></div>
-								<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
-								<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
-							</div>
-						</div>
-					</div>
+
 				</TransitionGroup>
 			</div>
 		</div>
@@ -376,7 +382,20 @@ const scrollToBottom = () => {
 }
 
 const sendMessage = async () => {
-	if (!inputMessage.value.trim() || chatStore.isLoading || !currentConversation.value) return
+	console.log('--- sendMessage Diagnostic ---')
+	console.log('hasContent:', hasContent.value)
+	console.log('inputMessage raw:', `"${inputMessage.value}"`)
+	console.log('chatStore.isLoading:', chatStore.isLoading)
+	console.log('currentConversation exists:', !!currentConversation.value)
+	if (currentConversation.value) {
+		console.log('currentConversation ID:', currentConversation.value.id)
+	}
+	console.log('------------------------------')
+
+	if (!inputMessage.value.trim() || chatStore.isLoading || !currentConversation.value) {
+		console.warn('sendMessage blocked by state checks')
+		return
+	}
 
 	const conversationId = currentConversation.value.id
 	// 确保 model 格式是 provider:model
@@ -404,10 +423,12 @@ const sendMessage = async () => {
 		console.log('User message length:', userMessage.length)
 
 		// Capture history BEFORE adding the new message
-		const history = currentConversation.value.messages.map((msg) => ({
-			role: msg.role as any,
-			content: msg.content,
-		}))
+		const history = currentConversation.value.messages
+			.slice(-20) // Limit to last 20 messages
+			.map((msg) => ({
+				role: msg.role as any,
+				content: msg.content,
+			}))
 		console.log('History count (before new message):', history.length)
 
 		// Add messages to UI/Store
@@ -474,12 +495,12 @@ const sendMessage = async () => {
 			},
 			onFinish: () => {
 				console.log('Stream finished. Total chunks received:', messageCount)
-				chatStore.setLoading(false)
 			},
 		})
 	} catch (error) {
 		console.error('Send message error:', error)
 		conversationStore.updateLastMessage(conversationId, '\n[Error: Failed to start stream]', true)
+	} finally {
 		chatStore.setLoading(false)
 	}
 }
@@ -516,6 +537,29 @@ const submitEdit = () => {
 		sendMessage()
 	}
 }
+
+// Global click handler for dynamic content (like code block copy buttons)
+const handleMessageClick = (e: MouseEvent) => {
+	const target = e.target as HTMLElement
+	// Check if clicked element or parent is .copy-code-btn
+	const btn = target.closest('.copy-code-btn') as HTMLElement
+	
+	if (btn) {
+		const code = btn.getAttribute('data-code')
+		if (code) {
+			copyMessage(code)
+			
+			// Optional: Visual feedback on button
+			const originalContent = btn.innerHTML
+			btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500"><path d="M20 6 9 17l-5-5"/></svg><span class="text-green-500 text-xs">Copied!</span>`
+			setTimeout(() => {
+				btn.innerHTML = originalContent
+			}, 2000)
+		}
+	}
+}
+
+
 </script>
 
 <style scoped lang="scss">
@@ -560,5 +604,113 @@ const submitEdit = () => {
 		height: 0;
 		pointer-events: none;
 	}
+}
+
+/* Code Block Styles */
+:deep(.code-block-wrapper) {
+	margin: 1rem 0;
+	border-radius: 0.5rem;
+	overflow: hidden;
+	background-color: #1e1e2e; /* Setup specific dark bg or variable */
+	border: 1px solid var(--border-light);
+}
+
+:deep(.code-block-header) {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.5rem 1rem;
+	background-color: rgba(255, 255, 255, 0.05);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	font-size: 0.75rem;
+	color: #a1a1aa;
+}
+
+:deep(.code-lang) {
+	font-family: monospace;
+	text-transform: uppercase;
+	font-weight: 600;
+}
+
+:deep(.copy-code-btn) {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	cursor: pointer;
+	padding: 0.25rem 0.5rem;
+	border-radius: 0.25rem;
+	transition: background-color 0.2s;
+	color: inherit;
+	background: transparent;
+	border: none;
+}
+
+:deep(.copy-code-btn:hover) {
+	background-color: rgba(255, 255, 255, 0.1);
+	color: white;
+}
+
+:deep(.hljs) {
+	padding: 1rem;
+	margin: 0 !important;
+	background: transparent !important; /* Let wrapper handle bg */
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.875rem;
+	line-height: 1.5;
+	overflow-x: auto;
+}
+
+/* Code Block Styles */
+:deep(.code-block-wrapper) {
+	margin: 1rem 0;
+	border-radius: 0.5rem;
+	overflow: hidden;
+	background-color: #1e1e2e; /* Setup specific dark bg or variable */
+	border: 1px solid var(--border-light);
+}
+
+:deep(.code-block-header) {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.5rem 1rem;
+	background-color: rgba(255, 255, 255, 0.05);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	font-size: 0.75rem;
+	color: #a1a1aa;
+}
+
+:deep(.code-lang) {
+	font-family: monospace;
+	text-transform: uppercase;
+	font-weight: 600;
+}
+
+:deep(.copy-code-btn) {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	cursor: pointer;
+	padding: 0.25rem 0.5rem;
+	border-radius: 0.25rem;
+	transition: background-color 0.2s;
+	color: inherit;
+	background: transparent;
+	border: none;
+}
+
+:deep(.copy-code-btn:hover) {
+	background-color: rgba(255, 255, 255, 0.1);
+	color: white;
+}
+
+:deep(.hljs) {
+	padding: 1rem;
+	margin: 0 !important;
+	background: transparent !important; /* Let wrapper handle bg */
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.875rem;
+	line-height: 1.5;
+	overflow-x: auto;
 }
 </style>

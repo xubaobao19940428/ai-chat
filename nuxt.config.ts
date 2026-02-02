@@ -26,6 +26,7 @@ export default defineNuxtConfig({
     },
     app: {
         head: {
+            title: 'Aura AI',
             script: [
                 {
                     innerHTML: `
@@ -41,7 +42,7 @@ export default defineNuxtConfig({
                 }
             ],
             link: [
-                { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+                { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }
             ]
         }
     }
