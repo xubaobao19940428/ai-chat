@@ -73,11 +73,17 @@
                         <!-- User Profile Header -->
                         <div class="flex items-center justify-between pb-6">
                             <div class="flex items-center gap-4">
-                                <div class="h-16 w-16 rounded-full overflow-hidden border border-[var(--border-main)]">
-                                     <img v-if="userStore.userInfo?.avatar" :src="userStore.userInfo.avatar" class="w-full h-full object-cover" />
-                                     <div v-else class="w-full h-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-2xl font-bold text-blue-600">
+                                <!-- Avatar Upload -->
+                                <div @click="triggerUpload" class="group relative h-16 w-16 rounded-full overflow-hidden border border-[var(--border-main)] cursor-pointer">
+                                     <img v-if="userStore.userInfo?.avatar" :src="userStore.userInfo.avatar" class="w-full h-full object-cover transition-opacity group-hover:opacity-75" />
+                                     <div v-else class="w-full h-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-2xl font-bold text-blue-600 transition-opacity group-hover:opacity-75">
                                         {{ userStore.userInfo?.nickname?.[0]?.toUpperCase() || 'U' }}
                                      </div>
+                                     <!-- Hover Overlay -->
+                                     <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
+                                       <PencilSquareIcon class="w-6 h-6 text-white drop-shadow-md" />
+                                     </div>
+                                     <input type="file" ref="fileInput" class="hidden" accept="image/*" @change="handleFileChange" />
                                 </div>
                                 <div>
                                     <h3 class="text-xl font-bold text-[var(--text-primary)] leading-tight">{{ userStore.userInfo?.nickname || 'User' }}</h3>
@@ -98,7 +104,7 @@
                         <div class="rounded-[16px] bg-[var(--fill-tsp-white-main)] border border-[var(--border-main)] p-5">
                             <div class="flex items-center justify-between mb-4">
                                 <span class="font-serif text-xl font-bold text-[var(--text-primary)]">Free</span>
-                                <button class="bg-black text-white px-4 py-1.5 rounded-full text-xs font-bold hover:opacity-80 transition-opacity">Upgrade</button>
+                                <button @click="showVipModal = true" class="bg-black text-white px-4 py-1.5 rounded-full text-xs font-bold hover:opacity-80 transition-opacity">Upgrade</button>
                             </div>
                             
                             <div class="border-t border-dashed border-[var(--border-main)] my-4"></div>
@@ -147,7 +153,7 @@
                         <div class="rounded-[16px] bg-[var(--fill-tsp-white-main)] border border-[var(--border-main)] p-5">
                             <div class="flex items-center justify-between mb-4">
                                 <span class="font-serif text-xl font-bold text-[var(--text-primary)]">Free</span>
-                                <button class="bg-black text-white px-4 py-1.5 rounded-full text-xs font-bold hover:opacity-80 transition-opacity">Upgrade</button>
+                                <button @click="showVipModal = true" class="bg-black text-white px-4 py-1.5 rounded-full text-xs font-bold hover:opacity-80 transition-opacity">Upgrade</button>
                             </div>
                             
                             <div class="border-t border-dashed border-[var(--border-main)] my-4"></div>
@@ -206,26 +212,19 @@
                                 <div class="w-40 text-left">Date</div>
                                 <div class="w-24 text-right">Credits change</div>
                             </div>
-                            <div class="divide-y divide-[var(--border-light)]">
-                                <div class="px-4 py-3 flex items-center text-sm group hover:bg-[var(--fill-tsp-white-light)] transition-colors">
-                                    <div class="flex-1 text-[var(--text-primary)]">Hello</div>
-                                    <div class="w-40 text-[var(--text-tertiary)]">2026-01-29 18:39</div>
-                                    <div class="w-24 text-right text-[var(--text-primary)]">-18</div>
+                            <div class="divide-y divide-[var(--border-light)] min-h-[100px]">
+                                <div v-if="isLoadingRecords" class="p-4 flex justify-center">
+                                    <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-400"></div>
                                 </div>
-                                <div class="px-4 py-3 flex items-center text-sm group hover:bg-[var(--fill-tsp-white-light)] transition-colors">
-                                    <div class="flex-1 text-[var(--text-primary)]">你好</div>
-                                    <div class="w-40 text-[var(--text-tertiary)]">2026-01-29 00:43</div>
-                                    <div class="w-24 text-right text-[var(--text-primary)]">-4</div>
+                                <div v-else-if="records.length === 0" class="p-4 text-center text-[var(--text-tertiary)] text-sm">
+                                    No records found
                                 </div>
-                                <div class="px-4 py-3 flex items-center text-sm group hover:bg-[var(--fill-tsp-white-light)] transition-colors">
-                                    <div class="flex-1 text-[var(--text-primary)]">你好</div>
-                                    <div class="w-40 text-[var(--text-tertiary)]">2026-01-28 23:46</div>
-                                    <div class="w-24 text-right text-[var(--text-primary)]">-4</div>
-                                </div>
-                                <div class="px-4 py-3 flex items-center text-sm group hover:bg-[var(--fill-tsp-white-light)] transition-colors">
-                                    <div class="flex-1 text-[var(--text-primary)]">Bonus for new users</div>
-                                    <div class="w-40 text-[var(--text-tertiary)]">2026-01-28 22:33</div>
-                                    <div class="w-24 text-right text-green-600 font-medium">+1,000</div>
+                                <div v-else v-for="record in records" :key="record.id" class="px-4 py-3 flex items-center text-sm group hover:bg-[var(--fill-tsp-white-light)] transition-colors">
+                                    <div class="flex-1 text-[var(--text-primary)] truncate pr-4">{{ record.description }}</div>
+                                    <div class="w-40 text-[var(--text-tertiary)] whitespace-nowrap">{{ new Date(record.created_at * 1000).toLocaleString() }}</div>
+                                    <div :class="['w-24 text-right font-medium', record.amount >= 0 ? 'text-green-600' : 'text-[var(--text-primary)]']">
+                                      {{ record.amount > 0 ? '+' : '' }}{{ record.amount }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -331,13 +330,16 @@
       </div>
     </Dialog>
   </TransitionRoot>
+
+  <BuyVipDialog :is-open="showVipModal" @close="showVipModal = false" />
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import { Dialog, DialogPanel, TransitionRoot, TransitionChild, Switch } from '@headlessui/vue'
 import { useUIStore } from '../stores/ui'
 import { useUserStore } from '../stores/user'
+import BuyVipDialog from './BuyVipDialog.vue'
 import { 
     UserIcon, 
     AdjustmentsHorizontalIcon, 
@@ -364,6 +366,10 @@ import {
 const uiStore = useUIStore()
 const userStore = useUserStore()
 const activeItem = ref('Account')
+const showVipModal = ref(false)
+const fileInput = ref<HTMLInputElement | null>(null)
+const records = ref<any[]>([])
+const isLoadingRecords = ref(false)
 
 const menuItems = [
     { name: 'Account', icon: UserIcon },
@@ -382,6 +388,30 @@ const menuItems = [
 const notifications = reactive({
     exclusive: true,
     queue: true
+})
+
+const triggerUpload = () => {
+    fileInput.value?.click()
+}
+
+const handleFileChange = async (e: Event) => {
+    const input = e.target as HTMLInputElement
+    if (input.files && input.files[0]) {
+        try {
+            await userStore.uploadAvatar(input.files[0])
+            // Do not alert, just update UI which is handled by store
+        } catch (error) {
+            alert('Avatar upload failed')
+        }
+    }
+}
+
+watch(activeItem, async (val) => {
+    if (val === 'Usage') {
+        isLoadingRecords.value = true
+        records.value = await userStore.fetchAccountRecords()
+        isLoadingRecords.value = false
+    }
 })
 </script>
 

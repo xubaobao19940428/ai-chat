@@ -22,36 +22,36 @@
 		<!-- Nav Items Section -->
 		<div class="flex flex-col flex-1 min-h-0 p-[8px] pb-0 gap-px transition-all">
 			<!-- New Task -->
-			<div @click="handleNewChat" class="flex items-center rounded-[10px] clickable cursor-pointer transition-colors w-full gap-[12px] h-[36px] hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px]">
+			<div @click="handleNewChat" :class="['flex items-center rounded-[10px] clickable cursor-pointer transition-colors w-full gap-[12px] h-[36px] hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px]', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px]']">
 				<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
 					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-pen">
 						<path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
 						<path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path>
 					</svg>
 				</div>
-				<div v-show="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex gap-[4px] items-center text-[14px] font-medium text-[var(--text-primary)]">
+				<div v-if="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex gap-[4px] items-center text-[14px] font-medium text-[var(--text-primary)]">
 					<span class="truncate">New task</span>
 				</div>
 			</div>
 
 			<!-- Search -->
-			<div @click="uiStore.openSearchModal" class="flex items-center rounded-[10px] clickable cursor-pointer transition-colors w-full gap-[12px] h-[36px] hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px] group">
+			<div @click="uiStore.openSearchModal" :class="['flex items-center rounded-[10px] clickable cursor-pointer transition-colors w-full gap-[12px] h-[36px] hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px] group', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px]']">
 				<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)]">
 					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search">
 						<circle cx="11" cy="11" r="8"></circle>
 						<path d="m21 21-4.34-4.34"></path>
 					</svg>
 				</div>
-				<div v-show="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex gap-[4px] items-center text-[14px] font-medium text-[var(--text-primary)]">
+				<div v-if="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex gap-[4px] items-center text-[14px] font-medium text-[var(--text-primary)]">
 					<span class="truncate">Search</span>
 				</div>
-				<div v-show="!uiStore.sidebarCollapsed" class="shrink-0 flex items-center">
+				<div v-if="!uiStore.sidebarCollapsed" class="shrink-0 flex items-center">
 					<div class="text-[var(--text-tertiary)] text-sm hidden group-hover:inline-flex items-center gap-1 pe-[8px]">⌘ K</div>
 				</div>
 			</div>
 
 			<!-- Library -->
-			<div class="flex items-center rounded-[10px] clickable cursor-pointer transition-colors w-full gap-[12px] h-[36px] hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px]">
+			<div :class="['flex items-center rounded-[10px] clickable cursor-pointer transition-colors w-full gap-[12px] h-[36px] hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px]', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px]']">
 				<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)]">
 					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-library-big">
 						<rect width="8" height="18" x="3" y="3" rx="1"></rect>
@@ -59,7 +59,7 @@
 						<path d="M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z"></path>
 					</svg>
 				</div>
-				<div v-show="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex gap-[4px] items-center text-[14px] font-medium text-[var(--text-primary)]">
+				<div v-if="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex gap-[4px] items-center text-[14px] font-medium text-[var(--text-primary)]">
 					<span class="truncate">Library</span>
 				</div>
 			</div>
@@ -69,11 +69,17 @@
 				<div class="w-full border-t-[1px] border-[var(--border-light)] opacity-50 my-2"></div>
 				<div class="flex flex-col flex-1 min-h-0 overflow-x-hidden overflow-y-auto custom-scrollbar pt-0 px-[8px]">
 					<!-- Projects Toggle -->
-					<div @click="toggleProjects" class="group flex items-center justify-between ps-[10px] pe-[2px] py-[2px] h-[36px] gap-[12px] clickable hover:bg-[var(--bg-hover)] transition-colors active:bg-[var(--bg-hover)] rounded-[10px] mb-1">
-						<div class="flex items-center flex-1 min-w-0 gap-0.5">
+					<div @click="toggleProjects" :class="['group flex items-center justify-between ps-[10px] pe-[2px] py-[2px] h-[36px] gap-[12px] clickable hover:bg-[var(--bg-hover)] transition-colors active:bg-[var(--bg-hover)] rounded-[10px] mb-1', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px]']">
+						<div v-if="!uiStore.sidebarCollapsed" class="flex items-center flex-1 min-w-0 gap-0.5">
 							<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium min-w-0 truncate tracking-tight uppercase">Projects</span>
-							<svg v-if="!uiStore.sidebarCollapsed" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="['lucide lucide-chevron-up transition-all shrink-0 group-hover:opacity-100 text-[var(--text-tertiary)]', projectsCollapsed ? 'rotate-180' : '']">
+							<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="['lucide lucide-chevron-up transition-all shrink-0 group-hover:opacity-100 text-[var(--text-tertiary)]', projectsCollapsed ? 'rotate-180' : '']">
 								<path d="m18 15-6-6-6 6"></path>
+							</svg>
+						</div>
+						<div v-else class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-tertiary)] opacity-60">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+								<line x1="9" x2="9" y1="3" y2="21"/>
 							</svg>
 						</div>
 						<div v-if="!uiStore.sidebarCollapsed" @click.stop="openCreateProjectModal" class="flex items-center justify-center size-[32px] rounded-[8px] hover:bg-[var(--bg-hover)] clickable transition-colors">
@@ -90,27 +96,27 @@
 							<div v-for="i in 3" :key="i" class="h-8 w-full bg-[var(--bg-hover)] rounded-lg animate-pulse"></div>
 						</div>
 						<template v-else>
-							<div @click="selectProject(null)" :class="['w-full flex items-center rounded-[10px] h-[36px] ps-[10px] pe-[8px] gap-[8px] transition-colors clickable', conversationStore.selectedGroupId === null || conversationStore.selectedGroupId === 0 ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]']">
+							<div @click="selectProject(null)" :class="['w-full flex items-center rounded-[10px] h-[36px] pe-[8px] gap-[8px] transition-colors clickable', conversationStore.selectedGroupId === null || conversationStore.selectedGroupId === 0 ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px]']">
 								<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)] opacity-80">
 									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 										<path d="M4 6h16M4 12h16M4 18h7" />
 									</svg>
 								</div>
-								<div v-show="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
+								<div v-if="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
 									<span class="truncate">All Sessions</span>
 								</div>
 							</div>
-							<div v-for="group in projectStore.projects" :key="group.id" @click="selectProject(group.id)" :class="['w-full group flex items-center rounded-[10px] h-[36px] ps-[10px] pe-[8px] gap-[8px] transition-colors clickable relative', conversationStore.selectedGroupId == group.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]']">
+							<div v-for="group in projectStore.projects" :key="group.id" @click="selectProject(group.id)" :class="['w-full group flex items-center rounded-[10px] h-[36px] pe-[8px] gap-[8px] transition-colors clickable relative', conversationStore.selectedGroupId == group.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px]']">
 								<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)] opacity-80">
 									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 										<path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
 									</svg>
 								</div>
-								<div v-show="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
+								<div v-if="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
 									<span class="truncate">{{ group.name }}</span>
 								</div>
 								<!-- Project Actions -->
-								<div v-show="!uiStore.sidebarCollapsed" class="shrink-0 flex items-center gap-0.5">
+								<div v-if="!uiStore.sidebarCollapsed" class="shrink-0 flex items-center gap-0.5">
 									<div @click.stop="handleEditProject(group)" class="size-7 flex rounded-[8px] items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 hover:bg-[var(--bg-sidebar)] transition-all text-[var(--text-tertiary)]">
 										<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil">
 											<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
@@ -129,9 +135,10 @@
 					</div>
 
 					<!-- Recent Chat Header -->
-					<div class="group flex items-center justify-between ps-[10px] pe-[2px] py-[2px] h-[36px] gap-[12px] rounded-[10px] mb-1">
+					<div v-if="!uiStore.sidebarCollapsed" class="group flex items-center justify-between ps-[10px] pe-[2px] py-[2px] h-[36px] gap-[12px] rounded-[10px] mb-1">
 						<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium min-w-0 truncate tracking-tight uppercase">Recent Chat</span>
 					</div>
+					<div v-else class="h-[1px] bg-[var(--border-light)] opacity-50 my-2 mx-2"></div>
 
 					<!-- Chat List -->
 					<div class="flex flex-col gap-px">
@@ -141,16 +148,16 @@
 							</div>
 						</template>
 						<template v-else>
-							<div v-for="conversation in sortedConversations" :key="conversation.id" @click="handleSelectConversation(String(conversation.id))" :class="['group flex items-center rounded-[10px] clickable cursor-pointer transition-all w-full gap-[12px] h-[36px] ps-[9px] pe-[2px]', conversationStore.currentConversationId == conversation.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]']">
+							<div v-for="conversation in sortedConversations" :key="conversation.id" @click="handleSelectConversation(String(conversation.id))" :class="['group flex items-center rounded-[10px] clickable cursor-pointer transition-all w-full gap-[12px] h-[36px] pe-[2px]', conversationStore.currentConversationId == conversation.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px]']">
 								<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)] opacity-60">
 									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 										<path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
 									</svg>
 								</div>
-								<div v-show="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
+								<div v-if="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
 									<span class="truncate">{{ conversation.title || 'New conversation' }}</span>
 								</div>
-								<div v-show="!uiStore.sidebarCollapsed" class="shrink-0 flex items-center">
+								<div v-if="!uiStore.sidebarCollapsed" class="shrink-0 flex items-center">
 									<!-- Conversation Action Menu -->
 									<Menu as="div" class="relative inline-block text-left">
 										<MenuButton @click.stop="handleMenuClick($event, conversation.id)" class="size-7 flex rounded-[8px] items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 hover:bg-[var(--bg-hover)] transition-all text-[var(--text-tertiary)]">
@@ -232,7 +239,7 @@
 		<!-- Bottom Section -->
 		<div class="flex flex-col justify-center items-start gap-[8px] bg-[var(--bg-sidebar)] p-[8px] overflow-hidden border-t border-[var(--border-light)] shrink-0 transition-all duration-300">
 			<!-- Share Card -->
-			<button v-show="!uiStore.sidebarCollapsed" class="relative w-full rounded-[12px] border border-[var(--border-light)] clickable hover:opacity-90 text-sm text-[var(--text-primary)] transition-all bg-[var(--background-card-gray)] shadow-sm">
+			<button v-if="!uiStore.sidebarCollapsed" class="relative w-full rounded-[12px] border border-[var(--border-light)] clickable hover:opacity-90 text-sm text-[var(--text-primary)] transition-all bg-[var(--background-card-gray)] shadow-sm">
 				<div class="flex w-full items-center justify-between ps-[9px] pe-[0px] py-[8px] rounded-[12px]">
 					<div class="flex-1 min-w-0 flex items-center gap-[12px]">
 						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hand-heart flex-shrink-0">
@@ -242,8 +249,8 @@
 							<path d="m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a1 1 0 0 0-2.75-2.91"></path>
 						</svg>
 						<div class="flex flex-col text-start overflow-hidden">
-							<span class="text-[var(--text-primary)] font-serif text-[14px] leading-[20px] truncate max-w-[200px]">Share Aura with a friend</span>
-							<span class="text-[var(--text-tertiary)] text-[12px] leading-[16px] truncate">Get 500 credits each</span>
+							<span class="text-[var(--text-primary)] font-serif text-[14px] leading-[20px] truncate max-w-[200px]">Share Aura</span>
+							<span class="text-[var(--text-tertiary)] text-[12px] leading-[16px] truncate">Get 500 credits</span>
 						</div>
 					</div>
 					<div class="flex items-center justify-center size-[32px] opacity-60">
@@ -252,6 +259,14 @@
 						</svg>
 					</div>
 				</div>
+			</button>
+			<button v-else class="flex items-center justify-center w-full h-[40px] rounded-[10px] border border-[var(--border-light)] hover:bg-[var(--bg-hover)] text-[var(--text-primary)] transition-all">
+				<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hand-heart shrink-0">
+					<path d="M11 14h2a2 2 0 0 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16"></path>
+					<path d="m14.45 13.39 5.05-4.694C20.196 8 21 6.85 21 5.75a2.75 2.75 0 0 0-4.797-1.837.276.276 0 0 1-.406 0A2.75 2.75 0 0 0 11 5.75c0 1.2.802 2.248 1.5 2.946L16 11.95"></path>
+					<path d="m2 15 6 6"></path>
+					<path d="m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a1 1 0 0 0-2.75-2.91"></path>
+				</svg>
 			</button>
 
 			<div class="flex items-center w-full p-[2px] justify-between">
@@ -284,7 +299,7 @@
 					</div>
 				</div>
 
-				<div class="flex items-center gap-[4px]">
+				<div v-show="!uiStore.sidebarCollapsed" class="flex items-center gap-[4px]">
 					<!-- Book / Docs -->
 					<a href="https://aura.im/docs" target="_blank" rel="noreferrer" class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book text-[var(--icon-primary)] size-[18px]">
