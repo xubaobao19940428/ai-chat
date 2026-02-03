@@ -10,6 +10,13 @@ import {
   getConversationDetail,
   type ConversationListItem
 } from '~/utils/api'
+import { 
+  saveLocalMessages, 
+  getLocalMessages, 
+  saveLocalConversations, 
+  getLocalConversations,
+  deleteLocalMessages
+} from '~/utils/storage'
 
 export interface Conversation {
   id: number | string
@@ -78,37 +85,29 @@ export const useConversationStore = defineStore('conversation', () => {
       const res: any = await getConversations({ group_id: gid || 0 })
       const list = res.data.list || []
 
-      // 保留已加载的消息，而不是清空
-      const newConversations = list.map((item: any) => {
-        // 查找已存在的会话
-        const existing = conversations.value.find(c => c.id == item.id)
-        return {
-          id: String(item.id),
-          title: item.title,
-          messages: existing?.messages || [], // 保留已加载的消息
-          model: item.model || '',
-          params: item.meta?.params || item.params || {},
-          groupId: item.group_id,
-          characterId: item.character_id,
-          updatedAt: item.updated_at * 1000
-        }
-      })
-
-      // CRITICAL: Ensure current conversation is preserved if it's not in the list (e.g. pagination or delay)
-      // Otherwise the current view will blank out
-      if (currentConversationId.value) {
-        const currentInNew = newConversations.find((c: Conversation) => c.id == currentConversationId.value)
-        if (!currentInNew) {
-           const currentInOld = conversations.value.find(c => c.id == currentConversationId.value)
-           if (currentInOld) {
-              console.log('Preserving current conversation in list even though not in fetch result:', currentInOld.id)
-              newConversations.push(currentInOld)
-           }
-        }
+      // 合并逻辑：如果后端返回了列表，以后端为准，但保留已有消息
+      // 如果后端返回空，则保留本地已有列表（防止后端异常导致列表清空）
+      if (list.length > 0) {
+        console.log('[Store] Fetched conversations from API:', list.length)
+        const newConversations = list.map((item: any) => {
+          const existing = conversations.value.find(c => c.id == item.id)
+          return {
+            id: String(item.id),
+            title: item.title,
+            messages: existing?.messages || [],
+            model: item.model || '',
+            params: item.meta?.params || item.params || {},
+            groupId: item.group_id,
+            characterId: item.character_id,
+            updatedAt: item.updated_at * 1000
+          }
+        })
+        conversations.value = newConversations
+        console.log('[Store] Updated local store, now persistenting to IndexedDB...')
+        saveLocalConversations(newConversations)
+      } else if (conversations.value.length > 0) {
+        console.log('[Store] Server returned no conversations, keeping current cache')
       }
-
-      conversations.value = newConversations
-      console.log('Conversations fetched, preserved messages for existing items')
     } catch (error) {
       console.error('Fetch conversations failed:', error)
     } finally {
@@ -128,27 +127,62 @@ export const useConversationStore = defineStore('conversation', () => {
 
   // 获取消息列表并同步到 store
   const fetchMessages = async (conversationId: number | string) => {
+    // 1. 先尝试从本地加载，提供即时反馈
+    const localMsgs = await getLocalMessages(conversationId)
+    const targetConv = conversations.value.find(c => c.id == conversationId)
+    
+    // 如果 store 中还没消息，先用本地的占位
+    if (localMsgs && localMsgs.length > 0 && targetConv && targetConv.messages.length === 0) {
+      console.log('Using local messages for initial render:', conversationId)
+      targetConv.messages = localMsgs
+    }
+
     isLoading.value = true
     try {
       const res: any = await getConversationMessages(Number(conversationId))
       const conversation = conversations.value.find(c => c.id == conversationId)
+      
       if (conversation) {
-        // 后端返回的消息格式可能在 data 或 data.list 中
         const rawMessages = Array.isArray(res.data) ? res.data : (res.data?.list || [])
-        const messages = rawMessages.map((m: any) => ({
+        const remoteMessages = rawMessages.map((m: any) => ({
           id: String(m.id),
           role: m.role,
           content: m.content,
           timestamp: m.created_at * 1000
         }))
-        conversation.messages = messages
+
+        // 合并策略：以后端返回为基础，补充本地存在但后端尚未同步的消息
+        // 启发式匹配：如果内容和时间接近，视为同一条消息
+        const mergedMessages = [...remoteMessages]
+        
+        if (localMsgs && localMsgs.length > 0) {
+          localMsgs.forEach(l => {
+            const isSynced = remoteMessages.some((r: Message) => 
+              (r.id === l.id) || 
+              (r.content === l.content && Math.abs(r.timestamp - l.timestamp) < 10000)
+            )
+            if (!isSynced) {
+              console.log('[Store] Found local message not in server response, preserving:', l.content.substring(0, 20))
+              mergedMessages.push(l)
+            }
+          })
+        }
+
+        // 按时间排序
+        mergedMessages.sort((a, b) => a.timestamp - b.timestamp)
+        
+        conversation.messages = mergedMessages
+        saveLocalMessages(conversationId, mergedMessages)
+        console.log(`[Store] Messages reconciled. Total: ${mergedMessages.length} (Remote: ${remoteMessages.length})`)
       }
     } catch (error) {
       console.error('Fetch messages failed:', error)
+      // 出错时，我们已经有了 localMsgs（如果存在的话），所以不需要额外处理
     } finally {
       isLoading.value = false
     }
   }
+
 
   // 创建新会话
   const createConversation = async (params: { character_id: number, group_id?: number, model?: string }) => {
@@ -183,28 +217,33 @@ export const useConversationStore = defineStore('conversation', () => {
     } catch (error) {
       console.error('Delete conversation failed:', error)
     }
+    // Cleanup local storage
+    deleteLocalMessages(id)
   }
 
   // 切换会话
   const switchConversation = async (id: number | string) => {
-    console.log('switchConversation called with id:', id)
+    console.log('[Store] switchConversation called for id:', id)
     currentConversationId.value = id
 
-    // 确保元数据存在
-    let conversation = conversations.value.find(c => c.id == id)
-    if (!conversation) {
-      console.log('Conversation not found in store, fetching details...')
-      conversation = await fetchConversationDetail(id)
-      console.log('Fetched conversation:', conversation)
-    } else {
-      console.log('Conversation found in store:', conversation)
+    // 1. 获取详情（优先从本地或接口同步最新元数据）
+    const conversation = await fetchConversationDetail(id)
+    
+    if (conversation) {
+      console.log('[Store] Target conversation for group sync:', conversation.id, 'groupId:', conversation.groupId)
+      // 2. 确认分组：如果当前选中的分组不是会话所在的分组，自动切换并刷新列表
+      if (conversation.groupId !== selectedGroupId.value) {
+        console.log('[Store] Group mismatch. Auto-syncing selectedGroupId to:', conversation.groupId)
+        // 注意：这里不要递归调用 switchConversation，只同步分组
+        selectedGroupId.value = conversation.groupId
+        await fetchConversations()
+      }
     }
 
-    // 只要消息为空就抓取一次，确保持久化
-    if (conversation && conversation.messages.length === 0) {
-      console.log('Fetching messages for conversation...')
-      await fetchMessages(id)
-    }
+    // 3. 异步触发消息同步（合并逻辑在 fetchMessages 内部）
+    fetchMessages(id)
+    
+    return conversation
   }
 
   // 更新会话标题
@@ -215,6 +254,8 @@ export const useConversationStore = defineStore('conversation', () => {
       if (conversation) {
         conversation.title = title
         conversation.updatedAt = Date.now()
+        // Sync list to local storage
+        saveLocalConversations(conversations.value)
       }
     } catch (error) {
       console.error('Update title failed:', error)
@@ -263,6 +304,8 @@ export const useConversationStore = defineStore('conversation', () => {
       }
       conversation.messages.push(newMessage)
       conversation.updatedAt = Date.now()
+      // Sync to local storage
+      saveLocalMessages(conversationId, conversation.messages)
     }
   }
 
@@ -278,6 +321,23 @@ export const useConversationStore = defineStore('conversation', () => {
           lastMessage.content = content
         }
         conversation.updatedAt = Date.now()
+        // Sync to local storage for persistent流式渲染
+        saveLocalMessages(conversationId, conversation.messages)
+      }
+    }
+  }
+
+  // Initial load from local storage
+  const initFromLocalStorage = async () => {
+    console.log('[Store] initFromLocalStorage started')
+    const cachedList = await getLocalConversations()
+    console.log('[Store] Cached list from storage:', cachedList ? cachedList.length : 'none')
+    if (cachedList && cachedList.length > 0) {
+      if (conversations.value.length === 0) {
+        console.log('[Store] Initializing store with cached conversations')
+        conversations.value = cachedList
+      } else {
+        console.log('[Store] Store already has data, skipping hydration')
       }
     }
   }
@@ -301,5 +361,6 @@ export const useConversationStore = defineStore('conversation', () => {
     addMessage,
     updateLastMessage,
     updateModelParams,
+    initFromLocalStorage,
   }
 })
