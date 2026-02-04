@@ -2,13 +2,13 @@
 	<!-- Aura Desktop Sidebar -->
 	<aside :class="['hidden lg:flex flex-col h-full bg-[var(--bg-sidebar)] text-[var(--text-secondary)] border-r border-[var(--border-light)] transition-all duration-300 relative z-[40] overflow-hidden flex-shrink-0', uiStore.sidebarCollapsed ? 'w-[68px]' : 'w-[300px]']">
 		<!-- Top Section: Logo & Collapse -->
-		<div class="flex items-center justify-between h-[56px] py-[12px] pe-[10px] ps-[12px] shrink-0">
+		<div :class="['flex items-center h-[56px] py-[12px] shrink-0', uiStore.sidebarCollapsed ? 'justify-center ps-0 pe-0' : 'justify-between pe-[10px] ps-[12px]']">
 			<!-- Logo Section -->
-			<div class="flex items-center gap-1 ps-[8px] clickable">
+			<div v-show="!uiStore.sidebarCollapsed" class="flex items-center gap-1 ps-[8px] clickable">
 				<div class="flex items-center size-8 justify-center shrink-0">
 					<img src="/favicon.svg" class="size-6 pointer-events-none" alt="Aura Logo" />
 				</div>
-				<span v-show="!uiStore.sidebarCollapsed" class="text-lg font-bold text-[var(--text-primary)] tracking-tight ml-1">aura</span>
+				<span class="text-lg font-bold text-[var(--text-primary)] tracking-tight ml-1">aura</span>
 			</div>
 
 			<div @click="uiStore.toggleSidebar" class="flex items-center justify-center rounded-md hover:bg-[var(--bg-hover)] cursor-pointer size-[32px] shrink-0 transition-colors">
@@ -265,8 +265,8 @@
 				</svg>
 			</button>
 
-			<div class="flex items-center w-full p-[2px] justify-between">
-				<div class="flex items-center gap-[4px]">
+			<div :class="['flex w-full p-[2px] transition-all', uiStore.sidebarCollapsed ? 'flex-col items-center gap-2' : 'items-center justify-between']">
+				<div :class="['flex items-center', uiStore.sidebarCollapsed ? 'flex-col gap-2' : 'gap-[4px]']">
 					<!-- Settings -->
 					<div @click="uiStore.openSettingsModal()" class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings-2 text-[var(--icon-primary)] size-[18px]">
@@ -295,7 +295,7 @@
 					</div>
 				</div>
 
-				<div v-show="!uiStore.sidebarCollapsed" class="flex items-center gap-[4px]">
+				<div :class="['flex items-center', uiStore.sidebarCollapsed ? 'flex-col gap-2' : 'gap-[4px]']">
 					<!-- Book / Docs -->
 					<a href="https://aura.im/docs" target="_blank" rel="noreferrer" class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book text-[var(--icon-primary)] size-[18px]">
