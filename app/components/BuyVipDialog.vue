@@ -28,9 +28,7 @@
               <DialogTitle as="h3" class="text-lg font-medium leading-6 text-[var(--text-primary)] flex justify-between items-center mb-6">
                 <span>Upgrade Plan</span>
                 <button @click="closeModal" class="text-[var(--text-tertiary)] hover:text-[var(--text-primary)]">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <X :size="24" />
                 </button>
               </DialogTitle>
 
@@ -59,9 +57,7 @@
                         <p class="text-sm text-[var(--text-secondary)] mt-1">{{ product.currency }} {{ product.price }}</p>
                       </div>
                       <div v-if="selectedProduct?.id === product.id" class="text-blue-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                        </svg>
+                        <CheckCircle :size="24" />
                       </div>
                     </div>
                   </div>
@@ -110,6 +106,7 @@
 import { ref, computed, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
 import { usePayStore } from '../stores/pay'
+import { X, CheckCircle } from 'lucide-vue-next'
 import type { Product, OrderStatus } from '../utils/api'
 
 const props = defineProps<{

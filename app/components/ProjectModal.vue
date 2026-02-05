@@ -12,17 +12,13 @@
 							<div class="absolute right-0 top-0 pr-4 pt-4">
 								<button type="button" class="rounded-full bg-[var(--fill-tsp-white-main)] p-2 text-[var(--icon-disable)] hover:text-[var(--icon-primary)] focus:outline-none transition-colors border border-transparent hover:border-[var(--border-main)]" @click="handleClose">
 									<span class="sr-only">Close</span>
-									<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-										<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-									</svg>
+									<X :size="20" />
 								</button>
 							</div>
 
 							<div>
 								<div class="mx-auto flex h-16 w-16 items-center justify-center rounded-[16px] bg-[var(--fill-tsp-gray-main)] mb-6">
-									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-8 w-8 text-[var(--text-secondary)]">
-										<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path>
-									</svg>
+									<Folder :size="32" class="text-[var(--text-secondary)]" />
 								</div>
 								<div class="text-left">
 									<DialogTitle as="h3" class="text-xl font-bold leading-6 text-[var(--text-primary)]">
@@ -71,6 +67,7 @@
 import { ref, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { useProjectStore } from '../stores/projects'
+import { X, Folder } from 'lucide-vue-next'
 import type { ProjectGroup } from '../utils/api'
 
 const props = defineProps<{

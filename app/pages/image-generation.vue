@@ -85,9 +85,7 @@
           
           <!-- Attachment Icon -->
           <button class="absolute left-4 top-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-            </svg>
+            <Paperclip :size="24" />
           </button>
 
           <!-- Generate Button -->
@@ -96,13 +94,8 @@
             :disabled="!prompt.trim() || isGenerating"
             class="absolute right-2 top-2 p-2 bg-indigo-600 dark:bg-white text-white dark:text-black rounded-xl hover:bg-indigo-700 dark:hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-             <svg v-if="!isGenerating" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              <svg v-else class="w-6 h-6 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
+             <Zap v-if="!isGenerating" :size="24" />
+             <Loader2 v-else :size="24" class="animate-spin" />
           </button>
         </div>
       </div>
@@ -112,6 +105,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { Paperclip, Zap, Loader2 } from 'lucide-vue-next'
 
 const prompt = ref('')
 const isGenerating = ref(false)

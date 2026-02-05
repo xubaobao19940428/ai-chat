@@ -30,9 +30,7 @@
                   Edit title
                 </DialogTitle>
                 <button @click="handleClose" class="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M18 6 6 18M6 6l12 12"/>
-                  </svg>
+                  <X :size="20" />
                 </button>
               </div>
 
@@ -54,9 +52,7 @@
                     @click="newTitle = ''" 
                     class="absolute right-3 top-1/2 -translate-y-1/2 size-5 flex items-center justify-center rounded-full bg-[var(--text-tertiary)] text-white opacity-60 hover:opacity-100 transition-opacity"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M18 6 6 18M6 6l12 12"/>
-                    </svg>
+                    <X :size="12" />
                   </button>
                 </div>
               </div>
@@ -76,10 +72,7 @@
                   @click="handleConfirm"
                 >
                   <template v-if="isLoading">
-                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
+                    <Loader2 :size="16" class="animate-spin -ml-1 mr-2 text-white" />
                   </template>
                   Confirm
                 </button>
@@ -97,6 +90,7 @@ import { ref, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { useUIStore } from '../stores/ui'
 import { useConversationStore } from '../stores/conversation'
+import { X, Loader2 } from 'lucide-vue-next'
 
 const uiStore = useUIStore()
 const conversationStore = useConversationStore()

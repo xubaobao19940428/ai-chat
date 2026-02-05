@@ -26,7 +26,7 @@
                 @click="scroll('left')"
                 class="w-7 h-7 rounded-full bg-white shadow-sm border border-[var(--border-main)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] pointer-events-auto transition-all"
             >
-                <ChevronLeftIcon class="w-4 h-4" />
+                <ChevronLeft :size="16" />
             </button>
         </div>
 
@@ -67,7 +67,7 @@
                 @click="scroll('right')"
                 class="w-7 h-7 rounded-full bg-white shadow-sm border border-[var(--border-main)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] pointer-events-auto transition-all"
             >
-                <ChevronRightIcon class="w-4 h-4" />
+                <ChevronRight :size="16" />
             </button>
         </div>
     </div>
@@ -76,7 +76,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
+import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 
 export interface Template {
     id: string

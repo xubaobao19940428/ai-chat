@@ -51,16 +51,10 @@
 									<!-- Action bar (Hover only) -->
 									<div class="absolute -top-10 right-0 flex items-center gap-1 opacity-0 group-hover/bubble:opacity-100 transition-opacity bg-[var(--bg-main)]/80 backdrop-blur-sm border border-[var(--border-light)] rounded-lg p-1 shadow-sm">
 										<button @click="copyMessage(message.content)" class="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors" title="Copy">
-											<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-												<rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-												<path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-											</svg>
+											<Copy :size="14" />
 										</button>
 										<button @click="startEditing(message)" class="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors" title="Edit">
-											<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-												<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-												<path d="m15 5 4 4" />
-											</svg>
+											<Pencil :size="14" />
 										</button>
 									</div>
 								</div>
@@ -80,10 +74,7 @@
 								<!-- Assistant Action Bar -->
 								<div class="mt-2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
 									<button @click.stop="copyMessage(message.content)" class="p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded transition-colors" title="Copy Message">
-										<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-											<rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-											<path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-										</svg>
+										<Copy :size="14" />
 									</button>
 									<!-- Add more actions here like Regenerate if needed -->
 								</div>
@@ -115,21 +106,14 @@
 								<!-- Attach Button -->
 								<Tooltip text="Add Attachment">
 									<button class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors">
-										<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus">
-											<path d="M5 12h14"></path>
-											<path d="M12 5v14"></path>
-										</svg>
+										<Plus :size="20" />
 									</button>
 								</Tooltip>
 
 								<!-- Web Search Toggle (Example) -->
 								<Tooltip text="Browse Web">
 									<button class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors">
-										<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe">
-											<circle cx="12" cy="12" r="10"></circle>
-											<path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
-											<path d="M2 12h20"></path>
-										</svg>
+										<Globe :size="18" />
 									</button>
 								</Tooltip>
 
@@ -137,11 +121,7 @@
 								<Popover class="relative" v-slot="{ open }">
 									<Tooltip text="Model Parameters">
 										<PopoverButton class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors" :class="{ 'text-[var(--text-primary)] bg-[var(--bg-hover)]': open }">
-											<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-												<path
-													d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
-												<circle cx="12" cy="12" r="3"></circle>
-											</svg>
+											<Settings :size="18" />
 										</PopoverButton>
 									</Tooltip>
 									<Transition enter-active-class="transition duration-200 ease-out" enter-from-class="translate-y-2 opacity-0" enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-150 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-2 opacity-0">
@@ -159,10 +139,7 @@
 							<!-- Send Button -->
 							<Tooltip :text="chatStore.isLoading ? 'Sending...' : (hasContent ? 'Send Message' : 'Type something...')">
 								<button @click="sendMessage" :disabled="!hasContent || chatStore.isLoading" class="flex items-center justify-center w-8 h-8 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full transition-transform active:scale-90 disabled:opacity-20 disabled:scale-100 dark:bg-[var(--text-white)] dark:text-[var(--bg-main)]">
-									<svg v-if="!chatStore.isLoading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-										<path d="m5 12 7-7 7 7"></path>
-										<path d="M12 19V5"></path>
-									</svg>
+									<ArrowUp v-if="!chatStore.isLoading" :size="16" :stroke-width="2.5" />
 									<div v-else class="w-4 h-4 border-2 border-[var(--bg-main)]/30 border-t-[var(--bg-main)] rounded-full animate-spin"></div>
 								</button>
 							</Tooltip>
@@ -197,6 +174,7 @@ import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import Tooltip from '../../components/Tooltip.vue'
+import { Copy, Pencil, Plus, Globe, Settings, ArrowUp } from 'lucide-vue-next'
 
 const route = useRoute()
 const conversationStore = useConversationStore()

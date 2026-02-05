@@ -5,7 +5,7 @@
         
         <div class="flex items-center gap-4" v-if="links && links.length">
             <button v-for="(link, i) in links" :key="i" @click="$emit('link-click', link.text)" class="flex items-center gap-1.5 text-[13px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
-                <component :is="link.icon" v-if="link.icon" class="w-4 h-4" />
+                <component :is="link.icon" v-if="link.icon" :size="16" />
                 <span>{{ link.text }}</span>
             </button>
         </div>
@@ -21,7 +21,7 @@
                 @click="scroll('left')"
                 class="w-7 h-7 rounded-full bg-white shadow-sm border border-[var(--border-main)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] pointer-events-auto transition-all"
             >
-                <ChevronLeftIcon class="w-4 h-4" />
+                <ChevronLeft :size="16" />
             </button>
         </div>
 
@@ -36,7 +36,7 @@
                 @click="$emit('select', chip.text)"
                 class="h-9 px-4 rounded-[10px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] transition-colors flex items-center justify-center gap-2 text-[13px] text-[var(--text-primary)] shrink-0 whitespace-nowrap"
             >
-                <component :is="chip.icon" v-if="chip.icon" class="w-4 h-4 text-[var(--text-secondary)]" />
+                <component :is="chip.icon" v-if="chip.icon" :size="16" class="text-[var(--text-secondary)]" />
                 <span>{{ chip.text }}</span>
             </button>
         </div>
@@ -50,7 +50,7 @@
                 @click="scroll('right')"
                 class="w-7 h-7 rounded-full bg-white shadow-sm border border-[var(--border-main)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] pointer-events-auto transition-all"
             >
-                <ChevronRightIcon class="w-4 h-4" />
+                <ChevronRight :size="16" />
             </button>
         </div>
     </div>
@@ -59,7 +59,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, type Component } from 'vue'
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
+import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 
 interface Chip {
     text: string

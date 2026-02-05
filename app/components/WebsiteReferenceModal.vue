@@ -30,7 +30,7 @@
                 @click="uiStore.closeWebsiteReferenceModal" 
                 class="absolute top-5 right-5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-full hover:bg-[var(--fill-tsp-gray-main)]"
               >
-                <XMarkIcon class="w-5 h-5" />
+                <X :size="20" />
               </button>
 
               <!-- Header Icon -->
@@ -89,7 +89,7 @@
 
               <!-- Footer Info -->
               <div class="bg-[var(--background-gray-main)] rounded-[16px] p-4 text-left border border-[var(--border-main)] flex gap-3">
-                <InformationCircleIcon class="w-5 h-5 text-[var(--text-tertiary)] flex-shrink-0 mt-0.5" />
+                <Info :size="20" class="text-[var(--text-tertiary)] flex-shrink-0 mt-0.5" />
                 <p class="text-[12px] text-[var(--text-secondary)] leading-[18px]">
                   Referenced content is for personal use and inspiration only. Ensure you have the right to use any designs or content you recreate.
                 </p>
@@ -106,7 +106,7 @@
 import { ref, computed } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { useUIStore } from '../stores/ui'
-import { XMarkIcon, InformationCircleIcon } from '@heroicons/vue/24/outline'
+import { X, Info } from 'lucide-vue-next'
 
 const uiStore = useUIStore()
 const websiteUrl = ref('')

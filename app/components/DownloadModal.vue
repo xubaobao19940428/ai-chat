@@ -10,13 +10,11 @@
 					<TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95" enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
 						<DialogPanel class="w-full max-w-sm transform overflow-hidden rounded-[16px] bg-[var(--background-white-main)] p-8 text-center align-middle shadow-[var(--shadow-XL)] transition-all border border-[var(--border-main)] relative">
 							<button @click="uiStore.closeDownloadModal" class="absolute top-4 right-4 p-2 rounded-full text-[var(--icon-disable)] hover:bg-[var(--fill-tsp-gray-main)] hover:text-[var(--text-primary)] transition-all">
-								<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+								<X :size="20" />
 							</button>
 
 							<div class="mx-auto flex h-16 w-16 items-center justify-center rounded-[14px] bg-[var(--fill-blue)] mb-6">
-								<svg class="h-8 w-8 text-[var(--text-blue)]" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
-								</svg>
+								<Smartphone :size="32" class="text-[var(--text-blue)]" />
 							</div>
 
 							<DialogTitle as="h3" class="text-xl font-black leading-6 text-[var(--text-primary)] mb-2">
@@ -62,6 +60,7 @@
 <script setup lang="ts">
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
 import { useUIStore } from '../stores/ui'
+import { X, Smartphone } from 'lucide-vue-next'
 
 const uiStore = useUIStore()
 </script>

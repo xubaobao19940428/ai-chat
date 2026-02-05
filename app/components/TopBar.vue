@@ -9,19 +9,14 @@
 		<div class="flex items-center gap-4">
 			<!-- Notifications -->
 			<button class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors relative flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
-                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
-                </svg>
-                <span class="absolute top-[2px] right-[2px] w-1.5 h-1.5 bg-red-500 rounded-full border border-[var(--background-gray-main)]"></span>
+				<Bell :size="20" />
+				<span class="absolute top-[2px] right-[2px] w-1.5 h-1.5 bg-red-500 rounded-full border border-[var(--background-gray-main)]"></span>
 			</button>
 
 			<!-- Credits -->
 			<div class="relative hidden sm:block">
 				<div class="rounded-full h-8 px-3 py-1 flex items-center gap-1.5 bg-[var(--fill-tsp-white-main)] border border-[var(--border-main)] shadow-sm">
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" fill="none" width="14" height="14" class="text-[var(--text-primary)]">
-                        <path d="M9 1L11.5 6.5L17 7L13 11L14 17L9 14L4 17L5 11L1 7L6.5 6.5L9 1Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-					</svg>
+					<Star :size="14" class="text-[var(--text-primary)]" />
 					<span class="text-[13px] font-bold text-[var(--text-primary)]">1,300</span>
 				</div>
 			</div>
@@ -40,6 +35,7 @@
 </template>
 
 <script setup lang="ts">
+import { Bell, Star } from 'lucide-vue-next'
 import { useUserStore } from '../stores/user'
 import { useUIStore } from '../stores/ui'
 import ModelSelector from './ModelSelector.vue'

@@ -12,7 +12,7 @@
               
               <!-- Search Header -->
               <div class="flex items-center gap-3 px-4 py-3 border-b border-[var(--border-light)]">
-                <MagnifyingGlassIcon class="w-5 h-5 text-[var(--text-tertiary)]" />
+                <Search :size="20" class="text-[var(--text-tertiary)]" />
                 <input 
                   type="text" 
                   v-model="searchQuery"
@@ -21,7 +21,7 @@
                   autofocus
                 />
                 <button @click="uiStore.closeSearchModal" class="p-1 rounded-md hover:bg-[var(--fill-tsp-gray-main)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors">
-                    <XMarkIcon class="w-5 h-5" />
+                    <X :size="20" />
                 </button>
               </div>
 
@@ -31,7 +31,7 @@
                 <!-- New Task Shortcut -->
                 <button @click="handleNewTask" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-[12px] bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] transition-colors mb-4 group text-left">
                     <div class="w-8 h-8 rounded-[8px] bg-[#1a1a1a] flex items-center justify-center text-white">
-                        <PlusIcon class="w-5 h-5" />
+                        <Plus :size="20" />
                     </div>
                     <span class="text-[14px] font-medium text-[var(--text-primary)]">New task</span>
                 </button>
@@ -83,7 +83,7 @@ import { ref, computed } from 'vue'
 import { Dialog, DialogPanel, TransitionRoot, TransitionChild } from '@headlessui/vue'
 import { useUIStore } from '../stores/ui'
 import { useConversationStore } from '../stores/conversation'
-import { MagnifyingGlassIcon, XMarkIcon, PlusIcon } from '@heroicons/vue/24/outline'
+import { Search, X, Plus } from 'lucide-vue-next'
 
 const uiStore = useUIStore()
 const conversationStore = useConversationStore()

@@ -31,7 +31,7 @@
                       item.name === activeItem 
                         ? 'bg-[var(--fill-tsp-white-main)] font-semibold text-[var(--text-primary)]' 
                         : 'text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-white-main)] hover:text-[var(--text-primary)]']">
-                    <component :is="item.icon" class="w-4 h-4" />
+                    <component :is="item.icon" :size="16" />
                     {{ item.name }}
                   </button>
                 </nav>
@@ -45,10 +45,10 @@
                 <div class="p-2">
                   <a href="https://help.manus.im" target="_blank" class="w-full flex items-center justify-between px-3 py-2 rounded-[8px] text-[14px] font-medium text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-white-main)] hover:text-[var(--text-primary)] transition-colors">
                     <div class="flex items-center gap-3">
-                      <QuestionMarkCircleIcon class="w-4 h-4" />
+                      <CircleHelp :size="16" />
                       Get help
                     </div>
-                    <ArrowUpRightIcon class="w-3.5 h-3.5" />
+                    <ArrowUpRight :size="14" />
                   </a>
                 </div>
               </div>
@@ -58,7 +58,7 @@
                  <!-- Close Button -->
                 <div class="absolute top-[20px] right-[12px] z-20">
                     <button @click="uiStore.closeSettingsModal" class="flex h-7 w-7 items-center justify-center rounded-md hover:bg-[var(--fill-tsp-gray-main)] text-[var(--icon-tertiary)] hover:text-[var(--text-primary)]">
-                        <XMarkIcon class="w-5 h-5" />
+                        <X :size="20" />
                     </button>
                 </div>
 
@@ -81,7 +81,7 @@
                                      </div>
                                      <!-- Hover Overlay -->
                                      <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
-                                       <PencilSquareIcon class="w-6 h-6 text-white drop-shadow-md" />
+                                       <SquarePen :size="24" class="text-white drop-shadow-md" />
                                      </div>
                                      <input type="file" ref="fileInput" class="hidden" accept="image/*" @change="handleFileChange" />
                                 </div>
@@ -92,10 +92,10 @@
                             </div>
                             <div class="flex items-center gap-3">
                                 <button class="w-9 h-9 flex items-center justify-center rounded-[8px] border border-[var(--border-main)] text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-gray-main)] hover:text-[var(--text-primary)] transition-colors">
-                                    <UserIcon class="w-5 h-5" />
+                                    <User :size="20" />
                                 </button>
                                 <button @click="userStore.logout" class="w-9 h-9 flex items-center justify-center rounded-[8px] border border-[var(--border-main)] text-red-500 hover:bg-red-50 hover:border-red-200 transition-colors">
-                                    <ArrowRightStartOnRectangleIcon class="w-5 h-5" />
+                                    <LogOut :size="20" />
                                 </button>
                             </div>
                         </div>
@@ -113,11 +113,11 @@
                                 <!-- Credits -->
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-start gap-2.5">
-                                        <SparklesIcon class="w-5 h-5 text-[var(--text-secondary)] mt-0.5" />
+                                        <Sparkles :size="20" class="text-[var(--text-secondary)] mt-0.5" />
                                         <div>
                                             <div class="flex items-center gap-1.5">
                                                 <span class="text-sm font-bold text-[var(--text-primary)]">Credits</span>
-                                                <QuestionMarkCircleIcon class="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
+                                                <CircleHelp :size="14" class="text-[var(--text-tertiary)]" />
                                             </div>
                                             <div class="text-[13px] text-[var(--text-tertiary)] mt-0.5">Free credits</div>
                                         </div>
@@ -131,11 +131,11 @@
                                 <!-- Daily Refresh -->
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-start gap-2.5">
-                                        <CalendarIcon class="w-5 h-5 text-[var(--text-secondary)] mt-0.5" />
+                                        <Calendar :size="20" class="text-[var(--text-secondary)] mt-0.5" />
                                         <div>
                                             <div class="flex items-center gap-1.5">
                                                 <span class="text-sm font-bold text-[var(--text-primary)]">Daily refresh credits</span>
-                                                <QuestionMarkCircleIcon class="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
+                                                <CircleHelp :size="14" class="text-[var(--text-tertiary)]" />
                                             </div>
                                             <div class="text-[13px] text-[var(--text-tertiary)] mt-0.5">Refresh to 300 at 00:00 every day</div>
                                         </div>
@@ -162,11 +162,11 @@
                                 <!-- Credits -->
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-start gap-2.5">
-                                        <SparklesIcon class="w-5 h-5 text-[var(--text-secondary)] mt-0.5" />
+                                        <Sparkles :size="20" class="text-[var(--text-secondary)] mt-0.5" />
                                         <div>
                                             <div class="flex items-center gap-1.5">
                                                 <span class="text-sm font-bold text-[var(--text-primary)]">Credits</span>
-                                                <QuestionMarkCircleIcon class="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
+                                                <CircleHelp :size="14" class="text-[var(--text-tertiary)]" />
                                             </div>
                                             <div class="text-[13px] text-[var(--text-tertiary)] mt-0.5">Free credits</div>
                                         </div>
@@ -180,11 +180,11 @@
                                 <!-- Daily Refresh -->
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-start gap-2.5">
-                                        <CalendarIcon class="w-5 h-5 text-[var(--text-secondary)] mt-0.5" />
+                                        <Calendar :size="20" class="text-[var(--text-secondary)] mt-0.5" />
                                         <div>
                                             <div class="flex items-center gap-1.5">
                                                 <span class="text-sm font-bold text-[var(--text-primary)]">Daily refresh credits</span>
-                                                <QuestionMarkCircleIcon class="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
+                                                <CircleHelp :size="14" class="text-[var(--text-tertiary)]" />
                                             </div>
                                             <div class="text-[13px] text-[var(--text-tertiary)] mt-0.5">Refresh to 300 at 00:00 every day</div>
                                         </div>
@@ -199,10 +199,10 @@
                         <!-- Billing Link -->
                         <button class="w-full flex items-center justify-between p-4 rounded-[12px] bg-[var(--fill-tsp-white-main)] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-gray-main)] transition-colors">
                             <div class="flex items-center gap-3">
-                                <CreditCardIcon class="w-5 h-5 text-[var(--text-secondary)]" />
+                                <CreditCard :size="20" class="text-[var(--text-secondary)]" />
                                 <span class="text-sm font-bold text-[var(--text-primary)]">Website usage & billing</span>
                             </div>
-                            <ChevronRightIcon class="w-4 h-4 text-[var(--text-tertiary)]" />
+                            <ChevronRight :size="16" class="text-[var(--text-tertiary)]" />
                         </button>
 
                         <!-- Usage History Table -->
@@ -242,7 +242,7 @@
                                         <option>English</option>
                                         <option>简体中文</option>
                                     </select>
-                                    <ChevronDownIcon class="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-primary)] pointer-events-none" />
+                                    <ChevronDown :size="16" class="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-primary)] pointer-events-none" />
                                 </div>
                             </div>
 
@@ -341,27 +341,27 @@ import { useUIStore } from '../stores/ui'
 import { useUserStore } from '../stores/user'
 import BuyVipDialog from './BuyVipDialog.vue'
 import { 
-    UserIcon, 
-    AdjustmentsHorizontalIcon, 
-    ChartBarIcon, 
-    CalendarIcon, 
-    EnvelopeIcon, 
-    CircleStackIcon, 
-    GlobeAltIcon, 
-    Squares2X2Icon, 
-    PuzzlePieceIcon, 
-    LinkIcon, 
-    RocketLaunchIcon,
-    QuestionMarkCircleIcon,
-    ArrowUpRightIcon,
-    XMarkIcon,
-    ChevronDownIcon,
-    SparklesIcon,
-    ArrowRightStartOnRectangleIcon,
-    PencilSquareIcon,
-    CreditCardIcon,
-    ChevronRightIcon
-} from '@heroicons/vue/24/outline'
+    User, 
+    SlidersHorizontal, 
+    BarChart3, 
+    Calendar, 
+    Mail, 
+    Database, 
+    Globe, 
+    LayoutGrid, 
+    Puzzle, 
+    Link, 
+    Rocket,
+    CircleHelp,
+    ArrowUpRight,
+    X,
+    ChevronDown,
+    Sparkles,
+    LogOut,
+    SquarePen,
+    CreditCard,
+    ChevronRight
+} from 'lucide-vue-next'
 
 const uiStore = useUIStore()
 const userStore = useUserStore()
@@ -372,17 +372,17 @@ const records = ref<any[]>([])
 const isLoadingRecords = ref(false)
 
 const menuItems = [
-    { name: 'Account', icon: UserIcon },
-    { name: 'Settings', icon: AdjustmentsHorizontalIcon },
-    { name: 'Usage', icon: ChartBarIcon },
-    { name: 'Scheduled tasks', icon: CalendarIcon },
-    { name: 'Mail Aura', icon: EnvelopeIcon },
-    { name: 'Data controls', icon: CircleStackIcon },
-    { name: 'Cloud browser', icon: GlobeAltIcon },
-    { name: 'Personalization', icon: Squares2X2Icon },
-    { name: 'Skills', icon: PuzzlePieceIcon },
-    { name: 'Connectors', icon: LinkIcon },
-    { name: 'Integrations', icon: RocketLaunchIcon },
+    { name: 'Account', icon: User },
+    { name: 'Settings', icon: SlidersHorizontal },
+    { name: 'Usage', icon: BarChart3 },
+    { name: 'Scheduled tasks', icon: Calendar },
+    { name: 'Mail Aura', icon: Mail },
+    { name: 'Data controls', icon: Database },
+    { name: 'Cloud browser', icon: Globe },
+    { name: 'Personalization', icon: LayoutGrid },
+    { name: 'Skills', icon: Puzzle },
+    { name: 'Connectors', icon: Link },
+    { name: 'Integrations', icon: Rocket },
 ]
 
 const notifications = reactive({

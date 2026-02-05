@@ -29,14 +29,14 @@
 											<!-- Plus -->
 											<Tooltip text="Add Attachment">
 												<button class="rounded-full border border-[var(--border-main)] inline-flex items-center justify-center gap-1 clickable cursor-pointer text-xs text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-gray-main)] w-8 h-8 p-0 shrink-0 transition-colors">
-													<PlusIcon class="w-[18px] h-[18px]" />
+													<Plus :size="18" />
 												</button>
 											</Tooltip>
 
 											<!-- Browser/Globe Icon Pill -->
 											<Tooltip v-if="!activeTool" text="Browse Web">
 												<div class="flex items-center gap-[4px] p-[6px] px-[8px] cursor-pointer rounded-[100px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-gray-main)] transition-colors">
-													<GlobeAltIcon class="w-4 h-4 text-[var(--text-secondary)]" />
+													<Globe :size="16" class="text-[var(--text-secondary)]" />
 													<span class="text-[12px] text-[var(--text-secondary)] font-medium">My Browser</span>
 												</div>
 											</Tooltip>
@@ -45,11 +45,11 @@
 											<div v-if="activeTool" class="flex items-center gap-[6px] pl-[10px] pr-[12px] py-[6px] cursor-pointer rounded-full bg-blue-50 text-blue-600 border border-blue-100 transition-colors group">
 												<Tooltip text="Remove Tool">
 													<button @click.stop="activeTool = null" class="hover:bg-blue-100 rounded-full p-0.5 transition-colors">
-														<XMarkIcon class="w-3.5 h-3.5" />
+														<X :size="14" />
 													</button>
 												</Tooltip>
 												<div class="flex items-center gap-1">
-													<component :is="currentTool?.icon" v-if="currentTool?.icon" class="w-3.5 h-3.5" />
+													<component :is="currentTool?.icon" v-if="currentTool?.icon" :size="14" />
 													<!-- Special case for Slides if icon is null in config -->
 													<svg v-else-if="activeTool === 'slides'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="w-3.5 h-3.5" stroke="currentColor" stroke-width="2">
 														<path d="M6.99976 5.9974V4.26406C6.99976 3.38041 7.7161 2.66406 8.59976 2.66406H15.3998C16.2834 2.66406 16.9998 3.38041 16.9998 4.26406V5.9974" stroke-linecap="round" stroke-linejoin="round" />
@@ -66,12 +66,12 @@
 											<div class="flex items-center gap-1">
 												<!-- Model Selection -->
 												<Tooltip text="Switch Model">
-													<ModelSelector variant="pill" :icon="ChatBubbleOvalLeftEllipsisIcon" :show-icon="false" />
+													<ModelSelector variant="pill" :icon="MessageCircle" :show-icon="false" />
 												</Tooltip>
 
 												<Tooltip text="Voice Input">
 													<button class="flex items-center justify-center cursor-pointer hover:bg-[var(--fill-tsp-gray-main)] size-8 flex-shrink-0 rounded-full transition-colors">
-														<MicrophoneIcon class="w-4 h-4 text-[var(--text-secondary)]" />
+														<Mic :size="16" class="text-[var(--text-secondary)]" />
 													</button>
 												</Tooltip>
 											</div>
@@ -79,7 +79,7 @@
 											<!-- Send Button -->
 											<Tooltip :text="hasContent ? 'Send Message' : 'Type something...'">
 												<button @click="() => handleSendMessage()" :disabled="!hasContent" class="flex items-center justify-center w-8 h-8 rounded-full transition-all bg-[var(--text-primary)] text-white disabled:bg-[var(--fill-tsp-white-dark)] disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-95">
-													<ArrowUpIcon class="w-[18px] h-[18px] stroke-[2.5]" />
+													<ArrowUp :size="18" :stroke-width="2.5" />
 												</button>
 											</Tooltip>
 										</div>
@@ -90,15 +90,7 @@
 							<!-- "Connect your tools" Banner (Matches user screenshot) -->
 							<div v-if="!activeTool || activeTool === 'website'" class="mx-3 mt-1 mb-1 py-2 px-3 flex items-center justify-between group animate-fade-in-up" style="animation-delay: 0.1s">
 								<div class="flex items-center gap-2">
-									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon-secondary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cable" aria-hidden="true">
-										<path d="M17 19a1 1 0 0 1-1-1v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a1 1 0 0 1-1 1z"></path>
-										<path d="M17 21v-2"></path>
-										<path d="M19 14V6.5a1 1 0 0 0-7 0v11a1 1 0 0 1-7 0V10"></path>
-										<path d="M21 21v-2"></path>
-										<path d="M3 5V3"></path>
-										<path d="M4 10a2 2 0 0 1-2-2V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2a2 2 0 0 1-2 2z"></path>
-										<path d="M7 5V3"></path>
-									</svg>
+									<Cable :size="16" class="text-[var(--icon-secondary)]" />
 									<span class="text-[13px] text-[var(--text-secondary)] font-medium">Connect your tools to Aura</span>
 								</div>
 								<div class="flex items-center gap-2">
@@ -106,7 +98,7 @@
 										<img src="/other.png" alt="" class="h-[22px]" />
 									</div>
 									<button class="text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors p-1">
-										<XMarkIcon class="w-4 h-4" />
+										<X :size="16" />
 									</button>
 								</div>
 							</div>
@@ -144,10 +136,7 @@
 					<!-- Develop apps -->
 					<Tooltip text="Build a mobile app">
 						<button @click="handleToolSelect('app')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="18" height="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
-								<path d="M12 18h.01" />
-							</svg>
+							<Smartphone :size="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
 							<span class="text-[var(--text-primary)] text-[14px]">Develop apps</span>
 						</button>
 					</Tooltip>
@@ -171,9 +160,9 @@
 						<!-- More Dropdown Menu -->
 						<div v-if="isMoreMenuOpen" class="absolute bottom-full mb-2 right-0 w-[220px] bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] py-2 z-50 animate-slide-up">
 							<div v-for="item in moreMenuItems" :key="item.name" class="flex items-center gap-3 px-4 py-[10px] hover:bg-[var(--fill-tsp-white-light)] cursor-pointer group transition-colors" @click="handleToolSelect(item.id || item.name)">
-								<component :is="item.icon" class="w-[18px] h-[18px] text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
+								<component :is="item.icon" :size="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
 								<span class="text-[14px] text-[var(--text-primary)] font-normal flex-1">{{ item.name }}</span>
-								<ArrowUpRightIcon v-if="item.name === 'Playbook'" class="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
+								<ArrowUpRight v-if="item.name === 'Playbook'" :size="14" class="text-[var(--text-tertiary)]" />
 							</div>
 						</div>
 					</div>
@@ -194,10 +183,10 @@
 							<h3 class="text-[14px] font-medium text-[var(--text-primary)]">Get started with</h3>
 							<div class="flex items-center gap-2">
 								<button class="h-8 w-8 rounded-lg border border-[var(--border-main)] flex items-center justify-center hover:bg-[var(--fill-tsp-white-light)] transition-colors">
-									<CalendarIcon class="w-4 h-4 text-[var(--text-secondary)]" />
+									<Calendar :size="16" class="text-[var(--text-secondary)]" />
 								</button>
 								<button class="h-8 px-3 rounded-lg border border-[var(--border-main)] flex items-center gap-1.5 hover:bg-[var(--fill-tsp-white-light)] transition-colors">
-									<PlusIcon class="w-4 h-4 text-[var(--text-secondary)]" />
+									<Plus :size="16" class="text-[var(--text-secondary)]" />
 									<span class="text-[13px] font-medium text-[var(--text-primary)]">New schedule</span>
 								</button>
 							</div>
@@ -207,11 +196,11 @@
 							<button v-for="(item, index) in currentTool.prompts" :key="index" @click="handlePromptSelect(item.text)" class="flex items-center justify-between p-4 px-5 rounded-2xl border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] transition-colors group text-left">
 								<div class="flex items-center gap-4 min-w-0">
 									<div class="w-5 h-5 flex items-center justify-center flex-shrink-0">
-										<component :is="item.icon" class="w-4 h-4 text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
+										<component :is="item.icon" :size="16" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
 									</div>
 									<span class="text-[14px] text-[var(--text-primary)] truncate font-normal">{{ item.text }}</span>
 								</div>
-								<ArrowUpRightIcon class="w-3.5 h-3.5 text-[var(--text-tertiary)] flex-shrink-0" />
+								<ArrowUpRight :size="14" class="text-[var(--text-tertiary)] flex-shrink-0" />
 							</button>
 						</div>
 					</div>
@@ -228,19 +217,19 @@
 				<div v-if="!activeTool" class="mt-20 flex gap-3 overflow-x-auto pb-4 scrollbar-none animate-fade-in-up" style="animation-delay: 0.5s; animation-fill-mode: forwards">
 					<div class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
 						<div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center mb-2">
-							<PuzzlePieceIcon class="w-6 h-6 text-blue-600" />
+							<Puzzle :size="24" class="text-blue-600" />
 						</div>
 						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Get new capabilities with custom skills</p>
 					</div>
 					<div class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
 						<div class="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center mb-2">
-							<EnvelopeIcon class="w-6 h-6 text-red-600" />
+							<Mail :size="24" class="text-red-600" />
 						</div>
 						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Stay updated with the latest news</p>
 					</div>
 					<div class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
 						<div class="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center mb-2">
-							<GlobeAltIcon class="w-6 h-6 text-green-600" />
+							<Globe :size="24" class="text-green-600" />
 						</div>
 						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Explore the global community</p>
 					</div>
@@ -261,40 +250,48 @@ import { useEditor, EditorContent as TiptapEditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import {
-	PlusIcon,
-	GlobeAltIcon,
-	PuzzlePieceIcon,
-	XMarkIcon,
-	ChatBubbleOvalLeftEllipsisIcon,
-	MicrophoneIcon,
-	ArrowUpIcon,
-	LinkIcon,
-	EnvelopeIcon,
-	DevicePhoneMobileIcon,
-	PaintBrushIcon,
-	SparklesIcon,
-	CalendarIcon,
-	MagnifyingGlassIcon,
-	TableCellsIcon,
-	ChartBarIcon as ChartBarIconOutline,
-	VideoCameraIcon,
-	SpeakerWaveIcon,
-	ChatBubbleLeftRightIcon,
-	ArrowUpRightIcon,
-	SignalIcon,
-	NewspaperIcon,
-	ChartBarIcon as ChartBarIconSolid,
-	CakeIcon,
-	AdjustmentsHorizontalIcon,
-	PresentationChartLineIcon,
-} from '@heroicons/vue/24/outline'
+	Plus,
+	Globe,
+	X,
+	Mic,
+	ArrowUp,
+	Cable,
+	Smartphone,
+	Calendar,
+	Search,
+	Table,
+	BarChart3,
+	Video,
+	Volume2,
+	MessageSquare,
+	ArrowUpRight,
+	Signal,
+	Newspaper,
+	BarChart2,
+	Cake,
+	SlidersHorizontal,
+	Presentation,
+	Puzzle,
+	Mail,
+	MessageCircle,
+	FileText,
+	Briefcase,
+	Building2,
+	Cloud,
+	User,
+	Link,
+	Image,
+	Code,
+	ShoppingBag,
+	Sparkles,
+	Paintbrush,
+} from 'lucide-vue-next'
 import ModelSelector from './ModelSelector.vue'
 import SamplePrompts from './SamplePrompts.vue'
 import TemplateSelector from './TemplateSelector.vue'
 import ToolChips from './ToolChips.vue'
 import ToolIntegrations from './ToolIntegrations.vue'
 import Tooltip from './Tooltip.vue'
-import { DocumentTextIcon, ChartBarIcon, BriefcaseIcon, BuildingOfficeIcon, CloudIcon, UserIcon, LinkIcon as LinkIconSolid, PhotoIcon, CodeBracketIcon, ShoppingBagIcon } from '@heroicons/vue/24/solid'
 
 // --- Custom Icons ---
 const FigmaIcon = () =>
@@ -349,14 +346,14 @@ const isMoreMenuOpen = ref(false)
 const moreMenuRef = ref<HTMLElement | null>(null)
 
 const moreMenuItems = [
-	{ name: 'Schedule task', id: 'schedule', icon: CalendarIcon },
-	{ name: 'Wide Research', id: 'research', icon: MagnifyingGlassIcon },
-	{ name: 'Spreadsheet', id: 'spreadsheet', icon: TableCellsIcon },
-	{ name: 'Visualization', icon: ChartBarIconOutline },
-	{ name: 'Video', icon: VideoCameraIcon },
-	{ name: 'Audio', icon: SpeakerWaveIcon },
-	{ name: 'Chat mode', icon: ChatBubbleLeftRightIcon },
-	{ name: 'Playbook', icon: ArrowUpRightIcon },
+	{ name: 'Schedule task', id: 'schedule', icon: Calendar },
+	{ name: 'Wide Research', id: 'research', icon: Search },
+	{ name: 'Spreadsheet', id: 'spreadsheet', icon: Table },
+	{ name: 'Visualization', icon: BarChart3 },
+	{ name: 'Video', icon: Video },
+	{ name: 'Audio', icon: Volume2 },
+	{ name: 'Chat mode', icon: MessageSquare },
+	{ name: 'Playbook', icon: ArrowUpRight },
 ]
 
 const handleClickOutside = (event: MouseEvent) => {
@@ -398,20 +395,20 @@ const tools: Record<string, ToolConfig> = {
 	website: {
 		id: 'website',
 		name: 'Website',
-		icon: CodeBracketIcon,
+		icon: Code,
 		color: 'text-purple-500',
 		placeholder: 'Describe the website you want to build',
 		chips: [
-			{ text: 'Landing page', icon: DocumentTextIcon },
-			{ text: 'Dashboard', icon: ChartBarIcon },
-			{ text: 'Portfolio', icon: BriefcaseIcon },
-			{ text: 'Corporate', icon: BuildingOfficeIcon },
-			{ text: 'SaaS', icon: CloudIcon },
-			{ text: 'Link in bio', icon: UserIcon },
-			{ text: 'E-commerce', icon: ShoppingBagIcon },
+			{ text: 'Landing page', icon: FileText },
+			{ text: 'Dashboard', icon: BarChart2 },
+			{ text: 'Portfolio', icon: Briefcase },
+			{ text: 'Corporate', icon: Building2 },
+			{ text: 'SaaS', icon: Cloud },
+			{ text: 'Link in bio', icon: User },
+			{ text: 'E-commerce', icon: ShoppingBag },
 		],
 		links: [
-			{ text: 'Add website reference', icon: LinkIconSolid },
+			{ text: 'Add website reference', icon: Link },
 			{ text: 'Import from Figma', icon: FigmaIcon },
 		],
 		showIntegrations: true,
@@ -421,7 +418,7 @@ const tools: Record<string, ToolConfig> = {
 	app: {
 		id: 'app',
 		name: 'Develop apps',
-		icon: DevicePhoneMobileIcon,
+		icon: Smartphone,
 		color: 'text-green-500',
 		placeholder: 'Describe the mobile app you want to build',
 		prompts: [{ text: 'Make a scheduling tool with events, reminders, and calendar view' }, { text: 'Make a weather app showing current conditions and forecasts' }, { text: 'Make a habit-building tool with daily tracking' }, { text: 'Build a personal expense tracker with categories and monthly summaries' }, { text: 'Build a shopping list tool with item adding and check-off' }],
@@ -430,32 +427,32 @@ const tools: Record<string, ToolConfig> = {
 	design: {
 		id: 'design',
 		name: 'Design',
-		icon: PaintBrushIcon,
+		icon: Paintbrush,
 		color: 'text-pink-500',
 		placeholder: 'Describe the image you want to create',
-		prompts: [{ icon: SparklesIcon, text: 'Try Nano Banana' }, { text: 'Meditation app UI/UX' }, { text: 'Coffee brand design' }, { text: 'Music festival print materials' }, { text: 'Data infographic' }, { text: 'App illustrations' }],
+		prompts: [{ icon: Sparkles, text: 'Try Nano Banana' }, { text: 'Meditation app UI/UX' }, { text: 'Coffee brand design' }, { text: 'Music festival print materials' }, { text: 'Data infographic' }, { text: 'App illustrations' }],
 		templates: [],
 	},
 	schedule: {
 		id: 'schedule',
 		name: 'Schedule task',
-		icon: CalendarIcon,
+		icon: Calendar,
 		color: 'text-blue-500',
 		placeholder: 'Describe the task you want to schedule',
 		prompts: [
-			{ text: 'Daily tech briefing', icon: SignalIcon },
-			{ text: '24 hours hot topics feed', icon: NewspaperIcon },
-			{ text: 'Monthly market trend analysis', icon: ChartBarIconSolid },
-			{ text: 'Weekly picks for food and fun', icon: CakeIcon },
-			{ text: 'Track weekly industry trends', icon: AdjustmentsHorizontalIcon },
-			{ text: 'Market insights before the bell', icon: PresentationChartLineIcon },
+			{ text: 'Daily tech briefing', icon: Signal },
+			{ text: '24 hours hot topics feed', icon: Newspaper },
+			{ text: 'Monthly market trend analysis', icon: BarChart2 },
+			{ text: 'Weekly picks for food and fun', icon: Cake },
+			{ text: 'Track weekly industry trends', icon: SlidersHorizontal },
+			{ text: 'Market insights before the bell', icon: Presentation },
 		],
 		templates: [],
 	},
 	research: {
 		id: 'research',
 		name: 'Wide Research',
-		icon: MagnifyingGlassIcon,
+		icon: Search,
 		color: 'text-blue-500',
 		placeholder: 'Search for anything you want to know',
 		prompts: [{ text: 'Map 250 NeurIPS researchers with areas affiliations citations and mobility insights' }, { text: 'Compare 100 sneakers across features pricing segments aesthetics resale metrics performance' }, { text: 'Profile 20 NASA legends with biographies missions ages quotes and notable milestones' }, { text: 'Create 50 New York event posters in diverse energetic visual styles' }, { text: 'Extract 100 prompts and build structured Notion database entries' }],
@@ -464,7 +461,7 @@ const tools: Record<string, ToolConfig> = {
 	spreadsheet: {
 		id: 'spreadsheet',
 		name: 'Spreadsheet',
-		icon: TableCellsIcon,
+		icon: Table,
 		color: 'text-blue-500',
 		placeholder: 'Search for anything you want to know',
 		prompts: [{ text: 'Calculate IRR for Anysphere investment with cash flows' }, { text: 'Create a discounted cash flow model with formulas' }, { text: 'Track project tasks across lifecycle with clean design' }, { text: 'Analyze North America natural gas data from IMF' }, { text: 'Track personal finances with daily logs and categories' }],

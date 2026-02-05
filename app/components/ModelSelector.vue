@@ -8,9 +8,7 @@
 					<span class="text-[var(--text-primary)] md:text-[18px] text-[16px] font-medium md:leading-[22px] leading-[20px] truncate tracking-tight">{{ modelStore.selectedModel?.display_name || 'Select Model' }}</span>
 				</div>
 			</ClientOnly>
-			<svg v-if="showChevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="16" height="16" :class="['text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-all duration-300', isOpen ? 'rotate-180' : '']">
-				<path d="M10.1992 18.6367L16.1992 12.6367L10.1992 6.63672" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-			</svg>
+			<ChevronRight v-if="showChevron" :size="16" :class="['text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-all duration-300', isOpen ? 'rotate-90' : '']" />
 		</button>
 
 		<!-- Variant: Pill (Chat Input style) -->
@@ -22,9 +20,7 @@
 					<span class="text-xs font-medium">{{ modelStore.selectedModel?.display_name || 'Select Model' }}</span>
 				</div>
 			</ClientOnly>
-			<svg v-if="showChevron" class="w-3 h-3 text-[var(--text-tertiary)] transition-transform duration-300" :class="{ 'rotate-180': isOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
-			</svg>
+			<ChevronDown v-if="showChevron" :size="12" :class="['text-[var(--text-tertiary)] transition-transform duration-300', isOpen ? 'rotate-180' : '']" />
 		</button>
 
 		<!-- Variant: Standard (Original style) -->
@@ -35,9 +31,7 @@
 					<span class="truncate">{{ modelStore.selectedModel?.display_name || 'Select Model' }}</span>
 				</div>
 			</ClientOnly>
-			<svg v-if="showChevron" class="w-3.5 h-3.5 text-[var(--icon-disable)] transition-transform duration-300" :class="{ 'rotate-180': isOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
-			</svg>
+			<ChevronDown v-if="showChevron" :size="14" :class="['text-[var(--icon-disable)] transition-transform duration-300', isOpen ? 'rotate-180' : '']" />
 		</button>
 
 		<!-- Dropdown Menu -->
@@ -78,6 +72,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, nextTick, watch } from 'vue'
 import { useModelStore } from '../stores/models'
+import { ChevronRight, ChevronDown } from 'lucide-vue-next'
 
 const props = withDefaults(
 	defineProps<{
