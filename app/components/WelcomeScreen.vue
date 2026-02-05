@@ -27,21 +27,27 @@
 									<div class="flex gap-2 items-center">
 										<div class="flex gap-2 items-center flex-shrink-0">
 											<!-- Plus -->
-											<button class="rounded-full border border-[var(--border-main)] inline-flex items-center justify-center gap-1 clickable cursor-pointer text-xs text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-gray-main)] w-8 h-8 p-0 shrink-0 transition-colors">
-												<PlusIcon class="w-[18px] h-[18px]" />
-											</button>
+											<Tooltip text="Add Attachment">
+												<button class="rounded-full border border-[var(--border-main)] inline-flex items-center justify-center gap-1 clickable cursor-pointer text-xs text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-gray-main)] w-8 h-8 p-0 shrink-0 transition-colors">
+													<PlusIcon class="w-[18px] h-[18px]" />
+												</button>
+											</Tooltip>
 
 											<!-- Browser/Globe Icon Pill -->
-											<div v-if="!activeTool" class="flex items-center gap-[4px] p-[6px] px-[8px] cursor-pointer rounded-[100px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-gray-main)] transition-colors">
-												<GlobeAltIcon class="w-4 h-4 text-[var(--text-secondary)]" />
-												<span class="text-[12px] text-[var(--text-secondary)] font-medium">My Browser</span>
-											</div>
+											<Tooltip v-if="!activeTool" text="Browse Web">
+												<div class="flex items-center gap-[4px] p-[6px] px-[8px] cursor-pointer rounded-[100px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-gray-main)] transition-colors">
+													<GlobeAltIcon class="w-4 h-4 text-[var(--text-secondary)]" />
+													<span class="text-[12px] text-[var(--text-secondary)] font-medium">My Browser</span>
+												</div>
+											</Tooltip>
 
 											<!-- Tool Pill (Active Mode) -->
 											<div v-if="activeTool" class="flex items-center gap-[6px] pl-[10px] pr-[12px] py-[6px] cursor-pointer rounded-full bg-blue-50 text-blue-600 border border-blue-100 transition-colors group">
-												<button @click.stop="activeTool = null" class="hover:bg-blue-100 rounded-full p-0.5 transition-colors">
-													<XMarkIcon class="w-3.5 h-3.5" />
-												</button>
+												<Tooltip text="Remove Tool">
+													<button @click.stop="activeTool = null" class="hover:bg-blue-100 rounded-full p-0.5 transition-colors">
+														<XMarkIcon class="w-3.5 h-3.5" />
+													</button>
+												</Tooltip>
 												<div class="flex items-center gap-1">
 													<component :is="currentTool?.icon" v-if="currentTool?.icon" class="w-3.5 h-3.5" />
 													<!-- Special case for Slides if icon is null in config -->
@@ -59,17 +65,23 @@
 										<div class="min-w-0 flex gap-2 ml-auto flex-shrink items-center">
 											<div class="flex items-center gap-1">
 												<!-- Model Selection -->
-												<ModelSelector variant="pill" :icon="ChatBubbleOvalLeftEllipsisIcon" :show-icon="false" />
+												<Tooltip text="Switch Model">
+													<ModelSelector variant="pill" :icon="ChatBubbleOvalLeftEllipsisIcon" :show-icon="false" />
+												</Tooltip>
 
-												<button class="flex items-center justify-center cursor-pointer hover:bg-[var(--fill-tsp-gray-main)] size-8 flex-shrink-0 rounded-full transition-colors">
-													<MicrophoneIcon class="w-4 h-4 text-[var(--text-secondary)]" />
-												</button>
+												<Tooltip text="Voice Input">
+													<button class="flex items-center justify-center cursor-pointer hover:bg-[var(--fill-tsp-gray-main)] size-8 flex-shrink-0 rounded-full transition-colors">
+														<MicrophoneIcon class="w-4 h-4 text-[var(--text-secondary)]" />
+													</button>
+												</Tooltip>
 											</div>
 
 											<!-- Send Button -->
-											<button @click="() => handleSendMessage()" :disabled="!hasContent" class="flex items-center justify-center w-8 h-8 rounded-full transition-all bg-[var(--text-primary)] text-white disabled:bg-[var(--fill-tsp-white-dark)] disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-95">
-												<ArrowUpIcon class="w-[18px] h-[18px] stroke-[2.5]" />
-											</button>
+											<Tooltip :text="hasContent ? 'Send Message' : 'Type something...'">
+												<button @click="() => handleSendMessage()" :disabled="!hasContent" class="flex items-center justify-center w-8 h-8 rounded-full transition-all bg-[var(--text-primary)] text-white disabled:bg-[var(--fill-tsp-white-dark)] disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-95">
+													<ArrowUpIcon class="w-[18px] h-[18px] stroke-[2.5]" />
+												</button>
+											</Tooltip>
 										</div>
 									</div>
 								</div>
@@ -105,46 +117,56 @@
 				<!-- Suggestions / Home View -->
 				<div v-if="!activeTool" class="mt-8 flex flex-wrap justify-center gap-2 animate-fade-in-up" style="animation-delay: 0.4s; animation-fill-mode: forwards">
 					<!-- Create slides -->
-					<button @click="handleToolSelect('slides')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="18" height="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors">
-							<path d="M6.99976 5.9974V4.26406C6.99976 3.38041 7.7161 2.66406 8.59976 2.66406H15.3998C16.2834 2.66406 16.9998 3.38041 16.9998 4.26406V5.9974" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-							<path d="M5.00024 10V8C5.00024 6.89543 5.89567 6 7.00024 6H17.0002C18.1048 6 19.0002 6.89543 19.0002 8V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-							<path d="M19 10H5C3.89543 10 3 10.8954 3 12V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V12C21 10.8954 20.1046 10 19 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-						</svg>
-						<span class="text-[var(--text-primary)] text-[14px]">Create slides</span>
-					</button>
+					<Tooltip text="Generate a presentation">
+						<button @click="handleToolSelect('slides')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="18" height="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors">
+								<path d="M6.99976 5.9974V4.26406C6.99976 3.38041 7.7161 2.66406 8.59976 2.66406H15.3998C16.2834 2.66406 16.9998 3.38041 16.9998 4.26406V5.9974" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+								<path d="M5.00024 10V8C5.00024 6.89543 5.89567 6 7.00024 6H17.0002C18.1048 6 19.0002 6.89543 19.0002 8V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+								<path d="M19 10H5C3.89543 10 3 10.8954 3 12V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V12C21 10.8954 20.1046 10 19 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+							</svg>
+							<span class="text-[var(--text-primary)] text-[14px]">Create slides</span>
+						</button>
+					</Tooltip>
 
 					<!-- Build website -->
-					<button @click="handleToolSelect('website')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" fill="none" width="18" height="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors">
-							<path d="M15 1.5H3C2.17157 1.5 1.5 2.33947 1.5 3.375V14.625C1.5 15.6605 2.17157 16.5 3 16.5H15C15.8284 16.5 16.5 15.6605 16.5 14.625V3.375C16.5 2.33947 15.8284 1.5 15 1.5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-							<path d="M2 5H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-							<path d="M7 9L5.5 10.5L7 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-							<path d="M11 9L12.5 10.5L11 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-						</svg>
-						<span class="text-[var(--text-primary)] text-[14px]">Build website</span>
-					</button>
+					<Tooltip text="Create a web page">
+						<button @click="handleToolSelect('website')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" fill="none" width="18" height="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors">
+								<path d="M15 1.5H3C2.17157 1.5 1.5 2.33947 1.5 3.375V14.625C1.5 15.6605 2.17157 16.5 3 16.5H15C15.8284 16.5 16.5 15.6605 16.5 14.625V3.375C16.5 2.33947 15.8284 1.5 15 1.5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+								<path d="M2 5H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+								<path d="M7 9L5.5 10.5L7 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+								<path d="M11 9L12.5 10.5L11 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+							</svg>
+							<span class="text-[var(--text-primary)] text-[14px]">Build website</span>
+						</button>
+					</Tooltip>
 
 					<!-- Develop apps -->
-					<button @click="handleToolSelect('app')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="18" height="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
-							<path d="M12 18h.01" />
-						</svg>
-						<span class="text-[var(--text-primary)] text-[14px]">Develop apps</span>
-					</button>
+					<Tooltip text="Build a mobile app">
+						<button @click="handleToolSelect('app')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="18" height="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
+								<path d="M12 18h.01" />
+							</svg>
+							<span class="text-[var(--text-primary)] text-[14px]">Develop apps</span>
+						</button>
+					</Tooltip>
 
 					<!-- Design -->
-					<button @click="handleToolSelect('design')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" width="18" height="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors">
-							<path d="M3.457 8.86C3.98 8.58 4.576 8.465 5.166 8.524c.59.06 1.15.293 1.608.67.458.378.793.882.965 1.45.17.568.169 1.174-.004 1.741-.173.568-.511 1.071-.97 1.447-.46.375-1.02.606-1.61.663-2.323.224-2.583.27-2.816 1.396" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
-							<path d="M13.348 1.275c.5 0 .983.2 1.337.554.354.354.553.835.553 1.336 0 .502-.2 1.982-.553 2.337l-7.351 7.35-1.895-.99" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
-						</svg>
-						<span class="text-[var(--text-primary)] text-[14px]">Design</span>
-					</button>
+					<Tooltip text="Create images or designs">
+						<button @click="handleToolSelect('design')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" width="18" height="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors">
+								<path d="M3.457 8.86C3.98 8.58 4.576 8.465 5.166 8.524c.59.06 1.15.293 1.608.67.458.378.793.882.965 1.45.17.568.169 1.174-.004 1.741-.173.568-.511 1.071-.97 1.447-.46.375-1.02.606-1.61.663-2.323.224-2.583.27-2.816 1.396" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+								<path d="M13.348 1.275c.5 0 .983.2 1.337.554.354.354.553.835.553 1.336 0 .502-.2 1.982-.553 2.337l-7.351 7.35-1.895-.99" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+							</svg>
+							<span class="text-[var(--text-primary)] text-[14px]">Design</span>
+						</button>
+					</Tooltip>
 
 					<div class="relative" ref="moreMenuRef">
-						<button @click.stop="isMoreMenuOpen = !isMoreMenuOpen" class="h-10 px-[14px] text-sm py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center clickable hover:bg-[var(--fill-tsp-white-light)] text-[var(--text-primary)] transition-colors" :class="{ 'bg-[var(--fill-tsp-white-light)]': isMoreMenuOpen }">More</button>
+						<Tooltip text="Explore more tools">
+							<button @click.stop="isMoreMenuOpen = !isMoreMenuOpen" class="h-10 px-[14px] text-sm py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center clickable hover:bg-[var(--fill-tsp-white-light)] text-[var(--text-primary)] transition-colors" :class="{ 'bg-[var(--fill-tsp-white-light)]': isMoreMenuOpen }">More</button>
+						</Tooltip>
 
 						<!-- More Dropdown Menu -->
 						<div v-if="isMoreMenuOpen" class="absolute bottom-full mb-2 right-0 w-[220px] bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] py-2 z-50 animate-slide-up">
@@ -271,6 +293,7 @@ import SamplePrompts from './SamplePrompts.vue'
 import TemplateSelector from './TemplateSelector.vue'
 import ToolChips from './ToolChips.vue'
 import ToolIntegrations from './ToolIntegrations.vue'
+import Tooltip from './Tooltip.vue'
 import { DocumentTextIcon, ChartBarIcon, BriefcaseIcon, BuildingOfficeIcon, CloudIcon, UserIcon, LinkIcon as LinkIconSolid, PhotoIcon, CodeBracketIcon, ShoppingBagIcon } from '@heroicons/vue/24/solid'
 
 // --- Custom Icons ---

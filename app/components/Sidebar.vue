@@ -1,8 +1,10 @@
 <template>
 	<!-- Aura Desktop Sidebar -->
-	<aside :class="['hidden lg:flex flex-col h-full bg-[var(--bg-sidebar)] text-[var(--text-secondary)] border-r border-[var(--border-light)] transition-all duration-300 relative z-[40] overflow-hidden flex-shrink-0', uiStore.sidebarCollapsed ? 'w-[68px]' : 'w-[300px]']">
+	<aside
+		:class="['hidden lg:flex flex-col h-full bg-[var(--bg-sidebar)] text-[var(--text-secondary)] border-r border-[var(--border-light)] transition-all duration-300 relative z-[40] overflow-hidden flex-shrink-0', uiStore.sidebarCollapsed ? 'w-[68px]' : 'w-[300px]']">
 		<!-- Top Section: Logo & Collapse -->
-		<div :class="['flex items-center h-[56px] py-[12px] shrink-0', uiStore.sidebarCollapsed ? 'justify-center ps-0 pe-0' : 'justify-between pe-[10px] ps-[12px]']">
+		<div
+			:class="['flex items-center h-[56px] py-[12px] shrink-0', uiStore.sidebarCollapsed ? 'justify-center ps-0 pe-0' : 'justify-between pe-[10px] ps-[12px]']">
 			<!-- Logo Section -->
 			<div v-show="!uiStore.sidebarCollapsed" class="flex items-center gap-1 ps-[8px] clickable">
 				<div class="flex items-center size-8 justify-center shrink-0">
@@ -11,8 +13,11 @@
 				<span class="text-lg font-bold text-[var(--text-primary)] tracking-tight ml-1">aura</span>
 			</div>
 
-			<div @click="uiStore.toggleSidebar" class="flex items-center justify-center rounded-md hover:bg-[var(--bg-hover)] cursor-pointer size-[32px] shrink-0 transition-colors">
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-panel-left text-[var(--text-secondary)] size-[18px]">
+			<div @click="uiStore.toggleSidebar"
+				class="flex items-center justify-center rounded-md hover:bg-[var(--bg-hover)] cursor-pointer size-[32px] shrink-0 transition-colors">
+				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+					stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+					class="lucide lucide-panel-left text-[var(--text-secondary)] size-[18px]">
 					<rect width="18" height="18" x="3" y="3" rx="2"></rect>
 					<path d="M9 3v18"></path>
 				</svg>
@@ -21,69 +26,225 @@
 
 		<!-- Nav Items Section -->
 		<div class="flex flex-col flex-1 min-h-0 p-[8px] pb-0 gap-px transition-all">
-			<!-- New Task -->
-			<div @click="handleNewChat" :class="['flex items-center rounded-[10px] clickable cursor-pointer transition-colors w-full gap-[12px] h-[36px] hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px]', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px]']">
-				<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
-					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-pen">
-						<path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-						<path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path>
-					</svg>
+			<!-- Static New Task Item (Not draggable as requested) -->
+			<div @click="handleNewChat"
+				:class="['flex items-center rounded-[10px] clickable cursor-pointer transition-colors w-full gap-[12px] h-[36px] hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px] group', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px]']">
+				<Tooltip text="New task" position="right" :disabled="!uiStore.sidebarCollapsed" fullWidth>
+					<div class="flex items-center w-full gap-[12px]">
+						<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
+							<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+								stroke-linejoin="round" class="lucide lucide-square-pen">
+								<path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+								<path
+									d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z">
+								</path>
+							</svg>
+						</div>
+						<div v-if="!uiStore.sidebarCollapsed"
+							class="flex-1 min-w-0 flex items-center text-[14px] font-medium text-[var(--text-primary)]">
+							<span class="truncate">New task</span>
+						</div>
+					</div>
+				</Tooltip>
+			</div>
+
+			<!-- Main Nav Items (Draggable) -->
+			<div v-for="(item, index) in sidebarNavItems" :key="item.id" draggable="true"
+				@dragstart="handleDragStart($event, 'main', index)"
+				@dragover.prevent="handleDragOver($event, 'main', index)" @drop="handleDrop($event, 'main', index)"
+				@dragend="handleDragEnd" @dragenter="draggingOverZone = 'main-' + index"
+				@dragleave="draggingOverZone = null" :class="[
+					'flex items-center rounded-[10px] bg-[var(--bg-sidebar)] clickable cursor-pointer transition-all w-full gap-[12px] h-[36px] hover:bg-[var(--bg-hover)] group relative',
+					uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px]',
+					draggingItem?.index === index && draggingItem?.source === 'main' ? 'opacity-20 scale-95' : 'opacity-100',
+					draggingOverZone === 'main-' + index ? 'bg-[var(--bg-hover)] ring-2 ring-[var(--border-main)]' : ''
+				]">
+				<div v-if="draggingOverZone === 'main-' + index"
+					class="absolute -top-0.5 left-0 right-0 h-0.5 bg-[var(--text-tertiary)] rounded-full opacity-50">
 				</div>
-				<div v-if="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex gap-[4px] items-center text-[14px] font-medium text-[var(--text-primary)]">
-					<span class="truncate">New task</span>
+				<Tooltip :text="item.label" position="right" :disabled="!uiStore.sidebarCollapsed" fullWidth>
+					<div @click="item.handler" class="flex items-center w-full gap-[12px]">
+						<div class="shrink-0 size-[18px] flex items-center justify-center"
+							:class="item.iconClass || 'text-[var(--text-secondary)]'">
+							<component :is="item.icon" class="size-[18px]" />
+						</div>
+						<div v-if="!uiStore.sidebarCollapsed"
+							class="flex-1 min-w-0 flex gap-[4px] items-center text-[14px] font-medium text-[var(--text-primary)]">
+							<span class="truncate">{{ item.label }}</span>
+						</div>
+						<div v-if="!uiStore.sidebarCollapsed && item.shortcut" class="shrink-0 flex items-center">
+							<div
+								class="text-[var(--text-tertiary)] text-sm hidden group-hover:inline-flex items-center gap-1 pe-[8px]">
+								{{ item.shortcut }}</div>
+						</div>
+					</div>
+				</Tooltip>
+			</div>
+
+			<!-- More Menu (Accordion + Hover Popover) -->
+			<div v-if="moreItems.length > 0" class="flex flex-col gap-px relative">
+				<Tooltip text="更多" position="right" :disabled="!uiStore.sidebarCollapsed" fullWidth>
+					<div @click="handleMoreMenuOpen" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave"
+						@dragover.prevent="handleDragOver($event, 'more-btn')"
+						@drop="handleDrop($event, 'more-container')" @dragenter="draggingOverZone = 'more-btn'"
+						@dragleave="draggingOverZone = null" :class="[
+							'w-full flex items-center rounded-[10px] clickable cursor-pointer transition-all h-[36px] hover:bg-[var(--bg-hover)] ps-[9px] pe-[10px] group mb-1 relative',
+							uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'justify-between',
+							draggingOverZone === 'more-btn' ? 'bg-[var(--bg-hover)] ring-2 ring-[var(--border-main)]' : ''
+						]">
+						<div class="flex items-center gap-[12px]">
+							<div
+								class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)]">
+								<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+									fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+									stroke-linejoin="round">
+									<rect width="7" height="7" x="3" y="3" rx="1" />
+									<rect width="7" height="7" x="14" y="3" rx="1" />
+									<rect width="7" height="7" x="14" y="14" rx="1" />
+									<rect width="7" height="7" x="3" y="14" rx="1" />
+								</svg>
+							</div>
+							<span v-if="!uiStore.sidebarCollapsed"
+								class="text-[14px] font-medium text-[var(--text-primary)] truncate">{{ isMoreMenuOpen ?
+									'收起' : '更多' }}</span>
+						</div>
+						<svg v-if="!uiStore.sidebarCollapsed" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+							viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+							stroke-linecap="round" stroke-linejoin="round"
+							:class="['lucide lucide-chevron-right text-[var(--text-tertiary)] opacity-60 group-hover:opacity-100 transition-transform duration-200', isMoreMenuOpen ? 'rotate-90' : '']">
+							<path d="m9 18 6-6-6-6" />
+						</svg>
+					</div>
+				</Tooltip>
+
+				<!-- Hover Popover (Teleported) -->
+				<Teleport to="body">
+					<div v-if="isHoverMenuOpen && !isMoreMenuOpen" class="fixed z-[9998]" :style="hoverMenuPosition"
+						@mouseenter="handlePopoverMouseEnter" @mouseleave="handleMouseLeave">
+						<transition appear enter-active-class="transition duration-100 ease-out"
+							enter-from-class="transform scale-95 opacity-0 translate-x-1"
+							enter-to-class="transform scale-100 opacity-100 translate-x-0">
+							<div
+								class="w-56 origin-left rounded-[16px] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] py-1.5 overflow-hidden">
+								<div class="px-1 py-1">
+									<button v-for="(item, index) in moreItems" :key="item.name" draggable="true"
+										@dragstart="handleDragStart($event, 'more', index)"
+										@click="handleMoreItemClick(item)"
+										class="group flex w-full items-center gap-3 rounded-[10px] ps-3.5 pe-4 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors">
+										<component :is="item.icon"
+											class="size-[18px] opacity-80 group-hover:opacity-100 transition-opacity" />
+										<span class="flex-1 text-left">{{ item.name }}</span>
+										<ArrowUpRightIcon class="size-3.5 opacity-40 group-hover:opacity-100" />
+									</button>
+								</div>
+								<div class="px-3 py-2 border-t border-[var(--border-light)] mt-1">
+									<div
+										class="flex items-center gap-2 text-[11px] text-[var(--text-tertiary)] font-medium">
+										<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+											viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+											stroke-linecap="round" stroke-linejoin="round">
+											<path
+												d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+											<path d="M9 18h6" />
+											<path d="M10 22h4" />
+										</svg>
+										拖拽可自定义排序
+									</div>
+								</div>
+							</div>
+						</transition>
+					</div>
+				</Teleport>
+
+				<!-- Inline Accordion Sub-items -->
+				<div v-show="isMoreMenuOpen" class="flex flex-col gap-px overflow-hidden transition-all duration-300">
+					<button v-for="(item, index) in moreItems" :key="item.name" draggable="true"
+						@dragstart="handleDragStart($event, 'more', index)"
+						@dragover.prevent="handleDragOver($event, 'more', index)"
+						@drop="handleDrop($event, 'more', index)" @dragenter="draggingOverZone = 'more-' + index"
+						@dragleave="draggingOverZone = null" @click="handleMoreItemClick(item)" :class="[
+							'group flex w-full items-center rounded-[10px] bg-[var(--bg-sidebar)] h-[36px] transition-all hover:bg-[var(--bg-hover)] relative',
+							uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[16px] pe-[12px] gap-[12px]',
+							draggingItem?.index === index && draggingItem?.source === 'more' ? 'opacity-20 scale-95' : 'opacity-100',
+							draggingOverZone === 'more-' + index ? 'bg-[var(--bg-hover)] ring-2 ring-[var(--border-main)]' : ''
+						]">
+						<div v-if="draggingOverZone === 'more-' + index"
+							class="absolute -top-0.5 left-[16px] right-[12px] h-0.5 bg-[var(--text-tertiary)] rounded-full opacity-50">
+						</div>
+						<div
+							class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)] opacity-80 group-hover:opacity-100 transition-opacity">
+							<component :is="item.icon" class="size-[18px]" />
+						</div>
+						<div v-if="!uiStore.sidebarCollapsed"
+							class="flex-1 min-w-0 flex items-center justify-between text-[13px] font-medium text-[var(--text-primary)]">
+							<span class="truncate">{{ item.name }}</span>
+							<ArrowUpRightIcon class="size-3.5 opacity-0 group-hover:opacity-40 transition-opacity" />
+						</div>
+					</button>
 				</div>
 			</div>
 
-			<!-- Search -->
-			<div @click="uiStore.openSearchModal" :class="['flex items-center rounded-[10px] clickable cursor-pointer transition-colors w-full gap-[12px] h-[36px] hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px] group', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px]']">
-				<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)]">
-					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search">
-						<circle cx="11" cy="11" r="8"></circle>
-						<path d="m21 21-4.34-4.34"></path>
-					</svg>
+			<!-- Standalone Drag to Collapse Zone (Only when More menu is empty and dragging) -->
+			<transition enter-active-class="transition duration-300 ease-out"
+				enter-from-class="opacity-0 transform translate-y-2 scale-95"
+				enter-to-class="opacity-100 transform translate-y-0 scale-100"
+				leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 scale-100"
+				leave-to-class="opacity-0 scale-95">
+				<div v-if="draggingItem?.source === 'main' && moreItems.length === 0 && !uiStore.sidebarCollapsed"
+					@dragover.prevent="handleDragOver($event, 'more-container')"
+					@drop="handleDrop($event, 'more-container')" @dragenter="draggingOverZone = 'empty-more'"
+					@dragleave="draggingOverZone = null" :class="[
+						'mx-2 p-3 border-2 border-dashed rounded-xl flex items-center justify-center gap-2 group/collapse transition-all duration-300',
+						draggingOverZone === 'empty-more' ? 'bg-[var(--bg-hover)] border-[var(--text-tertiary)] scale-[1.02] shadow-sm' : 'bg-[var(--bg-sidebar)] border-[var(--border-main)] animate-pulse-subtle'
+					]">
+					<div
+						class="shrink-0 size-6 flex items-center justify-center rounded-lg bg-[var(--bg-hover)] text-[var(--text-tertiary)] transition-colors group-hover/collapse:bg-[var(--border-main)]">
+						<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+							stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<rect width="7" height="7" x="3" y="3" rx="1" />
+							<rect width="7" height="7" x="14" y="3" rx="1" />
+							<rect width="7" height="7" x="14" y="14" rx="1" />
+							<rect width="7" height="7" x="3" y="14" rx="1" />
+						</svg>
+					</div>
+					<span
+						class="text-[12px] font-medium text-[var(--text-tertiary)] opacity-80 group-hover/collapse:opacity-100">拖到这里可以将其收起</span>
 				</div>
-				<div v-if="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex gap-[4px] items-center text-[14px] font-medium text-[var(--text-primary)]">
-					<span class="truncate">Search</span>
-				</div>
-				<div v-if="!uiStore.sidebarCollapsed" class="shrink-0 flex items-center">
-					<div class="text-[var(--text-tertiary)] text-sm hidden group-hover:inline-flex items-center gap-1 pe-[8px]">⌘ K</div>
-				</div>
-			</div>
-
-			<!-- Library -->
-			<div :class="['flex items-center rounded-[10px] clickable cursor-pointer transition-colors w-full gap-[12px] h-[36px] hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px]', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px]']">
-				<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)]">
-					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-library-big">
-						<rect width="8" height="18" x="3" y="3" rx="1"></rect>
-						<path d="M7 3v18"></path>
-						<path d="M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z"></path>
-					</svg>
-				</div>
-				<div v-if="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex gap-[4px] items-center text-[14px] font-medium text-[var(--text-primary)]">
-					<span class="truncate">Library</span>
-				</div>
-			</div>
+			</transition>
 
 			<!-- History Content (Scrollable) -->
 			<div class="flex flex-col flex-1 min-h-0 -mx-[8px] transition-all overflow-hidden" style="opacity: 1">
 				<div class="w-full border-t-[1px] border-[var(--border-light)] opacity-50 my-2"></div>
-				<div class="flex flex-col flex-1 min-h-0 overflow-x-hidden overflow-y-auto custom-scrollbar pt-0 px-[8px]">
+				<div
+					class="flex flex-col flex-1 min-h-0 overflow-x-hidden overflow-y-auto custom-scrollbar pt-0 px-[8px]">
 					<!-- Projects Toggle -->
-					<div @click="toggleProjects" :class="['group flex items-center justify-between ps-[10px] pe-[2px] py-[2px] h-[36px] gap-[12px] clickable hover:bg-[var(--bg-hover)] transition-colors active:bg-[var(--bg-hover)] rounded-[10px] mb-1', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px]']">
+					<div @click="toggleProjects"
+						:class="['group flex items-center justify-between ps-[10px] pe-[2px] py-[2px] h-[36px] gap-[12px] clickable hover:bg-[var(--bg-hover)] transition-colors active:bg-[var(--bg-hover)] rounded-[10px] mb-1', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px]']">
 						<div v-if="!uiStore.sidebarCollapsed" class="flex items-center flex-1 min-w-0 gap-0.5">
-							<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium min-w-0 truncate tracking-tight uppercase">Projects</span>
-							<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="['lucide lucide-chevron-up transition-all shrink-0 group-hover:opacity-100 text-[var(--text-tertiary)]', projectsCollapsed ? 'rotate-180' : '']">
+							<span
+								class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium min-w-0 truncate tracking-tight uppercase">Projects</span>
+							<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+								stroke-linejoin="round"
+								:class="['lucide lucide-chevron-up transition-all shrink-0 group-hover:opacity-100 text-[var(--text-tertiary)]', projectsCollapsed ? 'rotate-180' : '']">
 								<path d="m18 15-6-6-6 6"></path>
 							</svg>
 						</div>
-						<div v-else class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-tertiary)] opacity-60">
-							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
-								<line x1="9" x2="9" y1="3" y2="21"/>
+						<div v-else
+							class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-tertiary)] opacity-60">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+								stroke-linejoin="round">
+								<rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+								<line x1="9" x2="9" y1="3" y2="21" />
 							</svg>
 						</div>
-						<div v-if="!uiStore.sidebarCollapsed" @click.stop="openCreateProjectModal" class="flex items-center justify-center size-[32px] rounded-[8px] hover:bg-[var(--bg-hover)] clickable transition-colors">
-							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus text-[var(--text-tertiary)]">
+						<div v-if="!uiStore.sidebarCollapsed" @click.stop="openCreateProjectModal"
+							class="flex items-center justify-center size-[32px] rounded-[8px] hover:bg-[var(--bg-hover)] clickable transition-colors">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+								stroke-linejoin="round" class="lucide lucide-plus text-[var(--text-tertiary)]">
 								<path d="M5 12h14"></path>
 								<path d="M12 5v14"></path>
 							</svg>
@@ -93,37 +254,56 @@
 					<!-- Project List -->
 					<div v-show="!projectsCollapsed" class="flex flex-col gap-px mb-4">
 						<div v-if="projectStore.isLoading" class="flex flex-col gap-2 px-2 py-1">
-							<div v-for="i in 3" :key="i" class="h-8 w-full bg-[var(--bg-hover)] rounded-lg animate-pulse"></div>
+							<div v-for="i in 3" :key="i"
+								class="h-8 w-full bg-[var(--bg-hover)] rounded-lg animate-pulse"></div>
 						</div>
 						<template v-else>
-							<div @click="selectProject(null)" :class="['w-full flex items-center rounded-[10px] h-[36px] pe-[8px] gap-[8px] transition-colors clickable', conversationStore.selectedGroupId === null || conversationStore.selectedGroupId === 0 ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px]']">
-								<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)] opacity-80">
-									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<div @click="selectProject(null)"
+								:class="['w-full flex items-center rounded-[10px] h-[36px] pe-[8px] gap-[8px] transition-colors clickable', conversationStore.selectedGroupId === null || conversationStore.selectedGroupId === 0 ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px]']">
+								<div
+									class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)] opacity-80">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+										fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+										stroke-linejoin="round">
 										<path d="M4 6h16M4 12h16M4 18h7" />
 									</svg>
 								</div>
-								<div v-if="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
+								<div v-if="!uiStore.sidebarCollapsed"
+									class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
 									<span class="truncate">All Sessions</span>
 								</div>
 							</div>
-							<div v-for="group in projectStore.projects" :key="group.id" @click="selectProject(group.id)" :class="['w-full group flex items-center rounded-[10px] h-[36px] pe-[8px] gap-[8px] transition-colors clickable relative', conversationStore.selectedGroupId == group.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px]']">
-								<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)] opacity-80">
-									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-										<path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+							<div v-for="group in projectStore.projects" :key="group.id" @click="selectProject(group.id)"
+								:class="['w-full group flex items-center rounded-[10px] h-[36px] pe-[8px] gap-[8px] transition-colors clickable relative', conversationStore.selectedGroupId == group.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px]']">
+								<div
+									class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)] opacity-80">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+										fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+										stroke-linejoin="round">
+										<path
+											d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
 									</svg>
 								</div>
-								<div v-if="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
+								<div v-if="!uiStore.sidebarCollapsed"
+									class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
 									<span class="truncate">{{ group.name }}</span>
 								</div>
 								<!-- Project Actions -->
 								<div v-if="!uiStore.sidebarCollapsed" class="shrink-0 flex items-center gap-0.5">
-									<div @click.stop="handleEditProject(group)" class="size-7 flex rounded-[8px] items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 hover:bg-[var(--bg-sidebar)] transition-all text-[var(--text-tertiary)]">
-										<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil">
+									<div @click.stop="handleEditProject(group)"
+										class="size-7 flex rounded-[8px] items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 hover:bg-[var(--bg-sidebar)] transition-all text-[var(--text-tertiary)]">
+										<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+											viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+											stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil">
 											<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
 										</svg>
 									</div>
-									<div @click.stop="handleDeleteProject(group.id)" class="size-7 flex rounded-[8px] items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 hover:bg-[var(--bg-sidebar)] transition-all text-[var(--text-tertiary)]">
-										<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2">
+									<div @click.stop="handleDeleteProject(group.id)"
+										class="size-7 flex rounded-[8px] items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 hover:bg-[var(--bg-sidebar)] transition-all text-[var(--text-tertiary)]">
+										<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+											viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+											stroke-linecap="round" stroke-linejoin="round"
+											class="lucide lucide-trash-2">
 											<path d="M3 6h18"></path>
 											<path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
 											<path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
@@ -135,8 +315,11 @@
 					</div>
 
 					<!-- Recent Chat Header -->
-					<div v-if="!uiStore.sidebarCollapsed" class="group flex items-center justify-between ps-[10px] pe-[2px] py-[2px] h-[36px] gap-[12px] rounded-[10px] mb-1">
-						<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium min-w-0 truncate tracking-tight uppercase">Recent Chat</span>
+					<div v-if="!uiStore.sidebarCollapsed"
+						class="group flex items-center justify-between ps-[10px] pe-[2px] py-[2px] h-[36px] gap-[12px] rounded-[10px] mb-1">
+						<span
+							class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium min-w-0 truncate tracking-tight uppercase">Recent
+							Chat</span>
 					</div>
 					<div v-else class="h-[1px] bg-[var(--border-light)] opacity-50 my-2 mx-2"></div>
 
@@ -144,80 +327,125 @@
 					<div class="flex flex-col gap-px">
 						<template v-if="conversationStore.isLoading && conversationStore.conversations.length === 0">
 							<div class="flex flex-col gap-2 px-2 py-1">
-								<div v-for="i in 5" :key="i" class="h-8 w-full bg-[var(--bg-hover)] rounded-lg animate-pulse"></div>
+								<div v-for="i in 5" :key="i"
+									class="h-8 w-full bg-[var(--bg-hover)] rounded-lg animate-pulse"></div>
 							</div>
 						</template>
 						<template v-else>
-							<div v-for="conversation in sortedConversations" :key="conversation.id" @click="handleSelectConversation(String(conversation.id))" :class="['group flex items-center rounded-[10px] clickable cursor-pointer transition-all w-full gap-[12px] h-[36px] pe-[2px]', conversationStore.currentConversationId == conversation.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px]']">
-								<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)] opacity-60">
-									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-										<path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+							<div v-for="conversation in sortedConversations" :key="conversation.id"
+								@click="handleSelectConversation(String(conversation.id))"
+								:class="['group flex items-center rounded-[10px] clickable cursor-pointer transition-all w-full gap-[12px] h-[36px] pe-[2px]', conversationStore.currentConversationId == conversation.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px]']">
+								<div
+									class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)] opacity-60">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+										fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+										stroke-linejoin="round">
+										<path
+											d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
 									</svg>
 								</div>
-								<div v-if="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
+								<div v-if="!uiStore.sidebarCollapsed"
+									class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
 									<span class="truncate">{{ conversation.title || 'New conversation' }}</span>
 								</div>
 								<div v-if="!uiStore.sidebarCollapsed" class="shrink-0 flex items-center">
 									<!-- Conversation Action Menu -->
 									<Menu as="div" class="relative inline-block text-left">
-										<MenuButton @click.stop="handleMenuClick($event, conversation.id)" class="size-7 flex rounded-[8px] items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 hover:bg-[var(--bg-hover)] transition-all text-[var(--text-tertiary)]">
-											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-more-horizontal">
+										<MenuButton @click.stop="handleMenuClick($event, conversation.id)"
+											class="size-7 flex rounded-[8px] items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 hover:bg-[var(--bg-hover)] transition-all text-[var(--text-tertiary)]">
+											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+												viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+												stroke-linecap="round" stroke-linejoin="round"
+												class="lucide lucide-more-horizontal">
 												<circle cx="12" cy="12" r="1" />
 												<circle cx="19" cy="12" r="1" />
 												<circle cx="5" cy="12" r="1" />
 											</svg>
 										</MenuButton>
 
-										<transition enter-active-class="transition duration-100 ease-out" enter-from-class="transform scale-95 opacity-0" enter-to-class="transform scale-100 opacity-100" leave-active-class="transition duration-75 ease-in" leave-from-class="transform scale-100 opacity-100" leave-to-class="transform scale-95 opacity-0">
+										<transition enter-active-class="transition duration-100 ease-out"
+											enter-from-class="transform scale-95 opacity-0"
+											enter-to-class="transform scale-100 opacity-100"
+											leave-active-class="transition duration-75 ease-in"
+											leave-from-class="transform scale-100 opacity-100"
+											leave-to-class="transform scale-95 opacity-0">
 											<Teleport to="body">
-												<MenuItems v-if="activeMenuId === conversation.id" :style="menuPosition" class="fixed z-[9999] w-48 origin-top-right rounded-[12px] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] focus:outline-none py-1.5 overflow-hidden">
+												<MenuItems v-if="activeMenuId === conversation.id" :style="menuPosition"
+													class="fixed z-[9999] w-48 origin-top-right rounded-[12px] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] focus:outline-none py-1.5 overflow-hidden">
 													<div class="px-1 py-1">
 														<MenuItem v-slot="{ active }">
-															<button @click="handleShare(conversation)" :class="[active ? 'bg-[var(--fill-tsp-white-main)]' : '', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm text-[var(--text-primary)] transition-colors']">
-																<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 opacity-60">
-																	<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-																	<polyline points="16 6 12 2 8 6" />
-																	<line x1="12" x2="12" y1="2" y2="15" />
-																</svg>
-																Share
-															</button>
+														<button @click="handleShare(conversation)"
+															:class="[active ? 'bg-[var(--fill-tsp-white-main)]' : '', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm text-[var(--text-primary)] transition-colors']">
+															<svg xmlns="http://www.w3.org/2000/svg" width="16"
+																height="16" viewBox="0 0 24 24" fill="none"
+																stroke="currentColor" stroke-width="2"
+																stroke-linecap="round" stroke-linejoin="round"
+																class="shrink-0 opacity-60">
+																<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+																<polyline points="16 6 12 2 8 6" />
+																<line x1="12" x2="12" y1="2" y2="15" />
+															</svg>
+															Share
+														</button>
 														</MenuItem>
 														<MenuItem v-slot="{ active }">
-															<button @click="uiStore.openRenameModal(conversation)" :class="[active ? 'bg-[var(--fill-tsp-white-main)]' : '', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm text-[var(--text-primary)] transition-colors']">
-																<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 opacity-60">
-																	<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-																	<path d="m15 5 4 4" />
-																</svg>
-																Rename
-															</button>
+														<button @click="uiStore.openRenameModal(conversation)"
+															:class="[active ? 'bg-[var(--fill-tsp-white-main)]' : '', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm text-[var(--text-primary)] transition-colors']">
+															<svg xmlns="http://www.w3.org/2000/svg" width="16"
+																height="16" viewBox="0 0 24 24" fill="none"
+																stroke="currentColor" stroke-width="2"
+																stroke-linecap="round" stroke-linejoin="round"
+																class="shrink-0 opacity-60">
+																<path
+																	d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+																<path d="m15 5 4 4" />
+															</svg>
+															Rename
+														</button>
 														</MenuItem>
 
 														<!-- Move to Project -->
 														<div class="h-px bg-[var(--border-main)] my-1"></div>
-														<div class="px-3 py-1.5 text-[11px] font-bold text-[var(--text-tertiary)] uppercase tracking-tight">Move to Project</div>
+														<div
+															class="px-3 py-1.5 text-[11px] font-bold text-[var(--text-tertiary)] uppercase tracking-tight">
+															Move to Project</div>
 
 														<template v-if="projectStore.projects.length > 0">
-															<MenuItem v-for="proj in projectStore.projects" :key="proj.id" v-slot="{ active }">
-																<button @click="handleMoveToProject(conversation.id, proj.id)" :class="[active ? 'bg-[var(--fill-tsp-white-main)]' : '', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm text-[var(--text-primary)] transition-colors']">
-																	<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 opacity-60">
-																		<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-																	</svg>
-																	<span class="truncate">{{ proj.name }}</span>
-																</button>
+															<MenuItem v-for="proj in projectStore.projects"
+																:key="proj.id" v-slot="{ active }">
+															<button
+																@click="handleMoveToProject(conversation.id, proj.id)"
+																:class="[active ? 'bg-[var(--fill-tsp-white-main)]' : '', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm text-[var(--text-primary)] transition-colors']">
+																<svg xmlns="http://www.w3.org/2000/svg" width="16"
+																	height="16" viewBox="0 0 24 24" fill="none"
+																	stroke="currentColor" stroke-width="2"
+																	stroke-linecap="round" stroke-linejoin="round"
+																	class="shrink-0 opacity-60">
+																	<path
+																		d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+																</svg>
+																<span class="truncate">{{ proj.name }}</span>
+															</button>
 															</MenuItem>
 														</template>
 
 														<div class="h-px bg-[var(--border-main)] my-1"></div>
 
 														<MenuItem v-slot="{ active }">
-															<button @click="handleDeleteConversation(String(conversation.id))" :class="[active ? 'bg-red-50 text-red-600' : 'text-red-500', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm transition-colors']">
-																<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
-																	<path d="M3 6h18" />
-																	<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
-																	<path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-																</svg>
-																Delete
-															</button>
+														<button
+															@click="handleDeleteConversation(String(conversation.id))"
+															:class="[active ? 'bg-red-50 text-red-600' : 'text-red-500', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm transition-colors']">
+															<svg xmlns="http://www.w3.org/2000/svg" width="16"
+																height="16" viewBox="0 0 24 24" fill="none"
+																stroke="currentColor" stroke-width="2"
+																stroke-linecap="round" stroke-linejoin="round"
+																class="shrink-0">
+																<path d="M3 6h18" />
+																<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+																<path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+															</svg>
+															Delete
+														</button>
 														</MenuItem>
 													</div>
 												</MenuItems>
@@ -233,62 +461,104 @@
 		</div>
 
 		<!-- Bottom Section -->
-		<div class="flex flex-col justify-center items-start gap-[8px] bg-[var(--bg-sidebar)] p-[8px] overflow-hidden border-t border-[var(--border-light)] shrink-0 transition-all duration-300">
+		<div
+			class="flex flex-col justify-center items-start gap-[8px] bg-[var(--bg-sidebar)] p-[8px] overflow-hidden border-t border-[var(--border-light)] shrink-0 transition-all duration-300">
 			<!-- Share Card -->
-			<button v-if="!uiStore.sidebarCollapsed" class="relative w-full rounded-[12px] border border-[var(--border-light)] clickable hover:opacity-90 text-sm text-[var(--text-primary)] transition-all bg-[var(--background-card-gray)] shadow-sm">
+			<button v-if="!uiStore.sidebarCollapsed"
+				class="relative w-full rounded-[12px] border border-[var(--border-light)] clickable hover:opacity-90 text-sm text-[var(--text-primary)] transition-all bg-[var(--background-card-gray)] shadow-sm">
 				<div class="flex w-full items-center justify-between ps-[9px] pe-[0px] py-[8px] rounded-[12px]">
 					<div class="flex-1 min-w-0 flex items-center gap-[12px]">
-						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hand-heart flex-shrink-0">
+						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+							stroke="var(--text-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+							class="lucide lucide-hand-heart flex-shrink-0">
 							<path d="M11 14h2a2 2 0 0 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16"></path>
-							<path d="m14.45 13.39 5.05-4.694C20.196 8 21 6.85 21 5.75a2.75 2.75 0 0 0-4.797-1.837.276.276 0 0 1-.406 0A2.75 2.75 0 0 0 11 5.75c0 1.2.802 2.248 1.5 2.946L16 11.95"></path>
+							<path
+								d="m14.45 13.39 5.05-4.694C20.196 8 21 6.85 21 5.75a2.75 2.75 0 0 0-4.797-1.837.276.276 0 0 1-.406 0A2.75 2.75 0 0 0 11 5.75c0 1.2.802 2.248 1.5 2.946L16 11.95">
+							</path>
 							<path d="m2 15 6 6"></path>
-							<path d="m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a1 1 0 0 0-2.75-2.91"></path>
+							<path
+								d="m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a1 1 0 0 0-2.75-2.91">
+							</path>
 						</svg>
 						<div class="flex flex-col text-start overflow-hidden">
-							<span class="text-[var(--text-primary)] font-serif text-[14px] leading-[20px] truncate max-w-[200px]">Share Aura</span>
-							<span class="text-[var(--text-tertiary)] text-[12px] leading-[16px] truncate">Get 500 credits</span>
+							<span
+								class="text-[var(--text-primary)] font-serif text-[14px] leading-[20px] truncate max-w-[200px]">Share
+								Aura</span>
+							<span class="text-[var(--text-tertiary)] text-[12px] leading-[16px] truncate">Get 500
+								credits</span>
 						</div>
 					</div>
 					<div class="flex items-center justify-center size-[32px] opacity-60">
-						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right">
+						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+							stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+							class="lucide lucide-chevron-right">
 							<path d="m9 18 6-6-6-6"></path>
 						</svg>
 					</div>
 				</div>
 			</button>
-			<button v-else class="flex items-center justify-center w-full h-[40px] rounded-[10px] border border-[var(--border-light)] hover:bg-[var(--bg-hover)] text-[var(--text-primary)] transition-all">
-				<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hand-heart shrink-0">
+			<button v-else
+				class="flex items-center justify-center w-full h-[40px] rounded-[10px] border border-[var(--border-light)] hover:bg-[var(--bg-hover)] text-[var(--text-primary)] transition-all">
+				<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+					stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+					class="lucide lucide-hand-heart shrink-0">
 					<path d="M11 14h2a2 2 0 0 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16"></path>
-					<path d="m14.45 13.39 5.05-4.694C20.196 8 21 6.85 21 5.75a2.75 2.75 0 0 0-4.797-1.837.276.276 0 0 1-.406 0A2.75 2.75 0 0 0 11 5.75c0 1.2.802 2.248 1.5 2.946L16 11.95"></path>
+					<path
+						d="m14.45 13.39 5.05-4.694C20.196 8 21 6.85 21 5.75a2.75 2.75 0 0 0-4.797-1.837.276.276 0 0 1-.406 0A2.75 2.75 0 0 0 11 5.75c0 1.2.802 2.248 1.5 2.946L16 11.95">
+					</path>
 					<path d="m2 15 6 6"></path>
 					<path d="m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a1 1 0 0 0-2.75-2.91"></path>
 				</svg>
 			</button>
 
-			<div :class="['flex w-full p-[2px] transition-all', uiStore.sidebarCollapsed ? 'flex-col items-center gap-2' : 'items-center justify-between']">
+			<div
+				:class="['flex w-full p-[2px] transition-all', uiStore.sidebarCollapsed ? 'flex-col items-center gap-2' : 'items-center justify-between']">
 				<div :class="['flex items-center', uiStore.sidebarCollapsed ? 'flex-col gap-2' : 'gap-[4px]']">
 					<!-- Settings -->
-					<div @click="uiStore.openSettingsModal()" class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings-2 text-[var(--icon-primary)] size-[18px]">
-							<path d="M14 17H5"></path>
-							<path d="M19 7h-9"></path>
-							<circle cx="17" cy="17" r="3"></circle>
-							<circle cx="7" cy="7" r="3"></circle>
-						</svg>
-					</div>
+					<Tooltip text="Settings" position="right" :disabled="!uiStore.sidebarCollapsed">
+						<div @click="uiStore.openSettingsModal()"
+							class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+								stroke-linejoin="round"
+								class="lucide lucide-settings-2 text-[var(--icon-primary)] size-[18px]">
+								<path d="M14 17H5"></path>
+								<path d="M19 7h-9"></path>
+								<circle cx="17" cy="17" r="3"></circle>
+								<circle cx="7" cy="7" r="3"></circle>
+							</svg>
+						</div>
+					</Tooltip>
 
 					<!-- Tools / Apps -->
-					<div class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" fill="none" width="16" height="16" class="text-[var(--icon-primary)] size-[18px]">
-							<path d="M15.4286 7.55357H10.125L12.7768 2.25L15.4286 7.55357Z" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"></path>
-							<circle cx="5.25" cy="12.75" r="2.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></circle>
-							<path d="M10.5 10.5H15V14.25C15 14.6642 14.6642 15 14.25 15H11.25C10.8358 15 10.5 14.6642 10.5 14.25V10.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-							<path d="M3 3H7.5V6.75C7.5 7.16421 7.16421 7.5 6.75 7.5H3.75C3.33579 7.5 3 7.16421 3 6.75V3Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-						</svg>
-					</div>
+					<Tooltip text="Tools & Apps" position="right" :disabled="!uiStore.sidebarCollapsed">
+						<div
+							class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" fill="none" width="16"
+								height="16" class="text-[var(--icon-primary)] size-[18px]">
+								<path d="M15.4286 7.55357H10.125L12.7768 2.25L15.4286 7.55357Z" stroke="currentColor"
+									stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"></path>
+								<circle cx="5.25" cy="12.75" r="2.25" stroke="currentColor" stroke-width="1.5"
+									stroke-linecap="round" stroke-linejoin="round"></circle>
+								<path
+									d="M10.5 10.5H15V14.25C15 14.6642 14.6642 15 14.25 15H11.25C10.8358 15 10.5 14.6642 10.5 14.25V10.5Z"
+									stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+									stroke-linejoin="round">
+								</path>
+								<path
+									d="M3 3H7.5V6.75C7.5 7.16421 7.16421 7.5 6.75 7.5H3.75C3.33579 7.5 3 7.16421 3 6.75V3Z"
+									stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+									stroke-linejoin="round">
+								</path>
+							</svg>
+						</div>
+					</Tooltip>
 					<!-- Smartphone / Apps -->
-					<div @click="uiStore.openMobileMenu()" class="flex items-center justify-center lg:hidden cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-smartphone text-[var(--icon-primary)] size-[18px]">
+					<div @click="uiStore.openMobileMenu()"
+						class="flex items-center justify-center lg:hidden cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+							stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+							class="lucide lucide-smartphone text-[var(--icon-primary)] size-[18px]">
 							<rect width="14" height="20" x="5" y="2" rx="2" ry="2"></rect>
 							<path d="M12 18h.01"></path>
 						</svg>
@@ -297,28 +567,44 @@
 
 				<div :class="['flex items-center', uiStore.sidebarCollapsed ? 'flex-col gap-2' : 'gap-[4px]']">
 					<!-- Book / Docs -->
-					<a href="https://aura.im/docs" target="_blank" rel="noreferrer" class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book text-[var(--icon-primary)] size-[18px]">
-							<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"></path>
-						</svg>
-					</a>
+					<Tooltip text="Documentation" position="right" :disabled="!uiStore.sidebarCollapsed">
+						<a href="https://aura.im/docs" target="_blank" rel="noreferrer"
+							class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+								stroke-linejoin="round"
+								class="lucide lucide-book text-[var(--icon-primary)] size-[18px]">
+								<path
+									d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20">
+								</path>
+							</svg>
+						</a>
+					</Tooltip>
 				</div>
 			</div>
 		</div>
 
 		<!-- Global Modals -->
-		<ProjectModal :show="uiStore.showProjectModal" :editingProject="currentEditingProject" @close="handleCloseProjectModal" @success="projectStore.fetchProjects" />
+		<ProjectModal :show="uiStore.showProjectModal" :editingProject="currentEditingProject"
+			@close="handleCloseProjectModal" @success="projectStore.fetchProjects" />
 	</aside>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { markRaw, defineComponent, h } from 'vue'
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
+import {
+	SparklesIcon,
+	BookOpenIcon,
+	PhotoIcon,
+	VideoCameraIcon,
+	ArrowUpRightIcon,
+} from '@heroicons/vue/24/outline'
 import { useConversationStore } from '../stores/conversation'
 import { useProjectStore } from '../stores/projects'
 import { useUIStore } from '../stores/ui'
 import ProjectModal from './ProjectModal.vue'
+import Tooltip from './Tooltip.vue'
 
 const router = useRouter()
 const conversationStore = useConversationStore()
@@ -326,6 +612,127 @@ const projectStore = useProjectStore()
 const uiStore = useUIStore()
 const currentEditingProject = ref<any>(null)
 const projectsCollapsed = ref(false)
+
+
+const isMoreMenuOpen = ref(false)
+const isHoverMenuOpen = ref(false)
+const hoverMenuPosition = ref({ top: '0px', left: '0px' })
+let hoverTimeout: any = null
+
+const draggingItem = ref<{ source: 'main' | 'more', index: number } | null>(null)
+const draggingOverZone = ref<string | null>(null)
+
+const handleDragStart = (event: DragEvent, source: 'main' | 'more', index: number) => {
+	draggingItem.value = { source, index }
+	if (event.dataTransfer) {
+		event.dataTransfer.effectAllowed = 'move'
+		event.dataTransfer.setData('source', source)
+		event.dataTransfer.setData('index', index.toString())
+	}
+}
+
+const handleDragOver = (event: DragEvent, target: 'main' | 'more' | 'more-container' | 'more-btn', index?: number) => {
+	// Optimization: can add highlight logic here
+}
+
+const handleDrop = (event: DragEvent, target: 'main' | 'more' | 'more-container' | 'more-btn', targetIndex?: number) => {
+	const source = event.dataTransfer?.getData('source') as 'main' | 'more'
+	const sourceIndex = parseInt(event.dataTransfer?.getData('index') || '-1')
+
+	if (sourceIndex === -1) return
+
+	// Scenario 1: Reorder main nav
+	if (source === 'main' && target === 'main' && targetIndex !== undefined) {
+		const items = [...sidebarNavItems.value]
+		const moved = items.splice(sourceIndex, 1)[0]
+		if (moved) {
+			items.splice(targetIndex, 0, moved)
+			sidebarNavItems.value = items
+		}
+	}
+	// Scenario 2: Reorder more sub-items
+	else if (source === 'more' && target === 'more' && targetIndex !== undefined) {
+		const items = [...moreItems.value]
+		const moved = items.splice(sourceIndex, 1)[0]
+		if (moved) {
+			items.splice(targetIndex, 0, moved)
+			moreItems.value = items
+		}
+	}
+	// Scenario 3: Drag from more to main
+	else if (source === 'more' && target === 'main' && targetIndex !== undefined) {
+		const moved = moreItems.value.splice(sourceIndex, 1)[0]
+		if (moved) {
+			const newMainItem = {
+				id: moved.id,
+				label: moved.name,
+				icon: markRaw(moved.icon),
+				handler: () => handleMoreItemClick(moved)
+			}
+			sidebarNavItems.value.splice(targetIndex, 0, newMainItem as any)
+		}
+	}
+	// Scenario 4: Drag from main to more (container or item)
+	else if (source === 'main' && (target === 'more' || target === 'more-container')) {
+		const moved = sidebarNavItems.value.splice(sourceIndex, 1)[0]
+		if (moved) {
+			const newMoreItem = {
+				id: moved.id,
+				name: moved.label,
+				icon: (moved.icon as any).__file || (moved.icon as any).render ? moved.icon : SparklesIcon
+			}
+			if (targetIndex !== undefined) {
+				moreItems.value.splice(targetIndex, 0, newMoreItem as any)
+			} else {
+				moreItems.value.push(newMoreItem as any)
+			}
+		}
+	}
+
+	draggingItem.value = null
+	draggingOverZone.value = null
+}
+
+const handleDragEnd = () => {
+	draggingItem.value = null
+	draggingOverZone.value = null
+}
+
+const handleMoreMenuOpen = () => {
+	isMoreMenuOpen.value = !isMoreMenuOpen.value
+	if (isMoreMenuOpen.value) {
+		isHoverMenuOpen.value = false
+	}
+}
+
+const handleMouseEnter = (event: MouseEvent) => {
+	if (isMoreMenuOpen.value) return
+
+	const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+	hoverMenuPosition.value = {
+		top: `${rect.top}px`,
+		left: `${rect.right + 8}px`,
+	}
+
+	if (hoverTimeout) clearTimeout(hoverTimeout)
+	isHoverMenuOpen.value = true
+}
+
+const handlePopoverMouseEnter = () => {
+	if (hoverTimeout) clearTimeout(hoverTimeout)
+	isHoverMenuOpen.value = true
+}
+
+const handleMouseLeave = () => {
+	hoverTimeout = setTimeout(() => {
+		isHoverMenuOpen.value = false
+	}, 100)
+}
+
+const handleMoreItemClick = (item: any) => {
+	console.log('Clicked item:', item.name || item.label)
+	// Implement navigation or specific tool logic here
+}
 
 // Action Menu State
 const activeMenuId = ref<string | number | null>(null)
@@ -350,8 +757,52 @@ const handleSelectConversation = (id: string) => {
 }
 
 const handleNewChat = () => {
-	router.push('/')
+	router.push('/chat')
 }
+
+const sidebarNavItems = ref([
+	{
+		id: 'search',
+		label: 'Search',
+		icon: markRaw(defineComponent({
+			render() {
+				return h('svg', { xmlns: 'http://www.w3.org/2000/svg', width: '18', height: '18', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', class: 'lucide lucide-search' }, [
+					h('circle', { cx: '11', cy: '11', r: '8' }),
+					h('path', { d: 'm21 21-4.34-4.34' })
+				])
+			}
+		})),
+		shortcut: '⌘ K',
+		handler: () => {
+			console.log('Search clicked')
+			uiStore.openSearchModal()
+		},
+		iconClass: 'text-[var(--text-secondary)]'
+	},
+	{
+		id: 'library',
+		label: 'Library',
+		icon: markRaw(defineComponent({
+			render() {
+				return h('svg', { xmlns: 'http://www.w3.org/2000/svg', width: '18', height: '18', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', class: 'lucide lucide-library' }, [
+					h('path', { d: 'm16 6 4 14' }),
+					h('path', { d: 'M12 6v14' }),
+					h('path', { d: 'M8 8v12' }),
+					h('path', { d: 'M4 4v16' })
+				])
+			}
+		})),
+		handler: () => { },
+		iconClass: 'text-[var(--text-secondary)]'
+	}
+])
+
+const moreItems = ref([
+	{ id: 'ai-bots', name: 'AI bots', icon: SparklesIcon },
+	{ id: 'ai-reading', name: 'AI Reading', icon: BookOpenIcon },
+	{ id: 'ai-image', name: 'AI Image Generator', icon: PhotoIcon },
+	{ id: 'ai-video', name: 'AI Video Generator', icon: VideoCameraIcon },
+])
 
 const handleDeleteConversation = async (id: string) => {
 	if (confirm('Delete this conversation?')) {
@@ -441,5 +892,23 @@ onMounted(async () => {
 .clickable {
 	cursor: pointer;
 	user-select: none;
+}
+
+@keyframes pulse-subtle {
+
+	0%,
+	100% {
+		opacity: 1;
+		border-color: var(--border-main);
+	}
+
+	50% {
+		opacity: 0.8;
+		border-color: var(--text-tertiary);
+	}
+}
+
+.animate-pulse-subtle {
+	animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 </style>
