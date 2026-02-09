@@ -546,6 +546,8 @@ const handleMoreItemClick = (item: any) => {
 
 	if (item.id === 'ai-image') {
 		router.push('/image-generation')
+	} else if (item.id === 'ai-video') {
+		router.push('/video-generation')
 	} else if (item.id === 'ai-bots') {
 		router.push('/explore')
 	} else if (item.id === 'ai-reading') {

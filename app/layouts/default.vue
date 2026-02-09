@@ -9,7 +9,7 @@
 		<!-- Main Content Area -->
 		<div class="flex-1 flex flex-col min-w-0 h-full relative overflow-hidden bg-[var(--background-gray-main)]">
 			<!-- Shared Top Bar (Manus Style) -->
-			<TopBar />
+			<TopBar v-if="!$route.meta.hideTopBar" />
 
 			<!-- Page Specific Content -->
 			<main class="flex-1 relative min-h-0 overflow-y-auto custom-scrollbar">
