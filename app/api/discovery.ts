@@ -23,6 +23,6 @@ export interface DiscoveryGroup {
 }
 
 // Discovery API
-export const getDiscovery = (params: { placement?: string, country_code?: string, page?: number, page_size?: number, item_limit?: number } = {}) => {
+export const getDiscovery = (params: { placement?: string, tag?: string, country_code?: string, page?: number, page_size?: number, item_limit?: number } = {}) => {
   return request.get('/v1/discovery', { params })
 }

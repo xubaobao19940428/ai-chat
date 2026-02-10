@@ -99,7 +99,7 @@
 							enter-from-class="transform scale-95 opacity-0 translate-x-1"
 							enter-to-class="transform scale-100 opacity-100 translate-x-0">
 							<div
-								class="w-56 origin-left rounded-[16px] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] py-1.5 overflow-hidden">
+								class="w-60 origin-left rounded-[16px] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] py-1.5 overflow-hidden">
 								<div class="px-1 py-1">
 									<button v-for="(item, index) in moreItems" :key="item.name" draggable="true"
 										@dragstart="handleDragStart($event, 'more', index)"
@@ -136,7 +136,7 @@
 						</div>
 						<div
 							class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)] opacity-80 group-hover:opacity-100 transition-opacity">
-							<component :is="item.icon" :size="18" />
+							<component :is="item.id === 'ai-bots' ? Compass : item.icon" :size="18" />
 						</div>
 						<div v-if="!uiStore.sidebarCollapsed"
 							class="flex-1 min-w-0 flex items-center justify-between text-[13px] font-medium text-[var(--text-primary)]">
@@ -256,8 +256,18 @@
 								@click="handleSelectConversation(String(conversation.id))"
 								:class="['group flex items-center rounded-[10px] clickable cursor-pointer transition-all w-full h-[36px]', conversationStore.currentConversationId == conversation.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px] pe-[2px] gap-[12px]']">
 								<div
-									class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)] opacity-60">
-									<MessageSquare :size="16" />
+									class="shrink-0 size-[18px] flex items-center justify-center overflow-hidden transition-all">
+									<img v-if="getConversationAvatar(conversation)"
+										:src="getConversationAvatar(conversation)"
+										class="size-full object-cover rounded-[4px] border border-[var(--border-light)]/50" />
+									<template v-else>
+										<div v-if="conversation.characterId && conversation.characterId > 1"
+											class="size-full flex items-center justify-center bg-blue-500/10 rounded-[4px]">
+											<Bot :size="15" class="text-blue-500 opacity-80" />
+										</div>
+										<MessageSquare v-else :size="16"
+											class="text-[var(--text-secondary)] opacity-40 group-hover:opacity-100 transition-opacity" />
+									</template>
 								</div>
 								<div v-if="!uiStore.sidebarCollapsed"
 									class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
@@ -412,10 +422,11 @@
 <script setup lang="ts">
 import { markRaw } from 'vue'
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
-import { PanelLeft, SquarePen, Search, Library, LayoutGrid, ChevronRight, ChevronUp, Plus, Folder, FolderOpen, MessageSquare, MoreHorizontal, Pencil, Trash2, Settings2, BookOpen, HandHeart, Smartphone, Share, Lightbulb, ArrowUpRight, Sparkles, Image, Video, AlignJustify, PanelLeftClose, Shapes } from 'lucide-vue-next'
+import { PanelLeft, SquarePen, Search, Library, LayoutGrid, ChevronRight, ChevronUp, Plus, Folder, FolderOpen, MessageSquare, MoreHorizontal, Pencil, Trash2, Settings2, BookOpen, HandHeart, Smartphone, Share, Lightbulb, ArrowUpRight, Sparkles, Image, Video, AlignJustify, PanelLeftClose, Shapes, Bot, Compass } from 'lucide-vue-next'
 import { useConversationStore } from '../stores/conversation'
 import { useProjectStore } from '../stores/projects'
 import { useUIStore } from '../stores/ui'
+import { useDiscoveryStore } from '../stores/discovery'
 import ProjectModal from './ProjectModal.vue'
 import Tooltip from './Tooltip.vue'
 
@@ -423,6 +434,13 @@ const router = useRouter()
 const conversationStore = useConversationStore()
 const projectStore = useProjectStore()
 const uiStore = useUIStore()
+const discoveryStore = useDiscoveryStore()
+
+onMounted(() => {
+	if (discoveryStore.allItems.length === 0) {
+		discoveryStore.fetchDiscovery('tag')
+	}
+})
 const currentEditingProject = ref<any>(null)
 const projectsCollapsed = ref(false)
 
@@ -578,7 +596,18 @@ const selectProject = (id: string | number | null) => {
 }
 
 const handleSelectConversation = (id: string) => {
-	router.push(`/chat/${id}`)
+	const conversation = conversationStore.conversations.find(c => String(c.id) === id)
+	if (conversation?.characterId && conversation.characterId > 1) {
+		router.push(`/character/${conversation.characterId}?conv=${id}`)
+	} else {
+		router.push(`/chat/${id}`)
+	}
+}
+
+const getConversationAvatar = (conversation: any) => {
+	if (!conversation.characterId || conversation.characterId <= 1) return undefined
+	const bot = discoveryStore.allItems.find(b => Number(b.related_id || b.id) === Number(conversation.characterId))
+	return bot?.cover || undefined
 }
 
 const handleNewChat = () => {
@@ -607,7 +636,7 @@ const sidebarNavItems = ref([
 ])
 
 const moreItems = ref([
-	{ id: 'ai-bots', name: 'AI bots', icon: markRaw(Sparkles) },
+	{ id: 'ai-bots', name: 'AI bots', icon: markRaw(Compass) },
 	{ id: 'ai-reading', name: 'AI Reading', icon: markRaw(BookOpen) },
 	{ id: 'ai-image', name: 'AI Image Generator', icon: markRaw(Image) },
 	{ id: 'ai-video', name: 'AI Video Generator', icon: markRaw(Video) },

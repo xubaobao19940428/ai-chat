@@ -5,20 +5,25 @@
 			<div id="chat-home-view-container" class="w-full max-w-full sm:max-w-[768px] sm:min-w-[390px] mx-auto">
 				<div class="relative w-full flex flex-col items-center gap-[40px]">
 					<!-- Title using conditional text -->
-					<h1 class="text-[var(--text-primary)] text-center w-full font-serif text-[36px] mb-[34px] tracking-tight animate-fade-in-up" style="animation-delay: 0.2s; animation-fill-mode: forwards">
-						<span v-if="activeTool && activeTool !== 'website'" class="opacity-0">What can I do for you?</span>
+					<h1 class="text-[var(--text-primary)] text-center w-full font-serif text-[36px] mb-[34px] tracking-tight animate-fade-in-up"
+						style="animation-delay: 0.2s; animation-fill-mode: forwards">
+						<span v-if="activeTool && activeTool !== 'website'" class="opacity-0">What can I do for
+							you?</span>
 						<span v-else>What can I do for you?</span>
 					</h1>
 				</div>
 
 				<!-- Input Card Area -->
-				<div class="flex flex-col gap-1 w-full animate-fade-in-up" style="animation-delay: 0.3s; animation-fill-mode: forwards">
+				<div class="flex flex-col gap-1 w-full animate-fade-in-up"
+					style="animation-delay: 0.3s; animation-fill-mode: forwards">
 					<div class="flex flex-col w-full">
 						<div class="relative bg-[var(--fill-tsp-gray-main)] rounded-[22px]">
 							<!-- Main Input Box with dynamic padding if tool is active -->
-							<div class="flex flex-col gap-3 rounded-[22px] relative bg-[var(--fill-input-chat)] py-3 w-full z-[20] shadow-[0px_12px_32px_0px_rgba(0,0,0,0.02)] border border-black/5 dark:border-[var(--border-main)] focus-within:border-black/10 transition-all duration-300">
+							<div
+								class="flex flex-col gap-3 rounded-[22px] relative bg-[var(--fill-input-chat)] py-3 w-full z-[20] shadow-[0px_12px_32px_0px_rgba(0,0,0,0.02)] border border-black/5 dark:border-[var(--border-main)] focus-within:border-black/10 transition-all duration-300">
 								<!-- Text Area -->
-								<div class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[50px] max-h-[216px]">
+								<div
+									class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[50px] max-h-[216px]">
 									<TiptapEditorContent :editor="editor" class="w-full" />
 								</div>
 
@@ -28,36 +33,54 @@
 										<div class="flex gap-2 items-center flex-shrink-0">
 											<!-- Plus -->
 											<Tooltip text="Add Attachment">
-												<button class="rounded-full border border-[var(--border-main)] inline-flex items-center justify-center gap-1 clickable cursor-pointer text-xs text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-gray-main)] w-8 h-8 p-0 shrink-0 transition-colors">
+												<button
+													class="rounded-full border border-[var(--border-main)] inline-flex items-center justify-center gap-1 clickable cursor-pointer text-xs text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-gray-main)] w-8 h-8 p-0 shrink-0 transition-colors">
 													<Plus :size="18" />
 												</button>
 											</Tooltip>
 
 											<!-- Browser/Globe Icon Pill -->
 											<Tooltip v-if="!activeTool" text="Browse Web">
-												<div class="flex items-center gap-[4px] p-[6px] px-[8px] cursor-pointer rounded-[100px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-gray-main)] transition-colors">
+												<div
+													class="flex items-center gap-[4px] p-[6px] px-[8px] cursor-pointer rounded-[100px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-gray-main)] transition-colors">
 													<Globe :size="16" class="text-[var(--text-secondary)]" />
-													<span class="text-[12px] text-[var(--text-secondary)] font-medium">My Browser</span>
+													<span
+														class="text-[12px] text-[var(--text-secondary)] font-medium">My
+														Browser</span>
 												</div>
 											</Tooltip>
 
 											<!-- Tool Pill (Active Mode) -->
-											<div v-if="activeTool" class="flex items-center gap-[6px] pl-[10px] pr-[12px] py-[6px] cursor-pointer rounded-full bg-blue-50 text-blue-600 border border-blue-100 transition-colors group">
+											<div v-if="activeTool"
+												class="flex items-center gap-[6px] pl-[10px] pr-[12px] py-[6px] cursor-pointer rounded-full bg-blue-50 text-blue-600 border border-blue-100 transition-colors group">
 												<Tooltip text="Remove Tool">
-													<button @click.stop="activeTool = null" class="hover:bg-blue-100 rounded-full p-0.5 transition-colors">
+													<button @click.stop="activeTool = null"
+														class="hover:bg-blue-100 rounded-full p-0.5 transition-colors">
 														<X :size="14" />
 													</button>
 												</Tooltip>
 												<div class="flex items-center gap-1">
-													<component :is="currentTool?.icon" v-if="currentTool?.icon" :size="14" />
+													<component :is="currentTool?.icon" v-if="currentTool?.icon"
+														:size="14" />
 													<!-- Special case for Slides if icon is null in config -->
-													<svg v-else-if="activeTool === 'slides'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="w-3.5 h-3.5" stroke="currentColor" stroke-width="2">
-														<path d="M6.99976 5.9974V4.26406C6.99976 3.38041 7.7161 2.66406 8.59976 2.66406H15.3998C16.2834 2.66406 16.9998 3.38041 16.9998 4.26406V5.9974" stroke-linecap="round" stroke-linejoin="round" />
-														<path d="M5.00024 10V8C5.00024 6.89543 5.89567 6 7.00024 6H17.0002C18.1048 6 19.0002 6.89543 19.0002 8V10" stroke-linecap="round" stroke-linejoin="round" />
-														<path d="M19 10H5C3.89543 10 3 10.8954 3 12V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V12C21 10.8954 20.1046 10 19 10Z" stroke-linecap="round" stroke-linejoin="round" />
+													<svg v-else-if="activeTool === 'slides'"
+														xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+														fill="none" class="w-3.5 h-3.5" stroke="currentColor"
+														stroke-width="2">
+														<path
+															d="M6.99976 5.9974V4.26406C6.99976 3.38041 7.7161 2.66406 8.59976 2.66406H15.3998C16.2834 2.66406 16.9998 3.38041 16.9998 4.26406V5.9974"
+															stroke-linecap="round" stroke-linejoin="round" />
+														<path
+															d="M5.00024 10V8C5.00024 6.89543 5.89567 6 7.00024 6H17.0002C18.1048 6 19.0002 6.89543 19.0002 8V10"
+															stroke-linecap="round" stroke-linejoin="round" />
+														<path
+															d="M19 10H5C3.89543 10 3 10.8954 3 12V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V12C21 10.8954 20.1046 10 19 10Z"
+															stroke-linecap="round" stroke-linejoin="round" />
 													</svg>
-													<span class="text-[13px] font-medium leading-none pb-[1px]">{{ currentTool?.name }}</span>
-													<span v-if="activeTool === 'app'" class="ml-1 text-[11px] text-blue-400 font-normal">Beta</span>
+													<span class="text-[13px] font-medium leading-none pb-[1px]">{{
+														currentTool?.name }}</span>
+													<span v-if="activeTool === 'app'"
+														class="ml-1 text-[11px] text-blue-400 font-normal">Beta</span>
 												</div>
 											</div>
 										</div>
@@ -66,11 +89,13 @@
 											<div class="flex items-center gap-1">
 												<!-- Model Selection -->
 												<Tooltip text="Switch Model">
-													<ModelSelector variant="pill" :icon="MessageCircle" :show-icon="false" />
+													<ModelSelector variant="pill" :icon="MessageCircle"
+														:show-icon="false" />
 												</Tooltip>
 
 												<Tooltip text="Voice Input">
-													<button class="flex items-center justify-center cursor-pointer hover:bg-[var(--fill-tsp-gray-main)] size-8 flex-shrink-0 rounded-full transition-colors">
+													<button
+														class="flex items-center justify-center cursor-pointer hover:bg-[var(--fill-tsp-gray-main)] size-8 flex-shrink-0 rounded-full transition-colors">
 														<Mic :size="16" class="text-[var(--text-secondary)]" />
 													</button>
 												</Tooltip>
@@ -78,7 +103,8 @@
 
 											<!-- Send Button -->
 											<Tooltip :text="hasContent ? 'Send Message' : 'Type something...'">
-												<button @click="() => handleSendMessage()" :disabled="!hasContent" class="flex items-center justify-center w-8 h-8 rounded-full transition-all bg-[var(--text-primary)] text-white disabled:bg-[var(--fill-tsp-white-dark)] disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-95">
+												<button @click="() => handleSendMessage()" :disabled="!hasContent"
+													class="flex items-center justify-center w-8 h-8 rounded-full transition-all bg-[var(--text-primary)] text-white disabled:bg-[var(--fill-tsp-white-dark)] disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-95">
 													<ArrowUp :size="18" :stroke-width="2.5" />
 												</button>
 											</Tooltip>
@@ -88,16 +114,20 @@
 							</div>
 
 							<!-- "Connect your tools" Banner (Matches user screenshot) -->
-							<div v-if="!activeTool || activeTool === 'website'" class="mx-3 mt-1 mb-1 py-2 px-3 flex items-center justify-between group animate-fade-in-up" style="animation-delay: 0.1s">
+							<div v-if="!activeTool || activeTool === 'website'"
+								class="mx-3 mt-1 mb-1 py-2 px-3 flex items-center justify-between group animate-fade-in-up"
+								style="animation-delay: 0.1s">
 								<div class="flex items-center gap-2">
 									<Cable :size="16" class="text-[var(--icon-secondary)]" />
-									<span class="text-[13px] text-[var(--text-secondary)] font-medium">Connect your tools to Aura</span>
+									<span class="text-[13px] text-[var(--text-secondary)] font-medium">Connect your
+										tools to Aura</span>
 								</div>
 								<div class="flex items-center gap-2">
 									<div class="flex items-center -space-x-1">
 										<img src="/other.png" alt="" class="h-[22px]" />
 									</div>
-									<button class="text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors p-1">
+									<button
+										class="text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors p-1">
 										<X :size="16" />
 									</button>
 								</div>
@@ -107,9 +137,10 @@
 				</div>
 
 				<!-- Suggestions / Home View -->
-				<div v-if="!activeTool" class="mt-8 flex flex-wrap justify-center gap-2 animate-fade-in-up" style="animation-delay: 0.4s; animation-fill-mode: forwards">
+				<div v-if="!activeTool" class="mt-8 flex flex-wrap justify-center gap-2 animate-fade-in-up"
+					style="animation-delay: 0.4s; animation-fill-mode: forwards">
 					<!-- Create slides -->
-					<Tooltip text="Generate a presentation">
+					<!-- <Tooltip text="Generate a presentation">
 						<button @click="handleToolSelect('slides')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="18" height="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors">
 								<path d="M6.99976 5.9974V4.26406C6.99976 3.38041 7.7161 2.66406 8.59976 2.66406H15.3998C16.2834 2.66406 16.9998 3.38041 16.9998 4.26406V5.9974" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -118,10 +149,10 @@
 							</svg>
 							<span class="text-[var(--text-primary)] text-[14px]">Create slides</span>
 						</button>
-					</Tooltip>
+					</Tooltip> -->
 
 					<!-- Build website -->
-					<Tooltip text="Create a web page">
+					<!-- <Tooltip text="Create a web page">
 						<button @click="handleToolSelect('website')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" fill="none" width="18" height="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors">
 								<path d="M15 1.5H3C2.17157 1.5 1.5 2.33947 1.5 3.375V14.625C1.5 15.6605 2.17157 16.5 3 16.5H15C15.8284 16.5 16.5 15.6605 16.5 14.625V3.375C16.5 2.33947 15.8284 1.5 15 1.5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
@@ -131,18 +162,18 @@
 							</svg>
 							<span class="text-[var(--text-primary)] text-[14px]">Build website</span>
 						</button>
-					</Tooltip>
+					</Tooltip> -->
 
 					<!-- Develop apps -->
-					<Tooltip text="Build a mobile app">
+					<!-- <Tooltip text="Build a mobile app">
 						<button @click="handleToolSelect('app')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
 							<Smartphone :size="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
 							<span class="text-[var(--text-primary)] text-[14px]">Develop apps</span>
 						</button>
-					</Tooltip>
+					</Tooltip> -->
 
 					<!-- Design -->
-					<Tooltip text="Create images or designs">
+					<!-- <Tooltip text="Create images or designs">
 						<button @click="handleToolSelect('design')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" width="18" height="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors">
 								<path d="M3.457 8.86C3.98 8.58 4.576 8.465 5.166 8.524c.59.06 1.15.293 1.608.67.458.378.793.882.965 1.45.17.568.169 1.174-.004 1.741-.173.568-.511 1.071-.97 1.447-.46.375-1.02.606-1.61.663-2.323.224-2.583.27-2.816 1.396" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
@@ -150,29 +181,37 @@
 							</svg>
 							<span class="text-[var(--text-primary)] text-[14px]">Design</span>
 						</button>
-					</Tooltip>
+					</Tooltip> -->
 
-					<div class="relative" ref="moreMenuRef">
+					<!-- <div class="relative" ref="moreMenuRef">
 						<Tooltip text="Explore more tools">
-							<button @click.stop="isMoreMenuOpen = !isMoreMenuOpen" class="h-10 px-[14px] text-sm py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center clickable hover:bg-[var(--fill-tsp-white-light)] text-[var(--text-primary)] transition-colors" :class="{ 'bg-[var(--fill-tsp-white-light)]': isMoreMenuOpen }">More</button>
+							<button @click.stop="isMoreMenuOpen = !isMoreMenuOpen"
+								class="h-10 px-[14px] text-sm py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center clickable hover:bg-[var(--fill-tsp-white-light)] text-[var(--text-primary)] transition-colors"
+								:class="{ 'bg-[var(--fill-tsp-white-light)]': isMoreMenuOpen }">More</button>
 						</Tooltip>
-
-						<!-- More Dropdown Menu -->
-						<div v-if="isMoreMenuOpen" class="absolute bottom-full mb-2 right-0 w-[220px] bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] py-2 z-50 animate-slide-up">
-							<div v-for="item in moreMenuItems" :key="item.name" class="flex items-center gap-3 px-4 py-[10px] hover:bg-[var(--fill-tsp-white-light)] cursor-pointer group transition-colors" @click="handleToolSelect(item.id || item.name)">
-								<component :is="item.icon" :size="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
-								<span class="text-[14px] text-[var(--text-primary)] font-normal flex-1">{{ item.name }}</span>
-								<ArrowUpRight v-if="item.name === 'Playbook'" :size="14" class="text-[var(--text-tertiary)]" />
+						<div v-if="isMoreMenuOpen"
+							class="absolute bottom-full mb-2 right-0 w-[220px] bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] py-2 z-50 animate-slide-up">
+							<div v-for="item in moreMenuItems" :key="item.name"
+								class="flex items-center gap-3 px-4 py-[10px] hover:bg-[var(--fill-tsp-white-light)] cursor-pointer group transition-colors"
+								@click="handleToolSelect(item.id || item.name)">
+								<component :is="item.icon" :size="18"
+									class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
+								<span class="text-[14px] text-[var(--text-primary)] font-normal flex-1">{{ item.name
+								}}</span>
+								<ArrowUpRight v-if="item.name === 'Playbook'" :size="14"
+									class="text-[var(--text-tertiary)]" />
 							</div>
 						</div>
-					</div>
+					</div> -->
 				</div>
 
 				<!-- Expanded Tool View -->
 				<div v-if="activeTool && currentTool" class="mt-8 flex flex-col gap-8 w-full animate-fade-in-up">
 					<!-- Website Layout -->
 					<div v-if="activeTool === 'website'" class="flex flex-col gap-6 w-full">
-						<ToolChips title="What would you like to build?" :chips="currentTool.chips || []" :links="currentTool.links || []" @select="handlePromptSelect" @link-click="handleLinkClick" />
+						<ToolChips title="What would you like to build?" :chips="currentTool.chips || []"
+							:links="currentTool.links || []" @select="handlePromptSelect"
+							@link-click="handleLinkClick" />
 
 						<ToolIntegrations v-if="currentTool.showIntegrations" />
 					</div>
@@ -182,10 +221,12 @@
 						<div class="flex items-center justify-between mb-2">
 							<h3 class="text-[14px] font-medium text-[var(--text-primary)]">Get started with</h3>
 							<div class="flex items-center gap-2">
-								<button class="h-8 w-8 rounded-lg border border-[var(--border-main)] flex items-center justify-center hover:bg-[var(--fill-tsp-white-light)] transition-colors">
+								<button
+									class="h-8 w-8 rounded-lg border border-[var(--border-main)] flex items-center justify-center hover:bg-[var(--fill-tsp-white-light)] transition-colors">
 									<Calendar :size="16" class="text-[var(--text-secondary)]" />
 								</button>
-								<button class="h-8 px-3 rounded-lg border border-[var(--border-main)] flex items-center gap-1.5 hover:bg-[var(--fill-tsp-white-light)] transition-colors">
+								<button
+									class="h-8 px-3 rounded-lg border border-[var(--border-main)] flex items-center gap-1.5 hover:bg-[var(--fill-tsp-white-light)] transition-colors">
 									<Plus :size="16" class="text-[var(--text-secondary)]" />
 									<span class="text-[13px] font-medium text-[var(--text-primary)]">New schedule</span>
 								</button>
@@ -193,12 +234,16 @@
 						</div>
 
 						<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-							<button v-for="(item, index) in currentTool.prompts" :key="index" @click="handlePromptSelect(item.text)" class="flex items-center justify-between p-4 px-5 rounded-2xl border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] transition-colors group text-left">
+							<button v-for="(item, index) in currentTool.prompts" :key="index"
+								@click="handlePromptSelect(item.text)"
+								class="flex items-center justify-between p-4 px-5 rounded-2xl border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] transition-colors group text-left">
 								<div class="flex items-center gap-4 min-w-0">
 									<div class="w-5 h-5 flex items-center justify-center flex-shrink-0">
-										<component :is="item.icon" :size="16" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
+										<component :is="item.icon" :size="16"
+											class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
 									</div>
-									<span class="text-[14px] text-[var(--text-primary)] truncate font-normal">{{ item.text }}</span>
+									<span class="text-[14px] text-[var(--text-primary)] truncate font-normal">{{
+										item.text }}</span>
 								</div>
 								<ArrowUpRight :size="14" class="text-[var(--text-tertiary)] flex-shrink-0" />
 							</button>
@@ -207,31 +252,43 @@
 
 					<!-- Default Tool Layout (Slides, App, Design) -->
 					<div v-else class="flex flex-col gap-8 w-full">
-						<SamplePrompts v-if="currentTool.prompts && currentTool.prompts.length" :prompts="currentTool.prompts" :title="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? '' : 'Sample prompts'" :layout="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? 'list' : 'grid'" @select="handlePromptSelect" />
+						<SamplePrompts v-if="currentTool.prompts && currentTool.prompts.length"
+							:prompts="currentTool.prompts"
+							:title="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? '' : 'Sample prompts'"
+							:layout="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? 'list' : 'grid'"
+							@select="handlePromptSelect" />
 
-						<TemplateSelector v-if="currentTool.templates && currentTool.templates.length" :templates="currentTool.templates" />
+						<TemplateSelector v-if="currentTool.templates && currentTool.templates.length"
+							:templates="currentTool.templates" />
 					</div>
 				</div>
 
 				<!-- Footer Promo Cards -->
-				<div v-if="!activeTool" class="mt-20 flex gap-3 overflow-x-auto pb-4 scrollbar-none animate-fade-in-up" style="animation-delay: 0.5s; animation-fill-mode: forwards">
-					<div class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
+				<div v-if="!activeTool" class="mt-20 flex gap-3 overflow-x-auto pb-4 scrollbar-none animate-fade-in-up"
+					style="animation-delay: 0.5s; animation-fill-mode: forwards">
+					<div
+						class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
 						<div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center mb-2">
 							<Puzzle :size="24" class="text-blue-600" />
 						</div>
-						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Get new capabilities with custom skills</p>
+						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Get new capabilities
+							with custom skills</p>
 					</div>
-					<div class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
+					<div
+						class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
 						<div class="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center mb-2">
 							<Mail :size="24" class="text-red-600" />
 						</div>
-						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Stay updated with the latest news</p>
+						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Stay updated with the
+							latest news</p>
 					</div>
-					<div class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
+					<div
+						class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
 						<div class="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center mb-2">
 							<Globe :size="24" class="text-green-600" />
 						</div>
-						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Explore the global community</p>
+						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Explore the global
+							community</p>
 					</div>
 				</div>
 			</div>
@@ -613,6 +670,7 @@ onBeforeUnmount(() => {
 		opacity: 0;
 		transform: translateY(20px);
 	}
+
 	to {
 		opacity: 1;
 		transform: translateY(0);
@@ -642,6 +700,7 @@ onBeforeUnmount(() => {
 .scrollbar-none {
 	-ms-overflow-style: none;
 	scrollbar-width: none;
+
 	&::-webkit-scrollbar {
 		display: none;
 	}
