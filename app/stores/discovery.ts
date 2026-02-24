@@ -11,7 +11,7 @@ export const useDiscoveryStore = defineStore('discovery', () => {
   const hasMore = ref(true)
   const pageSize = 20
 
-  const fetchDiscovery = async (placement = 'provider') => {
+  const fetchDiscovery = async (placement = 'tag') => {
     isLoading.value = true
     currentPage.value = 1
     hasMore.value = true

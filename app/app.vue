@@ -19,10 +19,9 @@ const discoveryStore = useDiscoveryStore()
 onMounted(() => {
   uiStore.initTheme()
   userStore.initialize()
-  
+
   // Publicly available data
   modelStore.fetchModels()
-  discoveryStore.fetchDiscovery()
 
   // User-specific data
   if (userStore.token) {
