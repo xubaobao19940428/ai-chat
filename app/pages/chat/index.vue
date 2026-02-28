@@ -24,7 +24,7 @@ const handleWelcomeSendMessage = async (content: string, model: string) => {
 
 	// 创建新会话 (默认助手 ID 为 1)
 	const conversationId = await conversationStore.createConversation({
-		character_id: 0,
+		character_id: 1,
 		model: model,
 		group_id: conversationStore.selectedGroupId || 0,
 	})
@@ -81,7 +81,7 @@ const handleWelcomeSendMessage = async (content: string, model: string) => {
 			options: {
 				context: {
 					conversation_id: conversationId,
-					character_id: 0,
+					character_id: 1,
 					max_history: 20,
 				},
 			},

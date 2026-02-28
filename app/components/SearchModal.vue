@@ -147,7 +147,7 @@ const handleConversationClick = (id: number | string) => {
 }
 
 const handleNewTask = async () => {
-    const id = await conversationStore.createConversation({ character_id: 0 })
+    const id = await conversationStore.createConversation({ character_id: 1 })
     uiStore.closeSearchModal()
 }
 </script>

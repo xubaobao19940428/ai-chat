@@ -29,7 +29,8 @@
 					<p class="text-[var(--text-tertiary)] text-sm font-medium animate-pulse">Loading messages...</p>
 				</div>
 
-				<TransitionGroup v-else tag="div" name="message-list" class="space-y-10">
+				<!-- Conditional TransitionGroup or Div to prevent initial load jitter -->
+				<component :is="isMountedInitial ? 'TransitionGroup' : 'div'" name="message-list" class="space-y-10">
 					<div v-for="message in currentConversation?.messages" :key="message.id" class="flex gap-4 group"
 						:class="message.role === 'user' ? 'flex-row-reverse' : ''" @click="handleMessageClick">
 						<!-- Avatar -->
@@ -124,7 +125,7 @@
 							</div>
 						</div>
 					</div>
-				</TransitionGroup>
+				</component>
 			</div>
 		</div>
 
@@ -243,6 +244,7 @@ const discoveryStore = useDiscoveryStore()
 const messagesContainer = ref<HTMLElement | null>(null)
 const inputMessage = ref('')
 const activeSubPrompts = ref<string[]>([])
+const isMountedInitial = ref(false)
 
 // Editing state
 const editingMessageId = ref<string | null>(null)
@@ -389,8 +391,15 @@ onMounted(async () => {
 
 		if (conversation) {
 			modelStore.selectModel(conversation.model || '')
-			nextTick(() => scrollToBottom())
+			nextTick(() => {
+				scrollToBottom(true)
+				setTimeout(() => {
+					isMountedInitial.value = true
+				}, 50)
+			})
 		}
+	} else {
+		isMountedInitial.value = true
 	}
 })
 
@@ -411,7 +420,9 @@ watch(
 					conversationStore.selectedGroupId = currentConversation.value.groupId
 				}
 			}
-			nextTick(() => scrollToBottom())
+			nextTick(() => {
+				scrollToBottom(true)
+			})
 		}
 	},
 )
@@ -423,9 +434,12 @@ watch(
 	},
 )
 
-const scrollToBottom = () => {
+const scrollToBottom = (instant = false) => {
 	if (messagesContainer.value) {
-		messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+		messagesContainer.value.scrollTo({
+			top: messagesContainer.value.scrollHeight,
+			behavior: instant ? 'auto' : 'smooth'
+		})
 	}
 }
 

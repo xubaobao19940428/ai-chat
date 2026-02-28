@@ -248,7 +248,7 @@ const selectProject = (id: number | null) => {
 const handleNewChat = async () => {
 	try {
 		const id = await conversationStore.createConversation({
-			character_id: 0,
+			character_id: 1,
 			group_id: conversationStore.selectedGroupId || 0,
 		})
 		router.push(`/chat/${id}`)
