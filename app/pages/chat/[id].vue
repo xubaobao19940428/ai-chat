@@ -1,11 +1,9 @@
 <template>
 	<div class="flex-1 flex flex-col h-full bg-[var(--bg-main)] transition-colors relative overflow-hidden">
-		<header
-			class="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-6 py-3 bg-[var(--bg-main)]/80 backdrop-blur-md border-b border-[var(--border-light)] transition-all">
+		<header class="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-6 py-3 bg-[var(--bg-main)]/80 backdrop-blur-md border-b border-[var(--border-light)] transition-all">
 			<div class="flex items-center gap-3">
 				<div v-if="currentCharacter" class="flex items-center gap-2 pr-2 border-r border-[var(--border-light)]">
-					<img :src="currentCharacter.icon || currentCharacter.avatar"
-						class="w-6 h-6 rounded-full object-cover" />
+					<img :src="currentCharacter.icon || currentCharacter.avatar" class="w-6 h-6 rounded-full object-cover" />
 					<span class="text-[14px] font-bold text-[var(--text-primary)]">{{ currentCharacter.name }}</span>
 				</div>
 				<Tooltip text="Switch Model">
@@ -21,65 +19,45 @@
 		<div class="flex-1 overflow-y-auto px-4 pb-48 pt-20 custom-scrollbar relative z-10" ref="messagesContainer">
 			<div class="max-w-[840px] mx-auto py-6">
 				<!-- Initial Loading State -->
-				<div v-if="conversationStore.isLoading && (!currentConversation?.messages || currentConversation.messages.length === 0)"
-					class="flex flex-col items-center justify-center py-20 space-y-4">
-					<div
-						class="w-10 h-10 border-4 border-[var(--border-light)] border-t-[var(--text-primary)] rounded-full animate-spin">
-					</div>
+				<div v-if="conversationStore.isLoading && (!currentConversation?.messages || currentConversation.messages.length === 0)" class="flex flex-col items-center justify-center py-20 space-y-4">
+					<div class="w-10 h-10 border-4 border-[var(--border-light)] border-t-[var(--text-primary)] rounded-full animate-spin"></div>
 					<p class="text-[var(--text-tertiary)] text-sm font-medium animate-pulse">Loading messages...</p>
 				</div>
 
 				<!-- Conditional TransitionGroup or Div to prevent initial load jitter -->
 				<component :is="isMountedInitial ? 'TransitionGroup' : 'div'" name="message-list" class="space-y-10">
-					<div v-for="message in currentConversation?.messages" :key="message.id" class="flex gap-4 group"
-						:class="message.role === 'user' ? 'flex-row-reverse' : ''" @click="handleMessageClick">
+					<div v-for="message in currentConversation?.messages" :key="message.id" class="flex gap-4 group" :class="message.role === 'user' ? 'flex-row-reverse' : ''" @click="handleMessageClick">
 						<!-- Avatar -->
 						<div class="flex-shrink-0 mt-1">
-							<div
-								class="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden bg-[var(--bg-main)] border border-[var(--border-light)] shadow-sm">
-								<img :src="message.role === 'user' ? userStore.userInfo?.avatar || '/logo.png' : (currentCharacter?.icon || currentCharacter?.avatar || getModelIcon(currentConversation?.model))"
-									class="w-full h-full object-cover"
-									:class="{ 'p-1': message.role !== 'user' && !currentCharacter }"
-									:alt="message.role" />
+							<div class="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden bg-[var(--bg-main)] border border-[var(--border-light)] shadow-sm">
+								<img :src="message.role === 'user' ? userStore.userInfo?.avatar || '/logo.png' : currentCharacter?.icon || currentCharacter?.avatar || getModelIcon(currentConversation?.model)" class="w-full h-full object-cover" :class="{ 'p-1': message.role !== 'user' && !currentCharacter }" :alt="message.role" />
 							</div>
 						</div>
 
 						<!-- Message Content -->
-						<div class="flex flex-col max-w-[85%] sm:max-w-[80%] relative"
-							:class="message.role === 'user' ? 'items-end' : 'items-start'">
+						<div class="flex flex-col max-w-[85%] sm:max-w-[80%] relative" :class="message.role === 'user' ? 'items-end' : 'items-start'">
 							<!-- User Message -->
 							<div v-if="message.role === 'user'" class="w-full flex justify-end">
 								<!-- Edit Mode -->
-								<div v-if="editingMessageId === message.id"
-									class="w-[500px] max-w-full bg-[var(--bg-chat-bubble-user)] rounded-[24px] border border-[var(--border-light)] p-2 shadow-sm animate-in fade-in duration-200">
-									<textarea v-model="editingContent"
-										class="w-full bg-transparent border-none focus:ring-0 text-[15px] font-medium leading-relaxed px-3 py-1 resize-none custom-scrollbar min-h-[32px] max-h-48"
-										rows="1"></textarea>
+								<div v-if="editingMessageId === message.id" class="w-[500px] max-w-full bg-[var(--bg-chat-bubble-user)] rounded-[24px] border border-[var(--border-light)] p-2 shadow-sm animate-in fade-in duration-200">
+									<textarea v-model="editingContent" class="w-full bg-transparent border-none focus:ring-0 text-[15px] font-medium leading-relaxed px-3 py-1 resize-none custom-scrollbar min-h-[32px] max-h-48" rows="1"></textarea>
 									<div class="flex justify-end gap-2 mt-1">
-										<button @click="cancelEditing"
-											class="px-3 py-1 text-xs font-semibold rounded-full hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-secondary)]">Cancel</button>
-										<button @click="submitEdit" :disabled="!editingContent.trim()"
-											class="px-4 py-1.5 text-xs font-semibold bg-[var(--text-primary)] text-[var(--bg-main)] dark:bg-white dark:text-black rounded-full hover:opacity-90 transition-opacity disabled:opacity-50">Send</button>
+										<button @click="cancelEditing" class="px-3 py-1 text-xs font-semibold rounded-full hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-secondary)]">Cancel</button>
+										<button @click="submitEdit" :disabled="!editingContent.trim()" class="px-4 py-1.5 text-xs font-semibold bg-[var(--text-primary)] text-[var(--bg-main)] dark:bg-white dark:text-black rounded-full hover:opacity-90 transition-opacity disabled:opacity-50">Send</button>
 									</div>
 								</div>
 								<!-- View Mode -->
 								<div v-else class="relative group/bubble">
-									<div
-										class="bg-[var(--bg-chat-bubble-user)] text-[var(--text-primary)] px-5 py-3 rounded-[24px] text-[15px] font-medium leading-relaxed tracking-tight shadow-sm border border-[var(--border-light)]">
+									<div class="bg-[var(--bg-chat-bubble-user)] text-[var(--text-primary)] px-5 py-3 rounded-[24px] text-[15px] font-medium leading-relaxed tracking-tight shadow-sm border border-[var(--border-light)]">
 										<div class="whitespace-pre-wrap break-words">{{ message.content }}</div>
 									</div>
 
 									<!-- Action bar (Hover only) -->
-									<div
-										class="absolute -top-10 right-0 flex items-center gap-1 opacity-0 group-hover/bubble:opacity-100 transition-opacity bg-[var(--bg-main)]/80 backdrop-blur-sm border border-[var(--border-light)] rounded-lg p-1 shadow-sm">
-										<button @click="copyMessage(message.content)"
-											class="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors"
-											title="Copy">
+									<div class="absolute -top-10 right-0 flex items-center gap-1 opacity-0 group-hover/bubble:opacity-100 transition-opacity bg-[var(--bg-main)]/80 backdrop-blur-sm border border-[var(--border-light)] rounded-lg p-1 shadow-sm">
+										<button @click="copyMessage(message.content)" class="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors" title="Copy">
 											<Copy :size="14" />
 										</button>
-										<button @click="startEditing(message)"
-											class="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors"
-											title="Edit">
+										<button @click="startEditing(message)" class="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors" title="Edit">
 											<Pencil :size="14" />
 										</button>
 									</div>
@@ -87,28 +65,22 @@
 							</div>
 
 							<!-- Bot Message -->
-							<div v-else
-								class="text-[var(--text-primary)] px-1 py-1 text-[15px] leading-relaxed tracking-tight break-words font-normal">
-								<div v-if="!message.content && chatStore.isLoading && chatStore.loadingConversationId === currentConversationId && currentConversation?.messages[currentConversation.messages.length - 1]?.id === message.id"
-									class="py-2">
+							<div v-else class="text-[var(--text-primary)] px-1 py-1 text-[15px] leading-relaxed tracking-tight break-words font-normal">
+								<div v-if="!message.content && chatStore.isLoading && chatStore.loadingConversationId === currentConversationId && currentConversation?.messages[currentConversation.messages.length - 1]?.id === message.id" class="py-2">
 									<div class="flex space-x-1.5">
-										<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce"
-											style="animation-delay: 0s"></div>
-										<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce"
-											style="animation-delay: 0.15s"></div>
-										<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce"
-											style="animation-delay: 0.3s"></div>
+										<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce" style="animation-delay: 0s"></div>
+										<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
+										<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
 									</div>
 								</div>
-								<div v-else class="prose dark:prose-invert prose-neutral max-w-none break-words"
-									v-html="renderMarkdown(message.content)"></div>
+								<div v-else class="prose dark:prose-invert prose-neutral max-w-none break-words relative inline-block">
+									<div v-html="renderMarkdown(message.content)"></div>
+									<span v-if="chatStore.isLoading && chatStore.loadingConversationId === currentConversationId && currentConversation?.messages[currentConversation.messages.length - 1]?.id === message.id" class="inline-block w-1.5 h-4 bg-[var(--text-primary)] dark:bg-white ml-1 animate-pulse align-middle"></span>
+								</div>
 
 								<!-- Assistant Action Bar -->
-								<div
-									class="mt-2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-									<button @click.stop="copyMessage(message.content)"
-										class="p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded transition-colors"
-										title="Copy Message">
+								<div class="mt-2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+									<button @click.stop="copyMessage(message.content)" class="p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded transition-colors" title="Copy Message">
 										<Copy :size="14" />
 									</button>
 									<!-- Add more actions here like Regenerate if needed -->
@@ -116,8 +88,7 @@
 							</div>
 
 							<!-- Time/Meta (Hidden by default, shown on hover) -->
-							<div
-								class="mt-1 px-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2 text-[11px] text-[var(--text-tertiary)] font-medium">
+							<div class="mt-1 px-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2 text-[11px] text-[var(--text-tertiary)] font-medium">
 								<span>{{ message.role === 'user' ? 'You' : currentConversation?.model || 'AI' }}</span>
 								<ClientOnly>
 									<span>· {{ formatMessageTime(message.timestamp) }}</span>
@@ -133,8 +104,7 @@
 		<div class="absolute bottom-8 left-0 right-0 z-50 px-4 pointer-events-none">
 			<div class="max-w-[840px] mx-auto relative pointer-events-auto">
 				<!-- Input Container -->
-				<div
-					class="bg-[var(--bg-main)] rounded-[26px] shadow-[var(--shadow-pill)] border border-[var(--border-light)] transition-all duration-300 focus-within:shadow-lg focus-within:border-[var(--text-disable)] relative p-2">
+				<div class="bg-[var(--bg-main)] rounded-[26px] shadow-[var(--shadow-pill)] border border-[var(--border-light)] transition-all duration-300 focus-within:shadow-lg focus-within:border-[var(--text-disable)] relative p-2">
 					<div class="flex flex-col">
 						<editor-content :editor="editor" class="w-full max-h-48 overflow-y-auto custom-scrollbar" />
 
@@ -142,16 +112,14 @@
 							<div class="flex items-center gap-1">
 								<!-- Attach Button -->
 								<Tooltip text="Add Attachment">
-									<button
-										class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors">
+									<button class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors">
 										<Plus :size="20" />
 									</button>
 								</Tooltip>
 
 								<!-- Web Search Toggle (Example) -->
 								<Tooltip text="Browse Web">
-									<button
-										class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors">
+									<button class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors">
 										<Globe :size="18" />
 									</button>
 								</Tooltip>
@@ -159,44 +127,27 @@
 								<!-- Parameters Popover -->
 								<Popover class="relative" v-slot="{ open }">
 									<Tooltip text="Model Parameters">
-										<PopoverButton
-											class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors"
-											:class="{ 'text-[var(--text-primary)] bg-[var(--bg-hover)]': open }">
+										<PopoverButton class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors" :class="{ 'text-[var(--text-primary)] bg-[var(--bg-hover)]': open }">
 											<Settings :size="18" />
 										</PopoverButton>
 									</Tooltip>
-									<Transition enter-active-class="transition duration-200 ease-out"
-										enter-from-class="translate-y-2 opacity-0"
-										enter-to-class="translate-y-0 opacity-100"
-										leave-active-class="transition duration-150 ease-in"
-										leave-from-class="translate-y-0 opacity-100"
-										leave-to-class="translate-y-2 opacity-0">
-										<PopoverPanel
-											class="absolute bottom-full left-0 mb-3 z-50 w-[440px] bg-[var(--bg-main)] rounded-2xl shadow-[var(--shadow-card)] border border-[var(--border-light)] overflow-hidden">
-											<div
-												class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
-												<span
-													class="text-[11px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Parameters</span>
-												<button @click="resetParams"
-													class="text-[11px] text-[var(--text-blue)] hover:underline font-semibold">Reset</button>
+									<Transition enter-active-class="transition duration-200 ease-out" enter-from-class="translate-y-2 opacity-0" enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-150 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-2 opacity-0">
+										<PopoverPanel class="absolute bottom-full left-0 mb-3 z-50 w-[440px] bg-[var(--bg-main)] rounded-2xl shadow-[var(--shadow-card)] border border-[var(--border-light)] overflow-hidden">
+											<div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
+												<span class="text-[11px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Parameters</span>
+												<button @click="resetParams" class="text-[11px] text-[var(--text-blue)] hover:underline font-semibold">Reset</button>
 											</div>
-											<ModelParameters :model-input="modelStore.selectedModel?.model_input"
-												:values="currentConversation?.params || {}"
-												@update:values="updateParams" />
+											<ModelParameters :model-input="modelStore.selectedModel?.model_input" :values="currentConversation?.params || {}" @update:values="updateParams" />
 										</PopoverPanel>
 									</Transition>
 								</Popover>
 							</div>
 
 							<!-- Send Button -->
-							<Tooltip
-								:text="chatStore.isLoading ? 'Sending...' : (hasContent ? 'Send Message' : 'Type something...')">
-								<button @click="sendMessage" :disabled="!hasContent || chatStore.isLoading"
-									class="flex items-center justify-center w-8 h-8 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full transition-transform active:scale-90 disabled:opacity-20 disabled:scale-100 dark:bg-[var(--text-white)] dark:text-[var(--bg-main)]">
+							<Tooltip :text="chatStore.isLoading ? 'Sending...' : hasContent ? 'Send Message' : 'Type something...'">
+								<button @click="() => sendMessage()" :disabled="!hasContent || chatStore.isLoading" class="flex items-center justify-center w-8 h-8 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full transition-transform active:scale-90 disabled:opacity-20 disabled:scale-100 dark:bg-[var(--text-white)] dark:text-[var(--bg-main)]">
 									<ArrowUp v-if="!chatStore.isLoading" :size="16" :stroke-width="2.5" />
-									<div v-else
-										class="w-4 h-4 border-2 border-[var(--bg-main)]/30 border-t-[var(--bg-main)] rounded-full animate-spin">
-									</div>
+									<div v-else class="w-4 h-4 border-2 border-[var(--bg-main)]/30 border-t-[var(--bg-main)] rounded-full animate-spin"></div>
 								</button>
 							</Tooltip>
 						</div>
@@ -205,9 +156,7 @@
 
 				<!-- Suggestions -->
 				<div v-if="currentConversation?.messages.length === 0" class="mt-6 flex flex-wrap justify-center gap-2">
-					<button v-for="suggestion in PROMPT_SUGGESTIONS.slice(0, 3)" :key="suggestion.id"
-						@click="handleApplyPrompt(suggestion)"
-						class="flex items-center gap-2 px-4 py-2 bg-[var(--bg-main)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] rounded-full border border-[var(--border-light)] transition-all text-sm font-medium shadow-sm active:scale-95">
+					<button v-for="suggestion in PROMPT_SUGGESTIONS.slice(0, 3)" :key="suggestion.id" @click="handleApplyPrompt(suggestion)" class="flex items-center gap-2 px-4 py-2 bg-[var(--bg-main)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] rounded-full border border-[var(--border-light)] transition-all text-sm font-medium shadow-sm active:scale-95">
 						<span class="opacity-70 text-xs">{{ suggestion.icon }}</span>
 						<span>{{ suggestion.label }}</span>
 					</button>
@@ -255,12 +204,14 @@ const currentConversation = computed(() => conversationStore.currentConversation
 
 const currentCharacter = computed(() => {
 	if (!currentConversation.value?.characterId || currentConversation.value.characterId <= 1) return null
-	const bot = discoveryStore.allItems.find(b => Number(b.related_id || b.id) === Number(currentConversation.value?.characterId))
-	return bot ? {
-		name: bot.title,
-		icon: bot.cover,
-		avatar: bot.cover
-	} : null
+	const bot = discoveryStore.allItems.find((b) => Number(b.related_id || b.id) === Number(currentConversation.value?.characterId))
+	return bot
+		? {
+				name: bot.title,
+				icon: bot.cover,
+				avatar: bot.cover,
+			}
+		: null
 })
 
 const editor = useEditor({
@@ -386,7 +337,7 @@ onMounted(async () => {
 
 	const conversationId = currentConversationId.value
 	if (conversationId) {
-		// 2. 切换会话（Store 内部会处理分组同步、消息同步和详情拉取）
+		// 2. 切换会话
 		const conversation = await conversationStore.switchConversation(conversationId)
 
 		if (conversation) {
@@ -395,6 +346,10 @@ onMounted(async () => {
 				scrollToBottom(true)
 				setTimeout(() => {
 					isMountedInitial.value = true
+					// If there's a pending message from WelcomeScreen, send it
+					if (chatStore.pendingMessage) {
+						sendMessage(true)
+					}
 				}, 50)
 			})
 		}
@@ -438,74 +393,65 @@ const scrollToBottom = (instant = false) => {
 	if (messagesContainer.value) {
 		messagesContainer.value.scrollTo({
 			top: messagesContainer.value.scrollHeight,
-			behavior: instant ? 'auto' : 'smooth'
+			behavior: instant ? 'auto' : 'smooth',
 		})
 	}
 }
 
-const sendMessage = async () => {
-	console.log('--- sendMessage Diagnostic ---')
-	console.log('hasContent:', hasContent.value)
-	console.log('inputMessage raw:', `"${inputMessage.value}"`)
-	console.log('chatStore.isLoading:', chatStore.isLoading)
-	console.log('currentConversation exists:', !!currentConversation.value)
-	if (currentConversation.value) {
-		console.log('currentConversation ID:', currentConversation.value.id)
-	}
-	console.log('------------------------------')
+const sendMessage = async (isInitial = false) => {
+	// For initial messages, the message is already in the store,
+	// but we need to derive userMessage for the stream.
+	let userMessage = inputMessage.value.trim()
 
-	if (!inputMessage.value.trim() || chatStore.isLoading || !currentConversation.value) {
-		console.warn('sendMessage blocked by state checks')
+	if (isInitial && chatStore.pendingMessage) {
+		userMessage = chatStore.pendingMessage
+		chatStore.setPendingMessage(null) // Consume it
+	}
+
+	if (!userMessage && !isInitial) {
+		return
+	}
+
+	if ((chatStore.isLoading && !isInitial) || !currentConversation.value) {
 		return
 	}
 
 	const conversationId = currentConversation.value.id
 	// 确保 model 格式是 provider:model
 	let model = currentConversation.value.model || modelStore.selectedModelId || 'openai:gpt-4o-mini'
-	// 如果 model 没有包含 provider，尝试从 modelStore 获取完整格式
+
 	if (!model.includes(':')) {
 		const modelObj = modelStore.models.find((m) => m.model === model)
 		if (modelObj) {
 			model = `${modelObj.provider}:${modelObj.model}`
 		}
 	}
-	const userMessage = inputMessage.value.trim()
 
-	// Clear editor EARLY but use the captured userMessage
-	inputMessage.value = ''
-	editor.value?.commands.clearContent()
+	// 1. Clear input if not initial
+	if (!isInitial) {
+		inputMessage.value = ''
+		editor.value?.commands.clearContent()
+	}
 
-	// Set loading state
-	chatStore.setLoading(true, conversationId)
-
-	try {
-		console.log('=== Sending message ===')
-		console.log('Conversation ID:', conversationId)
-		console.log('Model (with provider):', model)
-		console.log('User message length:', userMessage.length)
-
-		// Capture history BEFORE adding the new message
-		const history = currentConversation.value.messages
-			.slice(-20) // Limit to last 20 messages
-			.map((msg) => ({
-				role: msg.role as any,
-				content: msg.content,
-			}))
-		console.log('History count (before new message):', history.length)
-
-		// Add messages to UI/Store
+	// 2. Add user message ONLY IF not already there (initial messages are added by the caller)
+	if (!isInitial) {
 		conversationStore.addMessage(conversationId, {
 			role: 'user',
 			content: userMessage,
 		})
 
-		// Auto-update title if it's the first message or matches default
+		// Auto-update title if needed
 		const currentTitle = currentConversation.value?.title
 		if (currentTitle === '(A.I. Bestie) 的对话' || currentTitle === 'New conversation' || !currentTitle) {
 			const newTitle = userMessage.length > 40 ? userMessage.substring(0, 40) + '...' : userMessage
 			conversationStore.updateTitle(conversationId, newTitle)
 		}
+	}
 
+	// 3. Set loading and add assistant placeholder
+	chatStore.setLoading(true, conversationId)
+
+	try {
 		conversationStore.addMessage(conversationId, {
 			role: 'assistant',
 			content: '',
@@ -535,34 +481,48 @@ const sendMessage = async () => {
 			context.character_id = currentConversation.value.characterId
 		}
 
-		console.log('Sending message with context:', context)
-		let messageCount = 0
+		let tokenBuffer = ''
+		let lastFlushTime = Date.now()
+		const FLUSH_INTERVAL = 60 // 60ms throttle for UI updates
 
 		await fetchChatStream({
 			message: userMessage,
-			// messages: history,
 			model,
 			options: {
 				...options,
 				context,
 			},
 			onMessage: (content) => {
-				messageCount++
-				conversationStore.updateLastMessage(conversationId, content)
+				tokenBuffer += content
+				const now = Date.now()
+				if (now - lastFlushTime > FLUSH_INTERVAL) {
+					// Use the lightweight update method
+					conversationStore.updateLastMessageContent(conversationId, tokenBuffer)
+					tokenBuffer = ''
+					lastFlushTime = now
+				}
 			},
 			onError: (error) => {
 				console.error('Stream error:', error)
 				const errorMessage = error?.message || 'Connection failed'
+				// For errors, we use the full update method to ensure state is synced
 				conversationStore.updateLastMessage(conversationId, `\n[Error: ${errorMessage}]`, true)
 			},
 			onFinish: () => {
-				console.log('Stream finished. Total chunks received:', messageCount)
+				// Final flush of any remaining tokens
+				if (tokenBuffer) {
+					conversationStore.updateLastMessageContent(conversationId, tokenBuffer)
+				}
+				// Call the full update method once at the end to sync updatedAt and trigger storage save
+				const finalContent = currentConversation.value?.messages[currentConversation.value.messages.length - 1]?.content || ''
+				conversationStore.updateLastMessage(conversationId, finalContent, false)
+
+				chatStore.setLoading(false)
 			},
 		})
 	} catch (error) {
 		console.error('Send message error:', error)
 		conversationStore.updateLastMessage(conversationId, '\n[Error: Failed to start stream]', true)
-	} finally {
 		chatStore.setLoading(false)
 	}
 }

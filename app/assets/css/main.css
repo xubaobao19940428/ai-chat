@@ -116,24 +116,6 @@
     --fill-input-chat: #ffffff;
     --gradient-bg-mask-gray-0: #eaeaeb00;
     --gradual-white-menu-0: #ffffff00;
-    --shadows-drop-1: #16191d08;
-    --shadows-drop-2: #16191d0a;
-    --shadows-drop-3: #16191d14;
-    --shadows-drop-4: #16191d1f;
-    --shadows-highlight-1: #cce5ff;
-    --shadows-highlight-2: #1487fa;
-    --shadows-danger-1: #fed7d7;
-    --shadows-danger-2: #ee3a3a;
-    --shadows-card-border: #16191d1f;
-    --shadows-card-border-2: #16191d1f;
-    --Tooltips-main: #000000e6;
-    --gradual-white-0: #ffffff00;
-    --gradual-gray-100: #ffffff00;
-    --gradual-gray-0: #ffffff00;
-    --gradual-dark-20: #00000033;
-    --fill-input-chat: #ffffff;
-    --gradient-bg-mask-gray-0: #eaeaeb00;
-    --gradual-white-menu-0: #ffffff00;
     /* Aliases for new components */
     --bg-sidebar: var(--background-nav);
     --bg-main: var(--background-gray-main);
@@ -255,14 +237,6 @@
     --fill-input-chat: #363537;
     --gradient-bg-mask-gray-0: #1e1e1e00;
     --gradual-white-menu-0: #38373900;
-    --Tooltips-main: #000000e6;
-    --gradual-white-0: #27272800;
-    --gradual-gray-100: #444345;
-    --gradual-gray-0: #44434500;
-    --gradual-dark-20: #ffffff33;
-    --fill-input-chat: #363537;
-    --gradient-bg-mask-gray-0: #1e1e1e00;
-    --gradual-white-menu-0: #38373900;
     /* Aliases for new components */
     --bg-sidebar: var(--background-nav);
     --bg-main: var(--background-gray-main);
@@ -352,7 +326,4 @@ body {
   /* Firefox */
 }
 
-/* Smooth transitions for theme toggle */
-* {
-  @apply transition-colors duration-200;
-}
+/* Theme transitions applied only to key layout elements, not globally */

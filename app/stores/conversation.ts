@@ -18,6 +18,16 @@ import {
   deleteLocalMessages
 } from '~/utils/storage'
 
+// Debounced save for streaming — avoids IndexedDB storm
+let _saveTimer: ReturnType<typeof setTimeout> | null = null
+const debouncedSaveMessages = (conversationId: number | string, messages: Message[]) => {
+  if (_saveTimer) clearTimeout(_saveTimer)
+  _saveTimer = setTimeout(() => {
+    saveLocalMessages(conversationId, messages)
+    _saveTimer = null
+  }, 500)
+}
+
 export interface Conversation {
   id: number | string
   title: string
@@ -59,9 +69,6 @@ export const useConversationStore = defineStore('conversation', () => {
           updatedAt: item.updated_at * 1000
         }
 
-        console.log('Fetched conversation detail:', conversation)
-
-        // 检查是否已存在
         const existingIndex = conversations.value.findIndex(c => c.id == id)
         if (existingIndex > -1) {
           conversations.value[existingIndex] = { ...conversations.value[existingIndex], ...conversation }
@@ -85,10 +92,7 @@ export const useConversationStore = defineStore('conversation', () => {
       const res: any = await getConversations({ group_id: gid || 0 })
       const list = res.data.list || []
 
-      // 合并逻辑：如果后端返回了列表，以后端为准，但保留已有消息
-      // 如果后端返回空，则保留本地已有列表（防止后端异常导致列表清空）
       if (list.length > 0) {
-        console.log('[Store] Fetched conversations from API:', list.length)
         const newConversations = list.map((item: any) => {
           const existing = conversations.value.find(c => c.id == item.id)
           return {
@@ -103,10 +107,7 @@ export const useConversationStore = defineStore('conversation', () => {
           }
         })
         conversations.value = newConversations
-        console.log('[Store] Updated local store, now persistenting to IndexedDB...')
         saveLocalConversations(newConversations)
-      } else if (conversations.value.length > 0) {
-        console.log('[Store] Server returned no conversations, keeping current cache')
       }
     } catch (error) {
       console.error('Fetch conversations failed:', error)
@@ -117,12 +118,8 @@ export const useConversationStore = defineStore('conversation', () => {
 
   // 切换分组过滤
   const setSelectedGroupId = async (id: number | null) => {
-    console.log('setSelectedGroupId called with:', id)
-    console.log('Previous selectedGroupId:', selectedGroupId.value)
     selectedGroupId.value = id
-    console.log('Fetching conversations for group:', id)
     await fetchConversations()
-    console.log('Conversations loaded, count:', conversations.value.length)
   }
 
   // 获取消息列表并同步到 store
@@ -131,9 +128,7 @@ export const useConversationStore = defineStore('conversation', () => {
     const localMsgs = await getLocalMessages(conversationId)
     const targetConv = conversations.value.find(c => c.id == conversationId)
     
-    // 如果 store 中还没消息，先用本地的占位
     if (localMsgs && localMsgs.length > 0 && targetConv && targetConv.messages.length === 0) {
-      console.log('Using local messages for initial render:', conversationId)
       targetConv.messages = localMsgs
     }
 
@@ -151,8 +146,7 @@ export const useConversationStore = defineStore('conversation', () => {
           timestamp: m.created_at * 1000
         }))
 
-        // 合并策略：以后端返回为基础，补充本地存在但后端尚未同步的消息
-        // 启发式匹配：如果内容和时间接近，视为同一条消息
+        // 合并策略：以后端返回为基础，补充本地尚未同步的消息
         const mergedMessages = [...remoteMessages]
         
         if (localMsgs && localMsgs.length > 0) {
@@ -162,40 +156,51 @@ export const useConversationStore = defineStore('conversation', () => {
               (r.content === l.content && Math.abs(r.timestamp - l.timestamp) < 10000)
             )
             if (!isSynced) {
-              console.log('[Store] Found local message not in server response, preserving:', l.content.substring(0, 20))
               mergedMessages.push(l)
             }
           })
         }
 
-        // 按时间排序
         mergedMessages.sort((a, b) => a.timestamp - b.timestamp)
-        
         conversation.messages = mergedMessages
         saveLocalMessages(conversationId, mergedMessages)
-        console.log(`[Store] Messages reconciled. Total: ${mergedMessages.length} (Remote: ${remoteMessages.length})`)
       }
     } catch (error) {
       console.error('Fetch messages failed:', error)
-      // 出错时，我们已经有了 localMsgs（如果存在的话），所以不需要额外处理
     } finally {
       isLoading.value = false
     }
   }
 
 
-  // 创建新会话
-  const createConversation = async (params: { character_id: number, group_id?: number, model?: string }) => {
+  // 创建新会话 — 乐观更新，不再阻塞等 fetchConversations
+  const createConversation = async (params: { character_id: number, group_id?: number, model?: string, model_id?: number }) => {
     try {
       const res: any = await apiCreateConversation({
         character_id: params.character_id,
         group_id: params.group_id || 0,
-        model_id: 1 // 暂时硬编码模型 ID，后续对接模型列表
+        model_id: params.model_id || 1
       })
       
       const newId = res.data.conversation_id
-      await fetchConversations() // 刷新列表获取完整元数据
+
+      // Optimistic: insert the new conversation locally
+      const newConv: Conversation = {
+        id: String(newId),
+        title: 'New conversation',
+        messages: [],
+        model: params.model || '',
+        params: {},
+        groupId: params.group_id || 0,
+        characterId: params.character_id,
+        updatedAt: Date.now(),
+      }
+      conversations.value.unshift(newConv)
       currentConversationId.value = newId
+
+      // Background sync — don't block the caller
+      fetchConversations().catch(() => {})
+
       return newId
     } catch (error) {
       console.error('Create conversation failed:', error)
@@ -223,26 +228,18 @@ export const useConversationStore = defineStore('conversation', () => {
 
   // 切换会话
   const switchConversation = async (id: number | string) => {
-    console.log('[Store] switchConversation called for id:', id)
     currentConversationId.value = id
 
-    // 1. 获取详情（优先从本地或接口同步最新元数据）
     const conversation = await fetchConversationDetail(id)
     
     if (conversation) {
-      console.log('[Store] Target conversation for group sync:', conversation.id, 'groupId:', conversation.groupId)
-      // 2. 确认分组：如果当前选中的分组不是会话所在的分组，自动切换并刷新列表
       if (conversation.groupId !== selectedGroupId.value) {
-        console.log('[Store] Group mismatch. Auto-syncing selectedGroupId to:', conversation.groupId)
-        // 注意：这里不要递归调用 switchConversation，只同步分组
         selectedGroupId.value = conversation.groupId
         await fetchConversations()
       }
     }
 
-    // 3. 异步触发消息同步（合并逻辑在 fetchMessages 内部）
     fetchMessages(id)
-    
     return conversation
   }
 
@@ -309,7 +306,23 @@ export const useConversationStore = defineStore('conversation', () => {
     }
   }
 
-  // 更新最后一条消息内容（用于流式渲染）
+  // 仅更新消息内容（极速模式，不更新 updatedAt，不触发本地保存）
+  // 用于流式渲染的节流过程中过程
+  const updateLastMessageContent = (conversationId: number | string, content: string, append = true) => {
+    const conversation = conversations.value.find(c => c.id == conversationId)
+    if (conversation && conversation.messages.length > 0) {
+      const lastMessage = conversation.messages[conversation.messages.length - 1]
+      if (lastMessage && lastMessage.role === 'assistant') {
+        if (append) {
+          lastMessage.content += content
+        } else {
+          lastMessage.content = content
+        }
+      }
+    }
+  }
+
+  // 更新最后一条消息内容（用于流式渲染，更新 updatedAt 并触发防抖保存）
   const updateLastMessage = (conversationId: number | string, content: string, append = true) => {
     const conversation = conversations.value.find(c => c.id == conversationId)
     if (conversation && conversation.messages.length > 0) {
@@ -321,24 +334,17 @@ export const useConversationStore = defineStore('conversation', () => {
           lastMessage.content = content
         }
         conversation.updatedAt = Date.now()
-        // Sync to local storage for persistent流式渲染
-        saveLocalMessages(conversationId, conversation.messages)
+        // Debounced save — avoid writing to IndexedDB on every stream chunk
+        debouncedSaveMessages(conversationId, conversation.messages)
       }
     }
   }
 
   // Initial load from local storage
   const initFromLocalStorage = async () => {
-    console.log('[Store] initFromLocalStorage started')
     const cachedList = await getLocalConversations()
-    console.log('[Store] Cached list from storage:', cachedList ? cachedList.length : 'none')
-    if (cachedList && cachedList.length > 0) {
-      if (conversations.value.length === 0) {
-        console.log('[Store] Initializing store with cached conversations')
-        conversations.value = cachedList
-      } else {
-        console.log('[Store] Store already has data, skipping hydration')
-      }
+    if (cachedList && cachedList.length > 0 && conversations.value.length === 0) {
+      conversations.value = cachedList
     }
   }
 
@@ -360,6 +366,7 @@ export const useConversationStore = defineStore('conversation', () => {
     moveToProject,
     addMessage,
     updateLastMessage,
+    updateLastMessageContent,
     updateModelParams,
     initFromLocalStorage,
   }

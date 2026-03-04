@@ -131,59 +131,30 @@ export const useUserStore = defineStore('user', () => {
       })
       const { url, key } = res.data
 
-      // 2. Upload file to cloud storage (PUT)
+      // 2. Upload file to cloud storage
       await fetch(url, {
         method: 'PUT',
         body: file,
-        headers: {
-          'Content-Type': file.type
-        }
+        headers: { 'Content-Type': file.type }
       })
 
-      // 3. Update user profile to use new avatar key 
-      // Note: The API might expect the key or full URL depending on implementation.
-      // Usually keys are stored. 
-      // There isn't an explicit updateUserProfile in api.ts yet, assuming we might need to add it or use an endpoint.
-      // Re-checking api.ts... there is `updateProjectGroup`, but no `updateUserProfile`.
-      // The instructions said: "POST /v1/sso/user: 更新用户信息" in the analysis.
-      // I should add `updateUserProfile` to api.ts if I missed it, but for now I can assume fetchUserInfo will refresh it
-      // if the backend auto-associates? No, usually explicit update is needed.
-      // The analysis said `POST /v1/sso/user`. Let's assume it exists or I should add it.
-      // Wait, I didn't add `updateUserProfile` to api.ts in step 47.
-      // I will add a method here using raw request for now or better, I should have added it.
-      // Let's implement it with a specific call here.
-
-      const { $axios } = useNuxtApp()
-      // Use raw fetch or request helper? The request helper is internal.
-      // I'll try to re-fetch user info, but usually we need to set the avatar.
-      // If the backend doesn't support setting avatar via key, this might be tricky.
-      // However, the analysis said "POST /v1/sso/user: Update user info". 
-      // I'll perform a raw fetch to that endpoint for now.
-
-      // Actually, let's just use the `request` helper if I can import it? No, it's not exported.
-      // I'll rely on `fetchUserInfo` to refresh. 
-      // WAIT. If I upload the file, the backend doesn't know it's MY avatar unless I tell it.
-      // I need to send the key to the backend.
-
-      // Let's assume there is an endpoint. I will assume I need to call update.
-      // I'll make a custom fetch here since I can't modify api.ts in this turn easily (best practice).
-
-      // Actually, I can use the `getUserProfile` logic but with POST.
+      // 3. Update user profile with new avatar key
       const runtimeConfig = useRuntimeConfig().public
       const apiBase = runtimeConfig.apiBase || '/api'
-      const token = localStorage.getItem('token')
+      const authToken = localStorage.getItem('token')
 
       await fetch(`${apiBase}/v1/sso/user`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': token || '',
+          'Authorization': authToken || '',
           'x-app-domain': 'ai-test.iappdaily.com',
           'x-app-id': runtimeConfig.appId || '1'
         },
         body: JSON.stringify({ avatar: key })
       })
 
+      // 4. Refresh user info to reflect changes
       await fetchUserInfo()
       return true
     } catch (error) {
