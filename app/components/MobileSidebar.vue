@@ -66,9 +66,14 @@
 									<!-- Scrollable content -->
 									<div class="flex flex-col flex-1 min-h-0 overflow-y-auto px-[8px] pb-[8px]">
 										<!-- Projects -->
-										<div @click="toggleProjects" class="group flex items-center justify-between rounded-[10px] mb-1 h-[36px] cursor-pointer hover:bg-[var(--bg-hover)] transition-colors ps-[10px] pe-[2px] py-[2px]">
-											<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium uppercase tracking-tight">Projects</span>
-											<ChevronUp :size="14" :class="['transition-all shrink-0 text-[var(--text-tertiary)] me-1', projectsCollapsed ? 'rotate-180' : '']" />
+										<div class="group flex items-center justify-between rounded-[10px] mb-1 h-[36px] hover:bg-[var(--bg-hover)] transition-colors ps-[10px] pe-[2px] py-[2px]">
+											<div @click="toggleProjects" class="flex-1 flex items-center gap-1 cursor-pointer h-full">
+												<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium uppercase tracking-tight">Projects</span>
+												<ChevronUp :size="14" :class="['transition-all shrink-0 text-[var(--text-tertiary)]', projectsCollapsed ? 'rotate-180' : '']" />
+											</div>
+											<div @click.stop="openCreateProjectModal" class="flex items-center justify-center size-[32px] rounded-[8px] hover:bg-[var(--bg-hover)] cursor-pointer transition-colors">
+												<Plus :size="16" class="text-[var(--text-tertiary)]" />
+											</div>
 										</div>
 
 										<div v-show="!projectsCollapsed" class="flex flex-col gap-px mb-3">
@@ -161,7 +166,7 @@
 <script setup lang="ts">
 import { ref, markRaw, computed, onMounted } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { X, SquarePen, Search, Library, AlignJustify, Folder, MessageSquare, Settings2, Sun, Moon, LogOut, Bot, Compass, BookOpen, Image, Video, ChevronUp, DollarSign, Book, GraduationCap, Pencil, PenTool, Code, Terminal, Music, Coffee, Paintbrush, Palette, Stethoscope, Asterisk, Flower, Briefcase, BarChart, CircleDot, Dumbbell, Notebook, Scale, Globe, Plane, Earth, Wrench, PawPrint, FlaskConical, Brain, Heart, Sprout } from 'lucide-vue-next'
+import { X, SquarePen, Search, Library, AlignJustify, Folder, MessageSquare, Settings2, Sun, Moon, LogOut, Bot, Compass, BookOpen, Image, Video, ChevronUp, Plus, DollarSign, Book, GraduationCap, Pencil, PenTool, Code, Terminal, Music, Coffee, Paintbrush, Palette, Stethoscope, Asterisk, Flower, Briefcase, BarChart, CircleDot, Dumbbell, Notebook, Scale, Globe, Plane, Earth, Wrench, PawPrint, FlaskConical, Brain, Heart, Sprout } from 'lucide-vue-next'
 import { useConversationStore } from '../stores/conversation'
 import { useUIStore } from '../stores/ui'
 import { useUserStore } from '../stores/user'
@@ -234,6 +239,10 @@ const moreNavItems = [
 
 const toggleProjects = () => {
 	projectsCollapsed.value = !projectsCollapsed.value
+}
+
+const openCreateProjectModal = () => {
+	showCreateProjectModal.value = true
 }
 
 const toggleMoreTools = () => {
