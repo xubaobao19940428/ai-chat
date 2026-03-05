@@ -253,9 +253,11 @@
 							</div>
 						</template>
 						<template v-else-if="sortedConversations.length === 0">
-							<div v-if="!uiStore.sidebarCollapsed" class="flex flex-col items-center justify-center py-6 px-3 gap-2">
+							<div v-if="!uiStore.sidebarCollapsed"
+								class="flex flex-col items-center justify-center py-6 px-3 gap-2">
 								<MessageSquare :size="20" class="text-[var(--text-tertiary)] opacity-40" />
-								<p class="text-[12px] text-[var(--text-tertiary)] text-center leading-relaxed">No conversations yet.<br />Start a new task above.</p>
+								<p class="text-[12px] text-[var(--text-tertiary)] text-center leading-relaxed">No
+									conversations yet.<br />Start a new task above.</p>
 							</div>
 						</template>
 						<template v-else>
@@ -394,12 +396,12 @@
 					</Tooltip>
 
 					<!-- Tools / Apps -->
-					<Tooltip text="Tools & Apps" position="right" :disabled="!uiStore.sidebarCollapsed">
+					<!-- <Tooltip text="Tools & Apps" position="right" :disabled="!uiStore.sidebarCollapsed">
 						<div
 							class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
 							<Shapes :size="18" class="text-[var(--icon-primary)]" />
 						</div>
-					</Tooltip>
+					</Tooltip> -->
 					<!-- Smartphone / Apps -->
 					<div @click="uiStore.openMobileMenu()"
 						class="flex items-center justify-center lg:hidden cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
