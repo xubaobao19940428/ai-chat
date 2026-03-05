@@ -41,35 +41,47 @@
 					<div v-if="modelStore.isLoading" class="p-6 text-center">
 						<div class="w-5 h-5 border-2 border-[var(--text-blue)] border-t-transparent rounded-full animate-spin mx-auto"></div>
 					</div>
-					<div v-else class="max-h-[380px] overflow-y-auto no-scrollbar">
-						<!-- Header -->
-						<div class="px-3 pt-3 pb-2">
-							<span class="text-[11px] font-medium text-[var(--text-tertiary)]">Models</span>
+					<div v-else>
+						<!-- Search -->
+						<div class="p-2 border-b border-[var(--border-main)]">
+							<div class="flex items-center gap-2 px-2.5 py-1.5 rounded-[8px] bg-[var(--background-gray-main)]">
+								<Search :size="13" class="text-[var(--icon-secondary)] flex-shrink-0" />
+								<input
+									ref="searchInputRef"
+									v-model="searchQuery"
+									type="text"
+									placeholder="Search models..."
+									class="flex-1 bg-transparent text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-disable)] outline-none"
+								/>
+								<button v-if="searchQuery" @click="searchQuery = ''" class="text-[var(--icon-secondary)] hover:text-[var(--text-primary)] transition-colors">
+									<X :size="12" />
+								</button>
+							</div>
 						</div>
-						<div class="mx-3 mb-1 h-px bg-[var(--border-main)]"></div>
 						<!-- List -->
-						<div class="p-1.5 space-y-0.5">
-							<button
-								v-for="model in modelStore.models"
-								:key="model.model"
-								@click="selectModel(`${model.provider}:${model.model}`)"
-								class="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-[8px] transition-colors text-left group"
-								:class="isSelected(model) ? 'bg-[var(--fill-blue)]' : 'hover:bg-[var(--fill-tsp-white-main)]'"
-							>
-								<!-- Icon -->
-								<div class="w-7 h-7 rounded-[7px] bg-[var(--background-gray-main)] flex items-center justify-center flex-shrink-0 overflow-hidden">
-									<img :src="getModelIcon(model)" class="w-4 h-4 object-contain" :alt="model.display_name" />
-								</div>
-
-								<!-- Name + provider -->
-								<div class="flex-1 min-w-0">
-									<div class="text-[13px] font-medium leading-tight truncate" :class="isSelected(model) ? 'text-[var(--text-blue)]' : 'text-[var(--text-primary)]'">{{ model.display_name }}</div>
-									<div class="text-[11px] leading-tight mt-0.5 truncate" :class="isSelected(model) ? 'text-[var(--text-blue)]/70' : 'text-[var(--text-tertiary)]'">{{ formatProvider(model.provider) }}</div>
-								</div>
-
-								<!-- Check -->
-								<Check v-if="isSelected(model)" :size="13" class="flex-shrink-0 text-[var(--text-blue)]" />
-							</button>
+						<div class="max-h-[320px] overflow-y-auto no-scrollbar p-1.5 space-y-0.5">
+							<template v-if="filteredModels.length">
+								<button
+									v-for="model in filteredModels"
+									:key="model.model"
+									@click="selectModel(`${model.provider}:${model.model}`)"
+									class="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-[8px] transition-colors text-left group"
+									:class="isSelected(model) ? 'bg-[var(--fill-blue)]' : 'hover:bg-[var(--fill-tsp-white-main)]'"
+								>
+									<!-- Icon -->
+									<div class="w-7 h-7 rounded-[7px] bg-[var(--background-gray-main)] flex items-center justify-center flex-shrink-0 overflow-hidden">
+										<img :src="getModelIcon(model)" class="w-4 h-4 object-contain" :alt="model.display_name" />
+									</div>
+									<!-- Name + provider -->
+									<div class="flex-1 min-w-0">
+										<div class="text-[13px] font-medium leading-tight truncate" :class="isSelected(model) ? 'text-[var(--text-blue)]' : 'text-[var(--text-primary)]'">{{ model.display_name }}</div>
+										<div class="text-[11px] leading-tight mt-0.5 truncate" :class="isSelected(model) ? 'text-[var(--text-blue)]/70' : 'text-[var(--text-tertiary)]'">{{ formatProvider(model.provider) }}</div>
+									</div>
+									<!-- Check -->
+									<Check v-if="isSelected(model)" :size="13" class="flex-shrink-0 text-[var(--text-blue)]" />
+								</button>
+							</template>
+							<div v-else class="py-6 text-center text-[12px] text-[var(--text-tertiary)]">No models found</div>
 						</div>
 					</div>
 				</div>
@@ -81,7 +93,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, nextTick, watch } from 'vue'
 import { useModelStore } from '../stores/models'
-import { ChevronRight, ChevronDown, Check } from 'lucide-vue-next'
+import { ChevronRight, ChevronDown, Check, Search, X } from 'lucide-vue-next'
 
 const props = withDefaults(
 	defineProps<{
@@ -103,6 +115,18 @@ const modelStore = useModelStore()
 const isOpen = ref(false)
 const containerRef = ref<HTMLElement | null>(null)
 const dropdownStyle = ref<Record<string, string>>({})
+const searchQuery = ref('')
+const searchInputRef = ref<HTMLInputElement | null>(null)
+
+const filteredModels = computed(() => {
+	const q = searchQuery.value.trim().toLowerCase()
+	if (!q) return modelStore.models
+	return modelStore.models.filter(m =>
+		m.display_name?.toLowerCase().includes(q) ||
+		m.provider?.toLowerCase().includes(q) ||
+		m.model?.toLowerCase().includes(q)
+	)
+})
 
 const updateDropdownPosition = () => {
 	if (!containerRef.value || !isOpen.value) return
@@ -134,9 +158,11 @@ watch(isOpen, async (val) => {
 	if (val) {
 		await nextTick()
 		updateDropdownPosition()
+		searchInputRef.value?.focus()
 		window.addEventListener('scroll', updateDropdownPosition, true)
 		window.addEventListener('resize', updateDropdownPosition)
 	} else {
+		searchQuery.value = ''
 		window.removeEventListener('scroll', updateDropdownPosition, true)
 		window.removeEventListener('resize', updateDropdownPosition)
 	}

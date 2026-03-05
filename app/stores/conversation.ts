@@ -95,21 +95,21 @@ export const useConversationStore = defineStore('conversation', () => {
       const res: any = await getConversations({ group_id: gid || 0 })
       const list = res.data.list || []
 
-      if (list.length > 0) {
-        const newConversations = list.map((item: any) => {
-          const existing = conversations.value.find(c => c.id == item.id)
-          return {
-            id: String(item.id),
-            title: item.title,
-            messages: existing?.messages || [],
-            model: item.model || '',
-            params: item.meta?.params || item.params || {},
-            groupId: item.group_id,
-            characterId: item.character_id,
-            updatedAt: item.updated_at * 1000
-          }
-        })
-        conversations.value = newConversations
+      const newConversations = list.map((item: any) => {
+        const existing = conversations.value.find(c => c.id == item.id)
+        return {
+          id: String(item.id),
+          title: item.title,
+          messages: existing?.messages || [],
+          model: item.model || '',
+          params: item.meta?.params || item.params || {},
+          groupId: item.group_id,
+          characterId: item.character_id,
+          updatedAt: item.updated_at * 1000
+        }
+      })
+      conversations.value = newConversations
+      if (newConversations.length > 0) {
         saveLocalConversations(newConversations)
       }
     } catch (error) {

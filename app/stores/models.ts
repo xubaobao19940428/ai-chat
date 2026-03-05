@@ -16,7 +16,7 @@ export const useModelStore = defineStore('model', () => {
   const fetchModels = async () => {
     isLoading.value = true
     try {
-      const res: any = await getModels({ capability: 'chat' })
+      const res: any = await getModels({})
       models.value = res.data || []
       
       // Initial default model selection

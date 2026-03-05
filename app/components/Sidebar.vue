@@ -163,7 +163,8 @@
 						<LayoutGrid :size="14" />
 					</div>
 					<span
-						class="text-[12px] font-medium text-[var(--text-tertiary)] opacity-80 group-hover/collapse:opacity-100">Drag here to collapse</span>
+						class="text-[12px] font-medium text-[var(--text-tertiary)] opacity-80 group-hover/collapse:opacity-100">Drag
+						here to collapse</span>
 				</div>
 			</transition>
 
@@ -211,9 +212,9 @@
 							</div>
 							<div v-for="group in projectStore.projects" :key="group.id" @click="selectProject(group.id)"
 								:class="['w-full group flex items-center rounded-[10px] h-[36px] transition-colors clickable relative transition-all', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px] pe-[8px] gap-[8px]', conversationStore.selectedGroupId == group.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]']">
-								<div
-									class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)] opacity-80">
-									<Folder :size="16" />
+								<div class="shrink-0 size-[18px] flex items-center justify-center opacity-80"
+									:style="{ color: getProjectColor(group.color) }">
+									<component :is="getProjectIcon(group.icon)" :size="16" />
 								</div>
 								<div v-if="!uiStore.sidebarCollapsed"
 									class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
@@ -249,6 +250,12 @@
 							<div class="flex flex-col gap-2 px-2 py-1">
 								<div v-for="i in 5" :key="i"
 									class="h-8 w-full bg-[var(--bg-hover)] rounded-lg animate-pulse"></div>
+							</div>
+						</template>
+						<template v-else-if="sortedConversations.length === 0">
+							<div v-if="!uiStore.sidebarCollapsed" class="flex flex-col items-center justify-center py-6 px-3 gap-2">
+								<MessageSquare :size="20" class="text-[var(--text-tertiary)] opacity-40" />
+								<p class="text-[12px] text-[var(--text-tertiary)] text-center leading-relaxed">No conversations yet.<br />Start a new task above.</p>
 							</div>
 						</template>
 						<template v-else>
@@ -351,7 +358,7 @@
 		<div
 			class="flex flex-col justify-center items-start gap-[8px] bg-[var(--bg-sidebar)] p-[8px] overflow-hidden border-t border-[var(--border-light)] shrink-0 transition-all duration-300">
 			<!-- Share Card -->
-			<button v-if="!uiStore.sidebarCollapsed"
+			<!-- <button v-if="!uiStore.sidebarCollapsed"
 				class="relative w-full rounded-[12px] border border-[var(--border-light)] clickable hover:opacity-90 text-sm text-[var(--text-primary)] transition-all bg-[var(--background-card-gray)] shadow-sm">
 				<div class="flex w-full items-center justify-between ps-[9px] pe-[0px] py-[8px] rounded-[12px]">
 					<div class="flex-1 min-w-0 flex items-center gap-[12px]">
@@ -368,11 +375,11 @@
 						<ChevronRight :size="18" />
 					</div>
 				</div>
-			</button>
-			<button v-else
+			</button> -->
+			<!-- <button v-else
 				class="flex items-center justify-center w-full h-[40px] rounded-[10px] border border-[var(--border-light)] hover:bg-[var(--bg-hover)] text-[var(--text-primary)] transition-all">
 				<HandHeart :size="18" class="shrink-0" />
-			</button>
+			</button> -->
 
 			<div
 				:class="['flex w-full p-[2px] transition-all', uiStore.sidebarCollapsed ? 'flex-col items-center justify-center gap-2' : 'items-center justify-between']">
@@ -418,24 +425,20 @@
 			@close="handleCloseProjectModal" @success="projectStore.fetchProjects" />
 
 		<!-- Confirm Dialog -->
-		<ConfirmDialog
-			:show="confirmDialog.show"
-			:title="confirmDialog.title"
-			:message="confirmDialog.message"
-			@confirm="confirmDialog.onConfirm"
-			@cancel="confirmDialog.show = false"
-		/>
+		<ConfirmDialog :show="confirmDialog.show" :title="confirmDialog.title" :message="confirmDialog.message"
+			@confirm="confirmDialog.onConfirm" @cancel="confirmDialog.show = false" />
 	</aside>
 </template>
 
 <script setup lang="ts">
 import { markRaw } from 'vue'
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
-import { PanelLeft, SquarePen, Search, Library, LayoutGrid, ChevronRight, ChevronUp, Plus, Folder, FolderOpen, MessageSquare, MoreHorizontal, Pencil, Trash2, Settings2, BookOpen, HandHeart, Smartphone, Share, Lightbulb, ArrowUpRight, Sparkles, Image, Video, AlignJustify, PanelLeftClose, Shapes, Bot, Compass } from 'lucide-vue-next'
+import { PanelLeft, SquarePen, Search, Library, LayoutGrid, ChevronRight, ChevronUp, Plus, Folder, FolderOpen, MessageSquare, MoreHorizontal, Pencil, Trash2, Settings2, BookOpen, HandHeart, Smartphone, Share, Lightbulb, ArrowUpRight, Sparkles, Image, Video, AlignJustify, PanelLeftClose, Shapes, Bot, Compass, DollarSign, Book, GraduationCap, PenTool, Code, Terminal, Music, Coffee, Paintbrush, Palette, Stethoscope, Asterisk, Flower, Briefcase, BarChart, CircleDot, Dumbbell, Notebook, Scale, Globe, Plane, Earth, Wrench, PawPrint, FlaskConical, Brain, Heart, Sprout, Cpu, Camera, Gamepad2, Headphones, Layers, Layout, Map, Microscope, Monitor, Moon, Sun, Shield, Star, Target, Tv, Umbrella, Zap, Archive, Calendar, Cloud, Crown, Flag, Gift, Key, Link, Lock, Magnet, Medal, Rocket, Trophy } from 'lucide-vue-next'
 import { useConversationStore } from '../stores/conversation'
 import { useProjectStore } from '../stores/projects'
 import { useUIStore } from '../stores/ui'
 import { useDiscoveryStore } from '../stores/discovery'
+import { useUserStore } from '../stores/user'
 import ProjectModal from './ProjectModal.vue'
 import ConfirmDialog from './ConfirmDialog.vue'
 import Tooltip from './Tooltip.vue'
@@ -445,6 +448,7 @@ const conversationStore = useConversationStore()
 const projectStore = useProjectStore()
 const uiStore = useUIStore()
 const discoveryStore = useDiscoveryStore()
+const userStore = useUserStore()
 
 onMounted(() => {
 	if (discoveryStore.allItems.length === 0) {
@@ -459,8 +463,41 @@ const confirmDialog = ref({
 	show: false,
 	title: '',
 	message: '',
-	onConfirm: () => {},
+	onConfirm: () => { },
 })
+
+const projectIconMap: Record<string, any> = {
+	Folder, DollarSign, Book, GraduationCap, Pencil, PenTool,
+	Code, Terminal, Music, Coffee, Paintbrush, Palette,
+	Stethoscope, Asterisk, Flower, Briefcase, BarChart, CircleDot,
+	Dumbbell, Notebook, Scale, Globe, Plane, Earth,
+	Wrench, PawPrint, FlaskConical, Brain, Heart, Sprout,
+	Cpu, Camera, Gamepad2, Headphones, Layers, Layout,
+	Lightbulb, Map, Microscope, Monitor, Moon, Sun, Shield,
+	Smartphone, Sparkles, Star, Target, Tv, Umbrella, Zap,
+	Archive, Calendar, Cloud, Compass, Crown, Flag,
+	Gift, Key, Link, Lock, Magnet, Medal, Rocket, Trophy
+}
+
+const colorPresets = [
+	{ name: 'black', hex: 'var(--text-secondary)' },
+	{ name: 'red', hex: '#EF4444' },
+	{ name: 'orange', hex: '#F97316' },
+	{ name: 'yellow', hex: '#EAB308' },
+	{ name: 'green', hex: '#22C55E' },
+	{ name: 'blue', hex: '#3B82F6' },
+	{ name: 'purple', hex: '#A855F7' },
+	{ name: 'pink', hex: '#EC4899' },
+]
+
+const getProjectColor = (colorName?: string) => {
+	const c = colorPresets.find(c => c.name === colorName)
+	return c ? c.hex : 'var(--text-secondary)'
+}
+
+const getProjectIcon = (iconName?: string) => {
+	return projectIconMap[iconName || 'Folder'] || Folder
+}
 
 const openConfirm = (title: string, message: string, onConfirm: () => void) => {
 	confirmDialog.value = { show: true, title, message, onConfirm }
@@ -515,20 +552,15 @@ const handleDrop = (event: DragEvent, target: 'main' | 'more' | 'more-container'
 	else if (source === 'more' && target === 'main' && targetIndex !== undefined) {
 		const moved = moreItems.value.splice(sourceIndex, 1)[0]
 		if (moved) {
-			const newMainItem = {
-				id: moved.id,
-				label: moved.name,
-				icon: markRaw(moved.icon),
-				handler: () => handleMoreItemClick(moved),
-			}
-			sidebarNavItems.value.splice(targetIndex, 0, newMainItem as any)
+			const def = getNavItemDef(moved.id)
+			if (def) sidebarNavItems.value.splice(targetIndex, 0, def)
 		}
 	}
 	// Scenario 4: Drag from main to more (container or item)
 	else if (source === 'main' && (target === 'more' || target === 'more-container')) {
 		const moved = sidebarNavItems.value.splice(sourceIndex, 1)[0]
 		if (moved) {
-			const newMoreItem = {
+			const newMoreItem = getMoreItemDef(moved.id) || {
 				id: moved.id,
 				name: moved.label,
 				icon: moved.icon,
@@ -543,6 +575,7 @@ const handleDrop = (event: DragEvent, target: 'main' | 'more' | 'more-container'
 
 	draggingItem.value = null
 	draggingOverZone.value = null
+	saveSidebarLayout()
 }
 
 const handleDragEnd = () => {
@@ -640,10 +673,7 @@ const sidebarNavItems = ref([
 		label: 'Search',
 		icon: markRaw(Search),
 		shortcut: '⌘ K',
-		handler: () => {
-			console.log('Search clicked')
-			uiStore.openSearchModal()
-		},
+		handler: () => { uiStore.openSearchModal() },
 		iconClass: 'text-[var(--text-secondary)]',
 	},
 	{
@@ -661,6 +691,61 @@ const moreItems = ref([
 	{ id: 'ai-image', name: 'AI Image Generator', icon: markRaw(Image) },
 	{ id: 'ai-video', name: 'AI Video Generator', icon: markRaw(Video) },
 ])
+
+// ── Sidebar layout persistence (per user) ────────────────────────────────────
+const SIDEBAR_KEY = (email: string) => `sidebar-order-${email}`
+
+// All possible items that can appear in either zone
+const NAV_DEFS: Record<string, any> = {
+	search: { id: 'search', label: 'Search', icon: markRaw(Search), shortcut: '⌘ K', handler: () => { uiStore.openSearchModal() }, iconClass: 'text-[var(--text-secondary)]' },
+	library: { id: 'library', label: 'Library', icon: markRaw(Library), handler: () => { }, iconClass: 'text-[var(--text-secondary)]' },
+	'ai-bots': { id: 'ai-bots', label: 'AI bots', icon: markRaw(Compass), handler: () => { router.push('/explore') }, iconClass: 'text-[var(--text-secondary)]' },
+	'ai-reading': { id: 'ai-reading', label: 'AI Reading', icon: markRaw(BookOpen), handler: () => { router.push('/ai-search') }, iconClass: 'text-[var(--text-secondary)]' },
+	'ai-image': { id: 'ai-image', label: 'AI Image Generator', icon: markRaw(Image), handler: () => { router.push('/image-generation') }, iconClass: 'text-[var(--text-secondary)]' },
+	'ai-video': { id: 'ai-video', label: 'AI Video Generator', icon: markRaw(Video), handler: () => { router.push('/video-generation') }, iconClass: 'text-[var(--text-secondary)]' },
+}
+const MORE_DEFS: Record<string, any> = {
+	'ai-bots': { id: 'ai-bots', name: 'AI bots', icon: markRaw(Compass) },
+	'ai-reading': { id: 'ai-reading', name: 'AI Reading', icon: markRaw(BookOpen) },
+	'ai-image': { id: 'ai-image', name: 'AI Image Generator', icon: markRaw(Image) },
+	'ai-video': { id: 'ai-video', name: 'AI Video Generator', icon: markRaw(Video) },
+	search: { id: 'search', name: 'Search', icon: markRaw(Search) },
+	library: { id: 'library', name: 'Library', icon: markRaw(Library) },
+}
+
+const getNavItemDef = (id: string): any => NAV_DEFS[id]
+const getMoreItemDef = (id: string): any => MORE_DEFS[id]
+
+const saveSidebarLayout = () => {
+	const email = userStore.userInfo?.email
+	if (!email || !import.meta.client) return
+	localStorage.setItem(SIDEBAR_KEY(email), JSON.stringify({
+		main: sidebarNavItems.value.map(i => i.id),
+		more: moreItems.value.map(i => i.id),
+	}))
+}
+
+const loadSidebarLayout = () => {
+	const email = userStore.userInfo?.email
+	if (!email || !import.meta.client) return
+	const raw = localStorage.getItem(SIDEBAR_KEY(email))
+	if (!raw) return
+	try {
+		const { main, more } = JSON.parse(raw)
+		if (Array.isArray(main)) {
+			const items = main.map(getNavItemDef).filter(Boolean)
+			if (items.length) sidebarNavItems.value = items
+		}
+		if (Array.isArray(more)) {
+			moreItems.value = more.map(getMoreItemDef).filter(Boolean)
+		}
+	} catch { }
+}
+
+// Load layout whenever user info becomes available (covers login + page refresh)
+watch(() => userStore.userInfo?.email, (email) => {
+	if (email) loadSidebarLayout()
+}, { immediate: true })
 
 const handleDeleteConversation = (id: string) => {
 	openConfirm(

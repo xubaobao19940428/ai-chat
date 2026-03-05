@@ -18,7 +18,7 @@ export const useProjectStore = defineStore('project', () => {
     }
   }
 
-  const createProject = async (params: { name: string, description?: string, color?: string }) => {
+  const createProject = async (params: { name: string, description?: string, color?: string, icon?: string }) => {
     isLoading.value = true
     try {
       const res: any = await createProjectGroup(params)
@@ -34,7 +34,7 @@ export const useProjectStore = defineStore('project', () => {
     }
   }
 
-  const updateProject = async (id: number, params: Partial<ProjectGroup>) => {
+  const updateProject = async (id: number, params: Partial<ProjectGroup> & { icon?: string }) => {
     isLoading.value = true
     try {
       await updateProjectGroup({ id, ...params })

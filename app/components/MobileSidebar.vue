@@ -1,182 +1,150 @@
 <template>
 	<TransitionRoot :show="uiStore.mobileMenuOpen" as="template">
 		<Dialog as="div" class="relative z-50 lg:hidden" @close="uiStore.closeMobileMenu">
-			<TransitionChild as="template" enter="ease-in-out duration-300" enter-from="opacity-0"
-				enter-to="opacity-100" leave="ease-in-out duration-300" leave-from="opacity-100" leave-to="opacity-0">
-				<div class="fixed inset-0 bg-black/80 transition-opacity" />
+			<TransitionChild as="template" enter="ease-in-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in-out duration-300" leave-from="opacity-100" leave-to="opacity-0">
+				<div class="fixed inset-0 bg-black/50 transition-opacity" />
 			</TransitionChild>
 
 			<div class="fixed inset-0 overflow-hidden">
 				<div class="absolute inset-0 overflow-hidden">
 					<div class="pointer-events-none fixed inset-y-0 left-0 flex max-w-full pr-10">
-						<TransitionChild as="template" enter="transform transition ease-in-out duration-300"
-							enter-from="-translate-x-full" enter-to="translate-x-0"
-							leave="transform transition ease-in-out duration-300" leave-from="translate-x-0"
-							leave-to="-translate-x-full">
+						<TransitionChild as="template" enter="transform transition ease-in-out duration-300" enter-from="-translate-x-full" enter-to="translate-x-0" leave="transform transition ease-in-out duration-300" leave-from="translate-x-0" leave-to="-translate-x-full">
 							<DialogPanel class="pointer-events-auto w-screen max-w-[280px]">
-								<div
-									class="flex h-full flex-col overflow-y-auto bg-[var(--background-white-main)] shadow-[var(--shadow-XL)] border-r border-[var(--border-main)] transition-colors">
+								<div class="flex h-full flex-col bg-[var(--bg-sidebar)] border-r border-[var(--border-light)] overflow-hidden">
+
 									<!-- Header -->
-									<div class="p-4 border-b border-[var(--border-main)]">
-										<div class="flex items-center justify-between mb-4 px-1">
-											<div class="flex items-center gap-1.5 h-8">
-												<div class="flex items-center size-8 justify-center shrink-0">
-													<img src="/favicon.svg" class="size-6 pointer-events-none"
-														alt="Aura Logo" />
-												</div>
-												<span
-													class="text-lg font-bold text-[var(--logo-color)] tracking-tight">aura</span>
+									<div class="flex items-center justify-between h-[56px] px-[12px] shrink-0">
+										<div class="flex items-center gap-1 ps-[8px]">
+											<div class="flex items-center size-8 justify-center shrink-0">
+												<img src="/favicon.svg" class="size-6 pointer-events-none" alt="Aura Logo" />
 											</div>
-											<button @click="uiStore.closeMobileMenu"
-												class="p-2 hover:bg-[var(--fill-tsp-white-main)] rounded-xl transition-colors text-[var(--icon-disable)]">
-												<X :size="20" :stroke-width="2.5" />
-											</button>
+											<span class="text-lg font-bold text-[var(--text-primary)] tracking-tight ml-1">aura</span>
 										</div>
-										<button @click="handleNewChat"
-											class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[var(--Button-primary-black)] hover:opacity-90 text-[var(--text-onblack)] rounded-[14px] transition-all font-bold text-sm shadow-[var(--shadow-S)]">
-											<Plus :size="16" />
-											<span>New task</span>
-										</button>
+										<div @click="uiStore.closeMobileMenu" class="flex items-center justify-center rounded-md hover:bg-[var(--bg-hover)] cursor-pointer size-[32px] shrink-0 transition-colors">
+											<X class="text-[var(--text-secondary)] size-[18px]" />
+										</div>
 									</div>
 
-									<!-- Menu List -->
-									<div class="flex-1 overflow-y-auto py-4">
-										<!-- Tools -->
-										<div class="px-4 mb-6">
-											<div
-												class="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-tertiary)] mb-3 px-3 flex items-center gap-2">
-												<span>Tools</span>
+									<!-- Nav Items -->
+									<div class="flex flex-col p-[8px] pb-0 gap-px">
+										<!-- New Chat -->
+										<div @click="handleNewChat" class="flex items-center rounded-[10px] cursor-pointer transition-colors w-full h-[40px] hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px] gap-[12px]">
+											<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
+												<SquarePen :size="18" />
 											</div>
-											<div class="space-y-1">
-												<NuxtLink to="/"
-													:class="['flex items-center gap-3 px-3 py-2.5 rounded-2xl transition-all text-sm group', $route.path === '/' ? 'bg-[var(--fill-tsp-white-main)] text-[var(--text-primary)] shadow-[var(--shadow-XS)] ring-1 ring-[var(--border-main)]' : 'text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-white-main)] font-bold']"
-													@click="uiStore.closeMobileMenu">
-													<div
-														class="w-8 h-8 rounded-full bg-[var(--background-white-main)] flex items-center justify-center border border-[var(--border-main)] shadow-[var(--shadow-XS)]">
-														<Home :size="18" class="text-[var(--icon-primary)]" />
-													</div>
-													<span class="font-bold tracking-tight">Home</span>
-												</NuxtLink>
-												<NuxtLink to="/chat"
-													:class="['flex items-center gap-3 px-3 py-2.5 rounded-2xl transition-all text-sm group', $route.path === '/chat' ? 'bg-[var(--fill-tsp-white-main)] text-[var(--text-primary)] shadow-[var(--shadow-XS)] ring-1 ring-[var(--border-main)]' : 'text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-white-main)] font-bold']"
-													@click="uiStore.closeMobileMenu">
-													<div
-														class="w-8 h-8 rounded-full bg-[var(--background-white-main)] flex items-center justify-center border border-[var(--border-main)] shadow-[var(--shadow-XS)]">
-														<MessageCircle :size="18" class="text-[var(--icon-primary)]" />
-													</div>
-													<span class="font-bold tracking-tight">AI Chat</span>
-												</NuxtLink>
-											</div>
+											<span class="text-[14px] font-medium text-[var(--text-primary)]">New task</span>
 										</div>
 
+										<!-- Nav items (no shortcuts on mobile) -->
+										<div v-for="item in navItems" :key="item.id" @click="item.handler" class="flex items-center rounded-[10px] cursor-pointer transition-colors w-full h-[40px] hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px] gap-[12px]">
+											<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)]">
+												<component :is="item.icon" :size="18" />
+											</div>
+											<span class="flex-1 text-[14px] font-medium text-[var(--text-primary)] truncate">{{ item.label }}</span>
+										</div>
+									</div>
+
+									<!-- More Tools -->
+									<div class="flex flex-col px-[8px] pb-0 gap-px mt-1">
+										<div @click="toggleMoreTools" class="group flex items-center justify-between rounded-[10px] h-[36px] cursor-pointer hover:bg-[var(--bg-hover)] transition-colors ps-[10px] pe-[2px]">
+											<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium uppercase tracking-tight">More Tools</span>
+											<ChevronUp :size="14" :class="['transition-all shrink-0 text-[var(--text-tertiary)] me-1', moreCollapsed ? 'rotate-180' : '']" />
+										</div>
+										<div v-show="!moreCollapsed" class="flex flex-col gap-px">
+											<div v-for="item in moreNavItems" :key="item.id" @click="item.handler" class="flex items-center rounded-[10px] cursor-pointer transition-colors w-full h-[40px] hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px] gap-[12px]">
+												<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)]">
+													<component :is="item.icon" :size="18" />
+												</div>
+												<span class="text-[14px] font-medium text-[var(--text-primary)] truncate">{{ item.label }}</span>
+											</div>
+										</div>
+									</div>
+
+									<!-- Divider -->
+									<div class="mx-[8px] border-t border-[var(--border-light)] opacity-50 my-2"></div>
+
+									<!-- Scrollable content -->
+									<div class="flex flex-col flex-1 min-h-0 overflow-y-auto px-[8px] pb-[8px]">
 										<!-- Projects -->
-										<div class="px-4 mb-6">
-											<button @click="toggleProjects"
-												class="w-full text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-tertiary)] mb-3 px-3 flex items-center justify-between group">
-												<div class="flex items-center gap-2">
-													<span>Projects</span>
-												</div>
-												<ChevronDown :size="12" :stroke-width="2.5"
-													:class="['transition-transform duration-200', !projectsCollapsed ? 'rotate-180' : '']" />
-											</button>
+										<div @click="toggleProjects" class="group flex items-center justify-between rounded-[10px] mb-1 h-[36px] cursor-pointer hover:bg-[var(--bg-hover)] transition-colors ps-[10px] pe-[2px] py-[2px]">
+											<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium uppercase tracking-tight">Projects</span>
+											<ChevronUp :size="14" :class="['transition-all shrink-0 text-[var(--text-tertiary)] me-1', projectsCollapsed ? 'rotate-180' : '']" />
+										</div>
 
-											<div v-show="!projectsCollapsed" class="space-y-1">
-												<button @click="selectProject(null)"
-													:class="['w-full flex items-center gap-3 px-3 py-2 rounded-2xl transition-all text-sm group', conversationStore.selectedGroupId === null ? 'bg-[var(--fill-tsp-white-main)] text-[var(--text-primary)] shadow-[var(--shadow-XS)] ring-1 ring-[var(--border-main)]' : 'text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-white-main)] font-bold']">
-													<div
-														class="w-8 h-8 rounded-lg flex items-center justify-center border border-[var(--border-main)] bg-[var(--background-white-main)]">
-														<AlignJustify :size="16" :stroke-width="2.5" />
-													</div>
-													<span class="font-bold tracking-tight">Direct chat</span>
-												</button>
-
-												<div v-for="project in projectStore.projects" :key="project.id"
-													@click="selectProject(project.id)"
-													:class="['flex items-center gap-3 px-3 py-2 rounded-2xl transition-all text-sm cursor-pointer font-bold', conversationStore.selectedGroupId === project.id ? 'bg-[var(--fill-tsp-white-main)] text-[var(--text-primary)] shadow-[var(--shadow-XS)] ring-1 ring-[var(--border-main)]' : 'text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-white-main)]']">
-													<div class="w-8 h-8 rounded-lg flex items-center justify-center border border-[var(--border-main)] bg-blue-500/10 text-blue-500"
-														:class="project.color">
-														<Folder :size="16" :stroke-width="2.5" />
-													</div>
-													<span class="truncate">{{ project.name }}</span>
+										<div v-show="!projectsCollapsed" class="flex flex-col gap-px mb-3">
+											<div @click="selectProject(null)" :class="['w-full flex items-center rounded-[10px] h-[40px] transition-colors cursor-pointer ps-[10px] pe-[8px] gap-[8px]', conversationStore.selectedGroupId === null || conversationStore.selectedGroupId === 0 ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]']">
+												<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)] opacity-80">
+													<AlignJustify :size="16" />
 												</div>
+												<span class="text-[14px] text-[var(--text-primary)] font-medium truncate">All Sessions</span>
+											</div>
+											<div v-for="group in projectStore.projects" :key="group.id" @click="selectProject(group.id)" :class="['w-full flex items-center rounded-[10px] h-[40px] transition-colors cursor-pointer ps-[10px] pe-[8px] gap-[8px]', conversationStore.selectedGroupId == group.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]']">
+												<div class="shrink-0 size-[18px] flex items-center justify-center opacity-80" :style="{ color: getProjectColor(group.color) }">
+													<component :is="getProjectIcon(group.icon)" :size="16" />
+												</div>
+												<span class="text-[14px] text-[var(--text-primary)] font-medium truncate">{{ group.name }}</span>
 											</div>
 										</div>
 
-										<!-- History -->
-										<div class="px-4 mb-6">
-											<div
-												class="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-tertiary)] mb-3 px-3">
-												<span>Recent Chat</span>
-											</div>
-											<div class="space-y-1">
-												<div v-for="conversation in conversationStore.conversations.slice(0, 10)"
-													:key="conversation.id"
-													@click="handleSelectConversation(conversation.id)"
-													:class="['flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors text-sm font-bold', conversationStore.currentConversationId === conversation.id ? 'bg-[var(--fill-tsp-white-main)] text-[var(--text-primary)] shadow-[var(--shadow-XS)] ring-1 ring-[var(--border-main)]' : 'text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-white-main)]']">
-													<div
-														class="shrink-0 size-8 flex items-center justify-center overflow-hidden transition-all">
-														<img v-if="getConversationAvatar(conversation)"
-															:src="getConversationAvatar(conversation)"
-															class="size-full object-cover rounded-lg border border-[var(--border-light)]/50" />
-														<template v-else>
-															<!-- characterId 1 is the default general assistant, treated as generic -->
-															<div v-if="conversation.characterId && conversation.characterId > 1"
-																class="size-full flex items-center justify-center bg-blue-500/10 rounded-lg">
-																<Bot :size="18" class="text-blue-500 opacity-80" />
-															</div>
-															<MessageSquare v-else :size="18"
-																class="flex-shrink-0 opacity-40" />
-														</template>
-													</div>
-													<span class="flex-1 truncate text-left">{{ conversation.title ||
-														'New conversation' }}</span>
+										<!-- Recent Chat -->
+										<div class="flex items-center h-[36px] ps-[10px] mb-1">
+											<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium uppercase tracking-tight">Recent Chat</span>
+										</div>
+										<div class="flex flex-col gap-px">
+											<!-- Loading skeleton -->
+											<template v-if="conversationStore.isLoading && conversationStore.conversations.length === 0">
+												<div v-for="i in 5" :key="i" class="h-[40px] rounded-[10px] bg-[var(--bg-hover)] animate-pulse mx-1"></div>
+											</template>
+											<template v-else-if="sortedConversations.length === 0">
+												<div class="flex flex-col items-center justify-center py-6 gap-2">
+													<MessageSquare :size="20" class="text-[var(--text-tertiary)] opacity-40" />
+													<p class="text-[12px] text-[var(--text-tertiary)] text-center leading-relaxed">No conversations yet.<br />Start a new task above.</p>
 												</div>
+											</template>
+											<template v-else>
+											<div v-for="conversation in sortedConversations" :key="conversation.id" @click="handleSelectConversation(conversation.id)" :class="['flex items-center rounded-[10px] cursor-pointer transition-colors w-full h-[40px] ps-[9px] pe-[2px] gap-[12px]', conversationStore.currentConversationId == conversation.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]']">
+												<div class="shrink-0 size-[18px] flex items-center justify-center overflow-hidden">
+													<img v-if="getConversationAvatar(conversation)" :src="getConversationAvatar(conversation)" class="size-full object-cover rounded-[4px]" />
+													<template v-else>
+														<div v-if="conversation.characterId && conversation.characterId > 1" class="size-full flex items-center justify-center bg-blue-500/10 rounded-[4px]">
+															<Bot :size="14" class="text-blue-500 opacity-80" />
+														</div>
+														<MessageSquare v-else :size="16" class="text-[var(--text-secondary)] opacity-40" />
+													</template>
+												</div>
+												<span class="flex-1 text-[14px] text-[var(--text-primary)] font-medium truncate">{{ conversation.title || 'New conversation' }}</span>
 											</div>
+											</template>
 										</div>
 									</div>
 
-									<!-- Bottom Section -->
-									<div class="p-4 border-t border-[var(--border-main)] space-y-2">
-										<!-- Appearance Toggle -->
-										<button @click="toggleTheme"
-											class="w-full flex items-center justify-between px-3 py-2.5 rounded-2xl bg-[var(--background-white-main)] text-sm text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-white-main)] transition-all shadow-[var(--shadow-XS)] border border-[var(--border-main)]">
-											<div class="flex items-center gap-3">
-												<Sun v-if="uiStore.currentTheme === 'dark'" :size="20"
-													class="text-[var(--icon-secondary)]" />
-												<Moon v-else :size="20" class="text-[var(--icon-secondary)]" />
-												<span class="font-bold tracking-tight">Appearance</span>
+									<!-- Bottom -->
+									<div class="flex items-center justify-between p-[8px] border-t border-[var(--border-light)] shrink-0">
+										<div class="flex items-center gap-[4px]">
+											<div @click="uiStore.openSettingsModal()" class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 transition-colors">
+												<Settings2 :size="18" class="text-[var(--icon-primary)]" />
 											</div>
-											<span
-												class="text-[10px] font-black uppercase tracking-widest text-[var(--text-disable)]">{{
-													uiStore.themeMode
-												}}</span>
-										</button>
-
-										<!-- User Info -->
-										<div v-if="userStore.token"
-											class="flex items-center gap-3 px-3 py-3 rounded-2xl bg-[var(--background-white-main)] border border-[var(--border-main)] shadow-[var(--shadow-XS)]">
-											<div
-												class="w-10 h-10 bg-[var(--Button-primary-black)] text-white rounded-full flex items-center justify-center text-base font-black">
-												{{ userStore.userInfo?.nickname?.charAt(0) || 'U' }}
+											<div @click="toggleTheme" class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 transition-colors">
+												<Sun v-if="uiStore.currentTheme === 'dark'" :size="18" class="text-[var(--icon-primary)]" />
+												<Moon v-else :size="18" class="text-[var(--icon-primary)]" />
 											</div>
-											<div class="flex-1 min-w-0">
-												<div
-													class="text-sm font-black text-[var(--text-primary)] truncate tracking-tight">
-													{{
-														userStore.userInfo?.nickname || 'User' }}</div>
-												<div
-													class="text-[10px] text-[var(--text-disable)] truncate font-bold uppercase tracking-tighter">
-													{{
-														userStore.userInfo?.email }}</div>
-											</div>
-											<button @click="userStore.logout()"
-												class="p-2 text-[var(--icon-disable)] hover:text-[var(--function-error)] transition-colors">
-												<LogOut :size="20" />
-											</button>
 										</div>
-										<button v-else @click="uiStore.openLoginModal()"
-											class="w-full py-3 bg-[var(--Button-primary-black)] hover:opacity-90 text-[var(--text-onblack)] rounded-2xl font-black text-sm transition-all shadow-[var(--shadow-S)]">Log
-											in</button>
+
+										<!-- User -->
+										<div v-if="userStore.token" class="flex items-center gap-2">
+											<div class="flex items-center gap-2 cursor-pointer" @click="uiStore.openSettingsModal()">
+												<div class="w-7 h-7 rounded-full bg-[var(--Button-primary-black)] text-[var(--text-onblack)] flex items-center justify-center text-xs font-bold shrink-0">
+													{{ userStore.userInfo?.nickname?.charAt(0)?.toUpperCase() || 'U' }}
+												</div>
+												<span class="text-[13px] font-medium text-[var(--text-primary)] max-w-[100px] truncate">{{ userStore.userInfo?.nickname || 'User' }}</span>
+											</div>
+											<div @click="userStore.logout()" class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 transition-colors">
+												<LogOut :size="16" class="text-[var(--icon-secondary)]" />
+											</div>
+										</div>
+										<button v-else @click="uiStore.openLoginModal()" class="px-3 py-1.5 bg-[var(--Button-primary-black)] hover:opacity-90 text-[var(--text-onblack)] rounded-[8px] text-sm font-medium transition-opacity">
+											Sign in
+										</button>
 									</div>
 								</div>
 							</DialogPanel>
@@ -187,29 +155,13 @@
 		</Dialog>
 	</TransitionRoot>
 
-	<!-- Modals -->
 	<ProjectModal :show="showCreateProjectModal" @close="showCreateProjectModal = false" />
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, markRaw, computed, onMounted } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { useRouter } from 'vue-router'
-import {
-	X,
-	Plus,
-	Home,
-	MessageCircle,
-	ChevronDown,
-	AlignJustify,
-	Folder,
-	MessageSquare,
-	Sun,
-	Moon,
-	LogOut,
-	Bot,
-	Compass,
-} from 'lucide-vue-next'
+import { X, SquarePen, Search, Library, AlignJustify, Folder, MessageSquare, Settings2, Sun, Moon, LogOut, Bot, Compass, BookOpen, Image, Video, ChevronUp, DollarSign, Book, GraduationCap, Pencil, PenTool, Code, Terminal, Music, Coffee, Paintbrush, Palette, Stethoscope, Asterisk, Flower, Briefcase, BarChart, CircleDot, Dumbbell, Notebook, Scale, Globe, Plane, Earth, Wrench, PawPrint, FlaskConical, Brain, Heart, Sprout } from 'lucide-vue-next'
 import { useConversationStore } from '../stores/conversation'
 import { useUIStore } from '../stores/ui'
 import { useUserStore } from '../stores/user'
@@ -225,7 +177,42 @@ const projectStore = useProjectStore()
 const discoveryStore = useDiscoveryStore()
 
 const projectsCollapsed = ref(false)
+const moreCollapsed = ref(false)
 const showCreateProjectModal = ref(false)
+
+const sortedConversations = computed(() =>
+	[...conversationStore.conversations].sort((a, b) =>
+		new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+	)
+)
+
+const projectIconMap: Record<string, any> = {
+	Folder, DollarSign, Book, GraduationCap, Pencil, PenTool,
+	Code, Terminal, Music, Coffee, Paintbrush, Palette,
+	Stethoscope, Asterisk, Flower, Briefcase, BarChart, CircleDot,
+	Dumbbell, Notebook, Scale, Globe, Plane, Earth,
+	Wrench, PawPrint, FlaskConical, Brain, Heart, Sprout,
+}
+
+const colorPresets = [
+	{ name: 'black', hex: 'var(--text-secondary)' },
+	{ name: 'red', hex: '#EF4444' },
+	{ name: 'orange', hex: '#F97316' },
+	{ name: 'yellow', hex: '#EAB308' },
+	{ name: 'green', hex: '#22C55E' },
+	{ name: 'blue', hex: '#3B82F6' },
+	{ name: 'purple', hex: '#A855F7' },
+	{ name: 'pink', hex: '#EC4899' },
+]
+
+const getProjectColor = (colorName?: string) => {
+	const c = colorPresets.find(c => c.name === colorName)
+	return c ? c.hex : 'var(--text-secondary)'
+}
+
+const getProjectIcon = (iconName?: string) => {
+	return projectIconMap[iconName || 'Folder'] || Folder
+}
 
 onMounted(() => {
 	if (discoveryStore.allItems.length === 0) {
@@ -233,33 +220,37 @@ onMounted(() => {
 	}
 })
 
+const navItems = [
+	{ id: 'search', label: 'Search', icon: markRaw(Search), shortcut: '⌘ K', handler: () => { uiStore.openSearchModal(); uiStore.closeMobileMenu() } },
+	{ id: 'library', label: 'Library', icon: markRaw(Library), handler: () => { uiStore.closeMobileMenu() } },
+]
+
+const moreNavItems = [
+	{ id: 'ai-bots', label: 'AI bots', icon: markRaw(Compass), handler: () => { router.push('/explore'); uiStore.closeMobileMenu() } },
+	{ id: 'ai-reading', label: 'AI Reading', icon: markRaw(BookOpen), handler: () => { router.push('/ai-search'); uiStore.closeMobileMenu() } },
+	{ id: 'ai-image', label: 'AI Image Generator', icon: markRaw(Image), handler: () => { router.push('/image-generation'); uiStore.closeMobileMenu() } },
+	{ id: 'ai-video', label: 'AI Video Generator', icon: markRaw(Video), handler: () => { router.push('/video-generation'); uiStore.closeMobileMenu() } },
+]
+
 const toggleProjects = () => {
 	projectsCollapsed.value = !projectsCollapsed.value
 }
 
-const openCreateProjectModal = () => {
-	showCreateProjectModal.value = true
+const toggleMoreTools = () => {
+	moreCollapsed.value = !moreCollapsed.value
 }
 
 const selectProject = (id: number | null) => {
 	conversationStore.setSelectedGroupId(id)
+	uiStore.closeMobileMenu()
 }
 
-const handleNewChat = async () => {
-	try {
-		const id = await conversationStore.createConversation({
-			character_id: 1,
-			group_id: conversationStore.selectedGroupId || 0,
-		})
-		router.push(`/chat/${id}`)
-		uiStore.closeMobileMenu()
-	} catch (e) {
-		console.error('Failed to create chat:', e)
-	}
+const handleNewChat = () => {
+	router.push('/chat')
+	uiStore.closeMobileMenu()
 }
 
 const handleSelectConversation = (id: number | string) => {
-	conversationStore.switchConversation(id)
 	const conversation = conversationStore.conversations.find(c => String(c.id) === String(id))
 	if (conversation?.characterId && conversation.characterId > 1) {
 		router.push(`/character/${conversation.characterId}?conv=${id}`)

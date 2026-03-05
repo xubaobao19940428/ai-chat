@@ -1,4 +1,7 @@
+/// <reference types="node" />
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import obfuscatorPlugin from 'vite-plugin-javascript-obfuscator'
+
 export default defineNuxtConfig({
     compatibilityDate: '2025-07-15',
     devtools: { enabled: false },
@@ -24,6 +27,30 @@ export default defineNuxtConfig({
             appKey: '49f68a5c8493ec2c0bf489821c21fc3b',
         }
     },
+    vite: {
+        plugins: process.env.NODE_ENV === 'production' ? [
+            obfuscatorPlugin({
+                options: {
+                    compact: true,
+                    controlFlowFlattening: false,
+                    deadCodeInjection: false,
+                    debugProtection: false,
+                    disableConsoleOutput: true,
+                    identifierNamesGenerator: 'hexadecimal',
+                    renameGlobals: false,
+                    rotateStringArray: true,
+                    selfDefending: false,
+                    shuffleStringArray: true,
+                    splitStrings: false,
+                    stringArray: true,
+                    stringArrayThreshold: 0.75,
+                    transformObjectKeys: false,
+                    unicodeEscapeSequence: false,
+                },
+            })
+        ] : [],
+    },
+
     app: {
         head: {
             title: 'Aura AI',
