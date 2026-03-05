@@ -1,6 +1,6 @@
 /// <reference types="node" />
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import obfuscatorPlugin from 'vite-plugin-javascript-obfuscator'
+// import obfuscatorPlugin from 'vite-plugin-javascript-obfuscator'
 
 export default defineNuxtConfig({
     compatibilityDate: '2025-07-15',
@@ -28,27 +28,27 @@ export default defineNuxtConfig({
         }
     },
     vite: {
-        plugins: process.env.NODE_ENV === 'production' ? [
-            obfuscatorPlugin({
-                options: {
-                    compact: true,
-                    controlFlowFlattening: false,
-                    deadCodeInjection: false,
-                    debugProtection: false,
-                    disableConsoleOutput: true,
-                    identifierNamesGenerator: 'hexadecimal',
-                    renameGlobals: false,
-                    rotateStringArray: true,
-                    selfDefending: false,
-                    shuffleStringArray: true,
-                    splitStrings: false,
-                    stringArray: true,
-                    stringArrayThreshold: 0.75,
-                    transformObjectKeys: false,
-                    unicodeEscapeSequence: false,
-                },
-            })
-        ] : [],
+        // plugins: process.env.NODE_ENV === 'production' ? [
+        //     obfuscatorPlugin({
+        //         options: {
+        //             compact: true,
+        //             controlFlowFlattening: false,
+        //             deadCodeInjection: false,
+        //             debugProtection: false,
+        //             disableConsoleOutput: true,
+        //             identifierNamesGenerator: 'hexadecimal',
+        //             renameGlobals: false,
+        //             rotateStringArray: true,
+        //             selfDefending: false,
+        //             shuffleStringArray: true,
+        //             splitStrings: false,
+        //             stringArray: true,
+        //             stringArrayThreshold: 0.75,
+        //             transformObjectKeys: false,
+        //             unicodeEscapeSequence: false,
+        //         },
+        //     })
+        // ] : [],
     },
 
     app: {
