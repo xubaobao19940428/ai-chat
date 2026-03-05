@@ -18,6 +18,9 @@ import {
   deleteLocalMessages
 } from '~/utils/storage'
 
+// Track freshly created conversations to skip redundant API fetches on navigation
+const _freshIds = new Set<string>()
+
 // Debounced save for streaming — avoids IndexedDB storm
 let _saveTimer: ReturnType<typeof setTimeout> | null = null
 const debouncedSaveMessages = (conversationId: number | string, messages: Message[]) => {
@@ -197,6 +200,7 @@ export const useConversationStore = defineStore('conversation', () => {
       }
       conversations.value.unshift(newConv)
       currentConversationId.value = newId
+      _freshIds.add(String(newId))
 
       // Background sync — don't block the caller
       fetchConversations().catch(() => {})
@@ -230,8 +234,15 @@ export const useConversationStore = defineStore('conversation', () => {
   const switchConversation = async (id: number | string) => {
     currentConversationId.value = id
 
+    // Freshly created conversations are already in the store — skip redundant API calls
+    const idStr = String(id)
+    if (_freshIds.has(idStr)) {
+      _freshIds.delete(idStr)
+      return conversations.value.find(c => String(c.id) === idStr) || null
+    }
+
     const conversation = await fetchConversationDetail(id)
-    
+
     if (conversation) {
       if (conversation.groupId !== selectedGroupId.value) {
         selectedGroupId.value = conversation.groupId
@@ -340,6 +351,30 @@ export const useConversationStore = defineStore('conversation', () => {
     }
   }
 
+  // 移除最后一条 assistant 消息（用于流式出错时清除空占位）
+  const removeLastAssistantMessage = (conversationId: number | string) => {
+    const conversation = conversations.value.find(c => c.id == conversationId)
+    if (!conversation) return
+    const last = conversation.messages[conversation.messages.length - 1]
+    if (last?.role === 'assistant') {
+      conversation.messages.pop()
+      conversation.updatedAt = Date.now()
+      saveLocalMessages(conversationId, conversation.messages)
+    }
+  }
+
+  // 从某条消息开始截断会话（用于编辑消息后重新生成）
+  const truncateFromMessage = (conversationId: number | string, messageId: string) => {
+    const conversation = conversations.value.find(c => c.id == conversationId)
+    if (!conversation) return
+    const idx = conversation.messages.findIndex(m => m.id === messageId)
+    if (idx !== -1) {
+      conversation.messages = conversation.messages.slice(0, idx)
+      conversation.updatedAt = Date.now()
+      saveLocalMessages(conversationId, conversation.messages)
+    }
+  }
+
   // Initial load from local storage
   const initFromLocalStorage = async () => {
     const cachedList = await getLocalConversations()
@@ -368,6 +403,8 @@ export const useConversationStore = defineStore('conversation', () => {
     updateLastMessage,
     updateLastMessageContent,
     updateModelParams,
+    truncateFromMessage,
+    removeLastAssistantMessage,
     initFromLocalStorage,
   }
 })

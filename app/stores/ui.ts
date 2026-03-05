@@ -1,6 +1,14 @@
 import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
 
+export type ToastType = 'success' | 'error' | 'info'
+
+export interface Toast {
+  id: number
+  message: string
+  type: ToastType
+}
+
 export type ThemeMode = 'light' | 'dark' | 'system'
 
 export const useUIStore = defineStore('ui', () => {
@@ -185,6 +193,22 @@ export const useUIStore = defineStore('ui', () => {
     showWebsiteReferenceModal.value = false
   }
 
+  // Toast Notifications
+  const toasts = ref<Toast[]>([])
+  let _toastId = 0
+
+  const showToast = (message: string, type: ToastType = 'success', duration = 2500) => {
+    const id = ++_toastId
+    toasts.value.push({ id, message, type })
+    setTimeout(() => {
+      toasts.value = toasts.value.filter(t => t.id !== id)
+    }, duration)
+  }
+
+  const removeToast = (id: number) => {
+    toasts.value = toasts.value.filter(t => t.id !== id)
+  }
+
   return {
     sidebarCollapsed,
     mobileMenuOpen,
@@ -218,5 +242,8 @@ export const useUIStore = defineStore('ui', () => {
     showWebsiteReferenceModal,
     openWebsiteReferenceModal,
     closeWebsiteReferenceModal,
+    toasts,
+    showToast,
+    removeToast,
   }
 })

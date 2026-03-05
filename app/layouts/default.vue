@@ -21,6 +21,7 @@
 					<SearchModal />
 					<RenameModal />
 					<WebsiteReferenceModal />
+					<Toast />
 				</ClientOnly>
 			</main>
 		</div>

@@ -256,11 +256,11 @@
   }
 
   body {
-    @apply text-gray-900 selection:bg-indigo-100 selection:text-indigo-900;
+    @apply text-gray-900 selection:bg-[#0081f2]/15 selection:text-[#0055b3];
   }
 
   html.dark body {
-    @apply text-gray-100 selection:bg-indigo-500/30 selection:text-indigo-200;
+    @apply text-gray-100 selection:bg-[#0081f2]/30 selection:text-[#7ec8ff];
   }
 }
 

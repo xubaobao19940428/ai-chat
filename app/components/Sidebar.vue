@@ -163,7 +163,7 @@
 						<LayoutGrid :size="14" />
 					</div>
 					<span
-						class="text-[12px] font-medium text-[var(--text-tertiary)] opacity-80 group-hover/collapse:opacity-100">拖到这里可以将其收起</span>
+						class="text-[12px] font-medium text-[var(--text-tertiary)] opacity-80 group-hover/collapse:opacity-100">Drag here to collapse</span>
 				</div>
 			</transition>
 
@@ -416,6 +416,15 @@
 		<!-- Global Modals -->
 		<ProjectModal :show="uiStore.showProjectModal" :editingProject="currentEditingProject"
 			@close="handleCloseProjectModal" @success="projectStore.fetchProjects" />
+
+		<!-- Confirm Dialog -->
+		<ConfirmDialog
+			:show="confirmDialog.show"
+			:title="confirmDialog.title"
+			:message="confirmDialog.message"
+			@confirm="confirmDialog.onConfirm"
+			@cancel="confirmDialog.show = false"
+		/>
 	</aside>
 </template>
 
@@ -428,6 +437,7 @@ import { useProjectStore } from '../stores/projects'
 import { useUIStore } from '../stores/ui'
 import { useDiscoveryStore } from '../stores/discovery'
 import ProjectModal from './ProjectModal.vue'
+import ConfirmDialog from './ConfirmDialog.vue'
 import Tooltip from './Tooltip.vue'
 
 const router = useRouter()
@@ -443,6 +453,18 @@ onMounted(() => {
 })
 const currentEditingProject = ref<any>(null)
 const projectsCollapsed = ref(false)
+
+// Confirm Dialog State
+const confirmDialog = ref({
+	show: false,
+	title: '',
+	message: '',
+	onConfirm: () => {},
+})
+
+const openConfirm = (title: string, message: string, onConfirm: () => void) => {
+	confirmDialog.value = { show: true, title, message, onConfirm }
+}
 
 const isMoreMenuOpen = ref(false)
 const isHoverMenuOpen = ref(false)
@@ -560,8 +582,6 @@ const handleMouseLeave = () => {
 }
 
 const handleMoreItemClick = (item: any) => {
-	console.log('Clicked item:', item.name || item.label)
-
 	if (item.id === 'ai-image') {
 		router.push('/image-generation')
 	} else if (item.id === 'ai-video') {
@@ -642,10 +662,16 @@ const moreItems = ref([
 	{ id: 'ai-video', name: 'AI Video Generator', icon: markRaw(Video) },
 ])
 
-const handleDeleteConversation = async (id: string) => {
-	if (confirm('Delete this conversation?')) {
-		await conversationStore.deleteConversation(id)
-	}
+const handleDeleteConversation = (id: string) => {
+	openConfirm(
+		'Delete Conversation',
+		'This conversation will be permanently deleted.',
+		async () => {
+			await conversationStore.deleteConversation(id)
+			confirmDialog.value.show = false
+			uiStore.showToast('Conversation deleted')
+		}
+	)
 }
 
 const handleOpenNewTab = (id: string | number) => {
@@ -658,11 +684,10 @@ const handleMoveToProject = async (conversationId: string | number, projectId: s
 }
 
 const handleShare = (conversation: any) => {
-	console.log('Sharing conversation:', conversation)
-	// Implement share logic or copy link
 	const url = window.location.origin + '/chat/' + conversation.id
-	navigator.clipboard.writeText(url)
-	alert('Link copied to clipboard!')
+	navigator.clipboard.writeText(url).then(() => {
+		uiStore.showToast('Link copied to clipboard')
+	})
 }
 
 const handleMenuClick = (event: MouseEvent, id: string | number) => {
@@ -690,10 +715,16 @@ const handleCloseProjectModal = () => {
 	currentEditingProject.value = null
 }
 
-const handleDeleteProject = async (id: string | number) => {
-	if (confirm('Delete this project? All associated chats will also be deleted.')) {
-		await projectStore.deleteProject(Number(id))
-	}
+const handleDeleteProject = (id: string | number) => {
+	openConfirm(
+		'Delete Project',
+		'This project and all its associated chats will be permanently deleted.',
+		async () => {
+			await projectStore.deleteProject(Number(id))
+			confirmDialog.value.show = false
+			uiStore.showToast('Project deleted')
+		}
+	)
 }
 
 onMounted(async () => {

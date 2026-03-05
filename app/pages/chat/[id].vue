@@ -43,7 +43,7 @@
 									<textarea v-model="editingContent" class="w-full bg-transparent border-none focus:ring-0 text-[15px] font-medium leading-relaxed px-3 py-1 resize-none custom-scrollbar min-h-[32px] max-h-48" rows="1"></textarea>
 									<div class="flex justify-end gap-2 mt-1">
 										<button @click="cancelEditing" class="px-3 py-1 text-xs font-semibold rounded-full hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-secondary)]">Cancel</button>
-										<button @click="submitEdit" :disabled="!editingContent.trim()" class="px-4 py-1.5 text-xs font-semibold bg-[var(--text-primary)] text-[var(--bg-main)] dark:bg-white dark:text-black rounded-full hover:opacity-90 transition-opacity disabled:opacity-50">Send</button>
+										<button @click="submitEdit" :disabled="!editingContent.trim()" class="px-4 py-1.5 text-xs font-semibold bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full hover:opacity-90 transition-opacity disabled:opacity-50">Send</button>
 									</div>
 								</div>
 								<!-- View Mode -->
@@ -131,11 +131,15 @@
 											<Settings :size="18" />
 										</PopoverButton>
 									</Tooltip>
-									<Transition enter-active-class="transition duration-200 ease-out" enter-from-class="translate-y-2 opacity-0" enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-150 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-2 opacity-0">
-										<PopoverPanel class="absolute bottom-full left-0 mb-3 z-50 w-[440px] bg-[var(--bg-main)] rounded-2xl shadow-[var(--shadow-card)] border border-[var(--border-light)] overflow-hidden">
-											<div class="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
-												<span class="text-[11px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Parameters</span>
-												<button @click="resetParams" class="text-[11px] text-[var(--text-blue)] hover:underline font-semibold">Reset</button>
+									<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1.5 opacity-0 scale-[0.98]" enter-to-class="translate-y-0 opacity-100 scale-100" leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1.5 opacity-0">
+										<PopoverPanel class="absolute bottom-full left-0 mb-3 z-50 w-[300px] max-w-[calc(100vw-2rem)] bg-[var(--bg-main)] rounded-2xl shadow-lg border border-[var(--border-light)]">
+											<!-- Header -->
+											<div class="px-4 pt-3.5 pb-3 border-b border-[var(--border-light)] flex items-center justify-between">
+												<div class="flex items-center gap-2">
+													<SlidersHorizontal :size="14" class="text-[var(--text-tertiary)]" />
+													<span class="text-[13px] font-semibold text-[var(--text-primary)]">Parameters</span>
+												</div>
+												<button @click="resetParams" class="text-[12px] font-medium text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors">Reset</button>
 											</div>
 											<ModelParameters :model-input="modelStore.selectedModel?.model_input" :values="currentConversation?.params || {}" @update:values="updateParams" />
 										</PopoverPanel>
@@ -143,11 +147,13 @@
 								</Popover>
 							</div>
 
-							<!-- Send Button -->
-							<Tooltip :text="chatStore.isLoading ? 'Sending...' : hasContent ? 'Send Message' : 'Type something...'">
-								<button @click="() => sendMessage()" :disabled="!hasContent || chatStore.isLoading" class="flex items-center justify-center w-8 h-8 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full transition-transform active:scale-90 disabled:opacity-20 disabled:scale-100 dark:bg-[var(--text-white)] dark:text-[var(--bg-main)]">
-									<ArrowUp v-if="!chatStore.isLoading" :size="16" :stroke-width="2.5" />
-									<div v-else class="w-4 h-4 border-2 border-[var(--bg-main)]/30 border-t-[var(--bg-main)] rounded-full animate-spin"></div>
+							<!-- Stop / Send Button -->
+							<Tooltip :text="chatStore.isLoading ? 'Stop generating' : hasContent ? 'Send Message' : 'Type something...'">
+								<button v-if="chatStore.isLoading" @click="stopGeneration" class="flex items-center justify-center w-8 h-8 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full transition-transform active:scale-90 dark:bg-[var(--text-white)] dark:text-[var(--bg-main)]">
+									<Square :size="12" fill="currentColor" />
+								</button>
+								<button v-else @click="() => sendMessage()" :disabled="!hasContent" class="flex items-center justify-center w-8 h-8 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full transition-transform active:scale-90 disabled:opacity-20 disabled:scale-100 dark:bg-[var(--text-white)] dark:text-[var(--bg-main)]">
+									<ArrowUp :size="16" :stroke-width="2.5" />
 								</button>
 							</Tooltip>
 						</div>
@@ -178,11 +184,12 @@ import { useChatStore } from '../../stores/chat'
 import { useModelStore } from '../../stores/models'
 import { useUserStore } from '../../stores/user'
 import { useDiscoveryStore } from '../../stores/discovery'
+import { useUIStore } from '../../stores/ui'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import Tooltip from '../../components/Tooltip.vue'
-import { Copy, Pencil, Plus, Globe, Settings, ArrowUp } from 'lucide-vue-next'
+import { Copy, Pencil, Plus, Globe, Settings, ArrowUp, Square, SlidersHorizontal } from 'lucide-vue-next'
 
 const route = useRoute()
 const conversationStore = useConversationStore()
@@ -190,6 +197,7 @@ const chatStore = useChatStore()
 const modelStore = useModelStore()
 const userStore = useUserStore()
 const discoveryStore = useDiscoveryStore()
+const uiStore = useUIStore()
 const messagesContainer = ref<HTMLElement | null>(null)
 const inputMessage = ref('')
 const activeSubPrompts = ref<string[]>([])
@@ -198,6 +206,14 @@ const isMountedInitial = ref(false)
 // Editing state
 const editingMessageId = ref<string | null>(null)
 const editingContent = ref('')
+
+// Abort controller for stream cancellation
+const abortController = ref<AbortController | null>(null)
+
+const stopGeneration = () => {
+	abortController.value?.abort()
+	abortController.value = null
+}
 
 const currentConversationId = computed(() => route.params.id as string)
 const currentConversation = computed(() => conversationStore.currentConversation)
@@ -306,8 +322,7 @@ const getModelIcon = (modelId?: string) => {
 
 const formatMessageTime = (timestamp?: number) => {
 	if (!timestamp) return ''
-	const date = new Date(timestamp * 1000)
-	return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+	return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
 const updateParams = (params: Record<string, any>) => {
@@ -331,7 +346,6 @@ const handleApplyPrompt = (suggestion: PromptSuggestion) => {
 }
 
 onMounted(async () => {
-	console.log('=== Chat page mounted ===')
 	// 1. 初始化本地存储
 	await conversationStore.initFromLocalStorage()
 
@@ -371,7 +385,6 @@ watch(
 				modelStore.selectModel(currentConversation.value.model || '')
 				// 只同步 selectedGroupId，不重新加载会话列表（避免清空消息）
 				if (currentConversation.value.groupId !== conversationStore.selectedGroupId) {
-					console.log('Watch: Syncing selectedGroupId to:', currentConversation.value.groupId)
 					conversationStore.selectedGroupId = currentConversation.value.groupId
 				}
 			}
@@ -408,7 +421,7 @@ const sendMessage = async (isInitial = false) => {
 		chatStore.setPendingMessage(null) // Consume it
 	}
 
-	if (!userMessage && !isInitial) {
+	if (!userMessage) {
 		return
 	}
 
@@ -442,7 +455,7 @@ const sendMessage = async (isInitial = false) => {
 
 		// Auto-update title if needed
 		const currentTitle = currentConversation.value?.title
-		if (currentTitle === '(A.I. Bestie) 的对话' || currentTitle === 'New conversation' || !currentTitle) {
+		if (!currentTitle || currentTitle === 'New conversation') {
 			const newTitle = userMessage.length > 40 ? userMessage.substring(0, 40) + '...' : userMessage
 			conversationStore.updateTitle(conversationId, newTitle)
 		}
@@ -450,6 +463,7 @@ const sendMessage = async (isInitial = false) => {
 
 	// 3. Set loading and add assistant placeholder
 	chatStore.setLoading(true, conversationId)
+	abortController.value = new AbortController()
 
 	try {
 		conversationStore.addMessage(conversationId, {
@@ -492,6 +506,7 @@ const sendMessage = async (isInitial = false) => {
 				...options,
 				context,
 			},
+			signal: abortController.value.signal,
 			onMessage: (content) => {
 				tokenBuffer += content
 				const now = Date.now()
@@ -503,12 +518,14 @@ const sendMessage = async (isInitial = false) => {
 				}
 			},
 			onError: (error) => {
-				console.error('Stream error:', error)
-				const errorMessage = error?.message || 'Connection failed'
-				// For errors, we use the full update method to ensure state is synced
-				conversationStore.updateLastMessage(conversationId, `\n[Error: ${errorMessage}]`, true)
+				const lastMsg = currentConversation.value?.messages[currentConversation.value.messages.length - 1]
+				if (lastMsg?.role === 'assistant' && !lastMsg.content) {
+					conversationStore.removeLastAssistantMessage(conversationId)
+				}
+				uiStore.showToast(error?.message || 'Connection failed. Please try again.', 'error')
 			},
 			onFinish: () => {
+				abortController.value = null
 				// Final flush of any remaining tokens
 				if (tokenBuffer) {
 					conversationStore.updateLastMessageContent(conversationId, tokenBuffer)
@@ -520,17 +537,19 @@ const sendMessage = async (isInitial = false) => {
 				chatStore.setLoading(false)
 			},
 		})
-	} catch (error) {
-		console.error('Send message error:', error)
-		conversationStore.updateLastMessage(conversationId, '\n[Error: Failed to start stream]', true)
+	} catch (error: any) {
+		abortController.value = null
+		conversationStore.removeLastAssistantMessage(conversationId)
+		if (error?.name !== 'AbortError') {
+			uiStore.showToast('Failed to send message. Please try again.', 'error')
+		}
 		chatStore.setLoading(false)
 	}
 }
 
 const copyMessage = (content: string) => {
 	navigator.clipboard.writeText(content).then(() => {
-		// Optional: Add a toast notification here
-		console.log('Message copied to clipboard')
+		uiStore.showToast('Copied to clipboard')
 	})
 }
 
@@ -548,11 +567,12 @@ const submitEdit = () => {
 	if (!editingContent.value.trim()) return
 
 	const content = editingContent.value.trim()
+	const messageId = editingMessageId.value!
 	cancelEditing()
 
-	// We use the same sendMessage logic but with the new content
-	// To strictly follow the requirement "send 新发送出去一条消息"
-	// We effectively populate the editor and call sendMessage
+	// Truncate conversation from the edited message onwards, then regenerate
+	conversationStore.truncateFromMessage(currentConversationId.value, messageId)
+
 	if (editor.value) {
 		editor.value.commands.setContent(content)
 		inputMessage.value = content
@@ -570,13 +590,6 @@ const handleMessageClick = (e: MouseEvent) => {
 		const code = btn.getAttribute('data-code')
 		if (code) {
 			copyMessage(code)
-
-			// Optional: Visual feedback on button
-			const originalContent = btn.innerHTML
-			btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500"><path d="M20 6 9 17l-5-5"/></svg><span class="text-green-500 text-xs">Copied!</span>`
-			setTimeout(() => {
-				btn.innerHTML = originalContent
-			}, 2000)
 		}
 	}
 }

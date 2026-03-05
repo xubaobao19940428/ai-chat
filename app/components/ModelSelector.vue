@@ -36,32 +36,41 @@
 
 		<!-- Dropdown Menu -->
 		<Teleport to="body">
-			<Transition enter-active-class="transition duration-300 ease-out" enter-from-class="transform translate-y-2 scale-95 opacity-0" enter-to-class="transform translate-y-0 scale-100 opacity-100" leave-active-class="transition duration-200 ease-in" leave-from-class="transform scale-100 opacity-100" leave-to-class="transform translate-y-2 scale-95 opacity-0">
-				<div v-if="isOpen" :style="dropdownStyle" class="fixed w-72 sm:w-80 rounded-2xl bg-[var(--background-white-main)] shadow-[var(--shadow-L)] ring-1 ring-[var(--border-main)] focus:outline-none z-[9999] overflow-hidden p-1.5 backdrop-blur-xl border border-[var(--border-main)]">
+			<Transition enter-active-class="transition duration-200 ease-out" enter-from-class="transform translate-y-1 opacity-0" enter-to-class="transform translate-y-0 opacity-100" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0">
+				<div v-if="isOpen" :style="dropdownStyle" class="fixed w-[280px] rounded-[12px] bg-[var(--background-white-main)] shadow-[var(--shadow-L)] z-[9999] overflow-hidden border border-[var(--border-main)]">
 					<div v-if="modelStore.isLoading" class="p-6 text-center">
-						<div class="w-6 h-6 border-2 border-[var(--text-blue)] border-t-transparent rounded-full animate-spin mx-auto"></div>
+						<div class="w-5 h-5 border-2 border-[var(--text-blue)] border-t-transparent rounded-full animate-spin mx-auto"></div>
 					</div>
-					<div v-else class="space-y-0.5 max-h-[350px] overflow-y-auto no-scrollbar">
-						<div class="px-3 py-2 text-[10px] font-bold text-[var(--text-disable)] uppercase tracking-widest text-start">Available Models</div>
-						<button v-for="model in modelStore.models" :key="model.model" @click="selectModel(`${model.provider}:${model.model}`)" class="w-full flex items-center gap-3 p-2.5 rounded-xl transition-all text-left hover:bg-[var(--fill-tsp-white-main)] group relative" :class="{ 'bg-[var(--fill-tsp-white-main)]': modelStore.selectedModelId === `${model.provider}:${model.model}` }">
-							<!-- Provider Icon -->
-							<div class="flex-shrink-0">
-								<div class="w-8 h-8 rounded-lg bg-[var(--background-white-main)] border border-[var(--border-main)] flex items-center justify-center group-hover:scale-110 transition-transform shadow-[var(--shadow-XS)] overflow-hidden">
-									<img :src="getModelIcon(model)" class="w-5 h-5 object-contain" :alt="model.display_name" />
+					<div v-else class="max-h-[380px] overflow-y-auto no-scrollbar">
+						<!-- Header -->
+						<div class="px-3 pt-3 pb-2">
+							<span class="text-[11px] font-medium text-[var(--text-tertiary)]">Models</span>
+						</div>
+						<div class="mx-3 mb-1 h-px bg-[var(--border-main)]"></div>
+						<!-- List -->
+						<div class="p-1.5 space-y-0.5">
+							<button
+								v-for="model in modelStore.models"
+								:key="model.model"
+								@click="selectModel(`${model.provider}:${model.model}`)"
+								class="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-[8px] transition-colors text-left group"
+								:class="isSelected(model) ? 'bg-[var(--fill-blue)]' : 'hover:bg-[var(--fill-tsp-white-main)]'"
+							>
+								<!-- Icon -->
+								<div class="w-7 h-7 rounded-[7px] bg-[var(--background-gray-main)] flex items-center justify-center flex-shrink-0 overflow-hidden">
+									<img :src="getModelIcon(model)" class="w-4 h-4 object-contain" :alt="model.display_name" />
 								</div>
-							</div>
 
-							<!-- Content -->
-							<div class="flex-1 min-w-0 text-start">
-								<div class="flex items-center gap-2">
-									<span class="text-sm font-bold text-[var(--text-primary)] truncate">{{ model.display_name }}</span>
-									<div v-if="modelStore.selectedModelId === `${model.provider}:${model.model}`" class="w-1.5 h-1.5 rounded-full bg-[var(--text-blue)]"></div>
+								<!-- Name + provider -->
+								<div class="flex-1 min-w-0">
+									<div class="text-[13px] font-medium leading-tight truncate" :class="isSelected(model) ? 'text-[var(--text-blue)]' : 'text-[var(--text-primary)]'">{{ model.display_name }}</div>
+									<div class="text-[11px] leading-tight mt-0.5 truncate" :class="isSelected(model) ? 'text-[var(--text-blue)]/70' : 'text-[var(--text-tertiary)]'">{{ formatProvider(model.provider) }}</div>
 								</div>
-								<p class="text-[10px] text-[var(--text-tertiary)] truncate uppercase tracking-tighter font-bold">
-									{{ model.provider }}
-								</p>
-							</div>
-						</button>
+
+								<!-- Check -->
+								<Check v-if="isSelected(model)" :size="13" class="flex-shrink-0 text-[var(--text-blue)]" />
+							</button>
+						</div>
 					</div>
 				</div>
 			</Transition>
@@ -72,7 +81,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, nextTick, watch } from 'vue'
 import { useModelStore } from '../stores/models'
-import { ChevronRight, ChevronDown } from 'lucide-vue-next'
+import { ChevronRight, ChevronDown, Check } from 'lucide-vue-next'
 
 const props = withDefaults(
 	defineProps<{
@@ -150,6 +159,20 @@ const getModelIcon = (model: any) => {
 	if (id.includes('fastgpt')) return '/icons/fastgpt.svg'
 
 	return '/icons/deepseek.svg'
+}
+
+const isSelected = (model: any) => {
+	return modelStore.selectedModelId === `${model.provider}:${model.model}`
+}
+
+const formatProvider = (provider: string) => {
+	const map: Record<string, string> = {
+		openai: 'OpenAI', anthropic: 'Anthropic', google: 'Google',
+		deepseek: 'DeepSeek', meta: 'Meta', xai: 'xAI',
+		bytedance: 'ByteDance', moonshot: 'Moonshot', zhipu: 'Zhipu AI',
+	}
+	const key = (provider || '').toLowerCase()
+	return map[key] || provider.charAt(0).toUpperCase() + provider.slice(1)
 }
 
 const selectModel = (id: string) => {

@@ -1,6 +1,17 @@
 import axios from 'axios'
 import type { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
 import { randomString, generateSign } from './sign'
+import { useUIStore } from '~/stores/ui'
+
+const AUTH_ERRORS = new Set(['not_logined', 'not_login', 'unauthorized', 'token_expired'])
+
+const handleAuthError = () => {
+  if (!import.meta.client) return
+  try {
+    const uiStore = useUIStore()
+    uiStore.openLoginModal()
+  } catch (_) {}
+}
 
 // 创建axios实例
 const service: AxiosInstance = axios.create({
@@ -97,7 +108,10 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response: AxiosResponse) => {
     const res = response.data as any
-    if (res && typeof res === 'object' && 'code' in res && res.code !==0) {
+    if (res && typeof res === 'object' && 'code' in res && res.code !== 0) {
+      if (AUTH_ERRORS.has(res.message)) {
+        handleAuthError()
+      }
       return Promise.reject(new Error(res.message || 'Error'))
     }
     return response.data

@@ -76,7 +76,7 @@
                                 <!-- Avatar Upload -->
                                 <div @click="triggerUpload" class="group relative h-16 w-16 rounded-full overflow-hidden border border-[var(--border-main)] cursor-pointer">
                                      <img v-if="userStore.userInfo?.avatar" :src="userStore.userInfo.avatar" class="w-full h-full object-cover transition-opacity group-hover:opacity-75" />
-                                     <div v-else class="w-full h-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-2xl font-bold text-blue-600 transition-opacity group-hover:opacity-75">
+                                     <div v-else class="w-full h-full bg-[var(--fill-tsp-white-main)] flex items-center justify-center text-2xl font-bold text-[var(--text-secondary)] transition-opacity group-hover:opacity-75">
                                         {{ userStore.userInfo?.nickname?.[0]?.toUpperCase() || 'U' }}
                                      </div>
                                      <!-- Hover Overlay -->
@@ -292,7 +292,7 @@
                                     <div class="text-sm font-medium text-[var(--text-primary)]">Receive exclusive content</div>
                                     <div class="text-[13px] text-[var(--text-tertiary)] leading-relaxed mt-0.5">Get exclusive offers, event updates, excellent case examples and new feature guides.</div>
                                 </div>
-                                <Switch v-model="notifications.exclusive" :class="notifications.exclusive ? 'bg-blue-600' : 'bg-gray-200'" class="relative inline-flex h-4 w-7 items-center rounded-full transition-colors focus:outline-none">
+                                <Switch v-model="notifications.exclusive" :class="notifications.exclusive ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'" class="relative inline-flex h-4 w-7 items-center rounded-full transition-colors focus:outline-none">
                                     <span :class="notifications.exclusive ? 'translate-x-3.5' : 'translate-x-0.5'" class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" />
                                 </Switch>
                             </div>
@@ -302,7 +302,7 @@
                                     <div class="text-sm font-medium text-[var(--text-primary)]">Email me when my queued task starts</div>
                                     <div class="text-[13px] text-[var(--text-tertiary)] leading-relaxed mt-0.5">When enabled, we'll send you a timely email once your task finishes queuing and begins processing.</div>
                                 </div>
-                                <Switch v-model="notifications.queue" :class="notifications.queue ? 'bg-blue-600' : 'bg-gray-200'" class="relative inline-flex h-4 w-7 items-center rounded-full transition-colors focus:outline-none">
+                                <Switch v-model="notifications.queue" :class="notifications.queue ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'" class="relative inline-flex h-4 w-7 items-center rounded-full transition-colors focus:outline-none">
                                     <span :class="notifications.queue ? 'translate-x-3.5' : 'translate-x-0.5'" class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" />
                                 </Switch>
                             </div>
@@ -401,7 +401,7 @@ const handleFileChange = async (e: Event) => {
             await userStore.uploadAvatar(input.files[0])
             // Do not alert, just update UI which is handled by store
         } catch (error) {
-            alert('Avatar upload failed')
+            uiStore.showToast('Avatar upload failed', 'error')
         }
     }
 }

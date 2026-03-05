@@ -52,10 +52,10 @@
 
 											<!-- Tool Pill (Active Mode) -->
 											<div v-if="activeTool"
-												class="flex items-center gap-[6px] pl-[10px] pr-[12px] py-[6px] cursor-pointer rounded-full bg-blue-50 text-blue-600 border border-blue-100 transition-colors group">
+												class="flex items-center gap-[6px] pl-[10px] pr-[12px] py-[6px] cursor-pointer rounded-full bg-[var(--fill-blue)] text-[var(--text-blue)] border border-[var(--text-blue)]/20 transition-colors group">
 												<Tooltip text="Remove Tool">
 													<button @click.stop="activeTool = null"
-														class="hover:bg-blue-100 rounded-full p-0.5 transition-colors">
+														class="hover:bg-[var(--text-blue)]/10 rounded-full p-0.5 transition-colors">
 														<X :size="14" />
 													</button>
 												</Tooltip>
@@ -102,10 +102,11 @@
 											</div>
 
 											<!-- Send Button -->
-											<Tooltip :text="hasContent ? 'Send Message' : 'Type something...'">
-												<button @click="() => handleSendMessage()" :disabled="!hasContent"
+											<Tooltip :text="props.isLoading ? 'Creating chat...' : hasContent ? 'Send Message' : 'Type something...'">
+												<button @click="() => handleSendMessage()" :disabled="!hasContent || props.isLoading"
 													class="flex items-center justify-center w-8 h-8 rounded-full transition-all bg-[var(--text-primary)] text-white disabled:bg-[var(--fill-tsp-white-dark)] disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-95">
-													<ArrowUp :size="18" :stroke-width="2.5" />
+													<div v-if="props.isLoading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+													<ArrowUp v-else :size="18" :stroke-width="2.5" />
 												</button>
 											</Tooltip>
 										</div>
@@ -114,7 +115,7 @@
 							</div>
 
 							<!-- "Connect your tools" Banner (Matches user screenshot) -->
-							<div v-if="!activeTool || activeTool === 'website'"
+							<div v-if="showConnectBanner && (!activeTool || activeTool === 'website')"
 								class="mx-3 mt-1 mb-1 py-2 px-3 flex items-center justify-between group animate-fade-in-up"
 								style="animation-delay: 0.1s">
 								<div class="flex items-center gap-2">
@@ -127,7 +128,7 @@
 										<img src="/other.png" alt="" class="h-[22px]" />
 									</div>
 									<button
-										class="text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors p-1">
+										class="text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors p-1" @click="showConnectBanner = false">
 										<X :size="16" />
 									</button>
 								</div>
@@ -268,24 +269,24 @@
 					style="animation-delay: 0.5s; animation-fill-mode: forwards">
 					<div
 						class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
-						<div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center mb-2">
-							<Puzzle :size="24" class="text-blue-600" />
+						<div class="w-10 h-10 rounded-lg bg-[var(--fill-blue)] flex items-center justify-center mb-2">
+							<Puzzle :size="24" class="text-[var(--text-blue)]" />
 						</div>
 						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Get new capabilities
 							with custom skills</p>
 					</div>
 					<div
 						class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
-						<div class="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center mb-2">
-							<Mail :size="24" class="text-red-600" />
+						<div class="w-10 h-10 rounded-lg bg-[var(--function-error-tsp)] flex items-center justify-center mb-2">
+							<Mail :size="24" class="text-[var(--function-error)]" />
 						</div>
 						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Stay updated with the
 							latest news</p>
 					</div>
 					<div
 						class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
-						<div class="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center mb-2">
-							<Globe :size="24" class="text-green-600" />
+						<div class="w-10 h-10 rounded-lg bg-[var(--function-success-tsp)] flex items-center justify-center mb-2">
+							<Globe :size="24" class="text-[var(--function-success)]" />
 						</div>
 						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Explore the global
 							community</p>
@@ -398,6 +399,7 @@ const emit = defineEmits(['send-message'])
 
 const activeTool = ref<ToolType>(null)
 const hasContent = ref(false)
+const showConnectBanner = ref(true)
 
 const isMoreMenuOpen = ref(false)
 const moreMenuRef = ref<HTMLElement | null>(null)
@@ -588,8 +590,6 @@ function handleSendMessage(directContent?: string) {
 	try {
 		// 直接使用完整的 provider:model 格式
 		const modelId = modelStore.selectedModelId || 'openai:gpt-4o-mini'
-
-		console.log('WelcomeScreen: Sending message with model:', modelId)
 		emit('send-message', content, modelId)
 		editor.value?.commands.clearContent()
 

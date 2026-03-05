@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, watch } from 'vue'
 
 const uiStore = useUIStore()
 const userStore = useUserStore()
@@ -37,6 +37,16 @@ onMounted(() => {
 		projectStore.fetchProjects()
 		conversationStore.fetchConversations()
 	}
+
+	// Refetch user-specific data on login
+	watch(() => userStore.token, (token, prevToken) => {
+		if (token && !prevToken) {
+			userStore.fetchUserInfo()
+			projectStore.fetchProjects()
+			conversationStore.fetchConversations()
+			modelStore.fetchModels()
+		}
+	})
 
 	// Global Keyboard Shortcuts
 	window.addEventListener('keydown', handleGlobalKeydown)

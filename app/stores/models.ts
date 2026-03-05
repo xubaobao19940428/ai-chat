@@ -5,7 +5,7 @@ import { getModels, type AIModel } from '~/utils/api'
 export const useModelStore = defineStore('model', () => {
   const models = ref<AIModel[]>([])
   const isLoading = ref(false)
-  const selectedModelId = ref<string | null>(null)
+  const selectedModelId = useCookie<string | null>('selected-model-id', { default: () => null })
 
   const selectedModel = computed(() => {
     return models.value.find(m => m.model === selectedModelId.value || `${m.provider}:${m.model}` === selectedModelId.value) || 
