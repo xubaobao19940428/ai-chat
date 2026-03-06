@@ -167,141 +167,194 @@
             </div>
         </main>
 
-        <!-- Floating Pill Control Bar (Bottom) -->
+        <!-- Floating Pill Control Bar (Bottom) - Krea Style -->
         <div class="absolute bottom-12 inset-x-0 flex justify-center px-4 z-50 pointer-events-none">
-            <div class="w-full max-w-[840px] relative pointer-events-auto">
+            <div
+                class="relative z-40 mx-auto flex w-full flex-col items-center justify-center gap-1.5 pointer-events-auto">
+
                 <transition enter-active-class="duration-300 ease-out" enter-from-class="opacity-0 -translate-y-2"
                     enter-to-class="opacity-100 translate-y-0">
                     <div v-if="isGenerating"
                         class="absolute -top-12 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-1.5 bg-[var(--bg-main)] border border-[var(--border-main)] rounded-full shadow-lg">
                         <Loader2 :size="14" class="animate-spin text-purple-500" />
-                        <span class="text-[11px] font-bold text-[var(--text-primary)]">{{ generationProgress }}%
-                            Generating... (~{{ estimatedTimeRemaining }})</span>
+                        <span class="text-[11px] font-bold text-[var(--text-primary)]">
+                            {{ generationProgress }}% Generating... (~{{ estimatedTimeRemaining }})
+                        </span>
                     </div>
                 </transition>
 
-                <div
-                    class="bg-[var(--bg-main)]/90 backdrop-blur-xl rounded-[28px] border border-[var(--border-main)] p-2 shadow-[var(--shadow-pill)] flex flex-col gap-1 transition-all">
-                    <!-- Selector Row -->
-                    <div class="flex items-center gap-1.5 px-1.5 py-1 flex-wrap">
-                        <!-- Model Selection -->
-                        <div class="relative">
-                            <button @click="openDropdown = openDropdown === 'model' ? null : 'model'"
-                                class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-[var(--border-main)] transition-colors">
-                                <Film :size="13" class="text-[var(--text-secondary)]" />
-                                <span class="text-[11px] font-bold text-[var(--text-secondary)]">{{
-                                    selectedModel?.display_name ||
-                                    'Engine'
-                                }}</span>
-                                <ChevronDown :size="12" class="text-[var(--text-tertiary)]" />
-                            </button>
-                            <div v-if="openDropdown === 'model'"
-                                class="absolute bottom-full left-0 mb-3 w-48 bg-[var(--bg-main)] border border-[var(--border-main)] rounded-2xl shadow-xl p-1.5 z-[60]">
-                                <button v-for="m in models" :key="m.model"
-                                    @click="selectedModel = m; openDropdown = null"
-                                    class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-[var(--bg-hover)] transition-colors">
-                                    <span class="text-[12px] font-medium"
-                                        :class="selectedModel?.model === m.model ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'">{{
-                                            m.display_name }}</span>
-                                    <div v-if="selectedModel?.model === m.model"
-                                        class="size-1.5 rounded-full bg-purple-500"></div>
-                                </button>
-                            </div>
-                        </div>
+                <div ref="controlBarRef"
+                    class="group/promptbox bg-[var(--background-gray-main)] border-[var(--border-main)] text-[var(--text-primary)] flex w-[90%] rounded-[2rem] transform flex-col border-[0.5px] p-3 shadow-2xl transition-all duration-100 ease-out sm:w-fit sm:min-w-[620px]"
+                    style="height: 110px">
+                    <div class="flex w-full min-w-0 flex-row items-end h-full">
+                        <div class="flex w-full min-w-0 flex-col justify-between h-full gap-2 sm:mr-2.5">
 
-                        <!-- Aspect Ratio -->
-                        <div class="relative">
-                            <button @click="openDropdown = openDropdown === 'ratio' ? null : 'ratio'"
-                                class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-[var(--border-main)] transition-colors text-[11px] font-bold text-[var(--text-secondary)]">
-                                {{ selectedAspectRatio }}
-                            </button>
-                            <div v-if="openDropdown === 'ratio'"
-                                class="absolute bottom-full left-0 mb-3 grid grid-cols-3 gap-1 w-40 bg-[var(--bg-main)] border border-[var(--border-main)] rounded-2xl shadow-xl p-2 z-[60]">
-                                <button v-for="r in ['16:9', '9:16', '1:1']" :key="r"
-                                    @click="selectedAspectRatio = r; openDropdown = null"
-                                    class="py-2.5 rounded-lg transition-all text-[11px] font-bold border"
-                                    :class="selectedAspectRatio === r ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)]' : 'bg-transparent text-[var(--text-secondary)] border-transparent hover:bg-[var(--bg-hover)]'">
-                                    {{ r }}
-                                </button>
+                            <!-- Input Area -->
+                            <div class="relative w-full h-full pt-1.5">
+                                <textarea v-model="prompt"
+                                    class="scrollbar-hide relative max-h-48 min-h-[1.5lh] w-full max-w-[calc(100vw-200px)] min-w-full cursor-text resize-none overflow-y-auto border-0 bg-transparent px-2.5 py-1.5 text-base leading-6 font-normal placeholder-[var(--text-secondary)] focus:ring-0 sm:min-w-[400px] md:max-w-[calc(100vw-440px)] md:min-w[full] outline-none"
+                                    placeholder="Describe a video and click generate..." autocomplete="off" rows="1"
+                                    @keydown.enter="handleEnterKey" style="height: 36px"></textarea>
                             </div>
-                        </div>
 
-                        <!-- Duration Selection -->
-                        <div class="relative">
-                            <button @click="openDropdown = openDropdown === 'duration' ? null : 'duration'"
-                                class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-[var(--border-main)] transition-colors">
-                                <Clock :size="13" class="text-[var(--text-secondary)]" />
-                                <span class="text-[11px] font-bold text-[var(--text-secondary)]">{{ selectedDuration
-                                }}s</span>
-                                <ChevronDown :size="12" class="text-[var(--text-tertiary)]" />
-                            </button>
-                            <div v-if="openDropdown === 'duration'"
-                                class="absolute bottom-full left-0 mb-3 w-32 bg-[var(--bg-main)] border border-[var(--border-main)] rounded-2xl shadow-xl p-1.5 z-[60]">
-                                <button v-for="d in [5, 10]" :key="d" @click="selectedDuration = d; openDropdown = null"
-                                    class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-[var(--bg-hover)] transition-colors">
-                                    <span class="text-[12px] font-medium"
-                                        :class="selectedDuration === d ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'">{{
-                                            d }} seconds</span>
-                                    <div v-if="selectedDuration === d" class="size-1.5 rounded-full bg-purple-500">
+                            <!-- Buttons Row -->
+                            <div class="flex flex-wrap gap-1 text-[13px] font-medium tracking-tight mt-auto">
+                                <!-- Start Frame Upload with Popover -->
+                                <input type="file" ref="fileInput" accept="image/png, image/jpeg, video/mp4"
+                                    class="hidden" @change="handleFileUpload" />
+                                <div class="group/button relative">
+                                    <button @click="openDropdown = openDropdown === 'startFrame' ? null : 'startFrame'"
+                                        class="focus-visible:ring-ring/50 inline-flex shrink-0 items-center justify-center gap-2 font-medium whitespace-nowrap transition-all outline-none disabled:pointer-events-none disabled:opacity-50 h-[30px] px-3 py-1 rounded-full shadow-none border border-transparent"
+                                        :class="openDropdown === 'startFrame' ? 'bg-white shadow-sm' : 'bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)]'"
+                                        type="button" :disabled="isUploading">
+                                        <ImagePlus v-if="!isUploading && !previewImageUrl" :size="14" />
+                                        <Loader2 v-else-if="isUploading" :size="14" class="animate-spin" />
+                                        <img v-else-if="previewImageUrl" :src="previewImageUrl"
+                                            class="w-4 h-4 rounded-sm object-cover" />
+                                        Start frame
+                                    </button>
+
+                                    <!-- Start Frame Popover -->
+                                    <div v-if="openDropdown === 'startFrame'"
+                                        class="absolute bottom-[36px] left-0 pb-2 z-[60] min-w-[300px]">
+                                        <div
+                                            class="rounded-[28px] bg-white dark:bg-[#1a1a1a] border border-[var(--border-main)] p-4 shadow-2xl min-w-[300px] flex flex-col gap-4">
+                                            <p
+                                                class="text-[14px] font-medium text-[var(--text-primary)] text-center leading-snug px-2">
+                                                Start frame anchors the opening of your video. Upload an image/video or
+                                                select one from your assets.
+                                            </p>
+
+                                            <div class="flex flex-col gap-2">
+                                                <!-- Upload Button -->
+                                                <button @click="triggerFileUpload(); openDropdown = null"
+                                                    class="w-full flex items-center justify-center gap-2 bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 rounded-full py-3 text-[14px] font-medium transition-colors">
+                                                    <div
+                                                        class="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center">
+                                                        <Plus :size="10" stroke-width="3" />
+                                                    </div>
+                                                    Upload
+                                                </button>
+
+                                                <!-- Select Asset Button (Dummy function for now) -->
+                                                <button @click="openDropdown = null"
+                                                    class="w-full flex items-center justify-center gap-2 bg-transparent text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full py-3 text-[14px] font-medium transition-colors border border-transparent">
+                                                    <ImagePlus :size="16" />
+                                                    Select asset
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
-                                </button>
-                            </div>
-                        </div>
+                                </div>
 
-                        <!-- Resolution Selection -->
-                        <div class="relative">
-                            <button @click="openDropdown = openDropdown === 'resolution' ? null : 'resolution'"
-                                class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-[var(--border-main)] transition-colors text-[11px] font-bold text-[var(--text-secondary)]">
-                                {{ selectedResolution }}
-                            </button>
-                            <div v-if="openDropdown === 'resolution'"
-                                class="absolute bottom-full left-0 mb-3 w-32 bg-[var(--bg-main)] border border-[var(--border-main)] rounded-2xl shadow-xl p-1.5 z-[60]">
-                                <button v-for="res in ['720p', '1080p']" :key="res"
-                                    @click="selectedResolution = res; openDropdown = null"
-                                    class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-[var(--bg-hover)] transition-colors">
-                                    <span class="text-[12px] font-medium"
-                                        :class="selectedResolution === res ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'">{{
-                                            res }}</span>
-                                    <div v-if="selectedResolution === res" class="size-1.5 rounded-full bg-purple-500">
+                                <!-- End Frame (Disabled mimic) -->
+                                <div class="relative">
+                                    <button
+                                        class="focus-visible:ring-ring/50 inline-flex shrink-0 items-center justify-center gap-2 font-medium whitespace-nowrap transition-all outline-none pointer-events-none opacity-50 h-[30px] px-3 py-1 rounded-full bg-[var(--fill-tsp-gray-main)] shadow-none border border-[var(--border-main)]"
+                                        type="button" disabled>
+                                        <ImagePlus :size="14" />
+                                        End frame
+                                    </button>
+                                </div>
+
+                                <!-- Style Select (Dummy mimic) -->
+                                <div class="group/button relative">
+                                    <button
+                                        class="inline-flex h-[30px] shrink-0 items-center justify-center gap-2 rounded-full border border-[var(--border-main)] bg-[var(--fill-tsp-gray-main)] px-3 py-1 font-medium whitespace-nowrap shadow-none outline-none transition-all hover:bg-[var(--bg-hover)] relative flex cursor-pointer">
+                                        Style
+                                    </button>
+                                </div>
+
+                                <!-- Resolution Select -->
+                                <div class="group/button relative">
+                                    <button @click="openDropdown = openDropdown === 'resolution' ? null : 'resolution'"
+                                        class="inline-flex h-[30px] shrink-0 items-center justify-center gap-2 rounded-full border border-transparent bg-[var(--fill-tsp-gray-main)] px-3 py-1 font-medium whitespace-nowrap shadow-none outline-none transition-all hover:bg-[var(--bg-hover)] relative flex w-[60px] cursor-pointer"
+                                        :class="openDropdown === 'resolution' ? 'bg-white shadow-sm' : ''">
+                                        {{ selectedResolution }}
+                                    </button>
+                                    <div v-if="openDropdown === 'resolution'"
+                                        class="absolute bottom-[38px] left-1/2 -translate-x-1/2 pb-2 z-[60]">
+                                        <div
+                                            class="rounded-[28px] bg-white dark:bg-[#1a1a1a] border border-[var(--border-main)] p-4 shadow-2xl min-w-[170px] flex flex-col gap-3">
+                                            <span
+                                                class="text-[#737373] dark:text-[#a3a3a3] font-medium text-[12px] text-center pt-1">Resolution</span>
+                                            <div class="flex flex-col gap-1">
+                                                <button v-for="res in ['720p', '480p']" :key="res"
+                                                    @click="selectedResolution = res; openDropdown = null"
+                                                    class="w-full flex items-center justify-between gap-4 py-2.5 px-3 rounded-2xl hover:bg-[var(--bg-hover)] transition-colors">
+                                                    <span class="text-[14px] font-bold text-black dark:text-white">{{
+                                                        res }}</span>
+                                                    <div class="flex items-center justify-center">
+                                                        <div v-if="selectedResolution === res"
+                                                            class="w-5 h-5 rounded-full bg-black dark:bg-white flex items-center justify-center">
+                                                            <Check :size="12" class="text-white dark:text-black"
+                                                                stroke-width="4" />
+                                                        </div>
+                                                        <div v-else
+                                                            class="w-5 h-5 rounded-full border-[2.5px] border-black dark:border-white">
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
-                                </button>
+                                </div>
+
+                                <!-- Aspect Ratio Select -->
+                                <div class="group/button relative">
+                                    <button @click="openDropdown = openDropdown === 'ratio' ? null : 'ratio'"
+                                        class="inline-flex h-[30px] shrink-0 items-center justify-center gap-2 rounded-full border border-[var(--border-main)] bg-[var(--fill-tsp-gray-main)] px-3 py-1 font-medium whitespace-nowrap shadow-none outline-none transition-all hover:bg-[var(--bg-hover)] flex w-10 cursor-pointer">
+                                        <span>
+                                            <div v-if="selectedAspectRatio === '16:9'"
+                                                class="w-4 h-2.5 border-[2px] border-current rounded-[2px]"></div>
+                                            <div v-if="selectedAspectRatio === '1:1'"
+                                                class="w-3.5 h-3.5 border-[2px] border-current rounded-[2px]"></div>
+                                            <div v-if="selectedAspectRatio === '9:16'"
+                                                class="w-2.5 h-4 border-[2px] border-current rounded-[2px]"></div>
+                                        </span>
+                                    </button>
+                                    <div v-if="openDropdown === 'ratio'"
+                                        class="absolute bottom-[38px] left-1/2 -translate-x-1/2 pb-2 z-[60]">
+                                        <div
+                                            class="rounded-[24px] bg-[var(--background-card)] border border-[var(--border-main)] p-3 shadow-2xl flex flex-col gap-3">
+                                            <span
+                                                class="text-[var(--text-primary)] px-2 font-medium text-[13px] text-center pt-2">Aspect
+                                                Ratio</span>
+                                            <div class="flex gap-2">
+                                                <button @click="selectedAspectRatio = '16:9'; openDropdown = null"
+                                                    class="flex flex-col items-center justify-center gap-3 w-[84px] h-[84px] rounded-[16px] transition-colors"
+                                                    :class="selectedAspectRatio === '16:9' ? 'bg-[var(--fill-tsp-gray-main)]' : 'bg-transparent hover:bg-[var(--bg-hover)]'">
+                                                    <div
+                                                        class="w-[28px] h-[18px] border-[2.5px] border-[var(--text-primary)] rounded-[4px]">
+                                                    </div>
+                                                    <span
+                                                        class="text-[12px] font-medium text-[var(--text-primary)]">Landscape</span>
+                                                </button>
+                                                <button @click="selectedAspectRatio = '9:16'; openDropdown = null"
+                                                    class="flex flex-col items-center justify-center gap-3 w-[84px] h-[84px] rounded-[16px] transition-colors"
+                                                    :class="selectedAspectRatio === '9:16' ? 'bg-[var(--fill-tsp-gray-main)]' : 'bg-transparent hover:bg-[var(--bg-hover)]'">
+                                                    <div
+                                                        class="w-[16px] h-[26px] border-[2.5px] border-[var(--text-primary)] rounded-[4px]">
+                                                    </div>
+                                                    <span
+                                                        class="text-[12px] font-medium text-[var(--text-primary)]">Portrait</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Uploaded Image Preview Area -->
-                    <div v-if="previewImageUrl" class="px-4 pt-2">
-                        <div class="relative inline-block group/preview">
-                            <img :src="previewImageUrl"
-                                class="w-20 h-20 object-cover rounded-xl border border-[var(--border-main)] shadow-sm" />
-                            <button @click="removeAttachedImage"
-                                class="absolute -top-1.5 -right-1.5 size-5 bg-[var(--text-primary)] text-white rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover/preview:opacity-100 transition-opacity">
-                                <X :size="12" stroke-width="3" />
+                        <!-- Generate Button Area -->
+                        <div class="flex items-end self-end ml-2 mb-1">
+                            <button @click="generateVideo" :disabled="!prompt.trim() || isGenerating"
+                                class="inline-flex shrink-0 items-center justify-center gap-2 font-medium whitespace-nowrap transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 h-10 w-10 active-scale-95 relative rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] hover:opacity-90 shadow-md">
+                                <Sparkles v-if="!isGenerating" :size="18" fill="currentColor" />
+                                <Loader2 v-else :size="18" class="animate-spin absolute" />
                             </button>
                         </div>
-                    </div>
 
-                    <!-- Input Row -->
-                    <div class="flex items-center gap-3 px-2 pb-1.5">
-                        <button @click="triggerFileUpload" :disabled="isUploading"
-                            class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors rounded-full hover:bg-[var(--bg-hover)] disabled:opacity-50">
-                            <Paperclip v-if="!isUploading" :size="20" />
-                            <Loader2 v-else :size="20" class="animate-spin" />
-                        </button>
-
-                        <!-- Hidden File Input -->
-                        <input type="file" ref="fileInput" class="hidden" accept="image/*" @change="handleFileUpload" />
-
-                        <div ref="inputRef" contenteditable="true"
-                            class="flex-1 bg-transparent border-none text-[var(--text-primary)] focus:outline-none font-medium text-[15px] py-1.5 max-h-40 overflow-y-auto no-scrollbar relative min-h-[36px] outline-none"
-                            :data-placeholder="'Describe the video you want to create...'" @input="handleInput"
-                            @keydown.enter="handleEnterKey" @paste="handlePaste"></div>
-
-                        <button @click="generateVideo" :disabled="!prompt.trim() || isGenerating"
-                            class="size-10 rounded-full bg-[var(--text-primary)] text-white flex items-center justify-center hover:opacity-90 active:scale-95 disabled:opacity-20 transition-all shadow-md">
-                            <Zap v-if="!isGenerating" :size="20" fill="currentColor" />
-                            <Loader2 v-else :size="20" class="animate-spin" />
-                        </button>
                     </div>
                 </div>
             </div>
@@ -313,7 +366,9 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import {
-    Paperclip,
+    ImagePlus,
+    Plus,
+    Check,
     Zap,
     Loader2,
     X,
@@ -334,9 +389,6 @@ import {
 } from '@/utils/api'
 import type { VideoTaskOutput } from '@/api/video'
 
-definePageMeta({
-    hideTopBar: true
-})
 
 const activeTab = ref<'inspiration' | 'creations'>('inspiration')
 const prompt = ref('')
@@ -346,9 +398,12 @@ const selectedCategory = ref('All')
 const playingVideoId = ref<number | null>(null)
 const openDropdown = ref<string | null>(null)
 
-// Model & Options State
-const models = ref<AIModel[]>([])
-const selectedModel = ref<AIModel | null>(null)
+// Model Store
+import { useModelStore } from '@/stores/models'
+const modelStore = useModelStore()
+const selectedModel = computed(() => modelStore.selectedModel)
+
+
 const selectedAspectRatio = ref('16:9')
 const selectedDuration = ref(5)
 const selectedResolution = ref('720p')
@@ -387,25 +442,24 @@ const fetchHistory = async () => {
     }
 }
 
-const fetchModels = async () => {
-    try {
-        const res = await getModels({ capability: 'video_generation' })
-        if (res.data) {
-            models.value = res.data
-            selectedModel.value = models.value.find(m => m.is_default) || models.value[0] || null
-        }
-    } catch (error) {
-        console.error('Failed to fetch models:', error)
+
+
+const controlBarRef = ref<HTMLDivElement | null>(null)
+
+const handleClickOutside = (event: MouseEvent) => {
+    if (openDropdown.value && controlBarRef.value && !controlBarRef.value.contains(event.target as Node)) {
+        openDropdown.value = null
     }
 }
 
 onMounted(() => {
-    fetchModels()
     fetchHistory()
+    window.addEventListener('mousedown', handleClickOutside)
 })
 
 onUnmounted(() => {
     if (pollingTimer) clearTimeout(pollingTimer)
+    window.removeEventListener('mousedown', handleClickOutside)
 })
 
 const triggerFocus = () => {

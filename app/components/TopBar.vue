@@ -3,10 +3,12 @@
 		<!-- Left: Mobile Menu + Model Selection -->
 		<div class="relative z-20 flex items-center gap-3 flex-shrink-0">
 			<!-- Hamburger (mobile only) -->
-			<button @click="uiStore.openMobileMenu()" class="lg:hidden text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center justify-center">
+			<button @click="uiStore.openMobileMenu()"
+				class="lg:hidden text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center justify-center">
 				<Menu :size="20" />
 			</button>
-			<ModelSelector variant="ghost" :show-icon="false" position="top" />
+			<ModelSelector v-if="showModelSelector" variant="ghost" :show-icon="false" position="top"
+				:capability="currentCapability" />
 		</div>
 
 		<!-- Right: Actions -->
@@ -18,36 +20,32 @@
 				<span
 					class="absolute top-[2px] right-[2px] w-1.5 h-1.5 bg-red-500 rounded-full border border-[var(--background-gray-main)]"></span>
 			</button>
-
-			<!-- Credits -->
-			<!-- <div class="relative hidden sm:block">
-				<div class="rounded-full h-8 px-3 py-1 flex items-center gap-1.5 bg-[var(--fill-tsp-white-main)] border border-[var(--border-main)] shadow-sm">
-					<Star :size="14" class="text-[var(--text-primary)]" />
-					<span class="text-[13px] font-bold text-[var(--text-primary)]">1,300</span>
-				</div>
-			</div> -->
-
-			<!-- User Avatar -->
-			<!-- <div @click="handleProfileClick" class="flex items-center cursor-pointer transition-transform active:scale-95">
-				<div v-if="userStore.userInfo?.avatar" class="w-8 h-8 rounded-full overflow-hidden border border-[var(--border-main)]">
-						<img :src="userStore.userInfo.avatar" class="w-full h-full object-cover" />
-				</div>
-                <div v-else class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-sm font-bold text-blue-600 border border-[var(--border-main)]">
-                    {{ userStore.userInfo?.nickname?.[0]?.toUpperCase() || 'U' }}
-                </div>
-			</div> -->
 		</div>
 	</header>
 </template>
 
 <script setup lang="ts">
-import { Bell, Star, Menu } from 'lucide-vue-next'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { Bell, Menu } from 'lucide-vue-next'
 import { useUserStore } from '../stores/user'
 import { useUIStore } from '../stores/ui'
 import ModelSelector from './ModelSelector.vue'
 
 const userStore = useUserStore()
 const uiStore = useUIStore()
+const route = useRoute()
+
+const showModelSelector = computed(() => {
+	const allowedRoutes = ['index', 'chat', 'chat-id', 'image-generation', 'video-generation']
+	return allowedRoutes.includes(route.name as string)
+})
+
+const currentCapability = computed(() => {
+	if (route.name === 'image-generation') return 'image_generation'
+	if (route.name === 'video-generation') return 'video_generation'
+	return undefined
+})
 
 const handleProfileClick = () => {
 	if (!userStore.userInfo) {

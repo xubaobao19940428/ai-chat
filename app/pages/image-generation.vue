@@ -45,7 +45,7 @@
               <div
                 class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6">
                 <p class="text-white text-[13px] font-medium line-clamp-2 italic mb-3 leading-snug">"{{ example.prompt
-                }}"</p>
+                  }}"</p>
                 <div class="flex items-center">
                   <span
                     class="px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider backdrop-blur-md shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">Use
@@ -154,102 +154,156 @@
           </div>
         </transition>
 
-        <div
-          class="bg-[var(--bg-main)]/90 backdrop-blur-xl rounded-[28px] border border-[var(--border-main)] p-2 shadow-[var(--shadow-pill)] flex flex-col gap-1 transition-all">
-          <!-- Selector Row -->
-          <div class="flex items-center gap-1.5 px-1.5 py-1">
-            <!-- Model Selection -->
-            <div class="relative">
-              <button @click="openDropdown = openDropdown === 'model' ? null : 'model'"
-                class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-[var(--border-main)] transition-colors">
-                <Monitor :size="13" class="text-[var(--text-secondary)]" />
-                <span class="text-[11px] font-bold text-[var(--text-secondary)]">{{ selectedModel?.display_name ||
-                  'Engine'
-                  }}</span>
-                <ChevronDown :size="12" class="text-[var(--text-tertiary)]" />
-              </button>
-              <div v-if="openDropdown === 'model'"
-                class="absolute bottom-full left-0 mb-3 w-48 bg-[var(--bg-main)] border border-[var(--border-main)] rounded-2xl shadow-xl p-1.5 z-[60]">
-                <button v-for="m in models" :key="m.model" @click="selectedModel = m; openDropdown = null"
-                  class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-[var(--bg-hover)] transition-colors">
-                  <span class="text-[12px] font-medium"
-                    :class="selectedModel?.model === m.model ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'">{{
-                      m.display_name }}</span>
-                  <div v-if="selectedModel?.model === m.model" class="size-1.5 rounded-full bg-indigo-500"></div>
-                </button>
-              </div>
-            </div>
+        <div ref="controlBarRef"
+          class="bg-[var(--bg-main)] rounded-[40px] border border-[var(--border-main)] p-5 shadow-[var(--shadow-pill)] flex flex-col gap-4 transition-all">
 
-            <!-- Aspect Ratio -->
-            <div class="relative">
-              <button @click="openDropdown = openDropdown === 'ratio' ? null : 'ratio'"
-                class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-[var(--border-main)] transition-colors text-[11px] font-bold text-[var(--text-secondary)]">
-                {{ selectedAspectRatio }}
-              </button>
-              <div v-if="openDropdown === 'ratio'"
-                class="absolute bottom-full left-0 mb-3 grid grid-cols-3 gap-1 w-40 bg-[var(--bg-main)] border border-[var(--border-main)] rounded-2xl shadow-xl p-2 z-[60]">
-                <button v-for="r in ['1:1', '16:9', '9:16', '3:2', '2:3', '4:5']" :key="r"
-                  @click="selectedAspectRatio = r; openDropdown = null"
-                  class="py-2.5 rounded-lg transition-all text-[11px] font-bold border"
-                  :class="selectedAspectRatio === r ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)]' : 'bg-transparent text-[var(--text-secondary)] border-transparent hover:bg-[var(--bg-hover)]'">
-                  {{ r }}
-                </button>
-              </div>
-            </div>
-
-            <!-- Style Selection -->
-            <div class="relative">
-              <button @click="openDropdown = openDropdown === 'style' ? null : 'style'"
-                class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-[var(--border-main)] transition-colors">
-                <span class="text-[11px] font-bold text-[var(--text-secondary)]">{{ selectedStyle }}</span>
-                <ChevronDown :size="12" class="text-[var(--text-tertiary)]" />
-              </button>
-              <div v-if="openDropdown === 'style'"
-                class="absolute bottom-full left-0 mb-3 w-40 bg-[var(--bg-main)] border border-[var(--border-main)] rounded-2xl shadow-xl p-1.5 z-[60] max-h-48 overflow-y-auto custom-scrollbar">
-                <button v-for="s in ['No Style', 'Cinematic', 'Realistic', 'Anime', 'Oil Painting', 'Digital Art']"
-                  :key="s" @click="selectedStyle = s; openDropdown = null"
-                  class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-[var(--bg-hover)] transition-colors text-left">
-                  <span class="text-[12px] font-medium"
-                    :class="selectedStyle === s ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'">{{ s
-                    }}</span>
-                </button>
-              </div>
-            </div>
+          <!-- Input Area (Top) -->
+          <div class="px-2">
+            <div ref="inputRef" contenteditable="true"
+              class="w-full bg-transparent border-none text-[var(--text-primary)] focus:outline-none font-medium text-[17px] py-1 max-h-32 overflow-y-auto no-scrollbar relative min-h-[28px] outline-none"
+              :data-placeholder="'Describe an image and click generate...'" @input="handleInput"
+              @keydown.enter="handleEnterKey" @paste="handlePaste"></div>
           </div>
 
-          <!-- Uploaded Image Preview Area -->
-          <div v-if="previewImageUrl" class="px-4 pt-2">
+          <!-- Bottom Row: Tools + Generate -->
+          <div class="flex items-center justify-between gap-2 px-1">
+            <!-- Tool Pills -->
+            <div class="flex items-center gap-2 flex-wrap">
+              <!-- Lora -->
+              <button
+                class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all">
+                <Link2 :size="16" class="text-[var(--text-secondary)]" />
+                <span class="text-[13px] font-medium text-[var(--text-primary)]">Lora</span>
+              </button>
+
+              <!-- Image Prompt -->
+              <button @click="triggerFileUpload"
+                class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all">
+                <ImagePlus :size="16" class="text-[var(--text-secondary)]" />
+                <span class="text-[13px] font-medium text-[var(--text-primary)]">Image prompt</span>
+              </button>
+
+              <!-- Style Transfer -->
+              <div class="relative">
+                <button @click="openDropdown = openDropdown === 'style' ? null : 'style'"
+                  class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all">
+                  <Palette :size="16" class="text-[var(--text-secondary)]" />
+                  <span class="text-[13px] font-medium text-[var(--text-primary)]">{{ selectedStyle === 'No Style' ?
+                    'Style transfer' : selectedStyle }}</span>
+                </button>
+                <div v-if="openDropdown === 'style'"
+                  class="absolute bottom-full left-0 mb-3 w-48 bg-[var(--bg-main)] border border-[var(--border-main)] rounded-2xl shadow-xl p-1.5 z-[60] max-h-60 overflow-y-auto custom-scrollbar">
+                  <button v-for="s in ['No Style', 'Cinematic', 'Realistic', 'Anime', 'Oil Painting', 'Digital Art']"
+                    :key="s" @click="selectedStyle = s; openDropdown = null"
+                    class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-[var(--bg-hover)] transition-colors text-left">
+                    <span class="text-[13px] font-medium"
+                      :class="selectedStyle === s ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'">{{ s
+                      }}</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Aspect Ratio -->
+              <div class="relative">
+                <button @click="openDropdown = openDropdown === 'ratio' ? null : 'ratio'"
+                  class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all">
+                  <Square :size="16" class="text-[var(--text-secondary)]" />
+                  <span class="text-[13px] font-medium text-[var(--text-primary)]">{{ selectedAspectRatio }}</span>
+                </button>
+                <div v-if="openDropdown === 'ratio'"
+                  class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-white border border-[#e5e5e5] rounded-[24px] shadow-2xl p-6 z-[60] flex gap-8 items-center min-w-[520px]">
+
+                  <!-- Left: Ratio Buttons Grid -->
+                  <div class="flex flex-col gap-4">
+                    <!-- Row 1 -->
+                    <div class="flex gap-2">
+                      <button v-for="r in ['4:3', '3:2', '16:9', '2.35:1']" :key="r" @click="selectedAspectRatio = r"
+                        class="px-4 py-2 rounded-xl text-[13px] font-bold border transition-all min-w-[64px]"
+                        :class="selectedAspectRatio === r ? 'bg-white border-black text-black shadow-sm scale-[1.02]' : 'bg-transparent text-black border-[#e5e5e5] hover:border-black/20 hover:bg-gray-50'">
+                        {{ r }}
+                      </button>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="flex gap-2">
+                      <button v-for="r in ['1:1', '4:5', '2:3', '9:16']" :key="r" @click="selectedAspectRatio = r"
+                        class="px-4 py-2 rounded-xl text-[13px] font-bold border transition-all min-w-[64px]"
+                        :class="selectedAspectRatio === r ? 'bg-white border-black text-black shadow-sm scale-[1.02]' : 'bg-transparent text-black border-[#e5e5e5] hover:border-black/20 hover:bg-gray-50'">
+                        {{ r }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Right: Visual Preview -->
+                  <div class="relative flex items-center justify-center w-[160px] h-[160px] bg-transparent">
+                    <!-- Dynamic Box -->
+                    <div
+                      class="relative bg-[#f5f5f5] rounded-xl border border-[#e5e5e5] transition-all duration-300 flex items-center justify-center overflow-hidden shadow-inner"
+                      :style="getPreviewStyle(selectedAspectRatio)">
+                      <!-- 3x3 Grid -->
+                      <div class="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none">
+                        <div v-for="i in 9" :key="i" class="border-[0.5px] border-black/5"></div>
+                      </div>
+                    </div>
+
+                    <!-- Adjustment Handles (Visual placeholders) -->
+                    <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-[#ccc] rounded-full"></div>
+                    <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-[#ccc] rounded-full"></div>
+                    <div class="absolute top-1/2 -left-1 -translate-y-1/2 w-1 h-3 bg-[#ccc] rounded-full"></div>
+                    <div class="absolute top-1/2 -right-1 -translate-y-1/2 w-1 h-3 bg-[#ccc] rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Resolution -->
+              <div class="relative">
+                <button @click="openDropdown = openDropdown === 'resolution' ? null : 'resolution'"
+                  class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all">
+                  <Gem :size="16" class="text-[var(--text-secondary)]" />
+                  <span class="text-[13px] font-medium text-[var(--text-primary)]">{{ selectedResolution }}</span>
+                </button>
+                <div v-if="openDropdown === 'resolution'"
+                  class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-white border border-[#e5e5e5] rounded-[24px] shadow-2xl p-5 z-[60] min-w-[180px]">
+                  <p class="text-[12px] font-medium text-gray-400 mb-4 px-1">Resolution</p>
+                  <div class="flex flex-col gap-1">
+                    <button v-for="res in ['1K', '1.2K', '1.5K', '4K']" :key="res"
+                      @click="selectedResolution = res; openDropdown = null"
+                      class="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors group"
+                      :class="res === '4K' ? 'opacity-50 cursor-not-allowed' : ''" :disabled="res === '4K'">
+                      <div class="flex items-center gap-3">
+                        <div class="size-4 rounded-full border-2 flex items-center justify-center transition-all"
+                          :class="selectedResolution === res ? 'border-black' : 'border-gray-300 group-hover:border-gray-400'">
+                          <div v-if="selectedResolution === res" class="size-1.5 rounded-full bg-black"></div>
+                        </div>
+                        <span class="text-[14px] font-bold"
+                          :class="selectedResolution === res ? 'text-black' : 'text-gray-600'">{{ res }}</span>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Generate Button -->
+            <button @click="generateImage" :disabled="!prompt.trim() || isGenerating"
+              class="size-12 rounded-full bg-black text-white flex items-center justify-center hover:bg-black/80 active:scale-95 disabled:opacity-20 transition-all shadow-lg flex-shrink-0">
+              <Sparkle v-if="!isGenerating" :size="24" fill="white" />
+              <Loader2 v-else :size="24" class="animate-spin" />
+            </button>
+          </div>
+
+          <!-- Hidden File Input -->
+          <input type="file" ref="fileInput" class="hidden" accept="image/*" @change="handleFileUpload" />
+
+          <!-- Uploaded Image Preview Area (Appears above the tools if an image is uploaded) -->
+          <div v-if="previewImageUrl" class="px-2 pb-2">
             <div class="relative inline-block group/preview">
               <img :src="previewImageUrl"
-                class="w-20 h-20 object-cover rounded-xl border border-[var(--border-main)] shadow-sm" />
+                class="w-16 h-16 object-cover rounded-xl border border-[var(--border-main)] shadow-sm" />
               <button @click="removeAttachedImage"
-                class="absolute -top-1.5 -right-1.5 size-5 bg-[var(--text-primary)] text-white rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover/preview:opacity-100 transition-opacity">
-                <X :size="12" stroke-width="3" />
+                class="absolute -top-1.5 -right-1.5 size-5 bg-black text-white rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover/preview:opacity-100 transition-opacity">
+                <X :size="10" stroke-width="3" />
               </button>
             </div>
-          </div>
-
-          <!-- Input Row -->
-          <div class="flex items-center gap-3 px-2 pb-1.5">
-            <button @click="triggerFileUpload" :disabled="isUploading"
-              class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors rounded-full hover:bg-[var(--bg-hover)] disabled:opacity-50">
-              <Paperclip v-if="!isUploading" :size="20" />
-              <Loader2 v-else :size="20" class="animate-spin" />
-            </button>
-
-            <!-- Hidden File Input -->
-            <input type="file" ref="fileInput" class="hidden" accept="image/*" @change="handleFileUpload" />
-
-            <div ref="inputRef" contenteditable="true"
-              class="flex-1 bg-transparent border-none text-[var(--text-primary)] focus:outline-none font-medium text-[15px] py-1.5 max-h-40 overflow-y-auto no-scrollbar relative min-h-[36px] outline-none"
-              :data-placeholder="'Describe what you want to create...'" @input="handleInput"
-              @keydown.enter="handleEnterKey" @paste="handlePaste"></div>
-
-            <button @click="generateImage" :disabled="!prompt.trim() || isGenerating"
-              class="size-10 rounded-full bg-[var(--text-primary)] text-white flex items-center justify-center hover:opacity-90 active:scale-95 disabled:opacity-20 transition-all shadow-md">
-              <Zap v-if="!isGenerating" :size="20" fill="currentColor" />
-              <Loader2 v-else :size="20" class="animate-spin" />
-            </button>
           </div>
         </div>
       </div>
@@ -260,6 +314,12 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import {
+  Link2,
+  ImagePlus,
+  Palette,
+  Square,
+  Gem,
+  Sparkle,
   Paperclip,
   Zap,
   Loader2,
@@ -280,9 +340,6 @@ import {
   type AIModel
 } from '@/utils/api'
 
-definePageMeta({
-  hideTopBar: true
-})
 
 // Define AsyncTaskOutput locally
 export interface AsyncTaskOutput {
@@ -305,9 +362,14 @@ const selectedCategory = ref('All')
 const openDropdown = ref<string | null>(null)
 
 // Model & Options State
-const models = ref<AIModel[]>([])
-const selectedModel = ref<AIModel | null>(null)
+// Model Store
+import { computed } from 'vue'
+import { useModelStore } from '@/stores/models'
+const modelStore = useModelStore()
+const selectedModel = computed(() => modelStore.selectedModel)
+
 const selectedAspectRatio = ref('1:1')
+const selectedResolution = ref('1K')
 const selectedStyle = ref('No Style')
 
 // File Upload State
@@ -335,25 +397,24 @@ const fetchHistory = async () => {
   }
 }
 
-const fetchModels = async () => {
-  try {
-    const res = await getModels({ capability: 'image_generation' })
-    if (res.data) {
-      models.value = res.data
-      selectedModel.value = models.value.find(m => m.is_default) || models.value[0] || null
-    }
-  } catch (error) {
-    console.error('Failed to fetch models:', error)
+
+
+const controlBarRef = ref<HTMLDivElement | null>(null)
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (openDropdown.value && controlBarRef.value && !controlBarRef.value.contains(event.target as Node)) {
+    openDropdown.value = null
   }
 }
 
 onMounted(() => {
-  fetchModels()
   fetchHistory()
+  window.addEventListener('mousedown', handleClickOutside)
 })
 
 onUnmounted(() => {
   if (pollingTimer) clearTimeout(pollingTimer)
+  window.removeEventListener('mousedown', handleClickOutside)
 })
 
 const triggerFocus = () => {
@@ -494,6 +555,45 @@ const generateImage = async () => {
   }
 }
 
+const getPreviewStyle = (ratio: string) => {
+  const baseSize = 120
+  let width = baseSize
+  let height = baseSize
+
+  switch (ratio) {
+    case '4:3':
+      height = (baseSize * 3) / 4
+      break
+    case '3:2':
+      height = (baseSize * 2) / 3
+      break
+    case '16:9':
+      height = (baseSize * 9) / 16
+      break
+    case '2.35:1':
+      height = baseSize / 2.35
+      break
+    case '4:5':
+      width = (baseSize * 4) / 5
+      break
+    case '2:3':
+      width = (baseSize * 2) / 3
+      break
+    case '9:16':
+      width = (baseSize * 9) / 16
+      break
+    case '1:1':
+    default:
+      width = baseSize
+      height = baseSize
+  }
+
+  return {
+    width: `${width}px`,
+    height: `${height}px`
+  }
+}
+
 const handleDownload = (imageUrl: string) => {
   window.open(imageUrl, '_blank')
 }
@@ -541,7 +641,8 @@ textarea::placeholder {
 
 [contenteditable]:empty:before {
   content: attr(data-placeholder);
-  color: var(--text-disable);
+  color: #999;
+  font-weight: 500;
   pointer-events: none;
   display: block;
 }

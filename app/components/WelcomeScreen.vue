@@ -86,12 +86,11 @@
 										</div>
 
 										<div class="min-w-0 flex gap-2 ml-auto flex-shrink items-center">
+											<!-- Model Selection -->
+											<ModelSelector v-if="!activeTool" class="mr-1" />
+
 											<div class="flex items-center gap-1">
-												<!-- Model Selection -->
-												<Tooltip text="Switch Model">
-													<ModelSelector variant="pill" :icon="MessageCircle"
-														:show-icon="false" />
-												</Tooltip>
+
 
 												<Tooltip text="Voice Input">
 													<button
@@ -102,10 +101,14 @@
 											</div>
 
 											<!-- Send Button -->
-											<Tooltip :text="props.isLoading ? 'Creating chat...' : hasContent ? 'Send Message' : 'Type something...'">
-												<button @click="() => handleSendMessage()" :disabled="!hasContent || props.isLoading"
+											<Tooltip
+												:text="props.isLoading ? 'Creating chat...' : hasContent ? 'Send Message' : 'Type something...'">
+												<button @click="() => handleSendMessage()"
+													:disabled="!hasContent || props.isLoading"
 													class="flex items-center justify-center w-8 h-8 rounded-full transition-all bg-[var(--text-primary)] text-white disabled:bg-[var(--fill-tsp-white-dark)] disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-95">
-													<div v-if="props.isLoading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+													<div v-if="props.isLoading"
+														class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin">
+													</div>
 													<ArrowUp v-else :size="18" :stroke-width="2.5" />
 												</button>
 											</Tooltip>
@@ -128,7 +131,8 @@
 										<img src="/other.png" alt="" class="h-[22px]" />
 									</div>
 									<button
-										class="text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors p-1" @click="showConnectBanner = false">
+										class="text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors p-1"
+										@click="showConnectBanner = false">
 										<X :size="16" />
 									</button>
 								</div>
@@ -277,7 +281,8 @@
 					</div>
 					<div
 						class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
-						<div class="w-10 h-10 rounded-lg bg-[var(--function-error-tsp)] flex items-center justify-center mb-2">
+						<div
+							class="w-10 h-10 rounded-lg bg-[var(--function-error-tsp)] flex items-center justify-center mb-2">
 							<Mail :size="24" class="text-[var(--function-error)]" />
 						</div>
 						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Stay updated with the
@@ -285,7 +290,8 @@
 					</div>
 					<div
 						class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
-						<div class="w-10 h-10 rounded-lg bg-[var(--function-success-tsp)] flex items-center justify-center mb-2">
+						<div
+							class="w-10 h-10 rounded-lg bg-[var(--function-success-tsp)] flex items-center justify-center mb-2">
 							<Globe :size="24" class="text-[var(--function-success)]" />
 						</div>
 						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Explore the global
