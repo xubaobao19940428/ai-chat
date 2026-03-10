@@ -45,7 +45,7 @@
               <div
                 class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6">
                 <p class="text-white text-[13px] font-medium line-clamp-2 italic mb-3 leading-snug">"{{ example.prompt
-                  }}"</p>
+                }}"</p>
                 <div class="flex items-center">
                   <span
                     class="px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider backdrop-blur-md shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">Use
@@ -169,114 +169,154 @@
           <div class="flex items-center justify-between gap-2 px-1">
             <!-- Tool Pills -->
             <div class="flex items-center gap-2 flex-wrap">
-              <!-- Lora -->
-              <button
-                class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all">
-                <Link2 :size="16" class="text-[var(--text-secondary)]" />
-                <span class="text-[13px] font-medium text-[var(--text-primary)]">Lora</span>
-              </button>
+
+              <!-- Model Selector -->
+              <ModelSelector capability="image_generation" class="mr-1" />
 
               <!-- Image Prompt -->
-              <button @click="triggerFileUpload"
+              <button v-if="supportsImageUpload" @click="triggerFileUpload"
                 class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all">
                 <ImagePlus :size="16" class="text-[var(--text-secondary)]" />
                 <span class="text-[13px] font-medium text-[var(--text-primary)]">Image prompt</span>
               </button>
 
-              <!-- Style Transfer -->
-              <div class="relative">
-                <button @click="openDropdown = openDropdown === 'style' ? null : 'style'"
-                  class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all">
-                  <Palette :size="16" class="text-[var(--text-secondary)]" />
-                  <span class="text-[13px] font-medium text-[var(--text-primary)]">{{ selectedStyle === 'No Style' ?
-                    'Style transfer' : selectedStyle }}</span>
-                </button>
-                <div v-if="openDropdown === 'style'"
-                  class="absolute bottom-full left-0 mb-3 w-48 bg-[var(--bg-main)] border border-[var(--border-main)] rounded-2xl shadow-xl p-1.5 z-[60] max-h-60 overflow-y-auto custom-scrollbar">
-                  <button v-for="s in ['No Style', 'Cinematic', 'Realistic', 'Anime', 'Oil Painting', 'Digital Art']"
-                    :key="s" @click="selectedStyle = s; openDropdown = null"
-                    class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-[var(--bg-hover)] transition-colors text-left">
-                    <span class="text-[13px] font-medium"
-                      :class="selectedStyle === s ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'">{{ s
-                      }}</span>
+              <!-- Dynamic Select Fields -->
+              <div v-for="field in dynamicSelectFields" :key="field.key" class="relative">
+
+                <!-- Aspect Ratio -->
+                <template v-if="field.key === 'aspect_ratio'">
+                  <button @click="openDropdown = openDropdown === field.key ? null : field.key"
+                    class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+                    :class="openDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+                    <Square :size="16" class="text-[var(--text-secondary)]" />
+                    <span class="text-[13px] font-medium text-[var(--text-primary)]">{{ dynamicParams[field.key]
+                    }}</span>
                   </button>
-                </div>
-              </div>
+                  <div v-if="openDropdown === field.key"
+                    class="absolute bottom-full left-0 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-6 z-[60] flex gap-8 items-center min-w-max"
+                    style="background-color: var(--bg-main);">
 
-              <!-- Aspect Ratio -->
-              <div class="relative">
-                <button @click="openDropdown = openDropdown === 'ratio' ? null : 'ratio'"
-                  class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all">
-                  <Square :size="16" class="text-[var(--text-secondary)]" />
-                  <span class="text-[13px] font-medium text-[var(--text-primary)]">{{ selectedAspectRatio }}</span>
-                </button>
-                <div v-if="openDropdown === 'ratio'"
-                  class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-white border border-[#e5e5e5] rounded-[24px] shadow-2xl p-6 z-[60] flex gap-8 items-center min-w-[520px]">
-
-                  <!-- Left: Ratio Buttons Grid -->
-                  <div class="flex flex-col gap-4">
-                    <!-- Row 1 -->
-                    <div class="flex gap-2">
-                      <button v-for="r in ['4:3', '3:2', '16:9', '2.35:1']" :key="r" @click="selectedAspectRatio = r"
-                        class="px-4 py-2 rounded-xl text-[13px] font-bold border transition-all min-w-[64px]"
-                        :class="selectedAspectRatio === r ? 'bg-white border-black text-black shadow-sm scale-[1.02]' : 'bg-transparent text-black border-[#e5e5e5] hover:border-black/20 hover:bg-gray-50'">
+                    <!-- Left: Ratio Buttons Grid -->
+                    <div class="flex flex-wrap gap-2 w-[280px]">
+                      <button v-for="r in field.options" :key="r" @click="dynamicParams[field.key] = r"
+                        class="px-3 py-2 rounded-xl text-[13px] font-bold border transition-all min-w-[64px] flex-1 text-center"
+                        :class="dynamicParams[field.key] === r ? 'bg-[var(--text-primary)] border-[var(--text-primary)] text-[var(--bg-main)] shadow-sm scale-[1.02]' : 'bg-transparent text-[var(--text-primary)] border-[var(--border-main)] hover:border-[var(--text-primary)]/20 hover:bg-[var(--bg-hover)]'">
                         {{ r }}
                       </button>
                     </div>
-                    <!-- Row 2 -->
-                    <div class="flex gap-2">
-                      <button v-for="r in ['1:1', '4:5', '2:3', '9:16']" :key="r" @click="selectedAspectRatio = r"
-                        class="px-4 py-2 rounded-xl text-[13px] font-bold border transition-all min-w-[64px]"
-                        :class="selectedAspectRatio === r ? 'bg-white border-black text-black shadow-sm scale-[1.02]' : 'bg-transparent text-black border-[#e5e5e5] hover:border-black/20 hover:bg-gray-50'">
-                        {{ r }}
-                      </button>
-                    </div>
-                  </div>
 
-                  <!-- Right: Visual Preview -->
-                  <div class="relative flex items-center justify-center w-[160px] h-[160px] bg-transparent">
-                    <!-- Dynamic Box -->
-                    <div
-                      class="relative bg-[#f5f5f5] rounded-xl border border-[#e5e5e5] transition-all duration-300 flex items-center justify-center overflow-hidden shadow-inner"
-                      :style="getPreviewStyle(selectedAspectRatio)">
-                      <!-- 3x3 Grid -->
-                      <div class="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none">
-                        <div v-for="i in 9" :key="i" class="border-[0.5px] border-black/5"></div>
-                      </div>
-                    </div>
-
-                    <!-- Adjustment Handles (Visual placeholders) -->
-                    <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-[#ccc] rounded-full"></div>
-                    <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-[#ccc] rounded-full"></div>
-                    <div class="absolute top-1/2 -left-1 -translate-y-1/2 w-1 h-3 bg-[#ccc] rounded-full"></div>
-                    <div class="absolute top-1/2 -right-1 -translate-y-1/2 w-1 h-3 bg-[#ccc] rounded-full"></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Resolution -->
-              <div class="relative">
-                <button @click="openDropdown = openDropdown === 'resolution' ? null : 'resolution'"
-                  class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all">
-                  <Gem :size="16" class="text-[var(--text-secondary)]" />
-                  <span class="text-[13px] font-medium text-[var(--text-primary)]">{{ selectedResolution }}</span>
-                </button>
-                <div v-if="openDropdown === 'resolution'"
-                  class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-white border border-[#e5e5e5] rounded-[24px] shadow-2xl p-5 z-[60] min-w-[180px]">
-                  <p class="text-[12px] font-medium text-gray-400 mb-4 px-1">Resolution</p>
-                  <div class="flex flex-col gap-1">
-                    <button v-for="res in ['1K', '1.2K', '1.5K', '4K']" :key="res"
-                      @click="selectedResolution = res; openDropdown = null"
-                      class="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors group"
-                      :class="res === '4K' ? 'opacity-50 cursor-not-allowed' : ''" :disabled="res === '4K'">
-                      <div class="flex items-center gap-3">
-                        <div class="size-4 rounded-full border-2 flex items-center justify-center transition-all"
-                          :class="selectedResolution === res ? 'border-black' : 'border-gray-300 group-hover:border-gray-400'">
-                          <div v-if="selectedResolution === res" class="size-1.5 rounded-full bg-black"></div>
+                    <!-- Right: Visual Preview -->
+                    <div class="relative flex items-center justify-center w-[160px] h-[160px] bg-transparent shrink-0">
+                      <!-- Dynamic Box -->
+                      <div
+                        class="relative bg-[var(--fill-tsp-gray-main)] rounded-xl border border-[var(--border-main)] transition-all duration-300 flex items-center justify-center overflow-hidden shadow-inner"
+                        :style="getPreviewStyle(dynamicParams[field.key])">
+                        <!-- 3x3 Grid -->
+                        <div class="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none">
+                          <div v-for="i in 9" :key="i" class="border-[0.5px] border-[var(--border-main)] opacity-50">
+                          </div>
                         </div>
-                        <span class="text-[14px] font-bold"
-                          :class="selectedResolution === res ? 'text-black' : 'text-gray-600'">{{ res }}</span>
                       </div>
+                      <!-- Adjustment Handles -->
+                      <div
+                        class="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-[var(--text-tertiary)] rounded-full">
+                      </div>
+                      <div
+                        class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-[var(--text-tertiary)] rounded-full">
+                      </div>
+                      <div
+                        class="absolute top-1/2 -left-1 -translate-y-1/2 w-1 h-3 bg-[var(--text-tertiary)] rounded-full">
+                      </div>
+                      <div
+                        class="absolute top-1/2 -right-1 -translate-y-1/2 w-1 h-3 bg-[var(--text-tertiary)] rounded-full">
+                      </div>
+                    </div>
+                  </div>
+                </template>
+
+                <!-- Style Transfer -->
+                <template v-else-if="field.key === 'style'">
+                  <button @click="openDropdown = openDropdown === field.key ? null : field.key"
+                    class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+                    :class="openDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+                    <Palette :size="16" class="text-[var(--text-secondary)]" />
+                    <span class="text-[13px] font-medium text-[var(--text-primary)]">
+                      {{ dynamicParams[field.key] === 'No Style' || !dynamicParams[field.key] ? 'Style transfer' :
+                        dynamicParams[field.key] }}
+                    </span>
+                  </button>
+                  <div v-if="openDropdown === field.key"
+                    class="absolute bottom-full left-0 mb-3 w-48 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-1.5 z-[60] max-h-60 overflow-y-auto custom-scrollbar"
+                    style="background-color: var(--bg-main);">
+                    <button v-for="s in field.options" :key="s"
+                      @click="dynamicParams[field.key] = s; openDropdown = null"
+                      class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-[var(--bg-hover)] transition-colors text-left">
+                      <span class="text-[13px] font-medium"
+                        :class="dynamicParams[field.key] === s ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'">{{
+                          s }}</span>
+                    </button>
+                  </div>
+                </template>
+
+                <!-- Generalized Tool (like Resolution) -->
+                <template v-else>
+                  <button @click="openDropdown = openDropdown === field.key ? null : field.key"
+                    class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+                    :class="openDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+                    <Gem v-if="field.key === 'resolution'" :size="16" class="text-[var(--text-secondary)]" />
+                    <LayoutGrid v-else :size="16" class="text-[var(--text-secondary)]" />
+                    <span class="text-[13px] font-medium text-[var(--text-primary)]">
+                      <span v-if="field.key !== 'resolution'"
+                        class="uppercase font-bold text-[10px] tracking-wider opacity-60 mr-1">{{ field.key }}:</span>{{
+                          dynamicParams[field.key] }}
+                    </span>
+                  </button>
+                  <div v-if="openDropdown === field.key"
+                    class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-4 z-[60] min-w-[200px]"
+                    style="background-color: var(--bg-main);">
+                    <p class="text-[12px] font-medium text-[var(--text-tertiary)] mb-3 px-2 uppercase tracking-wide">{{
+                      field.key.replace(/_/g, ' ') }}</p>
+                    <div
+                      class="flex flex-col gap-0.5 max-h-[180px] overflow-y-auto custom-scrollbar px-1 relative z-10">
+                      <button v-for="opt in field.options" :key="opt"
+                        @click="dynamicParams[field.key] = opt; openDropdown = null"
+                        class="w-full flex items-center justify-between gap-3 py-2 px-3 rounded-[12px] group transition-all duration-200"
+                        :class="dynamicParams[field.key] === opt ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-md' : 'hover:bg-[var(--bg-hover)] text-[var(--text-primary)]'">
+                        <span class="text-[13px] font-semibold tracking-tight">{{ opt }}</span>
+                        <div
+                          class="flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          :class="dynamicParams[field.key] === opt ? 'opacity-100' : ''">
+                          <Check :size="14" :stroke-width="3"
+                            :class="dynamicParams[field.key] === opt ? 'text-[var(--bg-main)]' : 'text-[var(--text-tertiary)]'" />
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                </template>
+
+              </div>
+
+              <!-- Dynamic Number Fields (like Num Outputs) -->
+              <div v-for="field in dynamicNumberFields" :key="field.key" class="relative">
+                <button @click="openDropdown = openDropdown === field.key ? null : field.key"
+                  class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+                  :class="openDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+                  <Monitor :size="16" class="text-[var(--text-secondary)]" />
+                  <span class="text-[13px] font-medium text-[var(--text-primary)]">{{ dynamicParams[field.key] }}
+                    Outputs</span>
+                </button>
+                <div v-if="openDropdown === field.key"
+                  class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-4 z-[60] min-w-[200px]"
+                  style="background-color: var(--bg-main);">
+                  <p class="text-[12px] font-medium text-[var(--text-tertiary)] mb-3 px-2 uppercase tracking-wide">
+                    Outputs Quantity
+                  </p>
+                  <div class="flex flex-wrap gap-2 justify-center max-w-[240px]">
+                    <button v-for="n in (field.max - field.min + 1)" :key="n"
+                      @click="dynamicParams[field.key] = n + field.min - 1; openDropdown = null"
+                      class="size-10 rounded-xl font-bold flex items-center justify-center transition-colors border"
+                      :class="dynamicParams[field.key] === (n + field.min - 1) ? 'bg-[var(--text-primary)] text-[var(--bg-main)] border-[var(--text-primary)] shadow-md' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-primary)]'">
+                      {{ n + field.min - 1 }}
                     </button>
                   </div>
                 </div>
@@ -285,9 +325,9 @@
 
             <!-- Generate Button -->
             <button @click="generateImage" :disabled="!prompt.trim() || isGenerating"
-              class="size-12 rounded-full bg-black text-white flex items-center justify-center hover:bg-black/80 active:scale-95 disabled:opacity-20 transition-all shadow-lg flex-shrink-0">
-              <Sparkle v-if="!isGenerating" :size="24" fill="white" />
-              <Loader2 v-else :size="24" class="animate-spin" />
+              class="flex items-center justify-center shrink-0 w-10 h-10 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] hover:opacity-90 transition-all disabled:opacity-50 disabled:pointer-events-none self-end">
+              <Sparkle v-if="!isGenerating" :size="18" fill="currentColor" />
+              <Loader2 v-else :size="18" class="animate-spin absolute" />
             </button>
           </div>
 
@@ -362,15 +402,58 @@ const selectedCategory = ref('All')
 const openDropdown = ref<string | null>(null)
 
 // Model & Options State
-// Model Store
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useModelStore } from '@/stores/models'
+import ModelSelector from '@/components/ModelSelector.vue'
+
 const modelStore = useModelStore()
 const selectedModel = computed(() => modelStore.selectedModel)
 
-const selectedAspectRatio = ref('1:1')
-const selectedResolution = ref('1K')
-const selectedStyle = ref('No Style')
+const dynamicParams = ref<Record<string, any>>({})
+
+const modelInputFields = computed(() => {
+  return selectedModel.value?.model_input?.fields || {}
+})
+
+const supportsImageUpload = computed(() => {
+  return 'image_urls' in modelInputFields.value || 'file_ids' in modelInputFields.value
+})
+
+const dynamicSelectFields = computed(() => {
+  const fields = []
+  for (const [key, field] of Object.entries(modelInputFields.value)) {
+    if (field.type === 'select') {
+      fields.push({ key, ...field as any })
+    }
+  }
+  return fields
+})
+
+const dynamicNumberFields = computed(() => {
+  const fields = []
+  for (const [key, field] of Object.entries(modelInputFields.value)) {
+    if (field.type === 'number') {
+      fields.push({ key, ...field as any })
+    }
+  }
+  return fields
+})
+
+watch(selectedModel, () => {
+  if (selectedModel.value?.model_input?.fields) {
+    const fields = selectedModel.value.model_input.fields
+    dynamicParams.value = {}
+    for (const [key, field] of Object.entries(fields)) {
+      if (field.default !== undefined) {
+        dynamicParams.value[key] = field.default
+      } else if (field.options && field.options.length > 0) {
+        dynamicParams.value[key] = field.options[0]
+      } else if (field.type === 'number') {
+        dynamicParams.value[key] = field.min || 1
+      }
+    }
+  }
+}, { immediate: true })
 
 // File Upload State
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -538,9 +621,8 @@ const generateImage = async () => {
     const res = await createAsyncTask({
       capability: 'image_generation',
       model: `${selectedModel.value.provider}:${selectedModel.value.model}`,
+      ...dynamicParams.value,
       prompt: prompt.value,
-      aspect_ratio: selectedAspectRatio.value,
-      style: selectedStyle.value !== 'No Style' ? selectedStyle.value : undefined,
       image: uploadedImageKey.value || undefined
     })
     if (res.data?.pid) {

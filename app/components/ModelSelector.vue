@@ -149,7 +149,7 @@ const filteredModels = computed(() => {
 
 	// Filter by capability if provided
 	if (props.capability) {
-		models = models.filter(m => m.capabilities?.includes(props.capability!))
+		models = models.filter(m => m.model_input?.capability === props.capability || m.capabilities?.includes(props.capability!))
 	}
 
 	const q = searchQuery.value.trim().toLowerCase()
@@ -256,7 +256,17 @@ const selectModel = (id: string) => {
 
 	// Navigate to specialized pages if the model has image/video capabilities
 	const model = modelStore.models.find(m => `${m.provider}:${m.model}` === id)
-	if (model && model.capabilities) {
+	if (model && model.model_input?.capability) {
+		const cap = model.model_input.capability
+		if ((cap === 'image_generation' || cap === 'image') && route.name !== 'image-generation') {
+			router.push('/image-generation')
+		} else if ((cap === 'video_generation' || cap === 'video') && route.name !== 'video-generation') {
+			router.push('/video-generation')
+		} else if (cap === 'chat' && route.name !== 'chat' && route.name !== 'chat-id') {
+			router.push('/chat')
+		}
+	} else if (model && model.capabilities) {
+		// Fallback to legacy capabilities array
 		if (model.capabilities.includes('image_generation') && route.name !== 'image-generation') {
 			router.push('/image-generation')
 		} else if (model.capabilities.includes('video_generation') && route.name !== 'video-generation') {

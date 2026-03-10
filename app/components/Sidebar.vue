@@ -646,8 +646,18 @@ const toggleProjects = () => {
 	projectsCollapsed.value = !projectsCollapsed.value
 }
 
-const selectProject = (id: string | number | null) => {
-	conversationStore.setSelectedGroupId(id === null ? null : Number(id))
+const selectProject = async (id: string | number | null) => {
+	await conversationStore.setSelectedGroupId(id === null ? null : Number(id))
+
+	// Only navigate if it's a specific project, "All Sessions" (id === null) just filters
+	if (id !== null) {
+		const firstConv = sortedConversations.value[0]
+		if (firstConv) {
+			router.push(`/chat/${firstConv.id}`)
+		} else {
+			router.push('/chat')
+		}
+	}
 }
 
 const handleSelectConversation = (id: string) => {

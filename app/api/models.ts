@@ -14,6 +14,7 @@ export interface ModelInputField {
 }
 
 export interface ModelInput {
+  capability?: string
   fields: Record<string, ModelInputField>
 }
 

@@ -13,7 +13,7 @@ export interface GetUploadUrlResponse {
 
 // Helper API
 export const getUploadUrl = (data: GetUploadUrlParams) => {
-  return request.post('/v1/helper/upload-url', data)
+  return request.post('/v1/get-upload-url', data)
 }
 
 /**

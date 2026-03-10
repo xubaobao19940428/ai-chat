@@ -27,28 +27,98 @@
 									<TiptapEditorContent :editor="editor" class="w-full" />
 								</div>
 
+								<!-- Uploaded Files Preview -->
+								<div v-if="uploadedFiles.length > 0" class="flex flex-wrap gap-2 px-4 pb-2">
+									<div v-for="(file, index) in uploadedFiles" :key="index"
+										class="relative group/file flex items-center gap-2 border border-[var(--border-main)] bg-[var(--bg-main)]/50 rounded-xl pr-2 pl-1 py-1 max-w-[200px] shadow-sm">
+										<!-- Preview for images -->
+										<img v-if="file.type.startsWith('image/')" :src="file.url"
+											class="w-8 h-8 rounded-lg object-cover bg-black/5" />
+										<!-- Icon for other files -->
+										<div v-else
+											class="w-8 h-8 rounded-lg bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[var(--text-secondary)]">
+											<FileText :size="16" />
+										</div>
+										<div class="flex flex-col min-w-0 flex-1">
+											<span class="text-[12px] font-medium text-[var(--text-primary)] truncate"
+												:title="file.name">{{ file.name }}</span>
+										</div>
+										<!-- Remove Button -->
+										<button @click="removeFile(index)"
+											class="absolute -top-1.5 -right-1.5 size-5 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover/file:opacity-100 transition-opacity">
+											<X :size="10" stroke-width="3" />
+										</button>
+									</div>
+									<div v-if="isUploading"
+										class="flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--fill-tsp-gray-main)] border border-[var(--border-main)] animate-pulse">
+										<Loader2 :size="16" class="animate-spin text-[var(--text-secondary)]" />
+									</div>
+								</div>
+
+								<input type="file" ref="fileInputRef" class="hidden" multiple
+									@change="handleFileUpload" />
+
 								<!-- Toolbar -->
 								<div class="px-3">
 									<div class="flex gap-2 items-center">
 										<div class="flex gap-2 items-center flex-shrink-0">
 											<!-- Plus -->
-											<Tooltip text="Add Attachment">
-												<button
-													class="rounded-full border border-[var(--border-main)] inline-flex items-center justify-center gap-1 clickable cursor-pointer text-xs text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-gray-main)] w-8 h-8 p-0 shrink-0 transition-colors">
+											<Tooltip v-if="supportsFileUpload" text="Add Attachment">
+												<button @click="triggerFileUpload" :disabled="isUploading"
+													class="rounded-full border border-[var(--border-main)] inline-flex items-center justify-center gap-1 clickable cursor-pointer text-xs text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-gray-main)] disabled:opacity-50 disabled:cursor-not-allowed w-8 h-8 p-0 shrink-0 transition-colors">
 													<Plus :size="18" />
 												</button>
 											</Tooltip>
 
-											<!-- Browser/Globe Icon Pill -->
-											<Tooltip v-if="!activeTool" text="Browse Web">
-												<div
-													class="flex items-center gap-[4px] p-[6px] px-[8px] cursor-pointer rounded-[100px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-gray-main)] transition-colors">
-													<Globe :size="16" class="text-[var(--text-secondary)]" />
-													<span
-														class="text-[12px] text-[var(--text-secondary)] font-medium">My
-														Browser</span>
-												</div>
-											</Tooltip>
+											<!-- Browser/Globe Icon Pill Popover -->
+											<Popover v-if="!activeTool && supportsWebSearch" class="relative"
+												v-slot="{ open }">
+												<Tooltip text="Browse Web">
+													<PopoverButton
+														class="flex items-center gap-[4px] p-[6px] px-[8px] cursor-pointer rounded-[100px] border border-[var(--border-main)] transition-colors relative"
+														:class="{ 'bg-[var(--fill-tsp-gray-main)]': open || isWebSearchEnabled, 'hover:bg-[var(--fill-tsp-gray-main)]': !open }">
+														<Globe :size="16" class="text-[var(--text-secondary)]" />
+														<span
+															class="text-[12px] text-[var(--text-secondary)] font-medium">My
+															Browser</span>
+														<div v-if="isWebSearchEnabled"
+															class="absolute top-0 right-0 -mr-1 w-2 h-2 bg-[var(--text-primary)] rounded-full border-[1.5px] border-[var(--bg-main)]">
+														</div>
+													</PopoverButton>
+												</Tooltip>
+												<Transition enter-active-class="transition duration-150 ease-out"
+													enter-from-class="translate-y-1.5 opacity-0 scale-[0.98]"
+													enter-to-class="translate-y-0 opacity-100 scale-100"
+													leave-active-class="transition duration-100 ease-in"
+													leave-from-class="translate-y-0 opacity-100"
+													leave-to-class="translate-y-1.5 opacity-0">
+													<PopoverPanel
+														class="absolute bottom-full left-0 mb-3 z-50 w-[300px] max-w-[calc(100vw-2rem)] bg-[var(--bg-main)] rounded-2xl shadow-lg border border-[var(--border-light)] p-4 cursor-default text-left">
+														<div
+															class="text-[14px] font-semibold text-[var(--text-primary)] mb-3">
+															Web Search</div>
+														<div class="h-[1px] bg-[var(--border-light)] -mx-4 mb-3"></div>
+														<div class="flex items-start justify-between">
+															<div class="pr-4">
+																<div
+																	class="text-[13px] font-medium text-[var(--text-primary)]">
+																	Enable Web Search</div>
+																<div
+																	class="text-[12px] text-[var(--text-tertiary)] leading-relaxed mt-0.5 whitespace-normal">
+																	Enable web search and real-time information access.
+																</div>
+															</div>
+															<Switch v-model="isWebSearchEnabled"
+																:class="isWebSearchEnabled ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'"
+																class="relative inline-flex h-5 w-[36px] shrink-0 items-center rounded-full transition-colors focus:outline-none mt-1">
+																<span
+																	:class="isWebSearchEnabled ? 'translate-x-[18px]' : 'translate-x-0.5'"
+																	class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm" />
+															</Switch>
+														</div>
+													</PopoverPanel>
+												</Transition>
+											</Popover>
 
 											<!-- Tool Pill (Active Mode) -->
 											<div v-if="activeTool"
@@ -349,13 +419,16 @@ import {
 	ShoppingBag,
 	Sparkles,
 	Paintbrush,
+	Loader2
 } from 'lucide-vue-next'
+import { uploadFile } from '../utils/api'
 import ModelSelector from './ModelSelector.vue'
 import SamplePrompts from './SamplePrompts.vue'
 import TemplateSelector from './TemplateSelector.vue'
 import ToolChips from './ToolChips.vue'
 import ToolIntegrations from './ToolIntegrations.vue'
 import Tooltip from './Tooltip.vue'
+import { Switch, Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
 
 // --- Custom Icons ---
 const FigmaIcon = () =>
@@ -590,14 +663,88 @@ watch(activeTool, (newTool) => {
 
 const modelStore = useModelStore()
 
+const supportsFileUpload = computed(() => {
+	const fields = modelStore.selectedModel?.model_input?.fields
+	return !!(fields?.file_ids || fields?.image_urls)
+})
+
+const supportsWebSearch = computed(() => {
+	const fields = modelStore.selectedModel?.model_input?.fields
+	return !!fields?.enable_web_search
+})
+
+const fileInputRef = ref<HTMLInputElement | null>(null)
+const isUploading = ref(false)
+const uploadedFiles = ref<{ name: string; key: string; url: string; type: string }[]>([])
+const isWebSearchEnabled = ref(true)
+
+const triggerFileUpload = () => {
+	fileInputRef.value?.click()
+}
+
+const handleFileUpload = async (event: Event) => {
+	const target = event.target as HTMLInputElement
+	if (!target.files?.length) return
+
+	isUploading.value = true
+	try {
+		// Upload each file sequentially (or concurrently)
+		for (let i = 0; i < target.files.length; i++) {
+			const file = target.files.item(i)
+			if (!file) continue
+			const { key, url } = await uploadFile(file)
+			uploadedFiles.value.push({
+				name: file.name,
+				key,
+				url,
+				type: file.type
+			})
+		}
+	} catch (error) {
+		console.error('Failed to upload file(s):', error)
+		uiStore.showToast("Failed to upload file(s)", "error")
+	} finally {
+		isUploading.value = false
+		if (fileInputRef.value) fileInputRef.value.value = ''
+	}
+}
+
+const removeFile = (index: number) => {
+	uploadedFiles.value.splice(index, 1)
+}
+
+
 function handleSendMessage(directContent?: string) {
 	const content = directContent || editor.value?.getText() || ''
-	if (!content.trim()) return
+	if (!content.trim() && uploadedFiles.value.length === 0) return
 	try {
 		// 直接使用完整的 provider:model 格式
 		const modelId = modelStore.selectedModelId || 'openai:gpt-4o-mini'
-		emit('send-message', content, modelId)
+
+		// Group files by type
+		const image_urls: string[] = []
+		const file_ids: string[] = []
+
+		uploadedFiles.value.forEach(f => {
+			if (f.type.startsWith('image/')) {
+				// In a real implementation you might pass URL or a system key format.
+				// Assuming the API wants the `key` or `url`. 
+				// Let's pass the remote URL or key. 
+				image_urls.push(f.key)
+			} else {
+				file_ids.push(f.key)
+			}
+		})
+
+		const payloadOptions: any = { file_ids, image_urls }
+		if (supportsWebSearch.value) {
+			payloadOptions.enable_web_search = isWebSearchEnabled.value
+		}
+
+		emit('send-message', content, modelId, payloadOptions)
+
 		editor.value?.commands.clearContent()
+		uploadedFiles.value = []
 
 		// Reset tool after sending
 		activeTool.value = null

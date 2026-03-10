@@ -169,8 +169,7 @@
 
         <!-- Floating Pill Control Bar (Bottom) - Krea Style -->
         <div class="absolute bottom-12 inset-x-0 flex justify-center px-4 z-50 pointer-events-none">
-            <div
-                class="relative z-40 mx-auto flex w-full flex-col items-center justify-center gap-1.5 pointer-events-auto">
+            <div class="w-full max-w-[760px] relative pointer-events-auto">
 
                 <transition enter-active-class="duration-300 ease-out" enter-from-class="opacity-0 -translate-y-2"
                     enter-to-class="opacity-100 translate-y-0">
@@ -184,28 +183,31 @@
                 </transition>
 
                 <div ref="controlBarRef"
-                    class="group/promptbox bg-[var(--background-gray-main)] border-[var(--border-main)] text-[var(--text-primary)] flex w-[90%] rounded-[2rem] transform flex-col border-[0.5px] p-3 shadow-2xl transition-all duration-100 ease-out sm:w-fit sm:min-w-[620px]"
-                    style="height: 110px">
-                    <div class="flex w-full min-w-0 flex-row items-end h-full">
-                        <div class="flex w-full min-w-0 flex-col justify-between h-full gap-2 sm:mr-2.5">
+                    class="bg-[var(--bg-main)] rounded-[40px] border border-[var(--border-main)] p-5 shadow-[var(--shadow-pill)] flex flex-col gap-4 transition-all">
+                    <div class="flex w-full min-w-0 flex-col gap-2">
 
-                            <!-- Input Area -->
-                            <div class="relative w-full h-full pt-1.5">
-                                <textarea v-model="prompt"
-                                    class="scrollbar-hide relative max-h-48 min-h-[1.5lh] w-full max-w-[calc(100vw-200px)] min-w-full cursor-text resize-none overflow-y-auto border-0 bg-transparent px-2.5 py-1.5 text-base leading-6 font-normal placeholder-[var(--text-secondary)] focus:ring-0 sm:min-w-[400px] md:max-w-[calc(100vw-440px)] md:min-w[full] outline-none"
-                                    placeholder="Describe a video and click generate..." autocomplete="off" rows="1"
-                                    @keydown.enter="handleEnterKey" style="height: 36px"></textarea>
-                            </div>
+                        <!-- Input Area -->
+                        <div class="px-2">
+                            <textarea v-model="prompt"
+                                class="w-full bg-transparent border-none text-[var(--text-primary)] focus:outline-none font-medium text-[17px] py-1 max-h-32 overflow-y-auto no-scrollbar relative min-h-[28px] outline-none resize-none px-0"
+                                placeholder="Describe a video and click generate..." autocomplete="off" rows="1"
+                                @keydown.enter="handleEnterKey"></textarea>
+                        </div>
 
-                            <!-- Buttons Row -->
-                            <div class="flex flex-wrap gap-1 text-[13px] font-medium tracking-tight mt-auto">
+                        <!-- Bottom Row: Tools + Generate -->
+                        <div class="flex justify-between gap-2 px-1 mt-auto">
+                            <!-- Tool Pills -->
+                            <div class="flex items-center gap-1 flex-wrap">
+                                <!-- Model Selector -->
+                                <ModelSelector capability="video_generation" class="mr-1" />
+
                                 <!-- Start Frame Upload with Popover -->
                                 <input type="file" ref="fileInput" accept="image/png, image/jpeg, video/mp4"
                                     class="hidden" @change="handleFileUpload" />
-                                <div class="group/button relative">
-                                    <button @click="openDropdown = openDropdown === 'startFrame' ? null : 'startFrame'"
-                                        class="focus-visible:ring-ring/50 inline-flex shrink-0 items-center justify-center gap-2 font-medium whitespace-nowrap transition-all outline-none disabled:pointer-events-none disabled:opacity-50 h-[30px] px-3 py-1 rounded-full shadow-none border border-transparent"
-                                        :class="openDropdown === 'startFrame' ? 'bg-white shadow-sm' : 'bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)]'"
+                                <div class="group/button relative" v-if="supportsImageUpload">
+                                    <button @click="openStartFrameDropdown = !openStartFrameDropdown"
+                                        class="focus-visible:ring-ring/50 inline-flex shrink-0 items-center justify-center gap-2 font-medium whitespace-nowrap outline-none disabled:pointer-events-none disabled:opacity-50 h-[30px] px-4 py-1.5 rounded-full shadow-none bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+                                        :class="openStartFrameDropdown ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'"
                                         type="button" :disabled="isUploading">
                                         <ImagePlus v-if="!isUploading && !previewImageUrl" :size="14" />
                                         <Loader2 v-else-if="isUploading" :size="14" class="animate-spin" />
@@ -215,10 +217,10 @@
                                     </button>
 
                                     <!-- Start Frame Popover -->
-                                    <div v-if="openDropdown === 'startFrame'"
+                                    <div v-if="openStartFrameDropdown"
                                         class="absolute bottom-[36px] left-0 pb-2 z-[60] min-w-[300px]">
-                                        <div
-                                            class="rounded-[28px] bg-white dark:bg-[#1a1a1a] border border-[var(--border-main)] p-4 shadow-2xl min-w-[300px] flex flex-col gap-4">
+                                        <div class="rounded-2xl bg-[var(--bg-main)] border border-[var(--border-light)] p-4 shadow-lg min-w-[300px] flex flex-col gap-4"
+                                            style="background-color: var(--bg-main);">
                                             <p
                                                 class="text-[14px] font-medium text-[var(--text-primary)] text-center leading-snug px-2">
                                                 Start frame anchors the opening of your video. Upload an image/video or
@@ -227,7 +229,7 @@
 
                                             <div class="flex flex-col gap-2">
                                                 <!-- Upload Button -->
-                                                <button @click="triggerFileUpload(); openDropdown = null"
+                                                <button @click="triggerFileUpload(); openStartFrameDropdown = false"
                                                     class="w-full flex items-center justify-center gap-2 bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 rounded-full py-3 text-[14px] font-medium transition-colors">
                                                     <div
                                                         class="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center">
@@ -237,7 +239,7 @@
                                                 </button>
 
                                                 <!-- Select Asset Button (Dummy function for now) -->
-                                                <button @click="openDropdown = null"
+                                                <button @click="openStartFrameDropdown = false"
                                                     class="w-full flex items-center justify-center gap-2 bg-transparent text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full py-3 text-[14px] font-medium transition-colors border border-transparent">
                                                     <ImagePlus :size="16" />
                                                     Select asset
@@ -247,120 +249,156 @@
                                     </div>
                                 </div>
 
-                                <!-- End Frame (Disabled mimic) -->
-                                <div class="relative">
-                                    <button
-                                        class="focus-visible:ring-ring/50 inline-flex shrink-0 items-center justify-center gap-2 font-medium whitespace-nowrap transition-all outline-none pointer-events-none opacity-50 h-[30px] px-3 py-1 rounded-full bg-[var(--fill-tsp-gray-main)] shadow-none border border-[var(--border-main)]"
-                                        type="button" disabled>
-                                        <ImagePlus :size="14" />
-                                        End frame
-                                    </button>
-                                </div>
 
-                                <!-- Style Select (Dummy mimic) -->
-                                <div class="group/button relative">
-                                    <button
-                                        class="inline-flex h-[30px] shrink-0 items-center justify-center gap-2 rounded-full border border-[var(--border-main)] bg-[var(--fill-tsp-gray-main)] px-3 py-1 font-medium whitespace-nowrap shadow-none outline-none transition-all hover:bg-[var(--bg-hover)] relative flex cursor-pointer">
-                                        Style
-                                    </button>
-                                </div>
+                                <!-- Dynamic Select Fields -->
+                                <div v-for="field in dynamicSelectFields" :key="field.key"
+                                    class="group/button relative">
 
-                                <!-- Resolution Select -->
-                                <div class="group/button relative">
-                                    <button @click="openDropdown = openDropdown === 'resolution' ? null : 'resolution'"
-                                        class="inline-flex h-[30px] shrink-0 items-center justify-center gap-2 rounded-full border border-transparent bg-[var(--fill-tsp-gray-main)] px-3 py-1 font-medium whitespace-nowrap shadow-none outline-none transition-all hover:bg-[var(--bg-hover)] relative flex w-[60px] cursor-pointer"
-                                        :class="openDropdown === 'resolution' ? 'bg-white shadow-sm' : ''">
-                                        {{ selectedResolution }}
-                                    </button>
-                                    <div v-if="openDropdown === 'resolution'"
-                                        class="absolute bottom-[38px] left-1/2 -translate-x-1/2 pb-2 z-[60]">
-                                        <div
-                                            class="rounded-[28px] bg-white dark:bg-[#1a1a1a] border border-[var(--border-main)] p-4 shadow-2xl min-w-[170px] flex flex-col gap-3">
-                                            <span
-                                                class="text-[#737373] dark:text-[#a3a3a3] font-medium text-[12px] text-center pt-1">Resolution</span>
-                                            <div class="flex flex-col gap-1">
-                                                <button v-for="res in ['720p', '480p']" :key="res"
-                                                    @click="selectedResolution = res; openDropdown = null"
-                                                    class="w-full flex items-center justify-between gap-4 py-2.5 px-3 rounded-2xl hover:bg-[var(--bg-hover)] transition-colors">
-                                                    <span class="text-[14px] font-bold text-black dark:text-white">{{
-                                                        res }}</span>
-                                                    <div class="flex items-center justify-center">
-                                                        <div v-if="selectedResolution === res"
-                                                            class="w-5 h-5 rounded-full bg-black dark:bg-white flex items-center justify-center">
-                                                            <Check :size="12" class="text-white dark:text-black"
-                                                                stroke-width="4" />
+                                    <!-- 1. Aspect Ratio Custom Style -->
+                                    <template v-if="field.key === 'aspect_ratio'">
+                                        <button @click="toggleDropdown(field.key)"
+                                            class="inline-flex h-[30px] shrink-0 items-center justify-center gap-2 rounded-full px-4 py-1.5 font-medium whitespace-nowrap shadow-none outline-none cursor-pointer bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+                                            :class="activeDropdownField === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'">
+                                            <span>
+                                                <div v-if="String(dynamicParams[field.key]).startsWith('16:') || String(dynamicParams[field.key]).startsWith('21:') || !dynamicParams[field.key]"
+                                                    class="w-4 h-2.5 border-[2px] border-current rounded-[2px]"
+                                                    :title="dynamicParams[field.key]"></div>
+                                                <div v-else-if="String(dynamicParams[field.key]).startsWith('1:')"
+                                                    class="w-3.5 h-3.5 border-[2px] border-current rounded-[2px]"></div>
+                                                <div v-else class="w-2.5 h-4 border-[2px] border-current rounded-[2px]"
+                                                    :title="dynamicParams[field.key]"></div>
+                                            </span>
+                                        </button>
+                                        <div v-if="activeDropdownField === field.key"
+                                            class="absolute bottom-[38px] left-1/2 -translate-x-1/2 pb-2 z-[60]">
+                                            <div class="rounded-2xl bg-[var(--bg-main)] border border-[var(--border-light)] p-3 shadow-lg flex flex-col gap-3"
+                                                style="background-color: var(--bg-main);">
+                                                <span
+                                                    class="text-[var(--text-primary)] px-2 font-medium text-[13px] text-center pt-2">Aspect
+                                                    Ratio</span>
+                                                <div
+                                                    class="flex gap-2 min-w-[max-content] pb-1 overflow-x-auto no-scrollbar">
+                                                    <button v-for="opt in field.options" :key="opt"
+                                                        @click="dynamicParams[field.key] = opt; toggleDropdown(field.key)"
+                                                        class="flex flex-col items-center justify-center gap-3 w-[84px] h-[84px] rounded-[16px] transition-colors"
+                                                        :class="dynamicParams[field.key] === opt ? 'bg-[var(--fill-tsp-gray-main)]' : 'bg-transparent hover:bg-[var(--bg-hover)]'">
+
+                                                        <div v-if="String(opt).startsWith('16:') || String(opt).startsWith('21:') || String(opt).startsWith('3:2')"
+                                                            class="w-[28px] h-[18px] border-[2.5px] border-[var(--text-primary)] rounded-[4px]">
+                                                        </div>
+                                                        <div v-else-if="String(opt).startsWith('9:16') || String(opt).startsWith('3:4') || String(opt).startsWith('4:5')"
+                                                            class="w-[16px] h-[26px] border-[2.5px] border-[var(--text-primary)] rounded-[4px]">
                                                         </div>
                                                         <div v-else
-                                                            class="w-5 h-5 rounded-full border-[2.5px] border-black dark:border-white">
+                                                            class="w-[24px] h-[24px] border-[2.5px] border-[var(--text-primary)] rounded-[4px]">
                                                         </div>
-                                                    </div>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <!-- Aspect Ratio Select -->
-                                <div class="group/button relative">
-                                    <button @click="openDropdown = openDropdown === 'ratio' ? null : 'ratio'"
-                                        class="inline-flex h-[30px] shrink-0 items-center justify-center gap-2 rounded-full border border-[var(--border-main)] bg-[var(--fill-tsp-gray-main)] px-3 py-1 font-medium whitespace-nowrap shadow-none outline-none transition-all hover:bg-[var(--bg-hover)] flex w-10 cursor-pointer">
-                                        <span>
-                                            <div v-if="selectedAspectRatio === '16:9'"
-                                                class="w-4 h-2.5 border-[2px] border-current rounded-[2px]"></div>
-                                            <div v-if="selectedAspectRatio === '1:1'"
-                                                class="w-3.5 h-3.5 border-[2px] border-current rounded-[2px]"></div>
-                                            <div v-if="selectedAspectRatio === '9:16'"
-                                                class="w-2.5 h-4 border-[2px] border-current rounded-[2px]"></div>
-                                        </span>
-                                    </button>
-                                    <div v-if="openDropdown === 'ratio'"
-                                        class="absolute bottom-[38px] left-1/2 -translate-x-1/2 pb-2 z-[60]">
-                                        <div
-                                            class="rounded-[24px] bg-[var(--background-card)] border border-[var(--border-main)] p-3 shadow-2xl flex flex-col gap-3">
-                                            <span
-                                                class="text-[var(--text-primary)] px-2 font-medium text-[13px] text-center pt-2">Aspect
-                                                Ratio</span>
-                                            <div class="flex gap-2">
-                                                <button @click="selectedAspectRatio = '16:9'; openDropdown = null"
-                                                    class="flex flex-col items-center justify-center gap-3 w-[84px] h-[84px] rounded-[16px] transition-colors"
-                                                    :class="selectedAspectRatio === '16:9' ? 'bg-[var(--fill-tsp-gray-main)]' : 'bg-transparent hover:bg-[var(--bg-hover)]'">
-                                                    <div
-                                                        class="w-[28px] h-[18px] border-[2.5px] border-[var(--text-primary)] rounded-[4px]">
-                                                    </div>
-                                                    <span
-                                                        class="text-[12px] font-medium text-[var(--text-primary)]">Landscape</span>
-                                                </button>
-                                                <button @click="selectedAspectRatio = '9:16'; openDropdown = null"
-                                                    class="flex flex-col items-center justify-center gap-3 w-[84px] h-[84px] rounded-[16px] transition-colors"
-                                                    :class="selectedAspectRatio === '9:16' ? 'bg-[var(--fill-tsp-gray-main)]' : 'bg-transparent hover:bg-[var(--bg-hover)]'">
-                                                    <div
-                                                        class="w-[16px] h-[26px] border-[2.5px] border-[var(--text-primary)] rounded-[4px]">
-                                                    </div>
-                                                    <span
-                                                        class="text-[12px] font-medium text-[var(--text-primary)]">Portrait</span>
-                                                </button>
+                                                        <span
+                                                            class="text-[12px] font-medium text-[var(--text-primary)] whitespace-nowrap">
+                                                            {{ opt === '16:9' ? 'Landscape' : opt === '9:16' ?
+                                                                'Portrait' : opt === '1:1' ? 'Square' : opt }}
+                                                        </span>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </template>
+
+                                    <!-- 2. Duration Custom Style -->
+                                    <template v-else-if="field.key === 'duration'">
+                                        <button @click="toggleDropdown(field.key)"
+                                            class="inline-flex h-[30px] shrink-0 items-center justify-center gap-1.5 rounded-full px-4 py-1.5 font-medium whitespace-nowrap shadow-none outline-none cursor-pointer bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+                                            :class="activeDropdownField === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'">
+                                            <Clock :size="14" class="text-[var(--text-secondary)] opacity-80" />
+                                            {{ dynamicParams[field.key] }}s
+                                        </button>
+                                        <div v-if="activeDropdownField === field.key"
+                                            class="absolute bottom-[38px] left-1/2 -translate-x-1/2 pb-2 z-[60]">
+                                            <div class="rounded-2xl bg-[var(--bg-main)] border border-[var(--border-light)] p-4 shadow-lg min-w-[170px] flex flex-col gap-3"
+                                                style="background-color: var(--bg-main);">
+                                                <span
+                                                    class="text-[var(--text-tertiary)] font-medium text-[12px] text-center pt-1">Duration</span>
+                                                <div
+                                                    class="flex flex-col gap-1 max-h-[200px] overflow-y-auto no-scrollbar">
+                                                    <button v-for="opt in field.options" :key="opt"
+                                                        @click="dynamicParams[field.key] = opt; toggleDropdown(field.key)"
+                                                        class="w-full flex items-center justify-between gap-4 py-2.5 px-3 rounded-2xl hover:bg-[var(--bg-hover)] transition-colors">
+                                                        <span
+                                                            class="text-[14px] font-bold text-black dark:text-white">{{
+                                                                opt }}s</span>
+                                                        <div class="flex items-center justify-center">
+                                                            <div v-if="dynamicParams[field.key] === opt"
+                                                                class="w-5 h-5 rounded-full bg-black dark:bg-white flex items-center justify-center">
+                                                                <Check :size="12" class="text-white dark:text-black"
+                                                                    stroke-width="4" />
+                                                            </div>
+                                                            <div v-else
+                                                                class="w-5 h-5 rounded-full border-[2.5px] border-black dark:border-white">
+                                                            </div>
+                                                        </div>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+
+                                    <!-- 3. Generic Style for other properties (like resolution, style) -->
+                                    <template v-else>
+                                        <button @click="toggleDropdown(field.key)"
+                                            class="inline-flex h-[30px] shrink-0 items-center justify-center gap-2 rounded-full px-4 py-1.5 font-medium whitespace-nowrap shadow-none outline-none min-w-[60px] cursor-pointer bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+                                            :class="activeDropdownField === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'">
+                                            <span
+                                                class="text-[11px] font-bold tracking-wider opacity-60 uppercase mr-0.5">{{
+                                                    field.key === 'resolution' ? 'Res' : field.key.substring(0, 3)
+                                                }}:</span>
+                                            {{ dynamicParams[field.key] }}
+                                        </button>
+                                        <div v-if="activeDropdownField === field.key"
+                                            class="absolute bottom-[38px] left-1/2 -translate-x-1/2 pb-2 z-[60]">
+                                            <div class="rounded-2xl bg-[var(--bg-main)] border border-[var(--border-light)] py-3 px-2 shadow-lg min-w-[140px] flex flex-col gap-2 relative overflow-hidden"
+                                                style="background-color: var(--bg-main);">
+                                                <!-- Decorative background element -->
+                                                <div
+                                                    class="absolute -top-10 -right-10 w-24 h-24 bg-[var(--text-primary)] opacity-5 rounded-full blur-xl pointer-events-none">
+                                                </div>
+
+                                                <span
+                                                    class="text-[var(--text-tertiary)] font-bold text-[11px] text-center pt-1 tracking-widest uppercase">{{
+                                                        field.key.replace(/_/g, ' ') }}</span>
+
+                                                <div
+                                                    class="flex flex-col gap-0.5 max-h-[180px] overflow-y-auto custom-scrollbar px-1 relative z-10">
+                                                    <button v-for="opt in field.options" :key="opt"
+                                                        @click="dynamicParams[field.key] = opt; toggleDropdown(field.key)"
+                                                        class="w-full flex items-center justify-between gap-3 py-2 px-3 rounded-[12px] group transition-all duration-200"
+                                                        :class="dynamicParams[field.key] === opt ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-md' : 'hover:bg-[var(--bg-hover)] text-[var(--text-primary)]'">
+                                                        <span class="text-[13px] font-semibold tracking-tight">{{ opt
+                                                        }}</span>
+                                                        <div class="flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                                            :class="dynamicParams[field.key] === opt ? 'opacity-100' : ''">
+                                                            <Check :size="14" :stroke-width="3"
+                                                                :class="dynamicParams[field.key] === opt ? 'text-[var(--bg-main)]' : 'text-[var(--text-tertiary)]'" />
+                                                        </div>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Generate Button Area -->
-                        <div class="flex items-end self-end ml-2 mb-1">
+                            <!-- Generate Button -->
                             <button @click="generateVideo" :disabled="!prompt.trim() || isGenerating"
-                                class="inline-flex shrink-0 items-center justify-center gap-2 font-medium whitespace-nowrap transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 h-10 w-10 active-scale-95 relative rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] hover:opacity-90 shadow-md">
+                                class="flex items-center justify-center shrink-0 w-10 h-10 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] hover:opacity-90 transition-all disabled:opacity-50 disabled:pointer-events-none self-end">
                                 <Sparkles v-if="!isGenerating" :size="18" fill="currentColor" />
                                 <Loader2 v-else :size="18" class="animate-spin absolute" />
                             </button>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 </template>
 
 <script setup lang="ts">
@@ -387,8 +425,55 @@ import {
     uploadFile,
     type AIModel
 } from '@/utils/api'
+import { useModelStore } from '@/stores/models'
+import ModelSelector from '@/components/ModelSelector.vue'
 import type { VideoTaskOutput } from '@/api/video'
 
+const modelStore = useModelStore()
+const selectedModel = computed(() => modelStore.selectedModel)
+
+// --- Dynamic Input Logic ---
+const modelInputFields = computed(() => {
+    return selectedModel.value?.model_input?.fields || {}
+})
+
+const dynamicSelectFields = computed(() => {
+    const fields = []
+    for (const [key, field] of Object.entries(modelInputFields.value)) {
+        if ((field as any).type === 'select') {
+            fields.push({ key, ...(field as any) })
+        }
+    }
+    return fields
+})
+
+const supportsImageUpload = computed(() => {
+    const fields = modelInputFields.value
+    return !!fields['image'] || !!fields['image_urls'] || !!fields['image_url']
+})
+
+const dynamicParams = ref<Record<string, any>>({})
+
+// Initialize default values when model changes
+watch(() => selectedModel.value, (newModel) => {
+    const fields = newModel?.model_input?.fields || {}
+    const newParams: Record<string, any> = {}
+    for (const [key, field] of Object.entries(fields)) {
+        if (field.default !== undefined) {
+            newParams[key] = field.default
+        } else if (field.type === 'select' && field.options && field.options.length > 0) {
+            newParams[key] = field.options[0] // fallback to first option
+        }
+    }
+    dynamicParams.value = newParams
+}, { immediate: true })
+
+const activeDropdownField = ref<string | null>(null)
+
+const toggleDropdown = (key: string) => {
+    activeDropdownField.value = activeDropdownField.value === key ? null : key
+}
+// -----------------------------
 
 const activeTab = ref<'inspiration' | 'creations'>('inspiration')
 const prompt = ref('')
@@ -396,17 +481,6 @@ const isGenerating = ref(false)
 const generationProgress = ref(0)
 const selectedCategory = ref('All')
 const playingVideoId = ref<number | null>(null)
-const openDropdown = ref<string | null>(null)
-
-// Model Store
-import { useModelStore } from '@/stores/models'
-const modelStore = useModelStore()
-const selectedModel = computed(() => modelStore.selectedModel)
-
-
-const selectedAspectRatio = ref('16:9')
-const selectedDuration = ref(5)
-const selectedResolution = ref('720p')
 
 // File Upload State
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -414,6 +488,7 @@ const isUploading = ref(false)
 const uploadedImageKey = ref('')
 const previewImageUrl = ref('')
 const inputRef = ref<HTMLDivElement | null>(null)
+const openStartFrameDropdown = ref(false)
 
 const categories = [
     'All', 'Trending', 'Cinematic', 'Animation', 'Nature', 'Abstract'
@@ -424,7 +499,9 @@ let pollingTimer: any = null
 
 const estimatedTimeRemaining = computed(() => {
     const remaining = Math.max(0, 100 - generationProgress.value)
-    const seconds = Math.round((remaining / 100) * (selectedDuration.value === 5 ? 120 : 180))
+    // Try to guess duration from dynamic params if available
+    const durationParam = Object.values(dynamicParams.value).find(v => typeof v === 'number' && v > 0 && v < 20) || 5
+    const seconds = Math.round((remaining / 100) * (durationParam === 5 ? 120 : 180))
     if (seconds > 60) {
         return `${Math.floor(seconds / 60)}m ${seconds % 60}s`
     }
@@ -442,13 +519,15 @@ const fetchHistory = async () => {
     }
 }
 
-
-
 const controlBarRef = ref<HTMLDivElement | null>(null)
 
 const handleClickOutside = (event: MouseEvent) => {
-    if (openDropdown.value && controlBarRef.value && !controlBarRef.value.contains(event.target as Node)) {
-        openDropdown.value = null
+    if (activeDropdownField.value && controlBarRef.value && !controlBarRef.value.contains(event.target as Node)) {
+        activeDropdownField.value = null
+    }
+    // Also handle start frame dropdown
+    if (openStartFrameDropdown.value && controlBarRef.value && !controlBarRef.value.contains(event.target as Node)) {
+        openStartFrameDropdown.value = false
     }
 }
 
@@ -583,15 +662,29 @@ const generateVideo = async () => {
     isGenerating.value = true
     generationProgress.value = 0
     try {
-        const res = await createAsyncTask({
+        // Construct payload dynamically based on current selections
+        const payload: Record<string, any> = {
             capability: 'video_generation',
             model: `${selectedModel.value.provider}:${selectedModel.value.model}`,
             prompt: prompt.value,
-            aspect_ratio: selectedAspectRatio.value,
-            duration: selectedDuration.value,
-            resolution: selectedResolution.value,
-            image: uploadedImageKey.value || undefined
-        })
+        }
+
+        // Add dynamically rendered fields
+        for (const [key, value] of Object.entries(dynamicParams.value)) {
+            payload[key] = value
+        }
+
+        // Add image if supported
+        if (supportsImageUpload.value && uploadedImageKey.value) {
+            const imageField = modelInputFields.value['image_urls'] ? 'image_urls' : 'image'
+            if (imageField === 'image_urls') {
+                payload['image_urls'] = [uploadedImageKey.value]
+            } else {
+                payload['image'] = uploadedImageKey.value
+            }
+        }
+
+        const res = await createAsyncTask(payload as any)
         if (res.data?.pid) {
             pollTaskStatus(res.data.pid)
             prompt.value = ''
