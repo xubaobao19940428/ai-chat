@@ -1,0 +1,43 @@
+{
+	"chat": {
+		"new_chat": "New Chat",
+		"placeholder": "Type your message here...",
+		"send": "Send",
+		"welcome_title": "What can I do for you?",
+		"connect_tools": "Connect your tools to Aura",
+		"no_history": "No conversations yet.",
+		"start_new_chat": "Start a new task above.",
+		"new_conversation_default": "New conversation",
+		"share": "Share",
+		"rename": "Rename",
+		"move_to_project": "Move to Project",
+		"delete": "Delete"
+	},
+	"common": {
+		"confirm": "Confirm",
+		"cancel": "Cancel",
+		"settings": "Settings",
+		"account": "Account",
+		"select_model": "Select Model",
+		"search_models": "Search models...",
+		"general": "General",
+		"language": "Language",
+		"appearance": "Appearance",
+		"light": "Light",
+		"dark": "Dark",
+		"system": "Follow System",
+		"search": "Search",
+		"library": "Library",
+		"more_tools": "More Tools",
+		"collapse": "Collapse",
+		"drag_to_sort": "Drag and drop to customize the sorting",
+		"drag_to_collapse": "Drag here to collapse",
+		"projects": "Projects",
+		"all_sessions": "All Sessions",
+		"recent_chat": "Recent Chat",
+		"ai-bots": "AI bots",
+		"ai-reading": "AI Reading",
+		"ai-image": "AI Image Generator",
+		"ai-video": "AI Video Generator"
+	}
+}

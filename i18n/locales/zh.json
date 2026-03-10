@@ -1,0 +1,43 @@
+{
+	"chat": {
+		"new_chat": "新对话",
+		"placeholder": "请输入你想聊的内容...",
+		"send": "发送",
+		"welcome_title": "有什么我可以帮您的？",
+		"connect_tools": "连接您的工具到 Aura",
+		"no_history": "暂无对话记录",
+		"start_new_chat": "点击上方开启新对话",
+		"new_conversation_default": "新对话",
+		"share": "分享",
+		"rename": "重命名",
+		"move_to_project": "移动到项目",
+		"delete": "删除"
+	},
+	"common": {
+		"confirm": "确认",
+		"cancel": "取消",
+		"settings": "设置",
+		"account": "账号",
+		"select_model": "选择模型",
+		"search_models": "搜索模型...",
+		"general": "通用",
+		"language": "语言",
+		"appearance": "外观",
+		"light": "浅色",
+		"dark": "深色",
+		"system": "跟随系统",
+		"search": "搜索",
+		"library": "库",
+		"more_tools": "更多工具",
+		"collapse": "收起",
+		"drag_to_sort": "拖拽以自定义排序",
+		"drag_to_collapse": "拖拽到此处收起",
+		"projects": "项目",
+		"all_sessions": "所有会话",
+		"recent_chat": "最近对话",
+		"ai-bots": "AI 助手",
+		"ai-reading": "AI 阅读",
+		"ai-image": "AI 绘图",
+		"ai-video": "AI 视频"
+	}
+}

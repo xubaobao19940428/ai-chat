@@ -5,7 +5,22 @@
 export default defineNuxtConfig({
     compatibilityDate: '2025-07-15',
     devtools: { enabled: false },
-    modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt'],
+    modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', '@nuxtjs/i18n'],
+    i18n: {
+        strategy: 'no_prefix',
+        locales: [
+            { code: 'zh', file: 'zh.json', name: '简体中文' },
+            { code: 'en', file: 'en.json', name: 'English' }
+        ],
+        lazy: true,
+        langDir: 'locales',
+        defaultLocale: 'en',
+        detectBrowserLanguage: {
+            useCookie: true,
+            cookieKey: 'i18n_redirected',
+            redirectOn: 'root'
+        }
+    },
     css: ['~/assets/css/main.css', 'highlight.js/styles/atom-one-dark.css'],
     devServer: {
         port: 4000,

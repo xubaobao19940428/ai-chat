@@ -5,58 +5,46 @@
 			<div id="chat-home-view-container" class="w-full max-w-full sm:max-w-[768px] sm:min-w-[390px] mx-auto">
 				<div class="relative w-full flex flex-col items-center gap-[40px]">
 					<!-- Title using conditional text -->
-					<h1 class="text-[var(--text-primary)] text-center w-full font-serif text-[36px] mb-[34px] tracking-tight animate-fade-in-up"
-						style="animation-delay: 0.2s; animation-fill-mode: forwards">
-						<span v-if="activeTool && activeTool !== 'website'" class="opacity-0">What can I do for
-							you?</span>
-						<span v-else>What can I do for you?</span>
+					<h1 class="text-[var(--text-primary)] text-center w-full font-serif text-[36px] mb-[34px] tracking-tight animate-fade-in-up" style="animation-delay: 0.2s; animation-fill-mode: forwards">
+						<span v-if="activeTool && activeTool !== 'website'" class="opacity-0">{{ $t('chat.welcome_title') }}</span>
+						<span v-else>{{ $t('chat.welcome_title') }}</span>
 					</h1>
 				</div>
 
 				<!-- Input Card Area -->
-				<div class="flex flex-col gap-1 w-full animate-fade-in-up"
-					style="animation-delay: 0.3s; animation-fill-mode: forwards">
+				<div class="flex flex-col gap-1 w-full animate-fade-in-up" style="animation-delay: 0.3s; animation-fill-mode: forwards">
 					<div class="flex flex-col w-full">
 						<div class="relative bg-[var(--fill-tsp-gray-main)] rounded-[22px]">
 							<!-- Main Input Box with dynamic padding if tool is active -->
-							<div
-								class="flex flex-col gap-3 rounded-[22px] relative bg-[var(--fill-input-chat)] py-3 w-full z-[20] shadow-[0px_12px_32px_0px_rgba(0,0,0,0.02)] border border-black/5 dark:border-[var(--border-main)] focus-within:border-black/10 transition-all duration-300">
+							<div class="flex flex-col gap-3 rounded-[22px] relative bg-[var(--fill-input-chat)] py-3 w-full z-[20] shadow-[0px_12px_32px_0px_rgba(0,0,0,0.02)] border border-black/5 dark:border-[var(--border-main)] focus-within:border-black/10 transition-all duration-300">
 								<!-- Text Area -->
-								<div
-									class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[50px] max-h-[216px]">
+								<div class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[50px] max-h-[216px]">
 									<TiptapEditorContent :editor="editor" class="w-full" />
 								</div>
 
 								<!-- Uploaded Files Preview -->
 								<div v-if="uploadedFiles.length > 0" class="flex flex-wrap gap-2 px-4 pb-2">
-									<div v-for="(file, index) in uploadedFiles" :key="index"
-										class="relative group/file flex items-center gap-2 border border-[var(--border-main)] bg-[var(--bg-main)]/50 rounded-xl pr-2 pl-1 py-1 max-w-[200px] shadow-sm">
+									<div v-for="(file, index) in uploadedFiles" :key="index" class="relative group/file flex items-center gap-2 border border-[var(--border-main)] bg-[var(--bg-main)]/50 rounded-xl pr-2 pl-1 py-1 max-w-[200px] shadow-sm">
 										<!-- Preview for images -->
-										<img v-if="file.type.startsWith('image/')" :src="file.url"
-											class="w-8 h-8 rounded-lg object-cover bg-black/5" />
+										<img v-if="file.type.startsWith('image/')" :src="file.url" class="w-8 h-8 rounded-lg object-cover bg-black/5" />
 										<!-- Icon for other files -->
-										<div v-else
-											class="w-8 h-8 rounded-lg bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[var(--text-secondary)]">
+										<div v-else class="w-8 h-8 rounded-lg bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[var(--text-secondary)]">
 											<FileText :size="16" />
 										</div>
 										<div class="flex flex-col min-w-0 flex-1">
-											<span class="text-[12px] font-medium text-[var(--text-primary)] truncate"
-												:title="file.name">{{ file.name }}</span>
+											<span class="text-[12px] font-medium text-[var(--text-primary)] truncate" :title="file.name">{{ file.name }}</span>
 										</div>
 										<!-- Remove Button -->
-										<button @click="removeFile(index)"
-											class="absolute -top-1.5 -right-1.5 size-5 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover/file:opacity-100 transition-opacity">
+										<button @click="removeFile(index)" class="absolute -top-1.5 -right-1.5 size-5 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover/file:opacity-100 transition-opacity">
 											<X :size="10" stroke-width="3" />
 										</button>
 									</div>
-									<div v-if="isUploading"
-										class="flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--fill-tsp-gray-main)] border border-[var(--border-main)] animate-pulse">
+									<div v-if="isUploading" class="flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--fill-tsp-gray-main)] border border-[var(--border-main)] animate-pulse">
 										<Loader2 :size="16" class="animate-spin text-[var(--text-secondary)]" />
 									</div>
 								</div>
 
-								<input type="file" ref="fileInputRef" class="hidden" multiple
-									@change="handleFileUpload" />
+								<input type="file" ref="fileInputRef" class="hidden" multiple @change="handleFileUpload" />
 
 								<!-- Toolbar -->
 								<div class="px-3">
@@ -64,56 +52,31 @@
 										<div class="flex gap-2 items-center flex-shrink-0">
 											<!-- Plus -->
 											<Tooltip v-if="supportsFileUpload" text="Add Attachment">
-												<button @click="triggerFileUpload" :disabled="isUploading"
-													class="rounded-full border border-[var(--border-main)] inline-flex items-center justify-center gap-1 clickable cursor-pointer text-xs text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-gray-main)] disabled:opacity-50 disabled:cursor-not-allowed w-8 h-8 p-0 shrink-0 transition-colors">
+												<button @click="triggerFileUpload" :disabled="isUploading" class="rounded-full border border-[var(--border-main)] inline-flex items-center justify-center gap-1 clickable cursor-pointer text-xs text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-gray-main)] disabled:opacity-50 disabled:cursor-not-allowed w-8 h-8 p-0 shrink-0 transition-colors">
 													<Plus :size="18" />
 												</button>
 											</Tooltip>
 
 											<!-- Browser/Globe Icon Pill Popover -->
-											<Popover v-if="!activeTool && supportsWebSearch" class="relative"
-												v-slot="{ open }">
+											<Popover v-if="!activeTool && supportsWebSearch" class="relative" v-slot="{ open }">
 												<Tooltip text="Browse Web">
-													<PopoverButton
-														class="flex items-center gap-[4px] p-[6px] px-[8px] cursor-pointer rounded-[100px] border border-[var(--border-main)] transition-colors relative"
-														:class="{ 'bg-[var(--fill-tsp-gray-main)]': open || isWebSearchEnabled, 'hover:bg-[var(--fill-tsp-gray-main)]': !open }">
+													<PopoverButton class="flex items-center gap-[4px] p-[6px] px-[8px] cursor-pointer rounded-[100px] border border-[var(--border-main)] transition-colors relative" :class="{ 'bg-[var(--fill-tsp-gray-main)]': open || isWebSearchEnabled, 'hover:bg-[var(--fill-tsp-gray-main)]': !open }">
 														<Globe :size="16" class="text-[var(--text-secondary)]" />
-														<span
-															class="text-[12px] text-[var(--text-secondary)] font-medium">My
-															Browser</span>
-														<div v-if="isWebSearchEnabled"
-															class="absolute top-0 right-0 -mr-1 w-2 h-2 bg-[var(--text-primary)] rounded-full border-[1.5px] border-[var(--bg-main)]">
-														</div>
+														<span class="text-[12px] text-[var(--text-secondary)] font-medium">My Browser</span>
+														<div v-if="isWebSearchEnabled" class="absolute top-0 right-0 -mr-1 w-2 h-2 bg-[var(--text-primary)] rounded-full border-[1.5px] border-[var(--bg-main)]"></div>
 													</PopoverButton>
 												</Tooltip>
-												<Transition enter-active-class="transition duration-150 ease-out"
-													enter-from-class="translate-y-1.5 opacity-0 scale-[0.98]"
-													enter-to-class="translate-y-0 opacity-100 scale-100"
-													leave-active-class="transition duration-100 ease-in"
-													leave-from-class="translate-y-0 opacity-100"
-													leave-to-class="translate-y-1.5 opacity-0">
-													<PopoverPanel
-														class="absolute bottom-full left-0 mb-3 z-50 w-[300px] max-w-[calc(100vw-2rem)] bg-[var(--bg-main)] rounded-2xl shadow-lg border border-[var(--border-light)] p-4 cursor-default text-left">
-														<div
-															class="text-[14px] font-semibold text-[var(--text-primary)] mb-3">
-															Web Search</div>
+												<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1.5 opacity-0 scale-[0.98]" enter-to-class="translate-y-0 opacity-100 scale-100" leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1.5 opacity-0">
+													<PopoverPanel class="absolute bottom-full left-0 mb-3 z-50 w-[300px] max-w-[calc(100vw-2rem)] bg-[var(--bg-main)] rounded-2xl shadow-lg border border-[var(--border-light)] p-4 cursor-default text-left">
+														<div class="text-[14px] font-semibold text-[var(--text-primary)] mb-3">Web Search</div>
 														<div class="h-[1px] bg-[var(--border-light)] -mx-4 mb-3"></div>
 														<div class="flex items-start justify-between">
 															<div class="pr-4">
-																<div
-																	class="text-[13px] font-medium text-[var(--text-primary)]">
-																	Enable Web Search</div>
-																<div
-																	class="text-[12px] text-[var(--text-tertiary)] leading-relaxed mt-0.5 whitespace-normal">
-																	Enable web search and real-time information access.
-																</div>
+																<div class="text-[13px] font-medium text-[var(--text-primary)]">Enable Web Search</div>
+																<div class="text-[12px] text-[var(--text-tertiary)] leading-relaxed mt-0.5 whitespace-normal">Enable web search and real-time information access.</div>
 															</div>
-															<Switch v-model="isWebSearchEnabled"
-																:class="isWebSearchEnabled ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'"
-																class="relative inline-flex h-5 w-[36px] shrink-0 items-center rounded-full transition-colors focus:outline-none mt-1">
-																<span
-																	:class="isWebSearchEnabled ? 'translate-x-[18px]' : 'translate-x-0.5'"
-																	class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm" />
+															<Switch v-model="isWebSearchEnabled" :class="isWebSearchEnabled ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'" class="relative inline-flex h-5 w-[36px] shrink-0 items-center rounded-full transition-colors focus:outline-none mt-1">
+																<span :class="isWebSearchEnabled ? 'translate-x-[18px]' : 'translate-x-0.5'" class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm" />
 															</Switch>
 														</div>
 													</PopoverPanel>
@@ -121,36 +84,22 @@
 											</Popover>
 
 											<!-- Tool Pill (Active Mode) -->
-											<div v-if="activeTool"
-												class="flex items-center gap-[6px] pl-[10px] pr-[12px] py-[6px] cursor-pointer rounded-full bg-[var(--fill-blue)] text-[var(--text-blue)] border border-[var(--text-blue)]/20 transition-colors group">
+											<div v-if="activeTool" class="flex items-center gap-[6px] pl-[10px] pr-[12px] py-[6px] cursor-pointer rounded-full bg-[var(--fill-blue)] text-[var(--text-blue)] border border-[var(--text-blue)]/20 transition-colors group">
 												<Tooltip text="Remove Tool">
-													<button @click.stop="activeTool = null"
-														class="hover:bg-[var(--text-blue)]/10 rounded-full p-0.5 transition-colors">
+													<button @click.stop="activeTool = null" class="hover:bg-[var(--text-blue)]/10 rounded-full p-0.5 transition-colors">
 														<X :size="14" />
 													</button>
 												</Tooltip>
 												<div class="flex items-center gap-1">
-													<component :is="currentTool?.icon" v-if="currentTool?.icon"
-														:size="14" />
+													<component :is="currentTool?.icon" v-if="currentTool?.icon" :size="14" />
 													<!-- Special case for Slides if icon is null in config -->
-													<svg v-else-if="activeTool === 'slides'"
-														xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-														fill="none" class="w-3.5 h-3.5" stroke="currentColor"
-														stroke-width="2">
-														<path
-															d="M6.99976 5.9974V4.26406C6.99976 3.38041 7.7161 2.66406 8.59976 2.66406H15.3998C16.2834 2.66406 16.9998 3.38041 16.9998 4.26406V5.9974"
-															stroke-linecap="round" stroke-linejoin="round" />
-														<path
-															d="M5.00024 10V8C5.00024 6.89543 5.89567 6 7.00024 6H17.0002C18.1048 6 19.0002 6.89543 19.0002 8V10"
-															stroke-linecap="round" stroke-linejoin="round" />
-														<path
-															d="M19 10H5C3.89543 10 3 10.8954 3 12V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V12C21 10.8954 20.1046 10 19 10Z"
-															stroke-linecap="round" stroke-linejoin="round" />
+													<svg v-else-if="activeTool === 'slides'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="w-3.5 h-3.5" stroke="currentColor" stroke-width="2">
+														<path d="M6.99976 5.9974V4.26406C6.99976 3.38041 7.7161 2.66406 8.59976 2.66406H15.3998C16.2834 2.66406 16.9998 3.38041 16.9998 4.26406V5.9974" stroke-linecap="round" stroke-linejoin="round" />
+														<path d="M5.00024 10V8C5.00024 6.89543 5.89567 6 7.00024 6H17.0002C18.1048 6 19.0002 6.89543 19.0002 8V10" stroke-linecap="round" stroke-linejoin="round" />
+														<path d="M19 10H5C3.89543 10 3 10.8954 3 12V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V12C21 10.8954 20.1046 10 19 10Z" stroke-linecap="round" stroke-linejoin="round" />
 													</svg>
-													<span class="text-[13px] font-medium leading-none pb-[1px]">{{
-														currentTool?.name }}</span>
-													<span v-if="activeTool === 'app'"
-														class="ml-1 text-[11px] text-blue-400 font-normal">Beta</span>
+													<span class="text-[13px] font-medium leading-none pb-[1px]">{{ currentTool?.name }}</span>
+													<span v-if="activeTool === 'app'" class="ml-1 text-[11px] text-blue-400 font-normal">Beta</span>
 												</div>
 											</div>
 										</div>
@@ -160,25 +109,17 @@
 											<ModelSelector v-if="!activeTool" class="mr-1" />
 
 											<div class="flex items-center gap-1">
-
-
 												<Tooltip text="Voice Input">
-													<button
-														class="flex items-center justify-center cursor-pointer hover:bg-[var(--fill-tsp-gray-main)] size-8 flex-shrink-0 rounded-full transition-colors">
+													<button class="flex items-center justify-center cursor-pointer hover:bg-[var(--fill-tsp-gray-main)] size-8 flex-shrink-0 rounded-full transition-colors">
 														<Mic :size="16" class="text-[var(--text-secondary)]" />
 													</button>
 												</Tooltip>
 											</div>
 
 											<!-- Send Button -->
-											<Tooltip
-												:text="props.isLoading ? 'Creating chat...' : hasContent ? 'Send Message' : 'Type something...'">
-												<button @click="() => handleSendMessage()"
-													:disabled="!hasContent || props.isLoading"
-													class="flex items-center justify-center w-8 h-8 rounded-full transition-all bg-[var(--text-primary)] text-white disabled:bg-[var(--fill-tsp-white-dark)] disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-95">
-													<div v-if="props.isLoading"
-														class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin">
-													</div>
+											<Tooltip :text="props.isLoading ? 'Creating chat...' : hasContent ? 'Send Message' : 'Type something...'">
+												<button @click="() => handleSendMessage()" :disabled="!hasContent || props.isLoading" class="flex items-center justify-center w-8 h-8 rounded-full transition-all bg-[var(--text-primary)] text-white disabled:bg-[var(--fill-tsp-white-dark)] disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-95">
+													<div v-if="props.isLoading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
 													<ArrowUp v-else :size="18" :stroke-width="2.5" />
 												</button>
 											</Tooltip>
@@ -188,21 +129,16 @@
 							</div>
 
 							<!-- "Connect your tools" Banner (Matches user screenshot) -->
-							<div v-if="showConnectBanner && (!activeTool || activeTool === 'website')"
-								class="mx-3 mt-1 mb-1 py-2 px-3 flex items-center justify-between group animate-fade-in-up"
-								style="animation-delay: 0.1s">
+							<div v-if="showConnectBanner && (!activeTool || activeTool === 'website')" class="mx-3 mt-1 mb-1 py-2 px-3 flex items-center justify-between group animate-fade-in-up" style="animation-delay: 0.1s">
 								<div class="flex items-center gap-2">
 									<Cable :size="16" class="text-[var(--icon-secondary)]" />
-									<span class="text-[13px] text-[var(--text-secondary)] font-medium">Connect your
-										tools to Aura</span>
+									<span class="text-[13px] text-[var(--text-secondary)] font-medium">{{ $t('chat.connect_tools') }}</span>
 								</div>
 								<div class="flex items-center gap-2">
 									<div class="flex items-center -space-x-1">
 										<img src="/other.png" alt="" class="h-[22px]" />
 									</div>
-									<button
-										class="text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors p-1"
-										@click="showConnectBanner = false">
+									<button class="text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors p-1" @click="showConnectBanner = false">
 										<X :size="16" />
 									</button>
 								</div>
@@ -212,8 +148,7 @@
 				</div>
 
 				<!-- Suggestions / Home View -->
-				<div v-if="!activeTool" class="mt-8 flex flex-wrap justify-center gap-2 animate-fade-in-up"
-					style="animation-delay: 0.4s; animation-fill-mode: forwards">
+				<div v-if="!activeTool" class="mt-8 flex flex-wrap justify-center gap-2 animate-fade-in-up" style="animation-delay: 0.4s; animation-fill-mode: forwards">
 					<!-- Create slides -->
 					<!-- <Tooltip text="Generate a presentation">
 						<button @click="handleToolSelect('slides')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
@@ -284,9 +219,7 @@
 				<div v-if="activeTool && currentTool" class="mt-8 flex flex-col gap-8 w-full animate-fade-in-up">
 					<!-- Website Layout -->
 					<div v-if="activeTool === 'website'" class="flex flex-col gap-6 w-full">
-						<ToolChips title="What would you like to build?" :chips="currentTool.chips || []"
-							:links="currentTool.links || []" @select="handlePromptSelect"
-							@link-click="handleLinkClick" />
+						<ToolChips title="What would you like to build?" :chips="currentTool.chips || []" :links="currentTool.links || []" @select="handlePromptSelect" @link-click="handleLinkClick" />
 
 						<ToolIntegrations v-if="currentTool.showIntegrations" />
 					</div>
@@ -296,12 +229,10 @@
 						<div class="flex items-center justify-between mb-2">
 							<h3 class="text-[14px] font-medium text-[var(--text-primary)]">Get started with</h3>
 							<div class="flex items-center gap-2">
-								<button
-									class="h-8 w-8 rounded-lg border border-[var(--border-main)] flex items-center justify-center hover:bg-[var(--fill-tsp-white-light)] transition-colors">
+								<button class="h-8 w-8 rounded-lg border border-[var(--border-main)] flex items-center justify-center hover:bg-[var(--fill-tsp-white-light)] transition-colors">
 									<Calendar :size="16" class="text-[var(--text-secondary)]" />
 								</button>
-								<button
-									class="h-8 px-3 rounded-lg border border-[var(--border-main)] flex items-center gap-1.5 hover:bg-[var(--fill-tsp-white-light)] transition-colors">
+								<button class="h-8 px-3 rounded-lg border border-[var(--border-main)] flex items-center gap-1.5 hover:bg-[var(--fill-tsp-white-light)] transition-colors">
 									<Plus :size="16" class="text-[var(--text-secondary)]" />
 									<span class="text-[13px] font-medium text-[var(--text-primary)]">New schedule</span>
 								</button>
@@ -309,16 +240,12 @@
 						</div>
 
 						<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-							<button v-for="(item, index) in currentTool.prompts" :key="index"
-								@click="handlePromptSelect(item.text)"
-								class="flex items-center justify-between p-4 px-5 rounded-2xl border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] transition-colors group text-left">
+							<button v-for="(item, index) in currentTool.prompts" :key="index" @click="handlePromptSelect(item.text)" class="flex items-center justify-between p-4 px-5 rounded-2xl border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] transition-colors group text-left">
 								<div class="flex items-center gap-4 min-w-0">
 									<div class="w-5 h-5 flex items-center justify-center flex-shrink-0">
-										<component :is="item.icon" :size="16"
-											class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
+										<component :is="item.icon" :size="16" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
 									</div>
-									<span class="text-[14px] text-[var(--text-primary)] truncate font-normal">{{
-										item.text }}</span>
+									<span class="text-[14px] text-[var(--text-primary)] truncate font-normal">{{ item.text }}</span>
 								</div>
 								<ArrowUpRight :size="14" class="text-[var(--text-tertiary)] flex-shrink-0" />
 							</button>
@@ -327,45 +254,31 @@
 
 					<!-- Default Tool Layout (Slides, App, Design) -->
 					<div v-else class="flex flex-col gap-8 w-full">
-						<SamplePrompts v-if="currentTool.prompts && currentTool.prompts.length"
-							:prompts="currentTool.prompts"
-							:title="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? '' : 'Sample prompts'"
-							:layout="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? 'list' : 'grid'"
-							@select="handlePromptSelect" />
+						<SamplePrompts v-if="currentTool.prompts && currentTool.prompts.length" :prompts="currentTool.prompts" :title="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? '' : 'Sample prompts'" :layout="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? 'list' : 'grid'" @select="handlePromptSelect" />
 
-						<TemplateSelector v-if="currentTool.templates && currentTool.templates.length"
-							:templates="currentTool.templates" />
+						<TemplateSelector v-if="currentTool.templates && currentTool.templates.length" :templates="currentTool.templates" />
 					</div>
 				</div>
 
 				<!-- Footer Promo Cards -->
-				<div v-if="!activeTool" class="mt-20 flex gap-3 overflow-x-auto pb-4 scrollbar-none animate-fade-in-up"
-					style="animation-delay: 0.5s; animation-fill-mode: forwards">
-					<div
-						class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
+				<div v-if="!activeTool" class="mt-20 flex gap-3 overflow-x-auto pb-4 scrollbar-none animate-fade-in-up" style="animation-delay: 0.5s; animation-fill-mode: forwards">
+					<div class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
 						<div class="w-10 h-10 rounded-lg bg-[var(--fill-blue)] flex items-center justify-center mb-2">
 							<Puzzle :size="24" class="text-[var(--text-blue)]" />
 						</div>
-						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Get new capabilities
-							with custom skills</p>
+						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Get new capabilities with custom skills</p>
 					</div>
-					<div
-						class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
-						<div
-							class="w-10 h-10 rounded-lg bg-[var(--function-error-tsp)] flex items-center justify-center mb-2">
+					<div class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
+						<div class="w-10 h-10 rounded-lg bg-[var(--function-error-tsp)] flex items-center justify-center mb-2">
 							<Mail :size="24" class="text-[var(--function-error)]" />
 						</div>
-						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Stay updated with the
-							latest news</p>
+						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Stay updated with the latest news</p>
 					</div>
-					<div
-						class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
-						<div
-							class="w-10 h-10 rounded-lg bg-[var(--function-success-tsp)] flex items-center justify-center mb-2">
+					<div class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
+						<div class="w-10 h-10 rounded-lg bg-[var(--function-success-tsp)] flex items-center justify-center mb-2">
 							<Globe :size="24" class="text-[var(--function-success)]" />
 						</div>
-						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Explore the global
-							community</p>
+						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Explore the global community</p>
 					</div>
 				</div>
 			</div>
@@ -383,44 +296,7 @@ import { useModelStore } from '../stores/models'
 import { useEditor, EditorContent as TiptapEditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
-import {
-	Plus,
-	Globe,
-	X,
-	Mic,
-	ArrowUp,
-	Cable,
-	Smartphone,
-	Calendar,
-	Search,
-	Table,
-	BarChart3,
-	Video,
-	Volume2,
-	MessageSquare,
-	ArrowUpRight,
-	Signal,
-	Newspaper,
-	BarChart2,
-	Cake,
-	SlidersHorizontal,
-	Presentation,
-	Puzzle,
-	Mail,
-	MessageCircle,
-	FileText,
-	Briefcase,
-	Building2,
-	Cloud,
-	User,
-	Link,
-	Image,
-	Code,
-	ShoppingBag,
-	Sparkles,
-	Paintbrush,
-	Loader2
-} from 'lucide-vue-next'
+import { Plus, Globe, X, Mic, ArrowUp, Cable, Smartphone, Calendar, Search, Table, BarChart3, Video, Volume2, MessageSquare, ArrowUpRight, Signal, Newspaper, BarChart2, Cake, SlidersHorizontal, Presentation, Puzzle, Mail, MessageCircle, FileText, Briefcase, Building2, Cloud, User, Link, Image, Code, ShoppingBag, Sparkles, Paintbrush, Loader2 } from 'lucide-vue-next'
 import { uploadFile } from '../utils/api'
 import ModelSelector from './ModelSelector.vue'
 import SamplePrompts from './SamplePrompts.vue'
@@ -697,12 +573,12 @@ const handleFileUpload = async (event: Event) => {
 				name: file.name,
 				key,
 				url,
-				type: file.type
+				type: file.type,
 			})
 		}
 	} catch (error) {
 		console.error('Failed to upload file(s):', error)
-		uiStore.showToast("Failed to upload file(s)", "error")
+		uiStore.showToast('Failed to upload file(s)', 'error')
 	} finally {
 		isUploading.value = false
 		if (fileInputRef.value) fileInputRef.value.value = ''
@@ -712,7 +588,6 @@ const handleFileUpload = async (event: Event) => {
 const removeFile = (index: number) => {
 	uploadedFiles.value.splice(index, 1)
 }
-
 
 function handleSendMessage(directContent?: string) {
 	const content = directContent || editor.value?.getText() || ''
@@ -725,11 +600,11 @@ function handleSendMessage(directContent?: string) {
 		const image_urls: string[] = []
 		const file_ids: string[] = []
 
-		uploadedFiles.value.forEach(f => {
+		uploadedFiles.value.forEach((f) => {
 			if (f.type.startsWith('image/')) {
 				// In a real implementation you might pass URL or a system key format.
-				// Assuming the API wants the `key` or `url`. 
-				// Let's pass the remote URL or key. 
+				// Assuming the API wants the `key` or `url`.
+				// Let's pass the remote URL or key.
 				image_urls.push(f.key)
 			} else {
 				file_ids.push(f.key)
