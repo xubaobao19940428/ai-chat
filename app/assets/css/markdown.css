@@ -1,0 +1,186 @@
+/* Markdown Content Styling */
+.markdown-content {
+  /* Tables */
+  table {
+    @apply w-full border-collapse my-4 text-[14px];
+    border: 1px solid var(--border-light);
+  }
+
+  th, td {
+    @apply p-2 border border-[var(--border-light)];
+    text-align: left;
+  }
+
+  th {
+    @apply bg-[var(--bg-hover)] font-bold;
+  }
+
+  tr:nth-child(even) {
+    background-color: var(--bg-main);
+    opacity: 0.8;
+  }
+
+  /* Task Lists */
+  .task-list-item {
+    @apply list-none flex items-start gap-2 mb-1;
+    
+    input[type="checkbox"] {
+      @apply mt-1 rounded border-[var(--border-light)] text-[var(--brand-primary)] focus:ring-[var(--brand-primary)];
+    }
+  }
+
+  /* KaTeX Math */
+  .katex-display {
+    @apply my-6 overflow-x-auto overflow-y-hidden py-2;
+  }
+
+  .katex {
+    @apply text-[1.1em];
+  }
+
+  /* Footnotes */
+  .footnotes {
+    @apply mt-8 pt-4 border-t border-[var(--border-light)] text-[12px] text-[var(--text-tertiary)];
+    
+    .footnotes-title {
+      @apply hidden;
+    }
+  }
+
+  /* Mermaid Containers */
+  .mermaid-container {
+    @apply my-8 border border-[var(--border-light)] rounded-2xl overflow-hidden shadow-md bg-white dark:bg-zinc-900 transition-all duration-500;
+    position: relative;
+    max-width: 100%;
+    
+    &:fullscreen {
+      @apply bg-white dark:bg-zinc-950 p-12 flex flex-col justify-center items-center;
+      
+      .mermaid-viewer {
+        @apply flex-1 w-full flex justify-center items-center overflow-auto;
+      }
+    }
+
+    .mermaid-header {
+      @apply px-4 h-8 border-b border-[var(--border-light)] flex justify-between items-center text-[12px] font-medium leading-none rounded-t-2xl;
+      background-color: var(--bg-main);
+      backdrop-filter: blur(8px);
+      
+      .header-left {
+        @apply flex items-center gap-2 text-[var(--text-secondary)];
+        
+        .icon-menu {
+          @apply opacity-50;
+        }
+      }
+      
+      .header-actions {
+        @apply flex items-center gap-1 h-full;
+        
+        .mermaid-action-btn {
+          @apply flex items-center justify-center w-6 h-6 rounded-md hover:bg-[var(--bg-hover)] transition-all duration-200 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:scale-110 active:scale-95;
+          
+          &.active {
+            @apply bg-[var(--brand-primary)] text-white hover:bg-[var(--brand-primary)] opacity-100 shadow-sm;
+          }
+        }
+      }
+    }
+    
+    .mermaid-viewer {
+      @apply relative w-full overflow-hidden flex flex-col;
+      min-height: 250px;
+      background: #ffffff;
+    }
+    
+    html.dark .mermaid-viewer {
+      background: #161618;
+    }
+
+    .mermaid {
+      @apply p-8 flex justify-center overflow-auto text-[14px] font-mono whitespace-pre transition-transform duration-300;
+      
+      svg {
+        @apply max-w-full h-auto;
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.02));
+      }
+
+      &.rendered {
+        @apply opacity-100;
+        background: transparent !important;
+      }
+      &:not(.rendered) {
+        @apply opacity-25 grayscale;
+      }
+    }
+
+    .mermaid-source-view {
+      @apply w-full;
+      
+      pre {
+        @apply m-0 rounded-none border-0 !important;
+      }
+    }
+
+    .mermaid-zoom-controls {
+      @apply absolute bottom-6 right-6 flex flex-col gap-1.5 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-md p-1.5 rounded-xl border border-[var(--border-light)] shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0;
+    }
+    
+    &:hover .mermaid-zoom-controls {
+      @apply opacity-100 translate-y-0;
+    }
+
+    .zoom-btn {
+      @apply w-9 h-9 flex items-center justify-center rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all hover:scale-105 active:scale-95 font-bold;
+      
+      &.fullscreen-btn {
+        @apply mt-1.5 pt-1.5 border-t border-[var(--border-light)] rounded-none;
+      }
+    }
+  }
+
+  /* Code Block Refinements */
+  .code-block-wrapper {
+    @apply my-6 rounded-xl overflow-hidden border border-[var(--border-light)] shadow-sm;
+    
+    .code-block-header {
+      @apply flex justify-between items-center px-4 py-2 border-b border-[var(--border-light)];
+      background-color: var(--background-gray-main);
+      backdrop-filter: blur(8px);
+      
+      .code-lang {
+        @apply text-[11px] font-bold tracking-wider uppercase text-[var(--text-tertiary)];
+      }
+      
+      .copy-code-btn {
+        @apply flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold transition-all;
+        @apply text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)];
+      }
+    }
+    
+    pre {
+      @apply m-0 p-4 overflow-x-auto bg-[#fafafa] dark:bg-[#0d0d0d] !important;
+      
+      code {
+        @apply p-0 bg-transparent text-[13.5px] leading-[1.6] font-mono !important;
+      }
+    }
+  }
+
+  /* Typography */
+  hr {
+    @apply my-8 border-t border-[var(--border-light)];
+  }
+
+  blockquote {
+    @apply pl-4 border-l-4 border-[var(--text-disable)] italic text-[var(--text-secondary)] my-4;
+  }
+
+  mark {
+    @apply bg-yellow-200 dark:bg-yellow-900/40 px-0.5 rounded;
+  }
+
+  ins {
+    @apply no-underline border-b border-green-500;
+  }
+}
