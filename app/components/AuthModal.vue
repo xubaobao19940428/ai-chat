@@ -21,8 +21,8 @@
 											<img src="/favicon.svg" class="w-8 h-8" alt="Aura" />
 											<span class="text-lg font-semibold text-[var(--text-primary)]">Aura AI</span>
 										</div>
-										<h2 class="text-2xl font-semibold text-[var(--text-primary)] leading-snug mb-3">Your intelligent<br />chat assistant</h2>
-										<p class="text-sm text-[var(--text-secondary)] leading-relaxed">Access powerful AI models in one clean, fast interface.</p>
+										<h2 class="text-2xl font-semibold text-[var(--text-primary)] leading-snug mb-3">{{ $t('auth.headline') }}</h2>
+										<p class="text-sm text-[var(--text-secondary)] leading-relaxed">{{ $t('auth.subheadline') }}</p>
 									</div>
 
 									<!-- Feature Highlights -->
@@ -39,7 +39,7 @@
 									</div>
 
 									<!-- Footer -->
-									<p class="text-xs text-[var(--text-tertiary)]">Safe, private, and always improving.</p>
+									<p class="text-xs text-[var(--text-tertiary)]">{{ $t('auth.safe_private') }}</p>
 								</div>
 							</div>
 
@@ -48,10 +48,10 @@
 								<div class="max-w-sm mx-auto w-full">
 									<div class="mb-8">
 										<h3 class="text-xl font-semibold text-[var(--text-primary)]">
-											{{ authStep === 'email' ? 'Sign in to Aura' : isRegistering ? 'Create account' : 'Welcome back' }}
+											{{ authStep === 'email' ? $t('auth.sign_in_title') : isRegistering ? $t('auth.create_account_title') : $t('auth.welcome_back') }}
 										</h3>
 										<p class="text-sm text-[var(--text-secondary)] mt-1">
-											{{ authStep === 'email' ? 'Enter your email to get started.' : isRegistering ? 'Set up your password to continue.' : 'Enter your password to continue.' }}
+											{{ authStep === 'email' ? $t('auth.email_started') : isRegistering ? $t('auth.set_password') : $t('auth.enter_password') }}
 										</p>
 									</div>
 
@@ -59,11 +59,11 @@
 									<div v-if="authStep === 'email'" class="space-y-2.5 mb-6">
 										<button class="w-full flex items-center justify-center gap-2.5 px-4 py-3 bg-[var(--Button-primary-black)] text-[var(--text-onblack)] rounded-[10px] hover:opacity-90 transition-opacity font-medium text-sm">
 											<img src="/icons/google.svg" class="w-4 h-4" alt="Google" />
-											Continue with Google
+											{{ $t('auth.continue_google') }}
 										</button>
 										<button class="w-full flex items-center justify-center gap-2.5 px-4 py-3 border border-[var(--border-main)] rounded-[10px] hover:bg-[var(--fill-tsp-white-main)] transition-colors bg-[var(--background-white-main)] text-[var(--text-primary)] font-medium text-sm">
 											<img src="/icons/apple.svg" class="w-4 h-4 dark:invert" alt="Apple" />
-											Continue with Apple
+											{{ $t('auth.continue_apple') }}
 										</button>
 									</div>
 
@@ -72,7 +72,7 @@
 											<div class="w-full border-t border-[var(--border-main)]"></div>
 										</div>
 										<div class="relative flex justify-center text-xs">
-											<span class="px-4 bg-[var(--background-white-main)] text-[var(--text-tertiary)]">or continue with email</span>
+											<span class="px-4 bg-[var(--background-white-main)] text-[var(--text-tertiary)]">{{ $t('auth.or_email') }}</span>
 										</div>
 									</div>
 
@@ -82,10 +82,10 @@
 											<div v-if="authStep === 'email'" key="email-step" class="space-y-3">
 												<div class="relative">
 													<Mail class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--icon-secondary)]" />
-													<input type="email" id="email" v-model="email" required class="w-full pl-10 pr-4 py-3 rounded-[8px] border border-[var(--border-main)] bg-[var(--background-white-main)] text-[var(--text-primary)] focus:border-[var(--border-blue)] outline-none transition-colors placeholder:text-[var(--text-disable)] text-sm" placeholder="you@example.com" />
+													<input type="email" id="email" v-model="email" required class="w-full pl-10 pr-4 py-3 rounded-[8px] border border-[var(--border-main)] bg-[var(--background-white-main)] text-[var(--text-primary)] focus:border-[var(--border-blue)] outline-none transition-colors placeholder:text-[var(--text-disable)] text-sm" :placeholder="$t('auth.email_placeholder')" />
 												</div>
 												<button type="submit" class="w-full py-3 px-4 bg-[var(--Button-primary-black)] text-[var(--text-onblack)] rounded-[8px] font-medium text-sm transition-opacity hover:opacity-90">
-													Continue
+													{{ $t('auth.continue') }}
 												</button>
 											</div>
 
@@ -100,17 +100,17 @@
 												<div v-if="isRegistering" class="flex gap-2">
 													<div class="relative flex-1">
 														<ShieldCheck class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--icon-secondary)]" />
-														<input type="text" v-model="code" required class="w-full pl-10 pr-4 py-3 rounded-[8px] border border-[var(--border-main)] bg-[var(--background-white-main)] text-[var(--text-primary)] focus:border-[var(--border-blue)] outline-none transition-colors text-sm" placeholder="Verification code" />
+														<input type="text" v-model="code" required class="w-full pl-10 pr-4 py-3 rounded-[8px] border border-[var(--border-main)] bg-[var(--background-white-main)] text-[var(--text-primary)] focus:border-[var(--border-blue)] outline-none transition-colors text-sm" :placeholder="$t('auth.verification_code')" />
 													</div>
 													<button type="button" @click="handleSendCode" :disabled="countdown > 0 || sendingCode" class="px-4 py-3 bg-[var(--Button-secondary-gray)] text-[var(--text-primary)] rounded-[8px] font-medium text-sm transition-opacity disabled:opacity-40 whitespace-nowrap hover:opacity-80">
-														{{ countdown > 0 ? `${countdown}s` : 'Send' }}
+														{{ countdown > 0 ? `${countdown}s` : $t('auth.send_code') }}
 													</button>
 												</div>
 
 												<!-- Password -->
 												<div class="relative">
 													<Lock class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--icon-secondary)]" />
-													<input :type="showPassword ? 'text' : 'password'" v-model="password" required class="w-full pl-10 pr-10 py-3 rounded-[8px] border border-[var(--border-main)] bg-[var(--background-white-main)] text-[var(--text-primary)] focus:border-[var(--border-blue)] outline-none transition-colors placeholder:text-[var(--text-disable)] text-sm" placeholder="Password" />
+													<input :type="showPassword ? 'text' : 'password'" v-model="password" required class="w-full pl-10 pr-10 py-3 rounded-[8px] border border-[var(--border-main)] bg-[var(--background-white-main)] text-[var(--text-primary)] focus:border-[var(--border-blue)] outline-none transition-colors placeholder:text-[var(--text-disable)] text-sm" :placeholder="$t('auth.password')" />
 													<button type="button" @click="showPassword = !showPassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--icon-secondary)] hover:text-[var(--text-primary)] transition-colors">
 														<Eye v-if="!showPassword" class="w-4 h-4" />
 														<EyeOff v-else class="w-4 h-4" />
@@ -133,13 +133,13 @@
 															<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
 															<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
 														</svg>
-														{{ loading ? 'Processing...' : isRegistering ? 'Create account' : 'Sign in' }}
+														{{ loading ? $t('auth.processing') : isRegistering ? $t('auth.create_account_btn') : $t('auth.sign_in_btn') }}
 													</div>
 												</button>
 
 												<div class="text-center pt-1">
 													<button type="button" @click="toggleAuthMode" class="text-xs text-[var(--text-secondary)] hover:text-[var(--text-blue)] transition-colors">
-														{{ isRegistering ? 'Already have an account? Sign in' : "Don't have an account? Sign up" }}
+														{{ isRegistering ? $t('auth.have_account') : $t('auth.no_account') }}
 													</button>
 												</div>
 											</div>
@@ -147,10 +147,10 @@
 									</form>
 
 									<p class="text-[11px] text-[var(--text-tertiary)] leading-relaxed mt-8 text-center">
-										By continuing, you agree to our
-										<a href="#" class="underline underline-offset-2 hover:text-[var(--text-secondary)] transition-colors">Terms</a>
-										and
-										<a href="#" class="underline underline-offset-2 hover:text-[var(--text-secondary)] transition-colors">Privacy Policy</a>.
+										{{ $t('auth.terms_prefix') }}
+										<a href="#" class="underline underline-offset-2 hover:text-[var(--text-secondary)] transition-colors">{{ $t('auth.terms') }}</a>
+										{{ $t('auth.and') }}
+										<a href="#" class="underline underline-offset-2 hover:text-[var(--text-secondary)] transition-colors">{{ $t('auth.privacy_policy') }}</a>.
 									</p>
 								</div>
 							</div>
@@ -163,13 +163,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 import { X, Mail, Lock, Eye, EyeOff, ChevronLeft, ShieldCheck, AlertCircle, CheckCircle, MessageSquare, Zap, SlidersHorizontal } from 'lucide-vue-next'
 import { useUIStore } from '../stores/ui'
 import { useUserStore } from '../stores/user'
 
 const uiStore = useUIStore()
 const userStore = useUserStore()
+const { t } = useI18n()
 
 const authStep = ref<'email' | 'code'>('email')
 const isRegistering = ref(false)
@@ -186,11 +187,11 @@ const loading = ref(false)
 const errorMsg = ref('')
 const successMsg = ref('')
 
-const features = [
-	{ icon: MessageSquare, title: 'Natural conversations', desc: 'Chat fluidly with powerful AI models.' },
-	{ icon: Zap, title: 'Fast and responsive', desc: 'Streaming responses with no wait time.' },
-	{ icon: SlidersHorizontal, title: 'Multiple models', desc: 'Switch between providers in one click.' },
-]
+const features = computed(() => [
+	{ icon: MessageSquare, title: t('auth.feature_natural'), desc: t('auth.feature_natural_desc') },
+	{ icon: Zap, title: t('auth.feature_fast'), desc: t('auth.feature_fast_desc') },
+	{ icon: SlidersHorizontal, title: t('auth.feature_models'), desc: t('auth.feature_models_desc') },
+])
 
 const toggleAuthMode = () => {
 	isRegistering.value = !isRegistering.value
@@ -226,10 +227,10 @@ const handleSendCode = async () => {
 		} else {
 			await userStore.sendLoginCodeAction(confirmedEmail.value)
 		}
-		successMsg.value = 'Verification code sent!'
+		successMsg.value = t('auth.code_sent')
 		startCountdown()
 	} catch (err: any) {
-		errorMsg.value = err.message || 'Failed to send code.'
+		errorMsg.value = err.message || t('auth.failed_send_code')
 	} finally {
 		sendingCode.value = false
 	}
@@ -253,7 +254,7 @@ const handleAuth = async () => {
 				code: code.value,
 				password: password.value,
 			})
-			successMsg.value = 'Registration successful! You can now log in.'
+			successMsg.value = t('auth.register_success')
 			isRegistering.value = false
 			code.value = ''
 			password.value = ''
@@ -271,11 +272,11 @@ const handleAuth = async () => {
 				code.value = ''
 				password.value = ''
 			} else {
-				errorMsg.value = 'Login failed. Invalid credentials.'
+				errorMsg.value = t('auth.login_failed')
 			}
 		}
 	} catch (err: any) {
-		errorMsg.value = err.message || 'Authentication failed.'
+		errorMsg.value = err.message || t('auth.auth_failed')
 	} finally {
 		loading.value = false
 	}

@@ -17,7 +17,7 @@
                             <!-- Search Header -->
                             <div class="flex items-center gap-3 px-4 py-3 border-b border-[var(--border-light)]">
                                 <Search :size="20" class="text-[var(--text-tertiary)]" />
-                                <input type="text" v-model="searchQuery" placeholder="Search tasks..."
+                                <input type="text" v-model="searchQuery" :placeholder="$t('search.placeholder')"
                                     class="flex-1 bg-transparent border-none outline-none text-[15px] text-[var(--text-primary)] placeholder-[var(--text-tertiary)]"
                                     autofocus />
                                 <button @click="uiStore.closeSearchModal"
@@ -36,12 +36,12 @@
                                         class="w-8 h-8 rounded-[8px] bg-[#1a1a1a] flex items-center justify-center text-white">
                                         <Plus :size="20" />
                                     </div>
-                                    <span class="text-[14px] font-medium text-[var(--text-primary)]">New task</span>
+                                    <span class="text-[14px] font-medium text-[var(--text-primary)]">{{ $t('search.new_task') }}</span>
                                 </button>
 
                                 <!-- No Results -->
                                 <div v-if="Object.keys(groupedResults).length === 0" class="py-12 text-center">
-                                    <p class="text-[14px] text-[var(--text-tertiary)]">No conversations found</p>
+                                    <p class="text-[14px] text-[var(--text-tertiary)]">{{ $t('search.no_results') }}</p>
                                 </div>
 
                                 <!-- History Lists -->
@@ -67,7 +67,7 @@
                                                     <div class="flex items-center justify-between">
                                                         <span
                                                             class="text-[14px] text-[var(--text-primary)] font-medium truncate">{{
-                                                            item.title || 'Empty Chat' }}</span>
+                                                            item.title || $t('search.empty_chat') }}</span>
                                                         <span class="text-[12px] text-[var(--text-tertiary)]">{{
                                                             formatTime(item.updatedAt) }}</span>
                                                     </div>
@@ -98,6 +98,7 @@ import { Search, X, Plus } from 'lucide-vue-next'
 
 const uiStore = useUIStore()
 const conversationStore = useConversationStore()
+const { t } = useI18n()
 const searchQuery = ref('')
 
 const groupedResults = computed(() => {
@@ -113,10 +114,10 @@ const groupedResults = computed(() => {
     const last7Days = today - 86400000 * 7
 
     filtered.forEach(c => {
-        let category = 'Older'
-        if (c.updatedAt >= today) category = 'Today'
-        else if (c.updatedAt >= yesterday) category = 'Yesterday'
-        else if (c.updatedAt >= last7Days) category = 'Last 7 days'
+        let category = t('search.older')
+        if (c.updatedAt >= today) category = t('search.today')
+        else if (c.updatedAt >= yesterday) category = t('search.yesterday')
+        else if (c.updatedAt >= last7Days) category = t('search.last_7_days')
 
         const group = groups[category] || []
         group.push(c)

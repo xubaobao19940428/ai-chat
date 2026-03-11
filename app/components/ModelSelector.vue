@@ -73,7 +73,7 @@
 									<Check v-if="isSelected(model)" :size="13" class="flex-shrink-0 text-[var(--text-blue)]" />
 								</button>
 							</template>
-							<div v-else class="py-6 text-center text-[12px] text-[var(--text-tertiary)]">No models found</div>
+							<div v-else class="py-6 text-center text-[12px] text-[var(--text-tertiary)]">{{ $t('common.no_models_found') }}</div>
 						</div>
 					</div>
 				</div>

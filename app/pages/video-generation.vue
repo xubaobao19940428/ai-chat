@@ -101,9 +101,9 @@
 
                             <!-- Video Container -->
                             <div class="relative overflow-hidden aspect-video">
-                                <img v-if="!playingVideoId || playingVideoId !== video.id" :src="video.cover_url"
+                                <img v-if="!playingVideoId || playingVideoId !== video.id" :src="video.thumbnail"
                                     class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110" />
-                                <video v-else :src="video.url" class="w-full h-full object-cover" controls autoplay
+                                <video v-else :src="getRecordPrimaryUrl(video)" class="w-full h-full object-cover" controls autoplay
                                     playsinline></video>
                                 <div class="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-[24px]"></div>
 
@@ -120,7 +120,7 @@
                                 <!-- Duration Badge -->
                                 <div
                                     class="absolute bottom-3 right-3 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-sm text-white text-[11px] font-bold">
-                                    {{ formatDuration(video.duration || video.meta?.duration || 5) }}
+                                    {{ formatDuration(5) }}
                                 </div>
                             </div>
 
@@ -131,7 +131,7 @@
                                 <!-- Top Actions (Glassmorphism) -->
                                 <div
                                     class="flex justify-end transform -translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75">
-                                    <button @click.stop="handleDownload(video.url)"
+                                    <button @click.stop="handleDownload(getRecordPrimaryUrl(video))"
                                         class="size-10 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white hover:bg-white/25 transition-all shadow-2xl group/btn">
                                         <Download :size="18" class="group-hover/btn:scale-110 transition-transform" />
                                     </button>
@@ -143,7 +143,7 @@
                                     <div class="flex items-center gap-2 mb-2">
                                         <span
                                             class="px-2 py-0.5 rounded-md bg-white/10 backdrop-blur-md border border-white/10 text-[10px] font-bold text-white/80 uppercase tracking-wider">
-                                            {{ formatModel(video.meta?.model || (video as any).model) }}
+                                            {{ formatModel(getRecordModel(video)) }}
                                         </span>
                                         <span class="text-[10px] font-medium text-white/60">
                                             {{ formatDate(video.created_at) }}
@@ -151,9 +151,9 @@
                                     </div>
                                     <p
                                         class="text-white text-[13px] font-medium mb-4 line-clamp-3 leading-relaxed italic">
-                                        "{{ video.prompt || video.meta?.prompt || 'No description' }}"
+                                        "{{ getRecordPrompt(video) || 'No description' }}"
                                     </p>
-                                    <button @click.stop="useExample(video.prompt || video.meta?.prompt || '')"
+                                    <button @click.stop="useExample(getRecordPrompt(video))"
                                         class="w-full py-2.5 bg-white text-black rounded-xl font-bold text-[12px] hover:bg-purple-50 transition-colors shadow-xl flex items-center justify-center gap-2 group/reuse">
                                         <Zap :size="14" fill="currentColor"
                                             class="text-purple-600 group-hover/reuse:animate-pulse" />
@@ -423,11 +423,14 @@ import {
     queryAsyncTask,
     getAsyncTaskOutputs,
     uploadFile,
-    type AIModel
+    getRecordPrompt,
+    getRecordPrimaryUrl,
+    getRecordModel,
+    type AIModel,
+    type AsyncTaskRecord
 } from '@/utils/api'
 import { useModelStore } from '@/stores/models'
 import ModelSelector from '@/components/ModelSelector.vue'
-import type { VideoTaskOutput } from '@/api/video'
 
 const modelStore = useModelStore()
 const selectedModel = computed(() => modelStore.selectedModel)
@@ -494,7 +497,7 @@ const categories = [
     'All', 'Trending', 'Cinematic', 'Animation', 'Nature', 'Abstract'
 ]
 
-const generatedVideos = ref<VideoTaskOutput[]>([])
+const generatedVideos = ref<AsyncTaskRecord[]>([])
 let pollingTimer: any = null
 
 const estimatedTimeRemaining = computed(() => {
@@ -510,7 +513,7 @@ const estimatedTimeRemaining = computed(() => {
 
 const fetchHistory = async () => {
     try {
-        const res = await getAsyncTaskOutputs({ type: 'video', page_size: 50 })
+        const res = await getAsyncTaskOutputs({ capability: 'video_generation', page_size: 50 })
         if (res.data && res.data.list) {
             generatedVideos.value = res.data.list
         }

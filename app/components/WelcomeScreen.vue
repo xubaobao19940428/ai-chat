@@ -51,7 +51,7 @@
 									<div class="flex gap-2 items-center">
 										<div class="flex gap-2 items-center flex-shrink-0">
 											<!-- Plus -->
-											<Tooltip v-if="supportsFileUpload" text="Add Attachment">
+											<Tooltip v-if="supportsFileUpload" :text="$t('chat.add_attachment')">
 												<button @click="triggerFileUpload" :disabled="isUploading" class="rounded-full border border-[var(--border-main)] inline-flex items-center justify-center gap-1 clickable cursor-pointer text-xs text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-gray-main)] disabled:opacity-50 disabled:cursor-not-allowed w-8 h-8 p-0 shrink-0 transition-colors">
 													<Plus :size="18" />
 												</button>
@@ -59,21 +59,21 @@
 
 											<!-- Browser/Globe Icon Pill Popover -->
 											<Popover v-if="!activeTool && supportsWebSearch" class="relative" v-slot="{ open }">
-												<Tooltip text="Browse Web">
+												<Tooltip :text="$t('chat.browse_web')">
 													<PopoverButton class="flex items-center gap-[4px] p-[6px] px-[8px] cursor-pointer rounded-[100px] border border-[var(--border-main)] transition-colors relative" :class="{ 'bg-[var(--fill-tsp-gray-main)]': open || isWebSearchEnabled, 'hover:bg-[var(--fill-tsp-gray-main)]': !open }">
 														<Globe :size="16" class="text-[var(--text-secondary)]" />
-														<span class="text-[12px] text-[var(--text-secondary)] font-medium">My Browser</span>
+														<span class="text-[12px] text-[var(--text-secondary)] font-medium">{{ $t('chat.my_browser') }}</span>
 														<div v-if="isWebSearchEnabled" class="absolute top-0 right-0 -mr-1 w-2 h-2 bg-[var(--text-primary)] rounded-full border-[1.5px] border-[var(--bg-main)]"></div>
 													</PopoverButton>
 												</Tooltip>
 												<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1.5 opacity-0 scale-[0.98]" enter-to-class="translate-y-0 opacity-100 scale-100" leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1.5 opacity-0">
 													<PopoverPanel class="absolute bottom-full left-0 mb-3 z-50 w-[300px] max-w-[calc(100vw-2rem)] bg-[var(--bg-main)] rounded-2xl shadow-lg border border-[var(--border-light)] p-4 cursor-default text-left">
-														<div class="text-[14px] font-semibold text-[var(--text-primary)] mb-3">Web Search</div>
+														<div class="text-[14px] font-semibold text-[var(--text-primary)] mb-3">{{ $t('chat.web_search') }}</div>
 														<div class="h-[1px] bg-[var(--border-light)] -mx-4 mb-3"></div>
 														<div class="flex items-start justify-between">
 															<div class="pr-4">
-																<div class="text-[13px] font-medium text-[var(--text-primary)]">Enable Web Search</div>
-																<div class="text-[12px] text-[var(--text-tertiary)] leading-relaxed mt-0.5 whitespace-normal">Enable web search and real-time information access.</div>
+																<div class="text-[13px] font-medium text-[var(--text-primary)]">{{ $t('chat.enable_web_search') }}</div>
+																<div class="text-[12px] text-[var(--text-tertiary)] leading-relaxed mt-0.5 whitespace-normal">{{ $t('chat.enable_web_search_desc') }}</div>
 															</div>
 															<Switch v-model="isWebSearchEnabled" :class="isWebSearchEnabled ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'" class="relative inline-flex h-5 w-[36px] shrink-0 items-center rounded-full transition-colors focus:outline-none mt-1">
 																<span :class="isWebSearchEnabled ? 'translate-x-[18px]' : 'translate-x-0.5'" class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm" />
@@ -85,7 +85,7 @@
 
 											<!-- Tool Pill (Active Mode) -->
 											<div v-if="activeTool" class="flex items-center gap-[6px] pl-[10px] pr-[12px] py-[6px] cursor-pointer rounded-full bg-[var(--fill-blue)] text-[var(--text-blue)] border border-[var(--text-blue)]/20 transition-colors group">
-												<Tooltip text="Remove Tool">
+												<Tooltip :text="$t('chat.remove_tool')">
 													<button @click.stop="activeTool = null" class="hover:bg-[var(--text-blue)]/10 rounded-full p-0.5 transition-colors">
 														<X :size="14" />
 													</button>
@@ -109,7 +109,7 @@
 											<ModelSelector v-if="!activeTool" class="mr-1" />
 
 											<div class="flex items-center gap-1">
-												<Tooltip text="Voice Input">
+												<Tooltip :text="$t('chat.voice_input')">
 													<button class="flex items-center justify-center cursor-pointer hover:bg-[var(--fill-tsp-gray-main)] size-8 flex-shrink-0 rounded-full transition-colors">
 														<Mic :size="16" class="text-[var(--text-secondary)]" />
 													</button>
@@ -117,7 +117,7 @@
 											</div>
 
 											<!-- Send Button -->
-											<Tooltip :text="props.isLoading ? 'Creating chat...' : hasContent ? 'Send Message' : 'Type something...'">
+											<Tooltip :text="props.isLoading ? $t('chat.creating') : hasContent ? $t('chat.send_message') : $t('chat.type_something')">
 												<button @click="() => handleSendMessage()" :disabled="!hasContent || props.isLoading" class="flex items-center justify-center w-8 h-8 rounded-full transition-all bg-[var(--text-primary)] text-white disabled:bg-[var(--fill-tsp-white-dark)] disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-95">
 													<div v-if="props.isLoading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
 													<ArrowUp v-else :size="18" :stroke-width="2.5" />
@@ -227,14 +227,14 @@
 					<!-- Schedule Layout -->
 					<div v-if="activeTool === 'schedule'" class="flex flex-col gap-6 w-full">
 						<div class="flex items-center justify-between mb-2">
-							<h3 class="text-[14px] font-medium text-[var(--text-primary)]">Get started with</h3>
+							<h3 class="text-[14px] font-medium text-[var(--text-primary)]">{{ $t('chat.get_started') }}</h3>
 							<div class="flex items-center gap-2">
 								<button class="h-8 w-8 rounded-lg border border-[var(--border-main)] flex items-center justify-center hover:bg-[var(--fill-tsp-white-light)] transition-colors">
 									<Calendar :size="16" class="text-[var(--text-secondary)]" />
 								</button>
 								<button class="h-8 px-3 rounded-lg border border-[var(--border-main)] flex items-center gap-1.5 hover:bg-[var(--fill-tsp-white-light)] transition-colors">
 									<Plus :size="16" class="text-[var(--text-secondary)]" />
-									<span class="text-[13px] font-medium text-[var(--text-primary)]">New schedule</span>
+									<span class="text-[13px] font-medium text-[var(--text-primary)]">{{ $t('chat.new_schedule') }}</span>
 								</button>
 							</div>
 						</div>
@@ -266,19 +266,19 @@
 						<div class="w-10 h-10 rounded-lg bg-[var(--fill-blue)] flex items-center justify-center mb-2">
 							<Puzzle :size="24" class="text-[var(--text-blue)]" />
 						</div>
-						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Get new capabilities with custom skills</p>
+						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">{{ $t('chat.get_skills') }}</p>
 					</div>
 					<div class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
 						<div class="w-10 h-10 rounded-lg bg-[var(--function-error-tsp)] flex items-center justify-center mb-2">
 							<Mail :size="24" class="text-[var(--function-error)]" />
 						</div>
-						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Stay updated with the latest news</p>
+						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">{{ $t('chat.stay_updated') }}</p>
 					</div>
 					<div class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
 						<div class="w-10 h-10 rounded-lg bg-[var(--function-success-tsp)] flex items-center justify-center mb-2">
 							<Globe :size="24" class="text-[var(--function-success)]" />
 						</div>
-						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">Explore the global community</p>
+						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">{{ $t('chat.explore_community') }}</p>
 					</div>
 				</div>
 			</div>
@@ -350,6 +350,7 @@ const router = useRouter()
 const conversationStore = useConversationStore()
 const uiStore = useUIStore()
 const userStore = useUserStore()
+const { t } = useI18n()
 const emit = defineEmits(['send-message'])
 
 const activeTool = ref<ToolType>(null)
@@ -485,7 +486,7 @@ const tools: Record<string, ToolConfig> = {
 
 const currentTool = computed(() => (activeTool.value ? tools[activeTool.value] : null))
 
-const genericPlaceholder = 'Assign a task or ask anything'
+const genericPlaceholder = computed(() => t('chat.assign_task'))
 const displayedPlaceholder = ref('')
 let typewriterInterval: any = null
 
@@ -493,9 +494,10 @@ const runTypewriter = () => {
 	if (typewriterInterval) clearInterval(typewriterInterval)
 	displayedPlaceholder.value = ''
 	let i = 0
+	const placeholder = genericPlaceholder.value
 	typewriterInterval = setInterval(() => {
-		if (i < genericPlaceholder.length) {
-			displayedPlaceholder.value += genericPlaceholder[i]
+		if (i < placeholder.length) {
+			displayedPlaceholder.value += placeholder[i]
 			i++
 			// Force Tiptap to refresh its decoration
 			if (editor.value) {

@@ -34,7 +34,7 @@
 								<div class="text-center">
 									<DialogTitle as="h3"
 										class="text-xl font-bold leading-6 text-[var(--text-primary)] text-center">
-										{{ editingProject ? 'Edit project' : 'Create project' }}
+										{{ editingProject ? $t('project.edit_project') : $t('project.create_project') }}
 									</DialogTitle>
 								</div>
 							</div>
@@ -42,15 +42,14 @@
 							<div class="mt-6 space-y-4">
 								<div>
 									<label for="projectName"
-										class="block text-sm font-bold text-[var(--text-primary)] mb-2">Project
-										name</label>
+										class="block text-sm font-bold text-[var(--text-primary)] mb-2">{{ $t('project.project_name') }}</label>
 									<input type="text" id="projectName" v-model="projectName"
-										placeholder="Enter the name"
+										:placeholder="$t('project.enter_name')"
 										class="block w-full rounded-[10px] border border-[var(--border-main)] bg-[var(--fill-tsp-white-main)] py-2 px-3 text-[var(--text-primary)] placeholder:text-[var(--text-disable)] focus:border-[var(--border-blue)] outline-none sm:text-sm transition-all font-medium" />
 								</div>
 
 								<div>
-									<label class="block text-sm font-bold text-[var(--text-primary)] mb-2">Color</label>
+									<label class="block text-sm font-bold text-[var(--text-primary)] mb-2">{{ $t('project.color') }}</label>
 									<div class="flex gap-2 flex-wrap">
 										<button v-for="c in colorPresets" :key="c.name" type="button"
 											@click="selectedColor = c.name"
@@ -63,7 +62,7 @@
 								</div>
 
 								<div>
-									<label class="block text-sm font-bold text-[var(--text-primary)] mb-2">Icon</label>
+									<label class="block text-sm font-bold text-[var(--text-primary)] mb-2">{{ $t('project.icon') }}</label>
 									<div
 										class="h-max max-h-40 overflow-y-auto custom-scrollbar p-1 pb-2 border border-[var(--border-main)] rounded-[10px] bg-[var(--fill-tsp-white-main)]">
 										<div class="grid grid-cols-6 gap-2 sm:grid-cols-8">
@@ -79,8 +78,7 @@
 
 								<div>
 									<label for="projectDesc"
-										class="block text-sm font-bold text-[var(--text-primary)] mb-2">Instructions
-										(optional)</label>
+										class="block text-sm font-bold text-[var(--text-primary)] mb-2">{{ $t('project.instructions') }}</label>
 									<textarea id="projectDesc" v-model="projectDesc" rows="3"
 										placeholder="e.g. &quot;Focus on Python best practices&quot;, &quot;Maintain a professional tone&quot;, or &quot;Always provide sources for important conclusions&quot;."
 										class="block w-full rounded-[10px] border border-[var(--border-main)] bg-[var(--fill-tsp-white-main)] py-2 px-3 text-[var(--text-primary)] placeholder:text-[var(--text-disable)] focus:border-[var(--border-blue)] outline-none sm:text-sm transition-all resize-none font-medium custom-scrollbar"></textarea>
@@ -91,12 +89,12 @@
 								<button type="button"
 									class="inline-flex w-full justify-center rounded-[10px] bg-[var(--Button-primary-black)] px-6 py-2.5 text-sm font-bold text-[var(--text-onblack)] shadow-[var(--shadow-S)] hover:opacity-90 transition-all disabled:opacity-50"
 									:disabled="!projectName.trim() || isLoading" @click="handleSubmit">
-									{{ isLoading ? (editingProject ? 'Saving...' : 'Creating...') : editingProject ?
-										'Save' : 'Create' }}
+									{{ isLoading ? (editingProject ? $t('project.saving') : $t('project.creating')) : editingProject ?
+										$t('project.save') : $t('project.create') }}
 								</button>
 								<button type="button"
 									class="inline-flex w-full justify-center rounded-[10px] bg-[var(--background-white-main)] px-6 py-2.5 text-sm font-bold text-[var(--text-primary)] shadow-[var(--shadow-S)] ring-1 ring-inset ring-[var(--border-main)] hover:bg-[var(--fill-tsp-white-main)] transition-all sm:mt-0"
-									@click="handleClose">Cancel</button>
+									@click="handleClose">{{ $t('common.cancel') }}</button>
 							</div>
 						</DialogPanel>
 					</TransitionChild>

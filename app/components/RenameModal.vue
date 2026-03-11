@@ -27,7 +27,7 @@
             <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-[20px] bg-[var(--background-white-main)] p-6 text-left align-middle shadow-[var(--shadow-XL)] border border-[var(--border-main)] transition-all relative">
               <div class="flex items-center justify-between mb-2">
                 <DialogTitle as="h3" class="text-[18px] font-semibold leading-6 text-[var(--text-primary)]">
-                  Edit title
+                  {{ $t('rename.title') }}
                 </DialogTitle>
                 <button @click="handleClose" class="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors">
                   <X :size="20" />
@@ -36,7 +36,7 @@
 
               <div class="mt-2">
                 <p class="text-sm text-[var(--text-secondary)] mb-4">
-                  Please enter a new title
+                  {{ $t('rename.description') }}
                 </p>
                 <div class="relative group">
                   <input
@@ -45,7 +45,7 @@
                     @keyup.enter="handleConfirm"
                     v-focus
                     class="w-full bg-[var(--fill-tsp-gray-main)] border border-[var(--border-main)] rounded-xl py-3 px-4 outline-none focus:border-[var(--brand-main)] transition-all text-[var(--text-primary)] pr-10"
-                    placeholder="Enter title..."
+                    :placeholder="$t('rename.placeholder')"
                   />
                   <button 
                     v-if="newTitle" 
@@ -63,7 +63,7 @@
                   class="flex-1 lg:flex-none inline-flex justify-center items-center px-6 py-2.5 text-sm font-semibold text-[var(--text-primary)] border border-[var(--border-main)] rounded-xl hover:bg-[var(--fill-tsp-gray-main)] transition-all"
                   @click="handleClose"
                 >
-                  Cancel
+                  {{ $t('common.cancel') }}
                 </button>
                 <button
                   type="button"
@@ -74,7 +74,7 @@
                   <template v-if="isLoading">
                     <Loader2 :size="16" class="animate-spin -ml-1 mr-2 text-white" />
                   </template>
-                  Confirm
+                  {{ $t('common.confirm') }}
                 </button>
               </div>
             </DialogPanel>

@@ -32,7 +32,7 @@
 											<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
 												<SquarePen :size="18" />
 											</div>
-											<span class="text-[14px] font-medium text-[var(--text-primary)]">New task</span>
+											<span class="text-[14px] font-medium text-[var(--text-primary)]">{{ $t('search.new_task') }}</span>
 										</div>
 
 										<!-- Nav items (no shortcuts on mobile) -->

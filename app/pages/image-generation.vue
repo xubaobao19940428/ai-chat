@@ -87,7 +87,7 @@
 
               <!-- Image Container with Inner Shadow -->
               <div class="relative overflow-hidden aspect-auto">
-                <img :src="image.url || image.cover_url"
+                <img :src="getRecordPrimaryUrl(image)"
                   class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110" />
                 <div class="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-[24px]"></div>
               </div>
@@ -99,7 +99,7 @@
                 <!-- Top Actions (Glassmorphism) -->
                 <div
                   class="flex justify-end transform -translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75">
-                  <button @click.stop="handleDownload(image.url || image.cover_url)"
+                  <button @click.stop="handleDownload(getRecordPrimaryUrl(image))"
                     class="size-10 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white hover:bg-white/25 transition-all shadow-2xl group/btn">
                     <Download :size="18" class="group-hover/btn:scale-110 transition-transform" />
                   </button>
@@ -111,16 +111,16 @@
                   <div class="flex items-center gap-2 mb-2">
                     <span
                       class="px-2 py-0.5 rounded-md bg-white/10 backdrop-blur-md border border-white/10 text-[10px] font-bold text-white/80 uppercase tracking-wider">
-                      {{ formatModel(image.meta?.model || (image as any).model) }}
+                      {{ formatModel(getRecordModel(image)) }}
                     </span>
                     <span class="text-[10px] font-medium text-white/60">
                       {{ formatDate(image.created_at) }}
                     </span>
                   </div>
                   <p class="text-white text-[13px] font-medium mb-4 line-clamp-3 leading-relaxed italic">
-                    "{{ image.prompt || image.meta?.prompt || 'No description' }}"
+                    "{{ getRecordPrompt(image) || 'No description' }}"
                   </p>
-                  <button @click.stop="useExample(image.prompt || image.meta?.prompt || '')"
+                  <button @click.stop="useExample(getRecordPrompt(image))"
                     class="w-full py-2.5 bg-white text-black rounded-xl font-bold text-[12px] hover:bg-indigo-50 transition-colors shadow-xl flex items-center justify-center gap-2 group/reuse">
                     <Zap :size="14" fill="currentColor" class="text-indigo-600 group-hover/reuse:animate-pulse" />
                     Reuse Prompt
@@ -377,22 +377,12 @@ import {
   queryAsyncTask,
   getAsyncTaskOutputs,
   uploadFile,
-  type AIModel
+  getRecordPrompt,
+  getRecordPrimaryUrl,
+  getRecordModel,
+  type AIModel,
+  type AsyncTaskRecord
 } from '@/utils/api'
-
-
-// Define AsyncTaskOutput locally
-export interface AsyncTaskOutput {
-  id: number
-  type: string
-  cover_url: string
-  url: string
-  task_id: string
-  status: number
-  created_at: number
-  prompt?: string
-  meta?: any
-}
 
 const activeTab = ref<'inspiration' | 'creations'>('inspiration')
 const prompt = ref('')
@@ -466,12 +456,12 @@ const categories = [
   'All', 'Trending', 'Sci-Fi', 'Nature', 'Portrait', 'Abstract'
 ]
 
-const generatedImages = ref<AsyncTaskOutput[]>([])
+const generatedImages = ref<AsyncTaskRecord[]>([])
 let pollingTimer: any = null
 
 const fetchHistory = async () => {
   try {
-    const res = await getAsyncTaskOutputs({ type: 'image', page_size: 50 })
+    const res = await getAsyncTaskOutputs({ capability: 'image_generation', page_size: 50 })
     if (res.data && res.data.list) {
       generatedImages.value = res.data.list
     }

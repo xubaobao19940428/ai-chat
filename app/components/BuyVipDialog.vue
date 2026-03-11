@@ -26,7 +26,7 @@
           >
             <DialogPanel class="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-[var(--background-white-main)] border border-[var(--border-main)] p-6 text-left align-middle shadow-xl transition-all">
               <DialogTitle as="h3" class="text-lg font-medium leading-6 text-[var(--text-primary)] flex justify-between items-center mb-6">
-                <span>Upgrade Plan</span>
+                <span>{{ $t('payment.upgrade_plan') }}</span>
                 <button @click="closeModal" class="text-[var(--text-tertiary)] hover:text-[var(--text-primary)]">
                   <X :size="24" />
                 </button>
@@ -65,7 +65,7 @@
 
                 <!-- Channel Selection -->
                 <div v-if="selectedProduct" class="space-y-3">
-                  <h4 class="text-sm font-medium text-[var(--text-secondary)]">Payment Method</h4>
+                  <h4 class="text-sm font-medium text-[var(--text-secondary)]">{{ $t('payment.payment_method') }}</h4>
                   <div class="flex flex-wrap gap-3">
                     <button
                       v-for="channel in payStore.payChannels"
@@ -90,7 +90,7 @@
                   class="w-full mt-2 py-3 px-4 bg-black dark:bg-white text-white dark:text-black rounded-xl font-bold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity flex justify-center items-center gap-2"
                 >
                   <span v-if="processing" class="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent"></span>
-                  <span>{{ processing ? 'Processing...' : 'Pay Now' }}</span>
+                  <span>{{ processing ? $t('payment.processing') : $t('payment.pay_now') }}</span>
                 </button>
               </div>
 

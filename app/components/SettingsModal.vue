@@ -40,7 +40,7 @@
 									<a href="https://help.manus.im" target="_blank" class="w-full flex items-center justify-between px-3 py-2 rounded-[8px] text-[14px] font-medium text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-white-main)] hover:text-[var(--text-primary)] transition-colors">
 										<div class="flex items-center gap-3">
 											<CircleHelp :size="16" />
-											Get help
+											{{ $t('settings.get_help') }}
 										</div>
 										<ArrowUpRight :size="14" />
 									</a>
@@ -97,8 +97,8 @@
 										<!-- Plan Card -->
 										<div class="rounded-[16px] bg-[var(--fill-tsp-white-main)] border border-[var(--border-main)] p-5">
 											<div class="flex items-center justify-between mb-4">
-												<span class="font-serif text-xl font-bold text-[var(--text-primary)]">Free</span>
-												<button @click="showVipModal = true" class="bg-black text-white px-4 py-1.5 rounded-full text-xs font-bold hover:opacity-80 transition-opacity">Upgrade</button>
+												<span class="font-serif text-xl font-bold text-[var(--text-primary)]">{{ $t('settings.free_plan') }}</span>
+												<button @click="showVipModal = true" class="bg-black text-white px-4 py-1.5 rounded-full text-xs font-bold hover:opacity-80 transition-opacity">{{ $t('settings.upgrade') }}</button>
 											</div>
 
 											<div class="border-t border-dashed border-[var(--border-main)] my-4"></div>
@@ -110,10 +110,10 @@
 														<Sparkles :size="20" class="text-[var(--text-secondary)] mt-0.5" />
 														<div>
 															<div class="flex items-center gap-1.5">
-																<span class="text-sm font-bold text-[var(--text-primary)]">Credits</span>
+																<span class="text-sm font-bold text-[var(--text-primary)]">{{ $t('settings.credits') }}</span>
 																<CircleHelp :size="14" class="text-[var(--text-tertiary)]" />
 															</div>
-															<div class="text-[13px] text-[var(--text-tertiary)] mt-0.5">Free credits</div>
+															<div class="text-[13px] text-[var(--text-tertiary)] mt-0.5">{{ $t('settings.free_credits') }}</div>
 														</div>
 													</div>
 													<div class="text-right">
@@ -128,10 +128,10 @@
 														<Calendar :size="20" class="text-[var(--text-secondary)] mt-0.5" />
 														<div>
 															<div class="flex items-center gap-1.5">
-																<span class="text-sm font-bold text-[var(--text-primary)]">Daily refresh credits</span>
+																<span class="text-sm font-bold text-[var(--text-primary)]">{{ $t('settings.daily_refresh_credits') }}</span>
 																<CircleHelp :size="14" class="text-[var(--text-tertiary)]" />
 															</div>
-															<div class="text-[13px] text-[var(--text-tertiary)] mt-0.5">Refresh to 300 at 00:00 every day</div>
+															<div class="text-[13px] text-[var(--text-tertiary)] mt-0.5">{{ $t('settings.refresh_daily') }}</div>
 														</div>
 													</div>
 													<div class="text-right">
@@ -146,8 +146,8 @@
 										<!-- Plan Card (Reused) -->
 										<div class="rounded-[16px] bg-[var(--fill-tsp-white-main)] border border-[var(--border-main)] p-5">
 											<div class="flex items-center justify-between mb-4">
-												<span class="font-serif text-xl font-bold text-[var(--text-primary)]">Free</span>
-												<button @click="showVipModal = true" class="bg-black text-white px-4 py-1.5 rounded-full text-xs font-bold hover:opacity-80 transition-opacity">Upgrade</button>
+												<span class="font-serif text-xl font-bold text-[var(--text-primary)]">{{ $t('settings.free_plan') }}</span>
+												<button @click="showVipModal = true" class="bg-black text-white px-4 py-1.5 rounded-full text-xs font-bold hover:opacity-80 transition-opacity">{{ $t('settings.upgrade') }}</button>
 											</div>
 
 											<div class="border-t border-dashed border-[var(--border-main)] my-4"></div>
@@ -159,10 +159,10 @@
 														<Sparkles :size="20" class="text-[var(--text-secondary)] mt-0.5" />
 														<div>
 															<div class="flex items-center gap-1.5">
-																<span class="text-sm font-bold text-[var(--text-primary)]">Credits</span>
+																<span class="text-sm font-bold text-[var(--text-primary)]">{{ $t('settings.credits') }}</span>
 																<CircleHelp :size="14" class="text-[var(--text-tertiary)]" />
 															</div>
-															<div class="text-[13px] text-[var(--text-tertiary)] mt-0.5">Free credits</div>
+															<div class="text-[13px] text-[var(--text-tertiary)] mt-0.5">{{ $t('settings.free_credits') }}</div>
 														</div>
 													</div>
 													<div class="text-right">
@@ -177,10 +177,10 @@
 														<Calendar :size="20" class="text-[var(--text-secondary)] mt-0.5" />
 														<div>
 															<div class="flex items-center gap-1.5">
-																<span class="text-sm font-bold text-[var(--text-primary)]">Daily refresh credits</span>
+																<span class="text-sm font-bold text-[var(--text-primary)]">{{ $t('settings.daily_refresh_credits') }}</span>
 																<CircleHelp :size="14" class="text-[var(--text-tertiary)]" />
 															</div>
-															<div class="text-[13px] text-[var(--text-tertiary)] mt-0.5">Refresh to 300 at 00:00 every day</div>
+															<div class="text-[13px] text-[var(--text-tertiary)] mt-0.5">{{ $t('settings.refresh_daily') }}</div>
 														</div>
 													</div>
 													<div class="text-right">
@@ -194,7 +194,7 @@
 										<button class="w-full flex items-center justify-between p-4 rounded-[12px] bg-[var(--fill-tsp-white-main)] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-gray-main)] transition-colors">
 											<div class="flex items-center gap-3">
 												<CreditCard :size="20" class="text-[var(--text-secondary)]" />
-												<span class="text-sm font-bold text-[var(--text-primary)]">Website usage & billing</span>
+												<span class="text-sm font-bold text-[var(--text-primary)]">{{ $t('settings.website_billing') }}</span>
 											</div>
 											<ChevronRight :size="16" class="text-[var(--text-tertiary)]" />
 										</button>
@@ -202,15 +202,15 @@
 										<!-- Usage History Table -->
 										<div class="rounded-[16px] bg-[var(--fill-tsp-white-main)] border border-[var(--border-main)] overflow-hidden">
 											<div class="bg-[var(--fill-tsp-gray-main)] px-4 py-2 flex items-center text-xs font-medium text-[var(--text-tertiary)] border-b border-[var(--border-main)]">
-												<div class="flex-1">Details</div>
-												<div class="w-40 text-left">Date</div>
-												<div class="w-24 text-right">Credits change</div>
+												<div class="flex-1">{{ $t('settings.details') }}</div>
+												<div class="w-40 text-left">{{ $t('settings.date') }}</div>
+												<div class="w-24 text-right">{{ $t('settings.credits_change') }}</div>
 											</div>
 											<div class="divide-y divide-[var(--border-light)] min-h-[100px]">
 												<div v-if="isLoadingRecords" class="p-4 flex justify-center">
 													<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-400"></div>
 												</div>
-												<div v-else-if="records.length === 0" class="p-4 text-center text-[var(--text-tertiary)] text-sm">No records found</div>
+												<div v-else-if="records.length === 0" class="p-4 text-center text-[var(--text-tertiary)] text-sm">{{ $t('settings.no_records') }}</div>
 												<div v-else v-for="record in records" :key="record.id" class="px-4 py-3 flex items-center text-sm group hover:bg-[var(--fill-tsp-white-light)] transition-colors">
 													<div class="flex-1 text-[var(--text-primary)] truncate pr-4">{{ record.description }}</div>
 													<div class="w-40 text-[var(--text-tertiary)] whitespace-nowrap">{{ new Date(record.created_at * 1000).toLocaleString() }}</div>
@@ -274,12 +274,12 @@
 
 										<!-- Communication -->
 										<div class="pb-8 border-b border-[var(--border-light)]">
-											<div class="text-[13px] font-medium text-[var(--text-tertiary)] mb-1">Communication preferences</div>
+											<div class="text-[13px] font-medium text-[var(--text-tertiary)] mb-1">{{ $t('settings.communication_pref') }}</div>
 
 											<div class="flex items-start justify-between py-3">
 												<div class="pr-4">
-													<div class="text-sm font-medium text-[var(--text-primary)]">Receive exclusive content</div>
-													<div class="text-[13px] text-[var(--text-tertiary)] leading-relaxed mt-0.5">Get exclusive offers, event updates, excellent case examples and new feature guides.</div>
+													<div class="text-sm font-medium text-[var(--text-primary)]">{{ $t('settings.receive_exclusive') }}</div>
+													<div class="text-[13px] text-[var(--text-tertiary)] leading-relaxed mt-0.5">{{ $t('settings.receive_exclusive_desc') }}</div>
 												</div>
 												<Switch v-model="notifications.exclusive" :class="notifications.exclusive ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'" class="relative inline-flex h-4 w-7 items-center rounded-full transition-colors focus:outline-none">
 													<span :class="notifications.exclusive ? 'translate-x-3.5' : 'translate-x-0.5'" class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" />
@@ -288,8 +288,8 @@
 
 											<div class="flex items-start justify-between py-3">
 												<div class="pr-4">
-													<div class="text-sm font-medium text-[var(--text-primary)]">Email me when my queued task starts</div>
-													<div class="text-[13px] text-[var(--text-tertiary)] leading-relaxed mt-0.5">When enabled, we'll send you a timely email once your task finishes queuing and begins processing.</div>
+													<div class="text-sm font-medium text-[var(--text-primary)]">{{ $t('settings.email_queue') }}</div>
+													<div class="text-[13px] text-[var(--text-tertiary)] leading-relaxed mt-0.5">{{ $t('settings.email_queue_desc') }}</div>
 												</div>
 												<Switch v-model="notifications.queue" :class="notifications.queue ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'" class="relative inline-flex h-4 w-7 items-center rounded-full transition-colors focus:outline-none">
 													<span :class="notifications.queue ? 'translate-x-3.5' : 'translate-x-0.5'" class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" />
@@ -299,8 +299,8 @@
 
 										<!-- Cookies -->
 										<div class="flex items-center justify-between">
-											<span class="text-sm text-[var(--text-primary)]">Manage Cookies</span>
-											<button class="px-3 py-1.5 rounded-[10px] border border-[var(--border-btn-main)] text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--fill-tsp-white-light)] transition-colors">Manage</button>
+											<span class="text-sm text-[var(--text-primary)]">{{ $t('settings.manage_cookies') }}</span>
+											<button class="px-3 py-1.5 rounded-[10px] border border-[var(--border-btn-main)] text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--fill-tsp-white-light)] transition-colors">{{ $t('settings.manage') }}</button>
 										</div>
 									</div>
 
@@ -340,15 +340,15 @@ const isLoadingRecords = ref(false)
 const menuItems = computed(() => [
 	{ name: t('common.account'), icon: User, value: 'Account' },
 	{ name: t('common.settings'), icon: SlidersHorizontal, value: 'Settings' },
-	{ name: 'Usage', icon: BarChart3, value: 'Usage' },
-	{ name: 'Scheduled tasks', icon: Calendar, value: 'Scheduled tasks' },
-	{ name: 'Mail Aura', icon: Mail, value: 'Mail Aura' },
-	{ name: 'Data controls', icon: Database, value: 'Data controls' },
-	{ name: 'Cloud browser', icon: Globe, value: 'Cloud browser' },
-	{ name: 'Personalization', icon: LayoutGrid, value: 'Personalization' },
-	{ name: 'Skills', icon: Puzzle, value: 'Skills' },
-	{ name: 'Connectors', icon: Link, value: 'Connectors' },
-	{ name: 'Integrations', icon: Rocket, value: 'Integrations' },
+	{ name: t('settings.usage'), icon: BarChart3, value: 'Usage' },
+	{ name: t('settings.scheduled_tasks'), icon: Calendar, value: 'Scheduled tasks' },
+	{ name: t('settings.mail_aura'), icon: Mail, value: 'Mail Aura' },
+	{ name: t('settings.data_controls'), icon: Database, value: 'Data controls' },
+	{ name: t('settings.cloud_browser'), icon: Globe, value: 'Cloud browser' },
+	{ name: t('settings.personalization'), icon: LayoutGrid, value: 'Personalization' },
+	{ name: t('settings.skills'), icon: Puzzle, value: 'Skills' },
+	{ name: t('settings.connectors'), icon: Link, value: 'Connectors' },
+	{ name: t('settings.integrations'), icon: Rocket, value: 'Integrations' },
 ])
 
 const notifications = reactive({
