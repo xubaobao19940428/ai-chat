@@ -49,7 +49,7 @@
 								<!-- Toolbar -->
 								<div class="px-3">
 									<div class="flex gap-2 items-center">
-										<div class="flex gap-2 items-center flex-shrink-0">
+										<div ref="mediaToolbarRef" class="flex gap-1.5 items-center flex-shrink min-w-0 overflow-x-auto no-scrollbar">
 											<!-- Plus -->
 											<Tooltip v-if="supportsFileUpload" :text="$t('chat.add_attachment')">
 												<button @click="triggerFileUpload" :disabled="isUploading" class="rounded-full border border-[var(--border-main)] inline-flex items-center justify-center gap-1 clickable cursor-pointer text-xs text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-gray-main)] disabled:opacity-50 disabled:cursor-not-allowed w-8 h-8 p-0 shrink-0 transition-colors">
@@ -58,7 +58,7 @@
 											</Tooltip>
 
 											<!-- Browser/Globe Icon Pill Popover -->
-											<Popover v-if="!activeTool && supportsWebSearch" class="relative" v-slot="{ open }">
+											<Popover v-if="!activeTool && supportsWebSearch && !isMediaModel" class="relative" v-slot="{ open }">
 												<Tooltip :text="$t('chat.browse_web')">
 													<PopoverButton class="flex items-center gap-[4px] p-[6px] px-[8px] cursor-pointer rounded-[100px] border border-[var(--border-main)] transition-colors relative" :class="{ 'bg-[var(--fill-tsp-gray-main)]': open || isWebSearchEnabled, 'hover:bg-[var(--fill-tsp-gray-main)]': !open }">
 														<Globe :size="16" class="text-[var(--text-secondary)]" />
@@ -102,9 +102,67 @@
 													<span v-if="activeTool === 'app'" class="ml-1 text-[11px] text-blue-400 font-normal">Beta</span>
 												</div>
 											</div>
+
+											<!-- Media generation dynamic tool pills -->
+											<template v-if="isMediaModel && !activeTool">
+												<div v-for="field in dynamicSelectFields" :key="field.key" class="relative shrink-0">
+													<!-- Aspect Ratio -->
+													<template v-if="field.key === 'aspect_ratio'">
+														<button @click="openMediaDropdown = openMediaDropdown === field.key ? null : field.key"
+															class="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all text-[12px] font-medium text-[var(--text-primary)] whitespace-nowrap"
+															:class="openMediaDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+															<Square :size="11" class="text-[var(--text-secondary)] shrink-0" />
+															{{ dynamicParams[field.key] }}
+														</button>
+													</template>
+													<!-- Duration -->
+													<template v-else-if="field.key === 'duration'">
+														<button @click="openMediaDropdown = openMediaDropdown === field.key ? null : field.key"
+															class="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all text-[12px] font-medium text-[var(--text-primary)] whitespace-nowrap"
+															:class="openMediaDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+															<Clock :size="11" class="text-[var(--text-secondary)] shrink-0" />
+															{{ dynamicParams[field.key] }}s
+														</button>
+													</template>
+													<!-- Style -->
+													<template v-else-if="field.key === 'style'">
+														<button @click="openMediaDropdown = openMediaDropdown === field.key ? null : field.key"
+															class="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all text-[12px] font-medium text-[var(--text-primary)] whitespace-nowrap"
+															:class="openMediaDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+															<Palette :size="11" class="text-[var(--text-secondary)] shrink-0" />
+															{{ (!dynamicParams[field.key] || dynamicParams[field.key] === 'No Style') ? 'Style' : dynamicParams[field.key] }}
+														</button>
+													</template>
+													<!-- Generic -->
+													<template v-else>
+														<button @click="openMediaDropdown = openMediaDropdown === field.key ? null : field.key"
+															class="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all text-[12px] font-medium text-[var(--text-primary)] whitespace-nowrap"
+															:class="openMediaDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+															<span class="uppercase text-[10px] tracking-wider opacity-50 mr-0.5">{{ field.key.substring(0, 3) }}:</span>
+															{{ dynamicParams[field.key] }}
+														</button>
+													</template>
+
+													<!-- Options dropdown -->
+													<div v-if="openMediaDropdown === field.key"
+														class="absolute bottom-full left-0 mb-2 z-50 bg-[var(--background-white-main)] border border-[var(--border-main)] rounded-[14px] shadow-[var(--shadow-L)] p-1.5 min-w-[120px] max-h-[200px] overflow-y-auto custom-scrollbar">
+														<button v-for="opt in field.options" :key="opt"
+															@click="dynamicParams[field.key] = opt; openMediaDropdown = null"
+															class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-[10px] hover:bg-[var(--fill-tsp-gray-main)] transition-colors text-left">
+															<span class="text-[13px] text-[var(--text-primary)]">{{ field.key === 'duration' ? opt + 's' : opt }}</span>
+															<Check v-if="dynamicParams[field.key] === opt" :size="12" class="text-[var(--text-primary)] shrink-0" :stroke-width="2.5" />
+														</button>
+													</div>
+												</div>
+											</template>
 										</div>
 
 										<div class="min-w-0 flex gap-2 ml-auto flex-shrink items-center">
+											<!-- Inline generation error -->
+											<Transition enter-active-class="transition-opacity duration-200" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition-opacity duration-200" leave-from-class="opacity-100" leave-to-class="opacity-0">
+												<span v-if="generateError && isMediaModel" class="text-[11px] text-red-500 shrink-0 max-w-[160px] truncate" :title="generateError">{{ generateError }}</span>
+											</Transition>
+
 											<!-- Model Selection -->
 											<ModelSelector v-if="!activeTool" class="mr-1" />
 
@@ -116,10 +174,13 @@
 												</Tooltip>
 											</div>
 
-											<!-- Send Button -->
-											<Tooltip :text="props.isLoading ? $t('chat.creating') : hasContent ? $t('chat.send_message') : $t('chat.type_something')">
-												<button @click="() => handleSendMessage()" :disabled="!hasContent || props.isLoading" class="flex items-center justify-center w-8 h-8 rounded-full transition-all bg-[var(--text-primary)] text-white disabled:bg-[var(--fill-tsp-white-dark)] disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-95">
-													<div v-if="props.isLoading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+											<!-- Send / Generate Button -->
+											<Tooltip :text="isMediaModel ? (isGeneratingMedia ? 'Generating...' : 'Generate') : (props.isLoading ? $t('chat.creating') : hasContent ? $t('chat.send_message') : $t('chat.type_something'))">
+												<button @click="isMediaModel ? handleMediaGenerate() : handleSendMessage()"
+													:disabled="!hasContent || (isMediaModel ? isGeneratingMedia : props.isLoading)"
+													class="flex items-center justify-center w-8 h-8 rounded-full transition-all bg-[var(--text-primary)] text-white disabled:bg-[var(--fill-tsp-white-dark)] disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-95">
+													<div v-if="isMediaModel ? isGeneratingMedia : props.isLoading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+													<Sparkles v-else-if="isMediaModel" :size="15" fill="currentColor" />
 													<ArrowUp v-else :size="18" :stroke-width="2.5" />
 												</button>
 											</Tooltip>
@@ -296,8 +357,8 @@ import { useModelStore } from '../stores/models'
 import { useEditor, EditorContent as TiptapEditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
-import { Plus, Globe, X, Mic, ArrowUp, Cable, Smartphone, Calendar, Search, Table, BarChart3, Video, Volume2, MessageSquare, ArrowUpRight, Signal, Newspaper, BarChart2, Cake, SlidersHorizontal, Presentation, Puzzle, Mail, MessageCircle, FileText, Briefcase, Building2, Cloud, User, Link, Image, Code, ShoppingBag, Sparkles, Paintbrush, Loader2 } from 'lucide-vue-next'
-import { uploadFile } from '../utils/api'
+import { Plus, Globe, X, Mic, ArrowUp, Cable, Smartphone, Calendar, Search, Table, BarChart3, Video, Volume2, MessageSquare, ArrowUpRight, Signal, Newspaper, BarChart2, Cake, SlidersHorizontal, Presentation, Puzzle, Mail, MessageCircle, FileText, Briefcase, Building2, Cloud, User, Link, Image, Code, ShoppingBag, Sparkles, Paintbrush, Loader2, Square, Clock, Check, Palette } from 'lucide-vue-next'
+import { uploadFile, createAsyncTask } from '../utils/api'
 import ModelSelector from './ModelSelector.vue'
 import SamplePrompts from './SamplePrompts.vue'
 import TemplateSelector from './TemplateSelector.vue'
@@ -374,6 +435,9 @@ const moreMenuItems = [
 const handleClickOutside = (event: MouseEvent) => {
 	if (moreMenuRef.value && !moreMenuRef.value.contains(event.target as Node)) {
 		isMoreMenuOpen.value = false
+	}
+	if (openMediaDropdown.value && mediaToolbarRef.value && !mediaToolbarRef.value.contains(event.target as Node)) {
+		openMediaDropdown.value = null
 	}
 }
 
@@ -551,6 +615,102 @@ const supportsWebSearch = computed(() => {
 	return !!fields?.enable_web_search
 })
 
+// --- Media model detection ---
+const getModelCapability = (model: any): string => {
+	return model?.model_input?.capability || model?.capabilities?.[0] || ''
+}
+const isImageModel = computed(() => {
+	const cap = getModelCapability(modelStore.selectedModel)
+	return cap === 'image_generation' || cap === 'image'
+})
+const isVideoModel = computed(() => {
+	const cap = getModelCapability(modelStore.selectedModel)
+	return cap === 'video_generation' || cap === 'video'
+})
+const isMediaModel = computed(() => isImageModel.value || isVideoModel.value)
+
+const modelInputFields = computed(() => modelStore.selectedModel?.model_input?.fields || {})
+
+const dynamicSelectFields = computed(() => {
+	const result: Array<{ key: string; options: string[]; [k: string]: any }> = []
+	for (const [key, field] of Object.entries(modelInputFields.value)) {
+		if ((field as any).type === 'select') {
+			result.push({ key, ...(field as any) })
+		}
+	}
+	return result
+})
+
+const dynamicParams = ref<Record<string, any>>({})
+const openMediaDropdown = ref<string | null>(null)
+const isGeneratingMedia = ref(false)
+const generateError = ref('')
+const mediaToolbarRef = ref<HTMLElement | null>(null)
+
+watch(() => modelStore.selectedModel, (model) => {
+	if (!model?.model_input?.fields) {
+		dynamicParams.value = {}
+		return
+	}
+	const fields = model.model_input.fields
+	const newParams: Record<string, any> = {}
+	for (const [key, field] of Object.entries(fields)) {
+		if ((field as any).default !== undefined) {
+			newParams[key] = (field as any).default
+		} else if ((field as any).type === 'select' && (field as any).options?.length > 0) {
+			newParams[key] = (field as any).options[0]
+		} else if ((field as any).type === 'number') {
+			newParams[key] = (field as any).min || 1
+		}
+	}
+	dynamicParams.value = newParams
+}, { immediate: true })
+
+const handleMediaGenerate = async () => {
+	const content = editor.value?.getText()?.trim() || ''
+	if (!content || isGeneratingMedia.value || !modelStore.selectedModel) return
+
+	isGeneratingMedia.value = true
+	try {
+		const model = modelStore.selectedModel
+		// Filter out null/undefined/empty values from dynamicParams
+		const cleanParams = Object.fromEntries(
+			Object.entries(dynamicParams.value).filter(([, v]) => v !== null && v !== undefined && v !== '')
+		)
+		const payload: Record<string, any> = {
+			capability: getModelCapability(model),
+			model: `${model.provider}:${model.model}`,
+			...cleanParams,
+			prompt: content,
+		}
+
+		// Attach uploaded images if the model supports it
+		if (uploadedFiles.value.length > 0) {
+			const imageKeys = uploadedFiles.value.filter(f => f.type.startsWith('image/')).map(f => f.key)
+			if (imageKeys.length > 0) {
+				const fields = model.model_input?.fields || {}
+				if (fields.image_urls) payload.image_urls = imageKeys
+				else if (fields.image) payload.image = imageKeys[0]
+			}
+		}
+
+		const res = await createAsyncTask(payload)
+		if (res.data?.pid) {
+			editor.value?.commands.clearContent()
+			uploadedFiles.value = []
+			router.push(isImageModel.value ? '/image-generation' : '/video-generation')
+		}
+	} catch (error: any) {
+		console.error('Failed to generate:', error)
+		const msg = error?.data?.message || error?.message || 'Generation failed'
+		generateError.value = msg
+		setTimeout(() => { generateError.value = '' }, 4000)
+		uiStore.showToast(msg, 'error')
+	} finally {
+		isGeneratingMedia.value = false
+	}
+}
+
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const isUploading = ref(false)
 const uploadedFiles = ref<{ name: string; key: string; url: string; type: string }[]>([])
@@ -673,7 +833,8 @@ watch(editor, (instance) => {
 				handleKeyDown: (view, event) => {
 					if (event.key === 'Enter' && !event.shiftKey) {
 						event.preventDefault()
-						handleSendMessage()
+						if (isMediaModel.value) handleMediaGenerate()
+						else handleSendMessage()
 						return true
 					}
 					return false

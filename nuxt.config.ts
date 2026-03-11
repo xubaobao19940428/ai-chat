@@ -80,9 +80,21 @@ export default defineNuxtConfig({
                     innerHTML: `
             (function() {
               try {
-                const savedTheme = localStorage.getItem('theme-mode');
-                const isDark = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
-                if (isDark) document.documentElement.classList.add('dark');
+                // Read theme from cookie (same source as Pinia store's useCookie)
+                var cookieVal = document.cookie.split(';').reduce(function(acc, c) {
+                  var parts = c.trim().split('=');
+                  return parts[0] === 'theme-mode' ? decodeURIComponent(parts[1]) : acc;
+                }, null);
+                var systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var isDark = cookieVal === 'dark' || (cookieVal === 'system' && systemDark) || (!cookieVal && systemDark);
+                if (isDark) {
+                  document.documentElement.classList.add('dark');
+                  document.documentElement.style.colorScheme = 'dark';
+                  document.body && (document.body.style.backgroundColor = '#000000');
+                } else {
+                  document.documentElement.style.colorScheme = 'light';
+                  document.body && (document.body.style.backgroundColor = '#fcfbfb');
+                }
               } catch (e) {}
             })();
           `,
