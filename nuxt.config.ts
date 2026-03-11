@@ -9,8 +9,14 @@ export default defineNuxtConfig({
     i18n: {
         strategy: 'no_prefix',
         locales: [
+            { code: 'en', file: 'en.json', name: 'English' },
             { code: 'zh', file: 'zh.json', name: '简体中文' },
-            { code: 'en', file: 'en.json', name: 'English' }
+            { code: 'ja', file: 'ja.json', name: '日本語' },
+            { code: 'ko', file: 'ko.json', name: '한국어' },
+            { code: 'es', file: 'es.json', name: 'Español' },
+            { code: 'fr', file: 'fr.json', name: 'Français' },
+            { code: 'de', file: 'de.json', name: 'Deutsch' },
+            { code: 'pt', file: 'pt.json', name: 'Português' }
         ],
         lazy: true,
         langDir: 'locales',

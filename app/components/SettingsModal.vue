@@ -226,13 +226,32 @@
 											<div class="text-[13px] font-medium text-[var(--text-tertiary)] mb-1">{{ $t('common.general') }}</div>
 											<div class="mb-6">
 												<div class="text-sm font-medium text-[var(--text-primary)] mb-3">{{ $t('common.language') }}</div>
-												<div class="relative w-[208px]">
-													<select :value="locale" @change="(e) => setLocale((e.target as any).value)" class="w-full appearance-none bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--fill-tsp-gray-main)] border border-[var(--border-white)] text-[var(--text-primary)] text-sm rounded-lg py-2 pl-3 pr-8 outline-none cursor-pointer">
-														<option value="en">English</option>
-														<option value="zh">简体中文</option>
-													</select>
-													<ChevronDown :size="16" class="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-primary)] pointer-events-none" />
-												</div>
+												<Listbox :model-value="locale" @update:model-value="setLocale">
+													<div class="relative w-[208px]">
+														<ListboxButton class="w-full flex items-center justify-between gap-2 bg-[var(--fill-tsp-gray-main)] border border-[var(--border-main)] hover:border-[var(--border-blue)] text-[var(--text-primary)] text-sm rounded-lg py-2 pl-3 pr-3 outline-none cursor-pointer transition-colors">
+															<span>{{ currentLanguageLabel }}</span>
+															<ChevronDown :size="15" class="text-[var(--text-tertiary)] shrink-0" />
+														</ListboxButton>
+														<transition
+															enter-active-class="transition duration-100 ease-out"
+															enter-from-class="opacity-0 -translate-y-1"
+															enter-to-class="opacity-100 translate-y-0"
+															leave-active-class="transition duration-75 ease-in"
+															leave-from-class="opacity-100 translate-y-0"
+															leave-to-class="opacity-0 -translate-y-1">
+															<ListboxOptions class="absolute z-50 mt-1 w-full bg-[var(--background-white-main)] border border-[var(--border-main)] rounded-lg shadow-[var(--shadow-L)] overflow-hidden outline-none p-1">
+																<ListboxOption v-for="lang in languages" :key="lang.value" :value="lang.value" v-slot="{ active, selected }">
+																	<li :class="['flex items-center justify-between gap-2 px-3 py-2 rounded-md text-sm cursor-pointer select-none transition-colors', active ? 'bg-[var(--fill-tsp-gray-main)]' : '']">
+																		<span :class="selected ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'">{{ lang.label }}</span>
+																		<div v-if="selected" class="size-4 rounded-full bg-[var(--text-primary)] flex items-center justify-center shrink-0">
+																			<svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+																		</div>
+																	</li>
+																</ListboxOption>
+															</ListboxOptions>
+														</transition>
+													</div>
+												</Listbox>
 											</div>
 
 											<div>
@@ -322,7 +341,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch } from 'vue'
-import { Dialog, DialogPanel, TransitionRoot, TransitionChild, Switch } from '@headlessui/vue'
+import { Dialog, DialogPanel, TransitionRoot, TransitionChild, Switch, Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/vue'
 import { useUIStore } from '../stores/ui'
 import { useUserStore } from '../stores/user'
 import BuyVipDialog from './BuyVipDialog.vue'
@@ -332,6 +351,19 @@ const uiStore = useUIStore()
 const userStore = useUserStore()
 const { locale, setLocale, t } = useI18n()
 const activeItem = ref('Account')
+
+const languages = [
+	{ value: 'en', label: 'English' },
+	{ value: 'zh', label: '简体中文' },
+	{ value: 'ja', label: '日本語' },
+	{ value: 'ko', label: '한국어' },
+	{ value: 'es', label: 'Español' },
+	{ value: 'fr', label: 'Français' },
+	{ value: 'de', label: 'Deutsch' },
+	{ value: 'pt', label: 'Português' },
+]
+
+const currentLanguageLabel = computed(() => languages.find(l => l.value === locale.value)?.label ?? 'English')
 const showVipModal = ref(false)
 const fileInput = ref<HTMLInputElement | null>(null)
 const records = ref<any[]>([])
