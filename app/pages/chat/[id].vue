@@ -660,7 +660,7 @@ onMounted(async () => {
 		const conversation = await conversationStore.switchConversation(conversationId)
 
 		if (conversation) {
-			if (conversation.model) modelStore.selectModel(conversation.model)
+			syncConversationModel(conversation)
 			nextTick(() => {
 				scrollToBottom(true, true)
 				setTimeout(() => {
@@ -691,7 +691,7 @@ watch(
 			isUserScrolledUp.value = false
 			await conversationStore.switchConversation(newId)
 			if (currentConversation.value) {
-				if (currentConversation.value.model) modelStore.selectModel(currentConversation.value.model)
+				syncConversationModel(currentConversation.value)
 				// 只同步 selectedGroupId，不重新加载会话列表（避免清空消息）
 				if (currentConversation.value.groupId !== conversationStore.selectedGroupId) {
 					conversationStore.selectedGroupId = currentConversation.value.groupId
@@ -711,6 +711,21 @@ watch(
 		nextTick(() => scrollToBottom())
 	},
 )
+
+// Sync model selection when switching conversations:
+// prefer modelId (numeric), fall back to model string, ignore if neither set
+const syncConversationModel = (conv: { modelId?: number; model?: string }) => {
+	if (conv.modelId) {
+		const found = modelStore.models.find(m => m.id === conv.modelId)
+		if (found) {
+			modelStore.selectModel(`${found.provider}:${found.model}`)
+			return
+		}
+	}
+	if (conv.model) {
+		modelStore.selectModel(conv.model)
+	}
+}
 
 const scrollToBottom = (instant = false, force = false) => {
 	if (!messagesContainer.value) return

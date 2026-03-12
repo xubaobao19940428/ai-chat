@@ -36,6 +36,7 @@ export interface Conversation {
   title: string
   messages: Message[]
   model?: string
+  modelId?: number
   params?: Record<string, any>
   groupId: number
   characterId?: number
@@ -67,6 +68,7 @@ export const useConversationStore = defineStore('conversation', () => {
           title: item.title,
           messages: [],
           model: item.model || '',
+          modelId: item.model_id || undefined,
           params: item.meta?.params || item.params || {},
           groupId: item.group_id,
           characterId: item.character_id,
@@ -103,6 +105,7 @@ export const useConversationStore = defineStore('conversation', () => {
           title: item.title,
           messages: existing?.messages || [],
           model: item.model || '',
+          modelId: item.model_id || undefined,
           params: item.meta?.params || item.params || {},
           groupId: item.group_id,
           characterId: item.character_id,
@@ -188,7 +191,7 @@ export const useConversationStore = defineStore('conversation', () => {
       const res: any = await apiCreateConversation({
         character_id: params.character_id,
         group_id: params.group_id || 0,
-        model_id: params.model_id || 1
+        model_id: params.model_id
       })
       
       const newId = res.data.conversation_id
@@ -199,6 +202,7 @@ export const useConversationStore = defineStore('conversation', () => {
         title: 'New conversation',
         messages: [],
         model: params.model || '',
+        modelId: params.model_id,
         params: {},
         groupId: params.group_id || 0,
         characterId: params.character_id,

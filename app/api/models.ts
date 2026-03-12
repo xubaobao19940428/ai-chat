@@ -19,6 +19,7 @@ export interface ModelInput {
 }
 
 export interface AIModel {
+  id: number
   provider: string
   model: string
   display_name: string

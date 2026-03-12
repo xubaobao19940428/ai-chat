@@ -12,10 +12,12 @@ import { useRouter } from 'vue-router'
 import { onMounted } from 'vue'
 import { useConversationStore } from '../../stores/conversation'
 import { useChatStore } from '../../stores/chat'
+import { useModelStore } from '../../stores/models'
 
 const router = useRouter()
 const conversationStore = useConversationStore()
 const chatStore = useChatStore()
+const modelStore = useModelStore()
 
 const handleWelcomeSendMessage = async (content: string, model: string) => {
 	// 0. Set loading state immediately for instant feedback
@@ -25,6 +27,7 @@ const handleWelcomeSendMessage = async (content: string, model: string) => {
 	const conversationId = await conversationStore.createConversation({
 		character_id: 1,
 		model: model,
+		model_id: modelStore.selectedModel?.id,
 		group_id: conversationStore.selectedGroupId || 0,
 	})
 
