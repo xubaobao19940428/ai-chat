@@ -47,6 +47,7 @@ export const useConversationStore = defineStore('conversation', () => {
   const currentConversationId = ref<number | string | null>(null)
   const selectedGroupId = ref<number | null>(null)
   const isLoading = ref(false)
+  const isGroupSwitching = ref(false)
 
   // 当前会话
   const currentConversation = computed(() => {
@@ -122,7 +123,12 @@ export const useConversationStore = defineStore('conversation', () => {
   // 切换分组过滤
   const setSelectedGroupId = async (id: number | null) => {
     selectedGroupId.value = id
-    await fetchConversations()
+    isGroupSwitching.value = true
+    try {
+      await fetchConversations()
+    } finally {
+      isGroupSwitching.value = false
+    }
   }
 
   // 获取消息列表并同步到 store
@@ -389,6 +395,7 @@ export const useConversationStore = defineStore('conversation', () => {
     currentConversation,
     selectedGroupId,
     isLoading,
+    isGroupSwitching,
     fetchConversations,
     setSelectedGroupId,
     fetchConversationDetail,

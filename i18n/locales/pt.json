@@ -28,7 +28,17 @@
 		"get_started": "Começar com",
 		"get_skills": "Obtenha novas capacidades com habilidades personalizadas",
 		"stay_updated": "Fique atualizado com as últimas notícias",
-		"explore_community": "Explore a comunidade global"
+		"explore_community": "Explore a comunidade global",
+		"copy": "Copiar",
+		"regenerate": "Regenerar",
+		"copied": "Copiado para a área de transferência",
+		"copy_failed": "Falha ao copiar. Por favor, copie manualmente.",
+		"upload_failed": "Falha ao enviar {name}",
+		"send_failed": "Falha ao enviar. Verifique sua conexão e tente novamente.",
+		"retry": "Tentar novamente",
+		"connection_failed": "Falha na conexão. Por favor, tente novamente.",
+		"drag_drop_title": "Solte arquivos aqui para fazer upload",
+		"drag_drop_subtitle": "Suporta imagens e arquivos"
 	},
 	"common": {
 		"confirm": "Confirmar",
@@ -57,7 +67,8 @@
 		"ai-reading": "Leitura com IA",
 		"ai-image": "Gerador de imagens IA",
 		"ai-video": "Gerador de vídeos IA",
-		"no_models_found": "Nenhum modelo encontrado"
+		"no_models_found": "Nenhum modelo encontrado",
+		"edit": "Editar"
 	},
 	"settings": {
 		"usage": "Uso",

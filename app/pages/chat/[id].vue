@@ -1,5 +1,21 @@
 <template>
-	<div class="flex-1 flex flex-col h-full bg-[var(--bg-main)] transition-colors relative overflow-hidden">
+	<div class="flex-1 flex flex-col h-full bg-[var(--bg-main)] transition-colors relative overflow-hidden"
+		@dragenter.prevent="onDragEnter"
+		@dragover.prevent
+		@dragleave="onDragLeave"
+		@drop.prevent="onDrop">
+
+		<!-- Drag Overlay -->
+		<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0">
+			<div v-if="isDraggingOver && supportsFileUpload"
+				class="absolute inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-[var(--bg-main)]/90 backdrop-blur-sm border-2 border-dashed border-[var(--brand-primary)] rounded-none pointer-events-none">
+				<div class="w-16 h-16 rounded-2xl bg-[var(--brand-primary)]/10 flex items-center justify-center">
+					<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--brand-primary)]"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+				</div>
+				<p class="text-[15px] font-semibold text-[var(--brand-primary)]">{{ $t('chat.drag_drop_title') }}</p>
+				<p class="text-[13px] text-[var(--text-tertiary)]">{{ $t('chat.drag_drop_subtitle') }}</p>
+			</div>
+		</Transition>
 		<!-- <header
 			class="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-6 py-3 bg-[var(--bg-main)]/80 backdrop-blur-md border-b border-[var(--border-light)] transition-all">
 			<div class="flex items-center gap-3">
@@ -18,7 +34,7 @@
 		</header> -->
 
 		<!-- Main Chat Area -->
-		<div class="flex-1 overflow-y-auto px-4 pb-48 pt-20 custom-scrollbar relative z-10" ref="messagesContainer">
+		<div class="flex-1 overflow-y-auto px-4 pb-48 pt-20 custom-scrollbar relative z-10" ref="messagesContainer" @scroll="onMessagesScroll">
 			<div class="max-w-[840px] mx-auto py-6">
 				<!-- Initial Loading State -->
 				<div v-if="conversationStore.isLoading && (!currentConversation?.messages || currentConversation.messages.length === 0)"
@@ -45,21 +61,25 @@
 						</div>
 
 						<!-- Message Content -->
-						<div class="flex flex-col max-w-[85%] sm:max-w-[80%] relative"
-							:class="message.role === 'user' ? 'items-end' : 'items-start'">
+						<div class="flex flex-col relative"
+							:class="message.role === 'user' ? 'items-end max-w-[85%] sm:max-w-[80%]' : 'items-start w-full min-w-0'">
 							<!-- User Message -->
 							<div v-if="message.role === 'user'" class="w-full flex justify-end">
 								<!-- Edit Mode -->
 								<div v-if="editingMessageId === message.id"
 									class="w-[500px] max-w-full bg-[var(--bg-chat-bubble-user)] rounded-[24px] border border-[var(--border-light)] p-2 shadow-sm animate-in fade-in duration-200">
-									<textarea v-model="editingContent"
-										class="w-full bg-transparent border-none focus:ring-0 text-[15px] font-medium leading-relaxed px-3 py-1 resize-none custom-scrollbar min-h-[32px] max-h-48"
-										rows="1"></textarea>
+									<div
+										ref="editContentRef"
+										contenteditable="true"
+										@input="editingContent = ($event.target as HTMLElement).textContent || ''"
+										@keydown.enter.exact.prevent="submitEdit"
+										@keydown.escape="cancelEditing"
+										class="w-full bg-transparent outline-none text-[15px] font-medium leading-relaxed px-3 py-1 min-h-[32px] max-h-48 overflow-y-auto custom-scrollbar whitespace-pre-wrap break-words"></div>
 									<div class="flex justify-end gap-2 mt-1">
 										<button @click="cancelEditing"
 											class="px-3 py-1 text-xs font-semibold rounded-full hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-secondary)]">Cancel</button>
-										<button @click="submitEdit" :disabled="!editingContent.trim()"
-											class="px-4 py-1.5 text-xs font-semibold bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full hover:opacity-90 transition-opacity disabled:opacity-50">Send</button>
+										<button @click="submitEdit"
+											class="px-4 py-1.5 text-xs font-semibold bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full hover:opacity-90 transition-opacity">Send</button>
 									</div>
 								</div>
 								<!-- View Mode -->
@@ -74,12 +94,12 @@
 										class="absolute -top-10 right-0 flex items-center gap-1 opacity-0 group-hover/bubble:opacity-100 transition-opacity bg-[var(--bg-main)]/80 backdrop-blur-sm border border-[var(--border-light)] rounded-lg p-1 shadow-sm">
 										<button @click="copyMessage(message.content)"
 											class="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors"
-											title="Copy">
+											:title="$t('chat.copy')">
 											<Copy :size="14" />
 										</button>
 										<button @click="startEditing(message)"
 											class="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors"
-											title="Edit">
+											:title="$t('common.edit')">
 											<Pencil :size="14" />
 										</button>
 									</div>
@@ -109,13 +129,28 @@
 
 								<!-- Assistant Action Bar -->
 								<div
-									class="mt-2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+									class="mt-3 flex items-center gap-0.5">
+									<!-- Copy -->
 									<button @click.stop="copyMessage(message.content)"
-										class="p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded transition-colors"
-										title="Copy Message">
-										<Copy :size="14" />
+										class="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors"
+										:title="$t('chat.copy')">
+										<Copy :size="15" />
 									</button>
-									<!-- Add more actions here like Regenerate if needed -->
+									<!-- Share -->
+									<button @click.stop="shareMessage(message.content)"
+										class="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors"
+										:title="$t('chat.share')">
+										<Share2 :size="15" />
+									</button>
+									<!-- Regenerate (only show on last assistant message) -->
+									<button
+										v-if="currentConversation?.messages[currentConversation.messages.length - 1]?.id === message.id"
+										@click.stop="regenerateMessage()"
+										:disabled="chatStore.isLoading"
+										class="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors disabled:opacity-40"
+										:title="$t('chat.regenerate')">
+										<RefreshCw :size="15" :class="chatStore.isLoading ? 'animate-spin' : ''" />
+									</button>
 								</div>
 							</div>
 
@@ -130,42 +165,65 @@
 						</div>
 					</div>
 				</component>
+
+				<!-- Send Failed Retry Banner -->
+				<div v-if="failedMessageContent" class="flex items-center gap-3 mt-4 px-3 py-2.5 rounded-xl bg-red-500/8 border border-red-500/20 text-[13px]">
+					<span class="text-red-500 flex-1">{{ $t('chat.send_failed') }}</span>
+					<button @click="retryMessage" class="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 font-medium transition-colors">
+						<RefreshCw :size="13" />
+						{{ $t('chat.retry') }}
+					</button>
+					<button @click="failedMessageContent = null" class="p-1 text-red-400 hover:text-red-500 transition-colors">
+						<X :size="13" />
+					</button>
+				</div>
 			</div>
 		</div>
 
-		<!-- Floating Input Pill -->
+		<!-- Scroll to Bottom Button -->
+	<Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-2" enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-2">
+		<button v-if="isUserScrolledUp" @click="scrollToBottom(false, true)"
+			class="absolute bottom-36 right-8 z-40 size-9 flex items-center justify-center rounded-full bg-[var(--bg-main)] border border-[var(--border-light)] shadow-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:shadow-xl transition-all">
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+		</button>
+	</Transition>
+
+	<!-- Floating Input Pill -->
 		<div class="absolute bottom-8 left-0 right-0 z-50 px-4 pointer-events-none">
 			<div class="max-w-[840px] mx-auto relative pointer-events-auto">
 				<!-- Input Container -->
 				<div
 					class="bg-[var(--bg-main)] rounded-[26px] shadow-[var(--shadow-pill)] border border-[var(--border-light)] transition-all duration-300 focus-within:shadow-lg focus-within:border-[var(--text-disable)] relative p-2">
 					<div class="flex flex-col">
-						<editor-content :editor="editor" class="w-full max-h-48 overflow-y-auto custom-scrollbar" />
-
-						<!-- Uploaded Files Preview -->
-						<div v-if="uploadedFiles.length > 0" class="flex flex-wrap gap-2 px-3 pb-2 pt-1">
-							<div v-for="(file, index) in uploadedFiles" :key="index"
-								class="relative group/file flex items-center gap-2 border border-[var(--border-main)] rounded-xl pr-2 pl-1 py-1 max-w-[200px] shadow-sm">
-								<img v-if="file.type.startsWith('image/')" :src="file.url"
-									class="w-8 h-8 rounded-lg object-cover bg-black/5" />
+						<!-- Uploaded Files Preview — above editor -->
+						<div v-if="uploadedFiles.length > 0" class="flex flex-wrap gap-2 px-3 pt-2 pb-1">
+							<div v-for="file in uploadedFiles" :key="file.id" class="relative group/file shrink-0">
+								<!-- Image file -->
+								<div v-if="file.type.startsWith('image/')"
+									class="relative w-16 h-16 rounded-xl overflow-hidden border border-[var(--border-light)] shadow-sm bg-[var(--bg-hover)]">
+									<img :src="file.localUrl || file.url" class="w-full h-full object-cover" />
+									<div v-if="file.uploading" class="absolute inset-0 bg-black/40 flex items-center justify-center">
+										<Loader2 :size="18" class="animate-spin text-white" />
+									</div>
+								</div>
+								<!-- Non-image file -->
 								<div v-else
-									class="w-8 h-8 rounded-lg bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[var(--text-secondary)]">
-									<FileText :size="16" />
+									class="relative flex items-center gap-2 h-12 px-3 rounded-xl border border-[var(--border-light)] shadow-sm bg-[var(--bg-hover)] max-w-[180px]">
+									<div class="shrink-0 w-7 h-7 rounded-lg bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[var(--text-secondary)]">
+										<Loader2 v-if="file.uploading" :size="14" class="animate-spin" />
+										<FileText v-else :size="14" />
+									</div>
+									<span class="text-[12px] font-medium text-[var(--text-primary)] truncate">{{ file.name }}</span>
 								</div>
-								<div class="flex flex-col min-w-0 flex-1">
-									<span class="text-[12px] font-medium text-[var(--text-primary)] truncate"
-										:title="file.name">{{ file.name }}</span>
-								</div>
-								<button @click="removeFile(index)"
-									class="absolute -top-1.5 -right-1.5 size-5 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover/file:opacity-100 transition-opacity">
+								<!-- Delete button (only when upload is done) -->
+								<button v-if="!file.uploading" @click="removeFile(file.id)"
+									class="absolute -top-1.5 -right-1.5 size-5 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full flex items-center justify-center shadow-md opacity-0 group-hover/file:opacity-100 transition-opacity z-10">
 									<X :size="10" stroke-width="3" />
 								</button>
 							</div>
-							<div v-if="isUploading"
-								class="flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--fill-tsp-gray-main)] border border-[var(--border-main)] animate-pulse">
-								<Loader2 :size="16" class="animate-spin text-[var(--text-secondary)]" />
-							</div>
 						</div>
+
+						<editor-content :editor="editor" class="w-full max-h-48 overflow-y-auto custom-scrollbar" />
 
 						<input type="file" ref="fileInputRef" class="hidden" multiple @change="handleFileUpload" />
 
@@ -306,8 +364,9 @@ import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import Tooltip from '../../components/Tooltip.vue'
-import { Copy, Pencil, Plus, Globe, Settings, ArrowUp, Square, SlidersHorizontal, Loader2, X, FileText } from 'lucide-vue-next'
+import { Copy, Pencil, Plus, Globe, Settings, ArrowUp, Square, SlidersHorizontal, Loader2, X, FileText, Share2, RefreshCw } from 'lucide-vue-next'
 import { uploadFile } from '../../utils/api'
+const { t } = useI18n()
 
 const route = useRoute()
 const router = useRouter()
@@ -335,6 +394,41 @@ const isMountedInitial = ref(false)
 // Editing state
 const editingMessageId = ref<string | null>(null)
 const editingContent = ref('')
+const editContentRef = ref<HTMLElement | null>(null)
+
+// Failed message retry state
+const failedMessageContent = ref<string | null>(null)
+
+// Scroll lock: don't auto-scroll when user has scrolled up
+const isUserScrolledUp = ref(false)
+const hasScrolledToBottom = ref(false)
+const onMessagesScroll = () => {
+	if (!messagesContainer.value || !hasScrolledToBottom.value) return
+	const { scrollTop, scrollHeight, clientHeight } = messagesContainer.value
+	isUserScrolledUp.value = scrollHeight - scrollTop - clientHeight > 80
+}
+
+// Drag & drop upload
+const isDraggingOver = ref(false)
+let dragCounter = 0
+const onDragEnter = () => {
+	dragCounter++
+	isDraggingOver.value = true
+}
+const onDragLeave = () => {
+	dragCounter--
+	if (dragCounter <= 0) {
+		dragCounter = 0
+		isDraggingOver.value = false
+	}
+}
+const onDrop = (e: DragEvent) => {
+	dragCounter = 0
+	isDraggingOver.value = false
+	if (!supportsFileUpload.value) return
+	const files = Array.from(e.dataTransfer?.files || [])
+	if (files.length > 0) handleFilesUpload(files)
+}
 
 // Abort controller for stream cancellation
 const abortController = ref<AbortController | null>(null)
@@ -342,41 +436,58 @@ const abortController = ref<AbortController | null>(null)
 // File Upload State
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const isUploading = ref(false)
-const uploadedFiles = ref<{ name: string; key: string; url: string; type: string }[]>([])
+const uploadedFiles = ref<{ id: string; name: string; key: string; url: string; type: string; uploading: boolean; localUrl?: string }[]>([])
 const isWebSearchEnabled = ref(true)
 
 const triggerFileUpload = () => {
 	fileInputRef.value?.click()
 }
 
+const handleFilesUpload = async (files: File[]) => {
+	const placeholders = files.map(file => ({
+		id: Math.random().toString(36).slice(2),
+		name: file.name,
+		key: '',
+		url: '',
+		type: file.type,
+		uploading: true,
+		localUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
+	}))
+	uploadedFiles.value.push(...placeholders)
+	isUploading.value = true
+
+	await Promise.allSettled(files.map(async (file, i) => {
+		const placeholder = placeholders[i]
+		if (!placeholder) return
+		try {
+			const { key, url } = await uploadFile(file)
+			const item = uploadedFiles.value.find(f => f.id === placeholder.id)
+			if (item) {
+				item.key = key
+				item.url = url
+				item.uploading = false
+			}
+		} catch {
+			uploadedFiles.value = uploadedFiles.value.filter(f => f.id !== placeholder.id)
+			uiStore.showToast(t('chat.upload_failed', { name: file.name }), 'error')
+		}
+	}))
+
+	isUploading.value = uploadedFiles.value.some(f => f.uploading)
+}
+
 const handleFileUpload = async (event: Event) => {
 	const target = event.target as HTMLInputElement
 	if (!target.files?.length) return
-
-	isUploading.value = true
-	try {
-		for (let i = 0; i < target.files.length; i++) {
-			const file = target.files.item(i)
-			if (!file) continue
-			const { key, url } = await uploadFile(file)
-			uploadedFiles.value.push({
-				name: file.name,
-				key,
-				url,
-				type: file.type
-			})
-		}
-	} catch (error) {
-		console.error('Failed to upload file(s):', error)
-		uiStore.showToast("Failed to upload file(s)", "error")
-	} finally {
-		isUploading.value = false
-		if (fileInputRef.value) fileInputRef.value.value = ''
-	}
+	const files = Array.from(target.files)
+	if (fileInputRef.value) fileInputRef.value.value = ''
+	await handleFilesUpload(files)
 }
 
-const removeFile = (index: number) => {
-	uploadedFiles.value.splice(index, 1)
+const removeFile = (id: string) => {
+	const item = uploadedFiles.value.find(f => f.id === id)
+	if (item?.localUrl) URL.revokeObjectURL(item.localUrl)
+	uploadedFiles.value = uploadedFiles.value.filter(f => f.id !== id)
 }
 
 const stopGeneration = () => {
@@ -437,15 +548,6 @@ watch(
 	() => editor.value,
 	(newEditor) => {
 		if (newEditor) {
-			// Tiptap doesn't expose raw keydown easily without extension, but we can bind to the view's dom
-			// Or better yet, we can use the extension, but for simplicity here since we are inside a component, we can try to bind to the wrapper event if possible,
-			// but editor-content doesn't forward events directly.
-			// Actually, Tiptap suggests using Extension.create for keymaps.
-			// Let's stick to a simpler approach: add a listener to the window/document focused element or modify the extension config if needed.
-			// Wait, 'keydown' is simpler if we just intercept it on the wrapper or rely on custom extension.
-			// However, standard contenteditable behavior is fine, we just need to intercept Enter.
-			// Let's add a custom extension for keymap or just use a directive if available.
-			// Simplest: use EditorProps.handleKeyDown
 			newEditor.setOptions({
 				editorProps: {
 					handleKeyDown: (view, event) => {
@@ -455,6 +557,18 @@ watch(
 							return true
 						}
 						return false
+					},
+					handlePaste: (view, event) => {
+						if (!supportsFileUpload.value) return false
+						const items = Array.from(event.clipboardData?.items || [])
+						const imageItems = items.filter(item => item.type.startsWith('image/'))
+						if (imageItems.length === 0) return false
+						event.preventDefault()
+						const files = imageItems.map(item => item.getAsFile()).filter(Boolean) as File[]
+						if (files.length > 0) {
+							handleFilesUpload(files)
+						}
+						return true
 					},
 					attributes: {
 						class: 'prose dark:prose-invert focus:outline-none min-h-[44px] px-4 py-3 text-[15px] font-medium leading-relaxed text-[var(--text-primary)]',
@@ -469,6 +583,28 @@ watch(
 const hasContent = computed(() => {
 	return inputMessage.value.trim().length > 0
 })
+
+// Draft persistence per conversation
+const DRAFT_PREFIX = 'chat_draft_'
+const saveDraft = (text: string) => {
+	const id = currentConversationId.value
+	if (!id) return
+	if (text.trim()) {
+		localStorage.setItem(DRAFT_PREFIX + id, text)
+	} else {
+		localStorage.removeItem(DRAFT_PREFIX + id)
+	}
+}
+const loadDraft = () => {
+	const id = currentConversationId.value
+	if (!id) return
+	const draft = localStorage.getItem(DRAFT_PREFIX + id)
+	if (draft && editor.value) {
+		editor.value.commands.setContent(draft)
+		inputMessage.value = draft
+	}
+}
+watch(inputMessage, (val) => saveDraft(val))
 
 const getModelIcon = (modelId?: string) => {
 	const id = (modelId || '').toLowerCase()
@@ -524,14 +660,16 @@ onMounted(async () => {
 		const conversation = await conversationStore.switchConversation(conversationId)
 
 		if (conversation) {
-			modelStore.selectModel(conversation.model || '')
+			if (conversation.model) modelStore.selectModel(conversation.model)
 			nextTick(() => {
-				scrollToBottom(true)
+				scrollToBottom(true, true)
 				setTimeout(() => {
 					isMountedInitial.value = true
 					// If there's a pending message from WelcomeScreen, send it
 					if (chatStore.pendingMessage) {
 						sendMessage(true)
+					} else {
+						loadDraft()
 					}
 				}, 50)
 			})
@@ -549,16 +687,19 @@ watch(
 	() => currentConversationId.value,
 	async (newId) => {
 		if (newId) {
+			hasScrolledToBottom.value = false
+			isUserScrolledUp.value = false
 			await conversationStore.switchConversation(newId)
 			if (currentConversation.value) {
-				modelStore.selectModel(currentConversation.value.model || '')
+				if (currentConversation.value.model) modelStore.selectModel(currentConversation.value.model)
 				// 只同步 selectedGroupId，不重新加载会话列表（避免清空消息）
 				if (currentConversation.value.groupId !== conversationStore.selectedGroupId) {
 					conversationStore.selectedGroupId = currentConversation.value.groupId
 				}
 			}
 			nextTick(() => {
-				scrollToBottom(true)
+				scrollToBottom(true, true)
+				loadDraft()
 			})
 		}
 	},
@@ -571,13 +712,14 @@ watch(
 	},
 )
 
-const scrollToBottom = (instant = false) => {
-	if (messagesContainer.value) {
-		messagesContainer.value.scrollTo({
-			top: messagesContainer.value.scrollHeight,
-			behavior: instant ? 'auto' : 'smooth',
-		})
-	}
+const scrollToBottom = (instant = false, force = false) => {
+	if (!messagesContainer.value) return
+	if (!force && isUserScrolledUp.value) return
+	messagesContainer.value.scrollTo({
+		top: messagesContainer.value.scrollHeight,
+		behavior: instant ? 'auto' : 'smooth',
+	})
+	hasScrolledToBottom.value = true
 }
 
 const sendMessage = async (isInitial = false) => {
@@ -613,7 +755,7 @@ const sendMessage = async (isInitial = false) => {
 	const image_urls: string[] = []
 	const file_ids: string[] = []
 
-	uploadedFiles.value.forEach(f => {
+	uploadedFiles.value.filter(f => !f.uploading).forEach(f => {
 		if (f.type.startsWith('image/')) {
 			image_urls.push(f.key)
 		} else {
@@ -626,11 +768,16 @@ const sendMessage = async (isInitial = false) => {
 		payloadOptions.enable_web_search = isWebSearchEnabled.value
 	}
 
+	// Reset scroll lock when user sends a new message
+	isUserScrolledUp.value = false
+	failedMessageContent.value = null
+
 	// 1. Clear input if not initial
 	if (!isInitial) {
 		inputMessage.value = ''
 		editor.value?.commands.clearContent()
 		uploadedFiles.value = []
+		localStorage.removeItem(DRAFT_PREFIX + currentConversationId.value)
 	}
 
 	// 2. Add user message ONLY IF not already there (initial messages are added by the caller)
@@ -709,7 +856,8 @@ const sendMessage = async (isInitial = false) => {
 				if (lastMsg?.role === 'assistant' && !lastMsg.content) {
 					conversationStore.removeLastAssistantMessage(conversationId)
 				}
-				uiStore.showToast(error?.message || 'Connection failed. Please try again.', 'error')
+				failedMessageContent.value = userMessage
+				uiStore.showToast(error?.message || t('chat.connection_failed'), 'error')
 			},
 			onFinish: () => {
 				abortController.value = null
@@ -728,7 +876,8 @@ const sendMessage = async (isInitial = false) => {
 		abortController.value = null
 		conversationStore.removeLastAssistantMessage(conversationId)
 		if (error?.name !== 'AbortError') {
-			uiStore.showToast('Failed to send message. Please try again.', 'error')
+			failedMessageContent.value = userMessage
+			uiStore.showToast(t('chat.send_failed'), 'error')
 		}
 		chatStore.setLoading(false)
 	}
@@ -736,13 +885,53 @@ const sendMessage = async (isInitial = false) => {
 
 const copyMessage = (content: string) => {
 	navigator.clipboard.writeText(content).then(() => {
-		uiStore.showToast('Copied to clipboard')
+		uiStore.showToast(t('chat.copied'))
+	}).catch(() => {
+		uiStore.showToast(t('chat.copy_failed'), 'error')
 	})
+}
+
+
+const shareMessage = (content: string) => {
+	navigator.clipboard.writeText(content).then(() => {
+		uiStore.showToast(t('chat.copied'))
+	}).catch(() => {
+		uiStore.showToast(t('chat.copy_failed'), 'error')
+	})
+}
+
+const regenerateMessage = () => {
+	if (!currentConversation.value || chatStore.isLoading) return
+	const messages = currentConversation.value.messages
+	// Remove the last assistant message and resend
+	const lastUserMsgIndex = [...messages].reverse().findIndex(m => m.role === 'user')
+	if (lastUserMsgIndex === -1) return
+	const lastUserMsg = messages[messages.length - 1 - lastUserMsgIndex]
+	if (!lastUserMsg) return
+	conversationStore.truncateFromMessage(currentConversationId.value, lastUserMsg.id)
+	if (editor.value) {
+		editor.value.commands.setContent(lastUserMsg.content)
+		inputMessage.value = lastUserMsg.content
+		sendMessage()
+	}
 }
 
 const startEditing = (message: any) => {
 	editingMessageId.value = message.id
 	editingContent.value = message.content
+	nextTick(() => {
+		if (editContentRef.value) {
+			editContentRef.value.textContent = message.content
+			// Place cursor at end
+			const range = document.createRange()
+			const sel = window.getSelection()
+			range.selectNodeContents(editContentRef.value)
+			range.collapse(false)
+			sel?.removeAllRanges()
+			sel?.addRange(range)
+			editContentRef.value.focus()
+		}
+	})
 }
 
 const cancelEditing = () => {
@@ -751,15 +940,26 @@ const cancelEditing = () => {
 }
 
 const submitEdit = () => {
-	if (!editingContent.value.trim()) return
+	const content = (editContentRef.value?.textContent || editingContent.value).trim()
+	if (!content) return
 
-	const content = editingContent.value.trim()
 	const messageId = editingMessageId.value!
 	cancelEditing()
 
 	// Truncate conversation from the edited message onwards, then regenerate
 	conversationStore.truncateFromMessage(currentConversationId.value, messageId)
 
+	if (editor.value) {
+		editor.value.commands.setContent(content)
+		inputMessage.value = content
+		sendMessage()
+	}
+}
+
+const retryMessage = () => {
+	if (!failedMessageContent.value || chatStore.isLoading) return
+	const content = failedMessageContent.value
+	failedMessageContent.value = null
 	if (editor.value) {
 		editor.value.commands.setContent(content)
 		inputMessage.value = content

@@ -28,7 +28,17 @@
 		"get_started": "开始使用",
 		"get_skills": "通过自定义技能获取新能力",
 		"stay_updated": "随时了解最新资讯",
-		"explore_community": "探索全球社区"
+		"explore_community": "探索全球社区",
+		"copy": "复制",
+		"regenerate": "重新生成",
+		"copied": "已复制到剪贴板",
+		"copy_failed": "复制失败，请手动复制",
+		"upload_failed": "上传 {name} 失败",
+		"send_failed": "发送失败，请检查网络后重试",
+		"retry": "重试",
+		"connection_failed": "连接失败，请重试",
+		"drag_drop_title": "拖拽文件到这里上传",
+		"drag_drop_subtitle": "支持图片和文件"
 	},
 	"common": {
 		"confirm": "确认",
@@ -57,7 +67,8 @@
 		"ai-reading": "AI 阅读",
 		"ai-image": "AI 绘图",
 		"ai-video": "AI 视频",
-		"no_models_found": "未找到模型"
+		"no_models_found": "未找到模型",
+		"edit": "编辑"
 	},
 	"settings": {
 		"usage": "用量",

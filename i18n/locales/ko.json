@@ -28,7 +28,17 @@
 		"get_started": "시작하기",
 		"get_skills": "맞춤 스킬로 새로운 기능 획득",
 		"stay_updated": "최신 소식 받기",
-		"explore_community": "글로벌 커뮤니티 탐색"
+		"explore_community": "글로벌 커뮤니티 탐색",
+		"copy": "복사",
+		"regenerate": "재생성",
+		"copied": "클립보드에 복사되었습니다",
+		"copy_failed": "복사 실패. 수동으로 복사해 주세요.",
+		"upload_failed": "{name} 업로드 실패",
+		"send_failed": "전송 실패. 네트워크를 확인하고 다시 시도하세요.",
+		"retry": "다시 시도",
+		"connection_failed": "연결에 실패했습니다. 다시 시도해 주세요.",
+		"drag_drop_title": "파일을 여기에 드래그하여 업로드",
+		"drag_drop_subtitle": "이미지 및 파일 지원"
 	},
 	"common": {
 		"confirm": "확인",
@@ -57,7 +67,8 @@
 		"ai-reading": "AI 읽기",
 		"ai-image": "AI 이미지 생성",
 		"ai-video": "AI 동영상 생성",
-		"no_models_found": "모델을 찾을 수 없습니다"
+		"no_models_found": "모델을 찾을 수 없습니다",
+		"edit": "편집"
 	},
 	"settings": {
 		"usage": "사용량",

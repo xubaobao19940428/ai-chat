@@ -97,7 +97,7 @@
 										</div>
 										<div class="flex flex-col gap-px">
 											<!-- Loading skeleton -->
-											<template v-if="conversationStore.isLoading && conversationStore.conversations.length === 0">
+											<template v-if="conversationStore.isGroupSwitching || (conversationStore.isLoading && conversationStore.conversations.length === 0)">
 												<div v-for="i in 5" :key="i" class="h-[40px] rounded-[10px] bg-[var(--bg-hover)] animate-pulse mx-1"></div>
 											</template>
 											<template v-else-if="sortedConversations.length === 0">

@@ -28,7 +28,17 @@
 		"get_started": "始めましょう",
 		"get_skills": "カスタムスキルで新しい機能を取得",
 		"stay_updated": "最新情報をチェック",
-		"explore_community": "グローバルコミュニティを探索"
+		"explore_community": "グローバルコミュニティを探索",
+		"copy": "コピー",
+		"regenerate": "再生成",
+		"copied": "クリップボードにコピーしました",
+		"copy_failed": "コピーに失敗しました。手動でコピーしてください。",
+		"upload_failed": "{name} のアップロードに失敗しました",
+		"send_failed": "送信に失敗しました。接続を確認して再試行してください。",
+		"retry": "再試行",
+		"connection_failed": "接続に失敗しました。再試行してください。",
+		"drag_drop_title": "ファイルをここにドロップしてアップロード",
+		"drag_drop_subtitle": "画像とファイルに対応"
 	},
 	"common": {
 		"confirm": "確認",
@@ -57,7 +67,8 @@
 		"ai-reading": "AI読み取り",
 		"ai-image": "AI画像生成",
 		"ai-video": "AI動画生成",
-		"no_models_found": "モデルが見つかりません"
+		"no_models_found": "モデルが見つかりません",
+		"edit": "編集"
 	},
 	"settings": {
 		"usage": "使用状況",

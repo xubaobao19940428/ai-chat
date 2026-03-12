@@ -28,7 +28,17 @@
 		"get_started": "Loslegen mit",
 		"get_skills": "Erhalte neue Fähigkeiten mit benutzerdefinierten Skills",
 		"stay_updated": "Bleib über die neuesten Nachrichten informiert",
-		"explore_community": "Erkunde die globale Community"
+		"explore_community": "Erkunde die globale Community",
+		"copy": "Kopieren",
+		"regenerate": "Neu generieren",
+		"copied": "In die Zwischenablage kopiert",
+		"copy_failed": "Kopieren fehlgeschlagen. Bitte manuell kopieren.",
+		"upload_failed": "{name} konnte nicht hochgeladen werden",
+		"send_failed": "Senden fehlgeschlagen. Bitte Verbindung prüfen und erneut versuchen.",
+		"retry": "Erneut versuchen",
+		"connection_failed": "Verbindung fehlgeschlagen. Bitte erneut versuchen.",
+		"drag_drop_title": "Dateien hier ablegen zum Hochladen",
+		"drag_drop_subtitle": "Unterstützt Bilder und Dateien"
 	},
 	"common": {
 		"confirm": "Bestätigen",
@@ -57,7 +67,8 @@
 		"ai-reading": "KI-Lesen",
 		"ai-image": "KI-Bildgenerator",
 		"ai-video": "KI-Videogenerator",
-		"no_models_found": "Keine Modelle gefunden"
+		"no_models_found": "Keine Modelle gefunden",
+		"edit": "Bearbeiten"
 	},
 	"settings": {
 		"usage": "Nutzung",

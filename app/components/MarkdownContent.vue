@@ -204,10 +204,12 @@ if (typeof window !== 'undefined') {
 	})
 }
 
+let mermaidDebounceTimer: ReturnType<typeof setTimeout> | null = null
 onUpdated(() => {
-	nextTick(() => {
-		initMermaid()
-	})
+	if (mermaidDebounceTimer) clearTimeout(mermaidDebounceTimer)
+	mermaidDebounceTimer = setTimeout(() => {
+		nextTick(() => initMermaid())
+	}, 300)
 })
 
 </script>

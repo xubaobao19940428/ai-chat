@@ -62,6 +62,18 @@ const md: any = new MarkdownIt({
     .use(ins)
     .use(abbr)
 
+// 链接在新标签页打开，并加上 rel="noopener noreferrer"
+const _defaultLinkOpen = md.renderer.rules.link_open || ((tokens: any, idx: any, options: any, _: any, self: any) => self.renderToken(tokens, idx, options))
+md.renderer.rules.link_open = (tokens: any, idx: any, options: any, env: any, self: any) => {
+    tokens[idx].attrSet('target', '_blank')
+    tokens[idx].attrSet('rel', 'noopener noreferrer')
+    return _defaultLinkOpen(tokens, idx, options, env, self)
+}
+
+// 表格外层包一个 div，实现超宽时横向滚动
+md.renderer.rules.table_open  = () => '<div class="table-wrapper"><table>'
+md.renderer.rules.table_close = () => '</table></div>'
+
 /**
  * Closes any unclosed fenced code block (``` or ~~~) before rendering.
  * Prevents the rest of a streaming response from being swallowed into

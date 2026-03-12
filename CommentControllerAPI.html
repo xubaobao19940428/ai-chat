@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- saved from url=(0068)https://ai-test.iappdaily.com/doc/show/AsyncTaskRecordController-API -->
+<!-- saved from url=(0060)https://ai-test.iappdaily.com/doc/show/CommentController-API -->
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="applicable-device" content="pc,mobile">
-    <title>AsyncTaskRecordController API 文档</title>
+    <title>CommentController API 文档</title>
     <style>
         :root {
             --bg-color: #f8f9fa;
@@ -71,10 +71,10 @@
         .error-content{text-align:center;}
         @media(max-width:768px){.container{width:95%;margin:1rem auto;}.doc-content{padding:1.5rem;}.header{padding:.8rem 1rem;}.header h1{font-size:1.2rem;}}
     </style>
-    <link rel="stylesheet" href="./AsyncTaskRecordController API 文档_files/github.css" media="(prefers-color-scheme: light)">
-    <link rel="stylesheet" href="./AsyncTaskRecordController API 文档_files/atom-one-dark.css" media="(prefers-color-scheme: dark)">
-    <script src="./AsyncTaskRecordController API 文档_files/highlight.min.js"></script>
-    <script src="./AsyncTaskRecordController API 文档_files/marked.min.js"></script>
+    <link rel="stylesheet" href="./CommentController API 文档_files/github.css" media="(prefers-color-scheme: light)">
+    <link rel="stylesheet" href="./CommentController API 文档_files/atom-one-dark.css" media="(prefers-color-scheme: dark)">
+    <script src="./CommentController API 文档_files/highlight.min.js"></script>
+    <script src="./CommentController API 文档_files/marked.min.js"></script>
 <style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
   position: absolute;
   top: 0;
@@ -531,18 +531,19 @@
     <a href="https://ai-test.iappdaily.com/doc" class="back-button">← 返回文档列表</a>
     
         <div class="doc-content">
-        <div id="markdown-content"><h1>AsyncTaskRecordController API 文档</h1>
+        <div id="markdown-content"><h1>CommentController API 文档</h1>
 <h2>概述</h2>
-<p>管理用户的 AI 异步任务记录（<code>app_ai_async_tasks</code> 表），提供任务列表、详情、点赞、删除等接口。</p>
-<p><strong>注意</strong>：任务生成的文件（图片/视频/音频）存储在 <code>app_u_user_files</code> 表，通过 <code>source_type=ai_task</code> 关联，可通过 FileController 接口查询。</p>
-<p>路径前缀为 <code>/v1</code>，所有接口均需要登录。</p>
+<p>提供评论的创建、列表、点赞和删除等接口。路径前缀为 <code>/v1</code>。</p>
+<blockquote>
+<p>实际权限策略以后端为准，推荐业务上仅在登录后允许创建/点赞/删除评论。</p>
+</blockquote>
 <hr>
-<h2>1. 获取任务列表</h2>
+<h2>1. 获取评论列表</h2>
 <ul>
-<li><strong>接口描述</strong>：分页获取当前用户的异步任务列表</li>
+<li><strong>接口描述</strong>：按目标资源获取评论列表</li>
 <li><strong>HTTP 方法</strong>：<code>GET</code></li>
-<li><strong>请求路径</strong>：<code>/v1/async-task-record/list</code></li>
-<li><strong>是否需要登录</strong>：是</li>
+<li><strong>请求路径</strong>：<code>/v1/comments</code></li>
+<li><strong>是否需要登录</strong>：否</li>
 </ul>
 <h3>1.1 请求参数</h3>
 <table>
@@ -557,20 +558,28 @@
 </tr>
 </thead>
 <tbody><tr>
-<td><code>capability</code></td>
-<td>query</td>
-<td>string</td>
-<td>否</td>
-<td>-</td>
-<td>能力类型筛选，如 <code>video</code>、<code>image</code>、<code>audio_generation</code></td>
-</tr>
-<tr>
-<td><code>status</code></td>
+<td><code>target_type</code></td>
 <td>query</td>
 <td>int</td>
 <td>否</td>
-<td>-</td>
-<td>状态筛选：0-处理中，1-成功，-1-失败</td>
+<td>0</td>
+<td>目标类型，用于区分不同业务（由双方约定含义）</td>
+</tr>
+<tr>
+<td><code>target_id</code></td>
+<td>query</td>
+<td>int</td>
+<td>是</td>
+<td>0</td>
+<td>目标资源 ID，例如角色 ID、会话 ID 等</td>
+</tr>
+<tr>
+<td><code>sort</code></td>
+<td>query</td>
+<td>string</td>
+<td>否</td>
+<td>latest</td>
+<td>排序方式：<code>latest</code>（按时间倒序）、<code>likes</code>（按点赞数）</td>
 </tr>
 <tr>
 <td><code>page</code></td>
@@ -586,153 +595,94 @@
 <td>int</td>
 <td>否</td>
 <td>20</td>
-<td>每页数量，最少 1、最多 50</td>
+<td>每页数量，最小 1，最大 50</td>
 </tr>
 </tbody></table>
-<h3>1.2 响应说明</h3>
-<p>成功时返回任务列表和分页信息：</p>
+<h3>1.2 响应与错误</h3>
+<ul>
+<li><p>当 <code>target_id</code> 非法（≤0）时：</p>
 <pre><code class="language-json">{
-  "code": 0,
-  "message": "success",
-  "data": {
-    "list": [
-      {
-        "id": 123,
-        "provider_task_id": "task_abc123",
-        "provider_id": 1,
-        "character_id": 10,
-        "model_id": 5,
-        "capability": "video",
-        "user_id": 1001,
-        "status": 1,
-        "progress": 100,
-        "task_params_json": "{\"prompt\":\"一只猫在草地上奔跑\"}",
-        "task_output_json": "[{\"type\":\"video\",\"url\":\"https://...\"}]",
-        "thumbnail": "https://cdn.example.com/thumb.jpg",
-        "localized": 1,
-        "like_count": 5,
-        "error": null,
-        "started_at": 1710000000,
-        "completed_at": 1710000100,
-        "created_at": 1710000000,
-        "updated_at": 1710000100
-      }
-    ],
-    "page": 1,
-    "page_size": 20,
-    "total": 150
-  }
+  "code": 40001,
+  "message": "param_invalid",
+  "data": {}
 }
 </code></pre>
-<p><strong>字段说明</strong>：</p>
+</li>
+</ul>
+<p>成功时：</p>
 <ul>
-<li><code>id</code>：任务记录ID</li>
-<li><code>provider_task_id</code>：Provider 返回的任务ID</li>
-<li><code>capability</code>：能力类型</li>
-<li><code>status</code>：任务状态（0-处理中，1-成功，-1-失败）</li>
-<li><code>progress</code>：进度百分比（0-100）</li>
-<li><code>thumbnail</code>：首张缩略图URL</li>
-<li><code>localized</code>：本地化状态（0-未处理，1-已完成，2-失败）</li>
-<li><code>like_count</code>：点赞数</li>
-<li><code>total</code>：符合条件的任务总数</li>
+<li><code>list</code>：评论数组，每项包含评论内容、作者信息、点赞数、创建时间等字段。</li>
+<li><code>page</code> / <code>page_size</code>：分页信息。</li>
 </ul>
 <hr>
-<h2>2. 获取任务详情</h2>
+<h2>2. 创建评论</h2>
 <ul>
-<li><strong>接口描述</strong>：获取单个任务的详细信息，包含关联的文件列表</li>
-<li><strong>HTTP 方法</strong>：<code>GET</code></li>
-<li><strong>请求路径</strong>：<code>/v1/async-task-record/detail</code></li>
-<li><strong>是否需要登录</strong>：是</li>
+<li><strong>接口描述</strong>：为指定资源创建一条评论</li>
+<li><strong>HTTP 方法</strong>：<code>POST</code></li>
+<li><strong>请求路径</strong>：<code>/v1/comments</code></li>
+<li><strong>是否需要登录</strong>：推荐登录</li>
 </ul>
-<h3>2.1 请求参数</h3>
+<h3>2.1 请求参数（Body）</h3>
 <table>
 <thead>
 <tr>
 <th>参数名</th>
-<th>位置</th>
 <th>类型</th>
 <th>必填</th>
+<th>默认值</th>
 <th>说明</th>
 </tr>
 </thead>
 <tbody><tr>
-<td><code>id</code></td>
-<td>query</td>
+<td><code>target_type</code></td>
+<td>int</td>
+<td>否</td>
+<td>0</td>
+<td>目标类型</td>
+</tr>
+<tr>
+<td><code>target_id</code></td>
 <td>int</td>
 <td>是</td>
-<td>任务ID</td>
+<td>0</td>
+<td>目标资源 ID</td>
+</tr>
+<tr>
+<td><code>content</code></td>
+<td>string</td>
+<td>是</td>
+<td>空字符串</td>
+<td>评论内容，长度需大于 0 且不超过约 1000 字符</td>
+</tr>
+<tr>
+<td><code>parent_id</code></td>
+<td>int</td>
+<td>否</td>
+<td>0</td>
+<td>父评论 ID，用于回复某条评论，不需要时填 0</td>
 </tr>
 </tbody></table>
-<h3>2.2 响应说明</h3>
-<p>成功时返回任务详情和关联文件：</p>
-<pre><code class="language-json">{
-  "code": 0,
-  "message": "success",
-  "data": {
-    "id": 123,
-    "provider_task_id": "task_abc123",
-    "capability": "video",
-    "status": 1,
-    "progress": 100,
-    "task_params_json": "{\"prompt\":\"一只猫在草地上奔跑\"}",
-    "task_output_json": "[{\"type\":\"video\",\"url\":\"https://...\"}]",
-    "thumbnail": "https://cdn.example.com/thumb.jpg",
-    "localized": 1,
-    "like_count": 5,
-    "created_at": 1710000000,
-    "files": [
-      {
-        "id": 456,
-        "file_name": "video_output.mp4",
-        "file_url": "https://cdn.example.com/video.mp4",
-        "file_type": "video",
-        "source_index": 0,
-        "created_at": 1710000100
-      }
-    ]
-  }
-}
-</code></pre>
-<p><strong><code>files</code> 字段</strong>：关联的文件列表，按 <code>source_index</code> 排序</p>
-<h3>2.3 错误码</h3>
-<table>
-<thead>
-<tr>
-<th>错误码</th>
-<th>message</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>40001</td>
-<td>param_error</td>
-<td>参数错误（id 无效）</td>
-</tr>
-<tr>
-<td>30001</td>
-<td>task_not_found</td>
-<td>任务不存在</td>
-</tr>
-<tr>
-<td>20001</td>
-<td>permission_denied</td>
-<td>任务不属于当前用户</td>
-</tr>
-</tbody></table>
-<hr>
-<h2>3. 点赞/取消点赞任务</h2>
+<h3>2.2 响应与错误</h3>
 <ul>
-<li><strong>接口描述</strong>：对任务进行点赞或取消点赞（任务级别，非单个文件）</li>
-<li><strong>HTTP 方法</strong>：<code>POST</code></li>
-<li><strong>请求路径</strong>：<code>/v1/async-task-record/like</code></li>
-<li><strong>是否需要登录</strong>：是</li>
+<li>目标 ID 非法：<code>param_invalid</code>。</li>
+<li>内容为空：<code>content_empty</code>。</li>
+<li>内容过长：<code>content_too_long</code>。</li>
+<li>创建失败：<code>create_failed</code>。</li>
 </ul>
-<h3>3.1 请求参数</h3>
+<p>成功时 <code>data</code> 为创建成功的评论对象。</p>
+<hr>
+<h2>3. 删除评论</h2>
+<ul>
+<li><strong>接口描述</strong>：删除指定评论</li>
+<li><strong>HTTP 方法</strong>：<code>POST</code></li>
+<li><strong>请求路径</strong>：<code>/v1/comments/delete</code></li>
+<li><strong>是否需要登录</strong>：是（仅作者或具备权限的用户可删除）</li>
+</ul>
+<h3>3.1 请求参数（Body）</h3>
 <table>
 <thead>
 <tr>
 <th>参数名</th>
-<th>位置</th>
 <th>类型</th>
 <th>必填</th>
 <th>默认值</th>
@@ -741,195 +691,91 @@
 </thead>
 <tbody><tr>
 <td><code>id</code></td>
-<td>body</td>
 <td>int</td>
 <td>是</td>
-<td>-</td>
-<td>任务ID</td>
-</tr>
-<tr>
-<td><code>action</code></td>
-<td>body</td>
-<td>string</td>
-<td>是</td>
-<td>like</td>
-<td>操作类型：<code>like</code> 点赞，<code>unlike</code> 取消点赞</td>
+<td>0</td>
+<td>评论 ID</td>
 </tr>
 </tbody></table>
-<h3>3.2 请求示例</h3>
-<pre><code class="language-json">{
-  "id": 123,
-  "action": "like"
-}
-</code></pre>
-<h3>3.3 响应说明</h3>
-<p>成功时返回空数据：</p>
-<pre><code class="language-json">{
-  "code": 0,
-  "message": "success",
-  "data": []
-}
-</code></pre>
-<h3>3.4 错误码</h3>
-<table>
-<thead>
-<tr>
-<th>错误码</th>
-<th>message</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>40001</td>
-<td>param_error</td>
-<td>参数错误</td>
-</tr>
-<tr>
-<td>30001</td>
-<td>task_not_found</td>
-<td>任务不存在</td>
-</tr>
-<tr>
-<td>20001</td>
-<td>permission_denied</td>
-<td>任务不属于当前用户（无权点赞）</td>
-</tr>
-<tr>
-<td>30001</td>
-<td>operation_failed</td>
-<td>操作失败</td>
-</tr>
-</tbody></table>
-<hr>
-<h2>4. 删除任务记录</h2>
+<h3>3.2 响应与错误</h3>
 <ul>
-<li><strong>接口描述</strong>：删除任务记录（同时删除关联的文件记录）</li>
-<li><strong>HTTP 方法</strong>：<code>POST</code></li>
-<li><strong>请求路径</strong>：<code>/v1/async-task-record/delete</code></li>
-<li><strong>是否需要登录</strong>：是</li>
+<li><code>id</code> 非法：<code>param_invalid</code>。</li>
+<li>删除失败或无权限：<code>delete_failed</code>。</li>
 </ul>
-<h3>4.1 请求参数</h3>
+<p>成功时 <code>data</code> 为空对象 <code>{}</code>。</p>
+<hr>
+<h2>4. 点赞评论</h2>
+<ul>
+<li><strong>接口描述</strong>：为指定评论点赞</li>
+<li><strong>HTTP 方法</strong>：<code>POST</code></li>
+<li><strong>请求路径</strong>：<code>/v1/comments/like</code></li>
+<li><strong>是否需要登录</strong>：推荐登录</li>
+</ul>
+<h3>4.1 请求参数（Body）</h3>
 <table>
 <thead>
 <tr>
 <th>参数名</th>
-<th>位置</th>
 <th>类型</th>
 <th>必填</th>
+<th>默认值</th>
 <th>说明</th>
 </tr>
 </thead>
 <tbody><tr>
 <td><code>id</code></td>
-<td>body</td>
 <td>int</td>
 <td>是</td>
-<td>任务ID</td>
-</tr>
-</tbody></table>
-<h3>4.2 请求示例</h3>
-<pre><code class="language-json">{
-  "id": 123
-}
-</code></pre>
-<h3>4.3 响应说明</h3>
-<p>成功时返回：</p>
-<pre><code class="language-json">{
-  "code": 0,
-  "message": "success",
-  "data": []
-}
-</code></pre>
-<h3>4.4 错误码</h3>
-<table>
-<thead>
-<tr>
-<th>错误码</th>
-<th>message</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>40001</td>
-<td>param_error</td>
-<td>参数错误</td>
-</tr>
-<tr>
-<td>30001</td>
-<td>task_not_found</td>
-<td>任务不存在</td>
-</tr>
-<tr>
-<td>20001</td>
-<td>permission_denied</td>
-<td>任务不属于当前用户</td>
-</tr>
-<tr>
-<td>30001</td>
-<td>operation_failed</td>
-<td>删除失败</td>
-</tr>
-</tbody></table>
-<hr>
-<h2>附录：任务状态说明</h2>
-<h3>任务状态（status）</h3>
-<table>
-<thead>
-<tr>
-<th>值</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
 <td>0</td>
-<td>处理中</td>
-</tr>
-<tr>
-<td>1</td>
-<td>成功</td>
-</tr>
-<tr>
-<td>-1</td>
-<td>失败</td>
+<td>评论 ID</td>
 </tr>
 </tbody></table>
-<h3>本地化状态（localized）</h3>
-<table>
-<thead>
-<tr>
-<th>值</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>0</td>
-<td>未处理</td>
-</tr>
-<tr>
-<td>1</td>
-<td>已完成</td>
-</tr>
-<tr>
-<td>2</td>
-<td>失败</td>
-</tr>
-</tbody></table>
-<h3>能力类型（capability）</h3>
-<p>常见值：<code>video</code>、<code>image</code>、<code>audio_generation</code>、<code>image_edit</code>、<code>video_edit</code> 等</p>
-<hr>
-<h2>相关接口</h2>
+<h3>4.2 响应与错误</h3>
 <ul>
-<li><strong>查询任务生成的文件</strong>：使用 <code>GET /v1/files?source_type=ai_task&amp;source_id={任务ID}</code></li>
-<li><strong>删除任务生成的文件</strong>：使用 <code>POST /v1/files/delete-by-source</code></li>
+<li><code>id</code> 非法：<code>param_invalid</code>。</li>
+<li>点赞失败：<code>like_failed</code>。</li>
 </ul>
-<p>详见 <a href="https://ai-test.iappdaily.com/doc/show/FileController-API.md">FileController API 文档</a></p>
+<p>成功时 <code>data</code> 为空对象 <code>{}</code>。</p>
+<hr>
+<h2>5. 取消点赞</h2>
+<ul>
+<li><strong>接口描述</strong>：取消对指定评论的点赞</li>
+<li><strong>HTTP 方法</strong>：<code>POST</code></li>
+<li><strong>请求路径</strong>：<code>/v1/comments/unlike</code></li>
+<li><strong>是否需要登录</strong>：推荐登录</li>
+</ul>
+<h3>5.1 请求参数（Body）</h3>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>类型</th>
+<th>必填</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>int</td>
+<td>是</td>
+<td>0</td>
+<td>评论 ID</td>
+</tr>
+</tbody></table>
+<h3>5.2 响应与错误</h3>
+<ul>
+<li><code>id</code> 非法：<code>param_invalid</code>。</li>
+<li>取消点赞失败：<code>unlike_failed</code>。</li>
+</ul>
+<p>成功时 <code>data</code> 为空对象 <code>{}</code>。</p>
 </div>
     </div>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // 获取Markdown内容
-            const markdownContent = "# AsyncTaskRecordController API \u6587\u6863\n\n## \u6982\u8ff0\n\n\u7ba1\u7406\u7528\u6237\u7684 AI \u5f02\u6b65\u4efb\u52a1\u8bb0\u5f55\uff08`app_ai_async_tasks` \u8868\uff09\uff0c\u63d0\u4f9b\u4efb\u52a1\u5217\u8868\u3001\u8be6\u60c5\u3001\u70b9\u8d5e\u3001\u5220\u9664\u7b49\u63a5\u53e3\u3002\n\n**\u6ce8\u610f**\uff1a\u4efb\u52a1\u751f\u6210\u7684\u6587\u4ef6\uff08\u56fe\u7247\/\u89c6\u9891\/\u97f3\u9891\uff09\u5b58\u50a8\u5728 `app_u_user_files` \u8868\uff0c\u901a\u8fc7 `source_type=ai_task` \u5173\u8054\uff0c\u53ef\u901a\u8fc7 FileController \u63a5\u53e3\u67e5\u8be2\u3002\n\n\u8def\u5f84\u524d\u7f00\u4e3a `\/v1`\uff0c\u6240\u6709\u63a5\u53e3\u5747\u9700\u8981\u767b\u5f55\u3002\n\n---\n\n## 1. \u83b7\u53d6\u4efb\u52a1\u5217\u8868\n\n- **\u63a5\u53e3\u63cf\u8ff0**\uff1a\u5206\u9875\u83b7\u53d6\u5f53\u524d\u7528\u6237\u7684\u5f02\u6b65\u4efb\u52a1\u5217\u8868\n- **HTTP \u65b9\u6cd5**\uff1a`GET`\n- **\u8bf7\u6c42\u8def\u5f84**\uff1a`\/v1\/async-task-record\/list`\n- **\u662f\u5426\u9700\u8981\u767b\u5f55**\uff1a\u662f\n\n### 1.1 \u8bf7\u6c42\u53c2\u6570\n\n| \u53c2\u6570\u540d       | \u4f4d\u7f6e  | \u7c7b\u578b   | \u5fc5\u586b | \u9ed8\u8ba4\u503c | \u8bf4\u660e |\n| ------------ | ----- | ------ | ---- | ------ | ---- |\n| `capability` | query | string | \u5426   | -      | \u80fd\u529b\u7c7b\u578b\u7b5b\u9009\uff0c\u5982 `video`\u3001`image`\u3001`audio_generation` |\n| `status`     | query | int    | \u5426   | -      | \u72b6\u6001\u7b5b\u9009\uff1a0-\u5904\u7406\u4e2d\uff0c1-\u6210\u529f\uff0c-1-\u5931\u8d25 |\n| `page`       | query | int    | \u5426   | 1      | \u9875\u7801\uff0c\u6700\u5c0f 1 |\n| `page_size`  | query | int    | \u5426   | 20     | \u6bcf\u9875\u6570\u91cf\uff0c\u6700\u5c11 1\u3001\u6700\u591a 50 |\n\n### 1.2 \u54cd\u5e94\u8bf4\u660e\n\n\u6210\u529f\u65f6\u8fd4\u56de\u4efb\u52a1\u5217\u8868\u548c\u5206\u9875\u4fe1\u606f\uff1a\n\n```json\n{\n  \"code\": 0,\n  \"message\": \"success\",\n  \"data\": {\n    \"list\": [\n      {\n        \"id\": 123,\n        \"provider_task_id\": \"task_abc123\",\n        \"provider_id\": 1,\n        \"character_id\": 10,\n        \"model_id\": 5,\n        \"capability\": \"video\",\n        \"user_id\": 1001,\n        \"status\": 1,\n        \"progress\": 100,\n        \"task_params_json\": \"{\\\"prompt\\\":\\\"\u4e00\u53ea\u732b\u5728\u8349\u5730\u4e0a\u5954\u8dd1\\\"}\",\n        \"task_output_json\": \"[{\\\"type\\\":\\\"video\\\",\\\"url\\\":\\\"https:\/\/...\\\"}]\",\n        \"thumbnail\": \"https:\/\/cdn.example.com\/thumb.jpg\",\n        \"localized\": 1,\n        \"like_count\": 5,\n        \"error\": null,\n        \"started_at\": 1710000000,\n        \"completed_at\": 1710000100,\n        \"created_at\": 1710000000,\n        \"updated_at\": 1710000100\n      }\n    ],\n    \"page\": 1,\n    \"page_size\": 20,\n    \"total\": 150\n  }\n}\n```\n\n**\u5b57\u6bb5\u8bf4\u660e**\uff1a\n- `id`\uff1a\u4efb\u52a1\u8bb0\u5f55ID\n- `provider_task_id`\uff1aProvider \u8fd4\u56de\u7684\u4efb\u52a1ID\n- `capability`\uff1a\u80fd\u529b\u7c7b\u578b\n- `status`\uff1a\u4efb\u52a1\u72b6\u6001\uff080-\u5904\u7406\u4e2d\uff0c1-\u6210\u529f\uff0c-1-\u5931\u8d25\uff09\n- `progress`\uff1a\u8fdb\u5ea6\u767e\u5206\u6bd4\uff080-100\uff09\n- `thumbnail`\uff1a\u9996\u5f20\u7f29\u7565\u56feURL\n- `localized`\uff1a\u672c\u5730\u5316\u72b6\u6001\uff080-\u672a\u5904\u7406\uff0c1-\u5df2\u5b8c\u6210\uff0c2-\u5931\u8d25\uff09\n- `like_count`\uff1a\u70b9\u8d5e\u6570\n- `total`\uff1a\u7b26\u5408\u6761\u4ef6\u7684\u4efb\u52a1\u603b\u6570\n\n---\n\n## 2. \u83b7\u53d6\u4efb\u52a1\u8be6\u60c5\n\n- **\u63a5\u53e3\u63cf\u8ff0**\uff1a\u83b7\u53d6\u5355\u4e2a\u4efb\u52a1\u7684\u8be6\u7ec6\u4fe1\u606f\uff0c\u5305\u542b\u5173\u8054\u7684\u6587\u4ef6\u5217\u8868\n- **HTTP \u65b9\u6cd5**\uff1a`GET`\n- **\u8bf7\u6c42\u8def\u5f84**\uff1a`\/v1\/async-task-record\/detail`\n- **\u662f\u5426\u9700\u8981\u767b\u5f55**\uff1a\u662f\n\n### 2.1 \u8bf7\u6c42\u53c2\u6570\n\n| \u53c2\u6570\u540d | \u4f4d\u7f6e  | \u7c7b\u578b | \u5fc5\u586b | \u8bf4\u660e |\n| ------ | ----- | ---- | ---- | ---- |\n| `id`   | query | int  | \u662f   | \u4efb\u52a1ID |\n\n### 2.2 \u54cd\u5e94\u8bf4\u660e\n\n\u6210\u529f\u65f6\u8fd4\u56de\u4efb\u52a1\u8be6\u60c5\u548c\u5173\u8054\u6587\u4ef6\uff1a\n\n```json\n{\n  \"code\": 0,\n  \"message\": \"success\",\n  \"data\": {\n    \"id\": 123,\n    \"provider_task_id\": \"task_abc123\",\n    \"capability\": \"video\",\n    \"status\": 1,\n    \"progress\": 100,\n    \"task_params_json\": \"{\\\"prompt\\\":\\\"\u4e00\u53ea\u732b\u5728\u8349\u5730\u4e0a\u5954\u8dd1\\\"}\",\n    \"task_output_json\": \"[{\\\"type\\\":\\\"video\\\",\\\"url\\\":\\\"https:\/\/...\\\"}]\",\n    \"thumbnail\": \"https:\/\/cdn.example.com\/thumb.jpg\",\n    \"localized\": 1,\n    \"like_count\": 5,\n    \"created_at\": 1710000000,\n    \"files\": [\n      {\n        \"id\": 456,\n        \"file_name\": \"video_output.mp4\",\n        \"file_url\": \"https:\/\/cdn.example.com\/video.mp4\",\n        \"file_type\": \"video\",\n        \"source_index\": 0,\n        \"created_at\": 1710000100\n      }\n    ]\n  }\n}\n```\n\n**`files` \u5b57\u6bb5**\uff1a\u5173\u8054\u7684\u6587\u4ef6\u5217\u8868\uff0c\u6309 `source_index` \u6392\u5e8f\n\n### 2.3 \u9519\u8bef\u7801\n\n| \u9519\u8bef\u7801 | message           | \u8bf4\u660e |\n| ------ | ----------------- | ---- |\n| 40001  | param_error       | \u53c2\u6570\u9519\u8bef\uff08id \u65e0\u6548\uff09 |\n| 30001  | task_not_found    | \u4efb\u52a1\u4e0d\u5b58\u5728 |\n| 20001  | permission_denied | \u4efb\u52a1\u4e0d\u5c5e\u4e8e\u5f53\u524d\u7528\u6237 |\n\n---\n\n## 3. \u70b9\u8d5e\/\u53d6\u6d88\u70b9\u8d5e\u4efb\u52a1\n\n- **\u63a5\u53e3\u63cf\u8ff0**\uff1a\u5bf9\u4efb\u52a1\u8fdb\u884c\u70b9\u8d5e\u6216\u53d6\u6d88\u70b9\u8d5e\uff08\u4efb\u52a1\u7ea7\u522b\uff0c\u975e\u5355\u4e2a\u6587\u4ef6\uff09\n- **HTTP \u65b9\u6cd5**\uff1a`POST`\n- **\u8bf7\u6c42\u8def\u5f84**\uff1a`\/v1\/async-task-record\/like`\n- **\u662f\u5426\u9700\u8981\u767b\u5f55**\uff1a\u662f\n\n### 3.1 \u8bf7\u6c42\u53c2\u6570\n\n| \u53c2\u6570\u540d   | \u4f4d\u7f6e | \u7c7b\u578b   | \u5fc5\u586b | \u9ed8\u8ba4\u503c | \u8bf4\u660e |\n| -------- | ---- | ------ | ---- | ------ | ---- |\n| `id`     | body | int    | \u662f   | -      | \u4efb\u52a1ID |\n| `action` | body | string | \u662f   | like   | \u64cd\u4f5c\u7c7b\u578b\uff1a`like` \u70b9\u8d5e\uff0c`unlike` \u53d6\u6d88\u70b9\u8d5e |\n\n### 3.2 \u8bf7\u6c42\u793a\u4f8b\n\n```json\n{\n  \"id\": 123,\n  \"action\": \"like\"\n}\n```\n\n### 3.3 \u54cd\u5e94\u8bf4\u660e\n\n\u6210\u529f\u65f6\u8fd4\u56de\u7a7a\u6570\u636e\uff1a\n\n```json\n{\n  \"code\": 0,\n  \"message\": \"success\",\n  \"data\": []\n}\n```\n\n### 3.4 \u9519\u8bef\u7801\n\n| \u9519\u8bef\u7801 | message           | \u8bf4\u660e |\n| ------ | ----------------- | ---- |\n| 40001  | param_error       | \u53c2\u6570\u9519\u8bef |\n| 30001  | task_not_found    | \u4efb\u52a1\u4e0d\u5b58\u5728 |\n| 20001  | permission_denied | \u4efb\u52a1\u4e0d\u5c5e\u4e8e\u5f53\u524d\u7528\u6237\uff08\u65e0\u6743\u70b9\u8d5e\uff09 |\n| 30001  | operation_failed  | \u64cd\u4f5c\u5931\u8d25 |\n\n---\n\n## 4. \u5220\u9664\u4efb\u52a1\u8bb0\u5f55\n\n- **\u63a5\u53e3\u63cf\u8ff0**\uff1a\u5220\u9664\u4efb\u52a1\u8bb0\u5f55\uff08\u540c\u65f6\u5220\u9664\u5173\u8054\u7684\u6587\u4ef6\u8bb0\u5f55\uff09\n- **HTTP \u65b9\u6cd5**\uff1a`POST`\n- **\u8bf7\u6c42\u8def\u5f84**\uff1a`\/v1\/async-task-record\/delete`\n- **\u662f\u5426\u9700\u8981\u767b\u5f55**\uff1a\u662f\n\n### 4.1 \u8bf7\u6c42\u53c2\u6570\n\n| \u53c2\u6570\u540d | \u4f4d\u7f6e | \u7c7b\u578b | \u5fc5\u586b | \u8bf4\u660e |\n| ------ | ---- | ---- | ---- | ---- |\n| `id`   | body | int  | \u662f   | \u4efb\u52a1ID |\n\n### 4.2 \u8bf7\u6c42\u793a\u4f8b\n\n```json\n{\n  \"id\": 123\n}\n```\n\n### 4.3 \u54cd\u5e94\u8bf4\u660e\n\n\u6210\u529f\u65f6\u8fd4\u56de\uff1a\n\n```json\n{\n  \"code\": 0,\n  \"message\": \"success\",\n  \"data\": []\n}\n```\n\n### 4.4 \u9519\u8bef\u7801\n\n| \u9519\u8bef\u7801 | message           | \u8bf4\u660e |\n| ------ | ----------------- | ---- |\n| 40001  | param_error       | \u53c2\u6570\u9519\u8bef |\n| 30001  | task_not_found    | \u4efb\u52a1\u4e0d\u5b58\u5728 |\n| 20001  | permission_denied | \u4efb\u52a1\u4e0d\u5c5e\u4e8e\u5f53\u524d\u7528\u6237 |\n| 30001  | operation_failed  | \u5220\u9664\u5931\u8d25 |\n\n---\n\n## \u9644\u5f55\uff1a\u4efb\u52a1\u72b6\u6001\u8bf4\u660e\n\n### \u4efb\u52a1\u72b6\u6001\uff08status\uff09\n\n| \u503c  | \u8bf4\u660e |\n| --- | ---- |\n| 0   | \u5904\u7406\u4e2d |\n| 1   | \u6210\u529f |\n| -1  | \u5931\u8d25 |\n\n### \u672c\u5730\u5316\u72b6\u6001\uff08localized\uff09\n\n| \u503c  | \u8bf4\u660e |\n| --- | ---- |\n| 0   | \u672a\u5904\u7406 |\n| 1   | \u5df2\u5b8c\u6210 |\n| 2   | \u5931\u8d25 |\n\n### \u80fd\u529b\u7c7b\u578b\uff08capability\uff09\n\n\u5e38\u89c1\u503c\uff1a`video`\u3001`image`\u3001`audio_generation`\u3001`image_edit`\u3001`video_edit` \u7b49\n\n---\n\n## \u76f8\u5173\u63a5\u53e3\n\n- **\u67e5\u8be2\u4efb\u52a1\u751f\u6210\u7684\u6587\u4ef6**\uff1a\u4f7f\u7528 `GET \/v1\/files?source_type=ai_task&source_id={\u4efb\u52a1ID}`\n- **\u5220\u9664\u4efb\u52a1\u751f\u6210\u7684\u6587\u4ef6**\uff1a\u4f7f\u7528 `POST \/v1\/files\/delete-by-source`\n\n\u8be6\u89c1 [FileController API \u6587\u6863](.\/FileController-API.md)\n";
+            const markdownContent = "# CommentController API \u6587\u6863\n\n## \u6982\u8ff0\n\n\u63d0\u4f9b\u8bc4\u8bba\u7684\u521b\u5efa\u3001\u5217\u8868\u3001\u70b9\u8d5e\u548c\u5220\u9664\u7b49\u63a5\u53e3\u3002\u8def\u5f84\u524d\u7f00\u4e3a `\/v1`\u3002\n\n> \u5b9e\u9645\u6743\u9650\u7b56\u7565\u4ee5\u540e\u7aef\u4e3a\u51c6\uff0c\u63a8\u8350\u4e1a\u52a1\u4e0a\u4ec5\u5728\u767b\u5f55\u540e\u5141\u8bb8\u521b\u5efa\/\u70b9\u8d5e\/\u5220\u9664\u8bc4\u8bba\u3002\n\n---\n\n## 1. \u83b7\u53d6\u8bc4\u8bba\u5217\u8868\n\n- **\u63a5\u53e3\u63cf\u8ff0**\uff1a\u6309\u76ee\u6807\u8d44\u6e90\u83b7\u53d6\u8bc4\u8bba\u5217\u8868\n- **HTTP \u65b9\u6cd5**\uff1a`GET`\n- **\u8bf7\u6c42\u8def\u5f84**\uff1a`\/v1\/comments`\n- **\u662f\u5426\u9700\u8981\u767b\u5f55**\uff1a\u5426\n\n### 1.1 \u8bf7\u6c42\u53c2\u6570\n\n| \u53c2\u6570\u540d        | \u4f4d\u7f6e  | \u7c7b\u578b   | \u5fc5\u586b | \u9ed8\u8ba4\u503c | \u8bf4\u660e |\n| ------------- | ----- | ------ | ---- | ------ | ---- |\n| `target_type` | query | int    | \u5426   | 0      | \u76ee\u6807\u7c7b\u578b\uff0c\u7528\u4e8e\u533a\u5206\u4e0d\u540c\u4e1a\u52a1\uff08\u7531\u53cc\u65b9\u7ea6\u5b9a\u542b\u4e49\uff09 |\n| `target_id`   | query | int    | \u662f   | 0      | \u76ee\u6807\u8d44\u6e90 ID\uff0c\u4f8b\u5982\u89d2\u8272 ID\u3001\u4f1a\u8bdd ID \u7b49 |\n| `sort`        | query | string | \u5426   | latest | \u6392\u5e8f\u65b9\u5f0f\uff1a`latest`\uff08\u6309\u65f6\u95f4\u5012\u5e8f\uff09\u3001`likes`\uff08\u6309\u70b9\u8d5e\u6570\uff09 |\n| `page`        | query | int    | \u5426   | 1      | \u9875\u7801\uff0c\u6700\u5c0f 1 |\n| `page_size`   | query | int    | \u5426   | 20     | \u6bcf\u9875\u6570\u91cf\uff0c\u6700\u5c0f 1\uff0c\u6700\u5927 50 |\n\n### 1.2 \u54cd\u5e94\u4e0e\u9519\u8bef\n\n- \u5f53 `target_id` \u975e\u6cd5\uff08\u22640\uff09\u65f6\uff1a\n\n  ```json\n  {\n    \"code\": 40001,\n    \"message\": \"param_invalid\",\n    \"data\": {}\n  }\n  ```\n\n\u6210\u529f\u65f6\uff1a\n\n- `list`\uff1a\u8bc4\u8bba\u6570\u7ec4\uff0c\u6bcf\u9879\u5305\u542b\u8bc4\u8bba\u5185\u5bb9\u3001\u4f5c\u8005\u4fe1\u606f\u3001\u70b9\u8d5e\u6570\u3001\u521b\u5efa\u65f6\u95f4\u7b49\u5b57\u6bb5\u3002\n- `page` \/ `page_size`\uff1a\u5206\u9875\u4fe1\u606f\u3002\n\n---\n\n## 2. \u521b\u5efa\u8bc4\u8bba\n\n- **\u63a5\u53e3\u63cf\u8ff0**\uff1a\u4e3a\u6307\u5b9a\u8d44\u6e90\u521b\u5efa\u4e00\u6761\u8bc4\u8bba\n- **HTTP \u65b9\u6cd5**\uff1a`POST`\n- **\u8bf7\u6c42\u8def\u5f84**\uff1a`\/v1\/comments`\n- **\u662f\u5426\u9700\u8981\u767b\u5f55**\uff1a\u63a8\u8350\u767b\u5f55\n\n### 2.1 \u8bf7\u6c42\u53c2\u6570\uff08Body\uff09\n\n| \u53c2\u6570\u540d        | \u7c7b\u578b   | \u5fc5\u586b | \u9ed8\u8ba4\u503c | \u8bf4\u660e |\n| ------------- | ------ | ---- | ------ | ---- |\n| `target_type` | int    | \u5426   | 0      | \u76ee\u6807\u7c7b\u578b |\n| `target_id`   | int    | \u662f   | 0      | \u76ee\u6807\u8d44\u6e90 ID |\n| `content`     | string | \u662f   | \u7a7a\u5b57\u7b26\u4e32 | \u8bc4\u8bba\u5185\u5bb9\uff0c\u957f\u5ea6\u9700\u5927\u4e8e 0 \u4e14\u4e0d\u8d85\u8fc7\u7ea6 1000 \u5b57\u7b26 |\n| `parent_id`   | int    | \u5426   | 0      | \u7236\u8bc4\u8bba ID\uff0c\u7528\u4e8e\u56de\u590d\u67d0\u6761\u8bc4\u8bba\uff0c\u4e0d\u9700\u8981\u65f6\u586b 0 |\n\n### 2.2 \u54cd\u5e94\u4e0e\u9519\u8bef\n\n- \u76ee\u6807 ID \u975e\u6cd5\uff1a`param_invalid`\u3002\n- \u5185\u5bb9\u4e3a\u7a7a\uff1a`content_empty`\u3002\n- \u5185\u5bb9\u8fc7\u957f\uff1a`content_too_long`\u3002\n- \u521b\u5efa\u5931\u8d25\uff1a`create_failed`\u3002\n\n\u6210\u529f\u65f6 `data` \u4e3a\u521b\u5efa\u6210\u529f\u7684\u8bc4\u8bba\u5bf9\u8c61\u3002\n\n---\n\n## 3. \u5220\u9664\u8bc4\u8bba\n\n- **\u63a5\u53e3\u63cf\u8ff0**\uff1a\u5220\u9664\u6307\u5b9a\u8bc4\u8bba\n- **HTTP \u65b9\u6cd5**\uff1a`POST`\n- **\u8bf7\u6c42\u8def\u5f84**\uff1a`\/v1\/comments\/delete`\n- **\u662f\u5426\u9700\u8981\u767b\u5f55**\uff1a\u662f\uff08\u4ec5\u4f5c\u8005\u6216\u5177\u5907\u6743\u9650\u7684\u7528\u6237\u53ef\u5220\u9664\uff09\n\n### 3.1 \u8bf7\u6c42\u53c2\u6570\uff08Body\uff09\n\n| \u53c2\u6570\u540d | \u7c7b\u578b | \u5fc5\u586b | \u9ed8\u8ba4\u503c | \u8bf4\u660e |\n| ------ | ---- | ---- | ------ | ---- |\n| `id`   | int  | \u662f   | 0      | \u8bc4\u8bba ID |\n\n### 3.2 \u54cd\u5e94\u4e0e\u9519\u8bef\n\n- `id` \u975e\u6cd5\uff1a`param_invalid`\u3002\n- \u5220\u9664\u5931\u8d25\u6216\u65e0\u6743\u9650\uff1a`delete_failed`\u3002\n\n\u6210\u529f\u65f6 `data` \u4e3a\u7a7a\u5bf9\u8c61 `{}`\u3002\n\n---\n\n## 4. \u70b9\u8d5e\u8bc4\u8bba\n\n- **\u63a5\u53e3\u63cf\u8ff0**\uff1a\u4e3a\u6307\u5b9a\u8bc4\u8bba\u70b9\u8d5e\n- **HTTP \u65b9\u6cd5**\uff1a`POST`\n- **\u8bf7\u6c42\u8def\u5f84**\uff1a`\/v1\/comments\/like`\n- **\u662f\u5426\u9700\u8981\u767b\u5f55**\uff1a\u63a8\u8350\u767b\u5f55\n\n### 4.1 \u8bf7\u6c42\u53c2\u6570\uff08Body\uff09\n\n| \u53c2\u6570\u540d | \u7c7b\u578b | \u5fc5\u586b | \u9ed8\u8ba4\u503c | \u8bf4\u660e |\n| ------ | ---- | ---- | ------ | ---- |\n| `id`   | int  | \u662f   | 0      | \u8bc4\u8bba ID |\n\n### 4.2 \u54cd\u5e94\u4e0e\u9519\u8bef\n\n- `id` \u975e\u6cd5\uff1a`param_invalid`\u3002\n- \u70b9\u8d5e\u5931\u8d25\uff1a`like_failed`\u3002\n\n\u6210\u529f\u65f6 `data` \u4e3a\u7a7a\u5bf9\u8c61 `{}`\u3002\n\n---\n\n## 5. \u53d6\u6d88\u70b9\u8d5e\n\n- **\u63a5\u53e3\u63cf\u8ff0**\uff1a\u53d6\u6d88\u5bf9\u6307\u5b9a\u8bc4\u8bba\u7684\u70b9\u8d5e\n- **HTTP \u65b9\u6cd5**\uff1a`POST`\n- **\u8bf7\u6c42\u8def\u5f84**\uff1a`\/v1\/comments\/unlike`\n- **\u662f\u5426\u9700\u8981\u767b\u5f55**\uff1a\u63a8\u8350\u767b\u5f55\n\n### 5.1 \u8bf7\u6c42\u53c2\u6570\uff08Body\uff09\n\n| \u53c2\u6570\u540d | \u7c7b\u578b | \u5fc5\u586b | \u9ed8\u8ba4\u503c | \u8bf4\u660e |\n| ------ | ---- | ---- | ------ | ---- |\n| `id`   | int  | \u662f   | 0      | \u8bc4\u8bba ID |\n\n### 5.2 \u54cd\u5e94\u4e0e\u9519\u8bef\n\n- `id` \u975e\u6cd5\uff1a`param_invalid`\u3002\n- \u53d6\u6d88\u70b9\u8d5e\u5931\u8d25\uff1a`unlike_failed`\u3002\n\n\u6210\u529f\u65f6 `data` \u4e3a\u7a7a\u5bf9\u8c61 `{}`\u3002\n";
             
             // 使用marked解析Markdown
             const renderedContent = marked.parse(markdownContent);

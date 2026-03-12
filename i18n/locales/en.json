@@ -28,7 +28,17 @@
 		"get_started": "Get started with",
 		"get_skills": "Get new capabilities with custom skills",
 		"stay_updated": "Stay updated with the latest news",
-		"explore_community": "Explore the global community"
+		"explore_community": "Explore the global community",
+		"copy": "Copy",
+		"regenerate": "Regenerate",
+		"copied": "Copied to clipboard",
+		"copy_failed": "Copy failed. Please copy manually.",
+		"upload_failed": "Failed to upload {name}",
+		"send_failed": "Failed to send. Please check your connection and retry.",
+		"retry": "Retry",
+		"connection_failed": "Connection failed. Please try again.",
+		"drag_drop_title": "Drop files here to upload",
+		"drag_drop_subtitle": "Supports images and files"
 	},
 	"common": {
 		"confirm": "Confirm",
@@ -57,7 +67,8 @@
 		"ai-reading": "AI Reading",
 		"ai-image": "AI Image Generator",
 		"ai-video": "AI Video Generator",
-		"no_models_found": "No models found"
+		"no_models_found": "No models found",
+		"edit": "Edit"
 	},
 	"settings": {
 		"usage": "Usage",

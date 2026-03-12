@@ -173,7 +173,7 @@
 							<div v-for="i in 3" :key="i" class="h-8 w-full bg-[var(--bg-hover)] rounded-lg animate-pulse"></div>
 						</div>
 						<template v-else>
-							<div @click="selectProject(null)" :class="['w-full flex items-center rounded-[10px] h-[36px] transition-colors clickable transition-all', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px] pe-[8px] gap-[8px]', conversationStore.selectedGroupId === null || conversationStore.selectedGroupId === 0 ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]']">
+							<div @click="selectProject(null)" :class="['w-full flex items-center rounded-[10px] h-[36px] transition-colors clickable transition-all', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px] pe-[8px] gap-[8px]', conversationStore.selectedGroupId === null || conversationStore.selectedGroupId === 0 ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', conversationStore.isGroupSwitching ? 'opacity-50 pointer-events-none' : '']">
 								<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)] opacity-80">
 									<AlignJustify :size="16" />
 								</div>
@@ -181,7 +181,7 @@
 									<span class="truncate">{{ $t('common.all_sessions') }}</span>
 								</div>
 							</div>
-							<div v-for="group in projectStore.projects" :key="group.id" @click="selectProject(group.id)" :class="['w-full group flex items-center rounded-[10px] h-[36px] transition-colors clickable relative transition-all', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px] pe-[8px] gap-[8px]', conversationStore.selectedGroupId == group.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]']">
+							<div v-for="group in projectStore.projects" :key="group.id" @click="selectProject(group.id)" :class="['w-full group flex items-center rounded-[10px] h-[36px] transition-colors clickable relative transition-all', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px] pe-[8px] gap-[8px]', conversationStore.selectedGroupId == group.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', conversationStore.isGroupSwitching ? 'opacity-50 pointer-events-none' : '']">
 								<div class="shrink-0 size-[18px] flex items-center justify-center opacity-80" :style="{ color: getProjectColor(group.color) }">
 									<component :is="getProjectIcon(group.icon)" :size="16" />
 								</div>
@@ -209,7 +209,7 @@
 
 					<!-- Chat List -->
 					<div class="flex flex-col gap-px">
-						<template v-if="conversationStore.isLoading && conversationStore.conversations.length === 0">
+						<template v-if="conversationStore.isGroupSwitching || (conversationStore.isLoading && conversationStore.conversations.length === 0)">
 							<div class="flex flex-col gap-2 px-2 py-1">
 								<div v-for="i in 5" :key="i" class="h-8 w-full bg-[var(--bg-hover)] rounded-lg animate-pulse"></div>
 							</div>
