@@ -1,5 +1,5 @@
 <template>
-	<div class="markdown-content" v-html="renderedContent" ref="markdownRef"></div>
+	<div class="markdown-content prose dark:prose-invert prose-neutral max-w-none break-words" v-html="renderedContent" ref="markdownRef"></div>
 </template>
 
 <script setup lang="ts">
@@ -105,7 +105,6 @@ const initInteractiveMermaid = () => {
 }
 
 onMounted(() => {
-	loadKatexCss()
 	initInteractiveMermaid()
 })
 
@@ -211,35 +210,18 @@ onUpdated(() => {
 	})
 })
 
-const loadKatexCss = () => {
-	if (typeof document !== 'undefined') {
-		if (!document.getElementById('katex-css')) {
-			const link = document.createElement('link')
-			link.id = 'katex-css'
-			link.rel = 'stylesheet'
-			link.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css'
-			document.head.appendChild(link)
-		}
-	}
-}
-
-onMounted(() => {
-	loadKatexCss()
-})
 </script>
 
 <style lang="scss">
-/* We use global-ish styles or deep selectors because v-html content is not scoped */
+/* v-html content is not scoped — use global selectors */
 .markdown-content {
-	@apply prose dark:prose-invert prose-neutral max-w-none break-words relative;
-
-	/* Inherit text styles from parent if needed */
+	/* Override prose's hardcoded colors with theme-aware vars */
 	color: inherit;
 	font-size: inherit;
 	line-height: inherit;
 
 	p {
-		margin-bottom: 1rem;
+		margin-bottom: 1em;
 
 		&:last-child {
 			margin-bottom: 0;

@@ -27,7 +27,7 @@ export default defineNuxtConfig({
             redirectOn: 'root'
         }
     },
-    css: ['~/assets/css/main.css', 'highlight.js/styles/atom-one-dark.css'],
+    css: ['~/assets/css/main.css', 'highlight.js/styles/atom-one-dark.css', 'katex/dist/katex.min.css'],
     devServer: {
         port: 4000,
         host: '0.0.0.0',

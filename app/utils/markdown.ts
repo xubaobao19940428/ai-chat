@@ -62,7 +62,36 @@ const md: any = new MarkdownIt({
     .use(ins)
     .use(abbr)
 
+/**
+ * Closes any unclosed fenced code block (``` or ~~~) before rendering.
+ * Prevents the rest of a streaming response from being swallowed into
+ * a code block when the closing fence hasn't arrived yet.
+ */
+function sanitizeStreamingContent(content: string): string {
+    const lines = content.split('\n')
+    let inFence = false
+    let fenceChar = ''
+
+    for (const line of lines) {
+        const trimmed = line.trimStart()
+        if (!inFence) {
+            const m = trimmed.match(/^(`{3,}|~{3,})/)
+            if (m && m[1]) {
+                inFence = true
+                fenceChar = m[1].charAt(0)
+            }
+        } else {
+            const m = trimmed.match(/^(`{3,}|~{3,})\s*$/)
+            if (m && m[1] && m[1].charAt(0) === fenceChar) {
+                inFence = false
+            }
+        }
+    }
+
+    return inFence ? content.trimEnd() + '\n```' : content
+}
+
 export function renderMarkdown(content: string): string {
     if (!content) return ''
-    return md.render(content)
+    return md.render(sanitizeStreamingContent(content))
 }

@@ -1,23 +1,103 @@
 /* Markdown Content Styling */
 .markdown-content {
-  /* Tables */
+  /* ── Tailwind Typography 伪元素修复 ──────────────────────────
+     Typography 插件会在所有 <code> 前后插入反引号 (content: "`")，
+     我们已有自定义样式，不需要这个行为。 */
+  :where(code)::before,
+  :where(code)::after {
+    content: none !important;
+  }
+
+  /* ── 首尾元素间距修复 ───────────────────────────────────────── */
+  > :first-child { margin-top: 0 !important; }
+  > :last-child  { margin-bottom: 0 !important; }
+
+  /* ── Headings ─────────────────────────────────────────────── */
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+    line-height: 1.35;
+  }
+
+  h1 { font-size: 1.5em;   font-weight: 700; margin-top: 1.5em;  margin-bottom: 0.5em; }
+  h2 { font-size: 1.25em;  font-weight: 700; margin-top: 1.5em;  margin-bottom: 0.5em; }
+  h3 { font-size: 1.1em;   font-weight: 600; margin-top: 1.25em; margin-bottom: 0.375em; }
+  h4 { font-size: 1em;     font-weight: 600; margin-top: 1em;    margin-bottom: 0.25em; }
+
+  /* ── Inline code (backtick spans, not inside pre) ──────────── */
+  :not(pre) > code {
+    background-color: rgba(0, 0, 0, 0.07);
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace;
+    font-size: 0.875em;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  html.dark & :not(pre) > code {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  /* ── Links ──────────────────────────────────────────────────── */
+  a {
+    color: var(--text-blue);
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+
+  /* ── Lists ──────────────────────────────────────────────────── */
+  ul {
+    list-style-type: disc;
+    padding-left: 1.5em;
+    margin-top: 0.5em;
+    margin-bottom: 0.75em;
+  }
+  ol {
+    list-style-type: decimal;
+    padding-left: 1.75em;
+    margin-top: 0.5em;
+    margin-bottom: 0.75em;
+  }
+  li {
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+  }
+  li > ul, li > ol {
+    margin-top: 0.3em;
+    margin-bottom: 0;
+  }
+
+  /* ── Strong & em ──────────────────────────────────────────── */
+  strong {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  /* ── Tables ──────────────────────────────────────────────── */
   table {
     @apply w-full border-collapse my-4 text-[14px];
-    border: 1px solid var(--border-light);
+    border: 1px solid var(--border-dark);
+    border-radius: 8px;
+    overflow: hidden;
   }
 
   th, td {
-    @apply p-2 border border-[var(--border-light)];
+    padding: 8px 12px;
+    border: 1px solid var(--border-dark);
     text-align: left;
   }
 
   th {
-    @apply bg-[var(--bg-hover)] font-bold;
+    background-color: var(--bg-hover);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-secondary);
   }
 
-  tr:nth-child(even) {
-    background-color: var(--bg-main);
-    opacity: 0.8;
+  tr:hover td {
+    background-color: var(--bg-hover);
   }
 
   /* Task Lists */
@@ -29,13 +109,35 @@
     }
   }
 
-  /* KaTeX Math */
-  .katex-display {
-    @apply my-6 overflow-x-auto overflow-y-hidden py-2;
+  /* KaTeX Math ── 行内公式 */
+  .katex {
+    font-size: 1em;          /* 与正文等大 */
+    color: inherit;
+    word-break: normal;      /* 防止外层 break-words 在公式内部断行 */
+    overflow-wrap: normal;
   }
 
-  .katex {
-    @apply text-[1.1em];
+  /* KaTeX Math ── 块级公式（$$...$$） */
+  .katex-display {
+    margin: 1.75em 0;
+    padding: 0.25em 0;
+    text-align: center;
+
+    > .katex {
+      font-size: 1.1em;
+    }
+  }
+
+  /* 暗色模式下 KaTeX 字色随主题 */
+  html.dark & .katex {
+    color: var(--text-primary);
+  }
+
+  /* 公式渲染出错时的样式 */
+  .katex-error {
+    color: var(--function-error);
+    font-family: ui-monospace, monospace;
+    font-size: 0.875em;
   }
 
   /* Footnotes */
@@ -169,11 +271,17 @@
 
   /* Typography */
   hr {
-    @apply my-8 border-t border-[var(--border-light)];
+    border: none;
+    border-top: 1px solid var(--border-dark);
+    margin: 1.5em 0;
   }
 
   blockquote {
-    @apply pl-4 border-l-4 border-[var(--text-disable)] italic text-[var(--text-secondary)] my-4;
+    border-left: 3px solid var(--border-dark);
+    padding-left: 1em;
+    color: var(--text-secondary);
+    margin: 1em 0;
+    font-style: normal;
   }
 
   mark {
