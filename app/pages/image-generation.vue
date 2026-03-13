@@ -373,8 +373,7 @@ import {
 } from 'lucide-vue-next'
 import {
   getModels,
-  createAsyncTask,
-  queryAsyncTask,
+  generateImageStream,
   getAsyncTaskOutputs,
   uploadFile,
   getRecordPrompt,
@@ -398,10 +397,12 @@ import ModelSelector from '@/components/ModelSelector.vue'
 
 const modelStore = useModelStore()
 const selectedModel = computed(() => modelStore.selectedModel)
+const isImageModel = computed(() => selectedModel.value?.capabilities?.includes('image_generation') ?? false)
 
 const dynamicParams = ref<Record<string, any>>({})
 
 const modelInputFields = computed(() => {
+  if (!isImageModel.value) return {}
   return selectedModel.value?.model_input?.fields || {}
 })
 
@@ -457,7 +458,6 @@ const categories = [
 ]
 
 const generatedImages = ref<AsyncTaskRecord[]>([])
-let pollingTimer: any = null
 
 const fetchHistory = async () => {
   try {
@@ -486,7 +486,6 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (pollingTimer) clearTimeout(pollingTimer)
   window.removeEventListener('mousedown', handleClickOutside)
 })
 
@@ -581,50 +580,35 @@ const removeAttachedImage = () => {
   previewImageUrl.value = ''
 }
 
-const pollTaskStatus = async (pid: string) => {
-  try {
-    const res = await queryAsyncTask({ pid })
-    const task = res.data
-    if (task) {
-      generationProgress.value = task.progress || 0
-      if (task.status === 1) {
-        isGenerating.value = false
-        generationProgress.value = 100
-        await fetchHistory()
-        activeTab.value = 'creations'
-      } else if (task.status === -1) {
-        isGenerating.value = false
-      } else {
-        pollingTimer = setTimeout(() => pollTaskStatus(pid), 2000)
-      }
-    }
-  } catch (error) {
-    isGenerating.value = false
-  }
-}
-
 const generateImage = async () => {
   if (!prompt.value.trim() || isGenerating.value || !selectedModel.value) return
   isGenerating.value = true
   generationProgress.value = 0
-  try {
-    const res = await createAsyncTask({
-      capability: 'image_generation',
+  const currentPrompt = prompt.value
+  prompt.value = ''
+  if (inputRef.value) inputRef.value.innerText = ''
+  await generateImageStream(
+    {
       model: `${selectedModel.value.provider}:${selectedModel.value.model}`,
       ...dynamicParams.value,
-      prompt: prompt.value,
+      prompt: currentPrompt,
       image: uploadedImageKey.value || undefined
-    })
-    if (res.data?.pid) {
-      pollTaskStatus(res.data.pid)
-      // Clear input after success
-      prompt.value = ''
-      if (inputRef.value) inputRef.value.innerText = ''
+    },
+    {
+      onProgress: (percent) => {
+        generationProgress.value = percent
+      },
+      onDone: async () => {
+        generationProgress.value = 100
+        isGenerating.value = false
+        await fetchHistory()
+        activeTab.value = 'creations'
+      },
+      onError: () => {
+        isGenerating.value = false
+      }
     }
-    else throw new Error()
-  } catch (error) {
-    isGenerating.value = false
-  }
+  )
 }
 
 const getPreviewStyle = (ratio: string) => {

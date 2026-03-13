@@ -1,17 +1,59 @@
-import request from '@/utils/request'
 import { randomString, generateSign } from '~/utils/sign'
-import type { AIModel } from './models'
-import type { GenerateStreamDoneData } from './image'
 
-/**
- * Get available video generation models
- */
-export const getVideoModels = () => {
-  return request.get('/v1/models', { params: { capability: 'video_generation' } })
+export interface ImageGenerateParams {
+  prompt: string
+  model: string
+  mode?: string
+  [key: string]: any
 }
 
-export const generateVideoStream = async (
-  params: { prompt: string; model: string; mode?: string; [key: string]: any },
+export interface GenerateStreamDoneData {
+  provider_id: number
+  original_model: string
+  finish_reason: string
+  pid: number
+}
+
+const processStreamSSE = (
+  buffer: string,
+  lastEvent: { value: string },
+  callbacks: {
+    onProgress?: (percent: number, message: string) => void
+    onDone?: (data: GenerateStreamDoneData) => void
+    onError?: (error: Error) => void
+  }
+): string => {
+  const lines = buffer.split('\n')
+  const remaining = lines.pop() || ''
+
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (!trimmed) continue
+
+    if (trimmed.startsWith('event: ')) {
+      lastEvent.value = trimmed.substring(7)
+    } else if (trimmed.startsWith('data: ')) {
+      const dataStr = trimmed.substring(6)
+      try {
+        const json = JSON.parse(dataStr)
+        if (lastEvent.value === 'progress') {
+          callbacks.onProgress?.(json.percent ?? 0, json.message ?? '')
+        } else if (lastEvent.value === 'done') {
+          callbacks.onDone?.(json)
+        } else if (lastEvent.value === 'error' || json.error) {
+          callbacks.onError?.(new Error(json.error?.message || json.message || dataStr))
+        }
+      } catch {
+        // ignore JSON parse errors
+      }
+    }
+  }
+
+  return remaining
+}
+
+export const generateImageStream = async (
+  params: ImageGenerateParams,
   callbacks: {
     onProgress?: (percent: number, message: string) => void
     onDone?: (data: GenerateStreamDoneData) => void
@@ -33,12 +75,12 @@ export const generateVideoStream = async (
   const allParams: Record<string, any> = { ...requestBody, timestamp, nonce }
 
   const productionDomain = 'https://ai-test.iappdaily.com'
-  const fullPath = `${productionDomain}/v1/videos/generate`
+  const fullPath = `${productionDomain}/v1/images/generate`
   const secretKey = runtimeConfig.appKey || '49f68a5c8493ec2c0bf489821c21fc3b'
   const sign = generateSign(fullPath, allParams, secretKey)
 
   const apiBase = runtimeConfig.apiBase || '/api'
-  const url = `${apiBase}/v1/videos/generate?timestamp=${timestamp}&nonce=${nonce}&sign=${sign}`
+  const url = `${apiBase}/v1/images/generate?timestamp=${timestamp}&nonce=${nonce}&sign=${sign}`
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -66,36 +108,16 @@ export const generateVideoStream = async (
     const reader = response.body.getReader()
     const decoder = new TextDecoder()
     let buffer = ''
-    let lastEvent = ''
+    const lastEvent = { value: '' }
 
     try {
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
         buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n')
-        buffer = lines.pop() || ''
-
-        for (const line of lines) {
-          const trimmed = line.trim()
-          if (!trimmed) continue
-          if (trimmed.startsWith('event: ')) {
-            lastEvent = trimmed.substring(7)
-          } else if (trimmed.startsWith('data: ')) {
-            const dataStr = trimmed.substring(6)
-            try {
-              const json = JSON.parse(dataStr)
-              if (lastEvent === 'progress') {
-                callbacks.onProgress?.(json.percent ?? 0, json.message ?? '')
-              } else if (lastEvent === 'done') {
-                callbacks.onDone?.(json)
-              } else if (lastEvent === 'error' || json.error) {
-                callbacks.onError?.(new Error(json.error?.message || json.message || dataStr))
-              }
-            } catch { /* ignore */ }
-          }
-        }
+        buffer = processStreamSSE(buffer, lastEvent, callbacks)
       }
+      if (buffer) processStreamSSE(buffer + '\n', lastEvent, callbacks)
     } catch (e: any) {
       if (e.name !== 'AbortError') {
         try { void reader.cancel() } catch (_) {}
@@ -109,6 +131,3 @@ export const generateVideoStream = async (
     callbacks.onError?.(error)
   }
 }
-
-// Re-export AIModel for convenience
-export type { AIModel }

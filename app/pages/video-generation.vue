@@ -419,8 +419,7 @@ import {
 } from 'lucide-vue-next'
 import {
     getModels,
-    createAsyncTask,
-    queryAsyncTask,
+    generateVideoStream,
     getAsyncTaskOutputs,
     uploadFile,
     getRecordPrompt,
@@ -434,9 +433,11 @@ import ModelSelector from '@/components/ModelSelector.vue'
 
 const modelStore = useModelStore()
 const selectedModel = computed(() => modelStore.selectedModel)
+const isVideoModel = computed(() => selectedModel.value?.capabilities?.includes('video_generation') ?? false)
 
 // --- Dynamic Input Logic ---
 const modelInputFields = computed(() => {
+    if (!isVideoModel.value) return {}
     return selectedModel.value?.model_input?.fields || {}
 })
 
@@ -498,7 +499,6 @@ const categories = [
 ]
 
 const generatedVideos = ref<AsyncTaskRecord[]>([])
-let pollingTimer: any = null
 
 const estimatedTimeRemaining = computed(() => {
     const remaining = Math.max(0, 100 - generationProgress.value)
@@ -540,7 +540,6 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-    if (pollingTimer) clearTimeout(pollingTimer)
     window.removeEventListener('mousedown', handleClickOutside)
 })
 
@@ -638,65 +637,48 @@ const removeAttachedImage = () => {
     previewImageUrl.value = ''
 }
 
-const pollTaskStatus = async (pid: string) => {
-    try {
-        const res = await queryAsyncTask({ pid })
-        const task = res.data
-        if (task) {
-            generationProgress.value = task.progress || 0
-            if (task.status === 1) {
-                isGenerating.value = false
-                generationProgress.value = 100
-                await fetchHistory()
-                activeTab.value = 'creations'
-            } else if (task.status === -1 || task.status === -2) {
-                isGenerating.value = false
-            } else {
-                pollingTimer = setTimeout(() => pollTaskStatus(pid), 3000)
-            }
-        }
-    } catch (error) {
-        isGenerating.value = false
-    }
-}
-
 const generateVideo = async () => {
     if (!prompt.value.trim() || isGenerating.value || !selectedModel.value) return
     isGenerating.value = true
     generationProgress.value = 0
-    try {
-        // Construct payload dynamically based on current selections
-        const payload: Record<string, any> = {
-            capability: 'video_generation',
-            model: `${selectedModel.value.provider}:${selectedModel.value.model}`,
-            prompt: prompt.value,
-        }
 
-        // Add dynamically rendered fields
-        for (const [key, value] of Object.entries(dynamicParams.value)) {
-            payload[key] = value
-        }
+    // Construct payload dynamically based on current selections
+    const payload: Record<string, any> = {
+        model: `${selectedModel.value.provider}:${selectedModel.value.model}`,
+        prompt: prompt.value,
+        ...dynamicParams.value
+    }
 
-        // Add image if supported
-        if (supportsImageUpload.value && uploadedImageKey.value) {
-            const imageField = modelInputFields.value['image_urls'] ? 'image_urls' : 'image'
-            if (imageField === 'image_urls') {
-                payload['image_urls'] = [uploadedImageKey.value]
-            } else {
-                payload['image'] = uploadedImageKey.value
+    // Add image if supported
+    if (supportsImageUpload.value && uploadedImageKey.value) {
+        const imageField = modelInputFields.value['image_urls'] ? 'image_urls' : 'image'
+        if (imageField === 'image_urls') {
+            payload['image_urls'] = [uploadedImageKey.value]
+        } else {
+            payload['image'] = uploadedImageKey.value
+        }
+    }
+
+    prompt.value = ''
+    if (inputRef.value) inputRef.value.innerText = ''
+
+    await generateVideoStream(
+        payload,
+        {
+            onProgress: (percent) => {
+                generationProgress.value = percent
+            },
+            onDone: async () => {
+                generationProgress.value = 100
+                isGenerating.value = false
+                await fetchHistory()
+                activeTab.value = 'creations'
+            },
+            onError: () => {
+                isGenerating.value = false
             }
         }
-
-        const res = await createAsyncTask(payload as any)
-        if (res.data?.pid) {
-            pollTaskStatus(res.data.pid)
-            prompt.value = ''
-            if (inputRef.value) inputRef.value.innerText = ''
-        }
-        else throw new Error()
-    } catch (error) {
-        isGenerating.value = false
-    }
+    )
 }
 
 const handleDownload = (videoUrl: string) => {
