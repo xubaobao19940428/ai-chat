@@ -1,56 +1,35 @@
 import request from '../utils/request'
 
-// Helper Types
+// Legacy presigned URL upload (used by avatar upload in user.ts)
 export interface GetUploadUrlParams {
   file_name: string
   content_type: string
 }
 
-export interface GetUploadUrlResponse {
-  url: string
-  key: string
-}
-
-// Helper API
 export const getUploadUrl = (data: GetUploadUrlParams) => {
   return request.post('/v1/get-upload-url', data)
 }
 
 /**
- * Upload a file to object storage using a presigned URL
+ * Upload a file via POST /v1/files (multipart/form-data)
  * @param file The file to upload
  * @returns Object containing the storage key and public URL
  */
 export const uploadFile = async (file: File): Promise<{ key: string, url: string }> => {
-  try {
-    // 1. Get presigned URL
-    const res = await getUploadUrl({
-      file_name: file.name,
-      content_type: file.type
-    }) as any
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('file_name', file.name)
+  formData.append('mime_type', file.type)
+  formData.append('file_size', String(file.size))
+  formData.append('purpose', 'generation')
 
-    if (res.code !== 0 || !res.data?.url) {
-      throw new Error(res.message || 'Failed to get upload URL')
-    }
+  const res = await request.post('/v1/files', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }) as any
 
-    const { url, key } = res.data
-
-    // 2. Perform actual upload via PUT
-    const uploadRes = await fetch(url, {
-      method: 'PUT',
-      body: file,
-      headers: {
-        'Content-Type': file.type
-      }
-    })
-
-    if (!uploadRes.ok) {
-      throw new Error(`Upload failed with status ${uploadRes.status}`)
-    }
-
-    return { key, url: url.split('?')[0] } // Return key and clean URL
-  } catch (error) {
-    console.error('Upload error:', error)
-    throw error
+  if (res.code !== 0 || !res.data) {
+    throw new Error(res.message || 'Upload failed')
   }
+
+  return { key: res.data.file_key, url: res.data.file_url }
 }

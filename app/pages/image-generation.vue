@@ -155,9 +155,32 @@
         </transition>
 
         <div ref="controlBarRef"
-          class="bg-[var(--bg-main)] rounded-[40px] border border-[var(--border-main)] p-5 shadow-[var(--shadow-pill)] flex flex-col gap-4 transition-all">
+          class="bg-[var(--bg-main)] rounded-[40px] border border-[var(--border-main)] p-5 shadow-[var(--shadow-pill)] flex flex-col gap-3 transition-all">
 
-          <!-- Input Area (Top) -->
+          <!-- Uploaded Image Previews (above input) -->
+          <div v-if="uploadedImages.length > 0" class="px-2 flex items-center gap-2 flex-wrap">
+            <div v-for="(img, index) in uploadedImages" :key="img.url"
+              class="relative shrink-0 group/preview">
+              <img :src="img.url"
+                class="w-14 h-14 object-cover rounded-2xl border border-[var(--border-main)] shadow-sm" />
+              <!-- Upload loading overlay -->
+              <div v-if="img.uploading"
+                class="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center">
+                <Loader2 :size="18" class="animate-spin text-white" />
+              </div>
+              <button v-else @click="removeImage(index)"
+                class="absolute -top-1.5 -right-1.5 size-[18px] bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full flex items-center justify-center shadow-md opacity-0 group-hover/preview:opacity-100 transition-all scale-75 group-hover/preview:scale-100">
+                <X :size="9" stroke-width="3.5" />
+              </button>
+            </div>
+            <!-- Quick add button (multiple only) -->
+            <button v-if="supportsMultipleImages" @click="triggerFileUpload"
+              class="w-14 h-14 shrink-0 rounded-2xl border-2 border-dashed border-[var(--border-main)] flex items-center justify-center hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)] transition-all">
+              <Plus :size="16" class="text-[var(--text-tertiary)]" />
+            </button>
+          </div>
+
+          <!-- Input Area -->
           <div class="px-2">
             <div ref="inputRef" contenteditable="true"
               class="w-full bg-transparent border-none text-[var(--text-primary)] focus:outline-none font-medium text-[17px] py-1 max-h-32 overflow-y-auto no-scrollbar relative min-h-[28px] outline-none"
@@ -173,12 +196,57 @@
               <!-- Model Selector -->
               <ModelSelector capability="image_generation" class="mr-1" />
 
-              <!-- Image Prompt -->
-              <button v-if="supportsImageUpload" @click="triggerFileUpload"
-                class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all">
-                <ImagePlus :size="16" class="text-[var(--text-secondary)]" />
-                <span class="text-[13px] font-medium text-[var(--text-primary)]">Image prompt</span>
-              </button>
+              <!-- Image Upload -->
+              <div class="group/button relative" v-if="supportsImageUpload">
+                <button @click="openImageUploadDropdown = !openImageUploadDropdown"
+                  class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+                  :class="openImageUploadDropdown ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : (uploadedImages.length > 0 ? 'border-[var(--border-main)]' : '')"
+                  :disabled="isUploading">
+                  <Loader2 v-if="isUploading" :size="16" class="animate-spin text-[var(--text-secondary)]" />
+                  <template v-else-if="uploadedImages.length > 0">
+                    <div class="relative shrink-0">
+                      <img :src="uploadedImages[0].url" class="w-4 h-4 rounded object-cover" />
+                      <div v-if="uploadedImages.length > 1"
+                        class="absolute -top-1.5 -right-1.5 min-w-[14px] h-[14px] bg-[var(--text-primary)] rounded-full text-[8px] text-[var(--bg-main)] flex items-center justify-center font-bold px-0.5 leading-none">
+                        {{ uploadedImages.length }}
+                      </div>
+                    </div>
+                  </template>
+                  <ImagePlus v-else :size="16" class="text-[var(--text-secondary)]" />
+                  <span class="text-[13px] font-medium text-[var(--text-primary)]">
+                    {{ uploadedImages.length > 0
+                      ? `${uploadedImages.length} image${uploadedImages.length > 1 ? 's' : ''}`
+                      : 'Image prompt' }}
+                  </span>
+                </button>
+
+                <!-- Popover -->
+                <div v-if="openImageUploadDropdown"
+                  class="absolute bottom-[calc(100%+10px)] left-0 pb-2 z-[60] min-w-[300px]">
+                  <div class="rounded-2xl bg-[var(--bg-main)] border border-[var(--border-light)] p-4 shadow-lg flex flex-col gap-4"
+                    style="background-color: var(--bg-main);">
+                    <p class="text-[14px] font-medium text-[var(--text-primary)] text-center leading-snug px-2">
+                      Image prompts apply the style and content of any picture to your generation.
+                      Upload images or select from your asset library.
+                    </p>
+                    <div class="flex flex-col gap-2">
+                      <button @click="triggerFileUpload(); openImageUploadDropdown = false"
+                        class="w-full flex items-center justify-center gap-2 bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 rounded-full py-3 text-[14px] font-medium transition-colors">
+                        <div class="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center">
+                          <Plus :size="10" stroke-width="3" />
+                        </div>
+                        Upload
+                      </button>
+                      <button @click="openImageUploadDropdown = false; showAssetPicker = true"
+                        class="w-full flex items-center justify-center gap-2 bg-[var(--bg-main)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full py-3 text-[14px] font-medium transition-colors border border-[var(--border-main)] shadow-sm"
+                        style="background-color: var(--bg-main);">
+                        <ImagePlus :size="16" />
+                        Select asset
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               <!-- Dynamic Select Fields -->
               <div v-for="field in dynamicSelectFields" :key="field.key" class="relative">
@@ -332,23 +400,16 @@
           </div>
 
           <!-- Hidden File Input -->
-          <input type="file" ref="fileInput" class="hidden" accept="image/*" @change="handleFileUpload" />
-
-          <!-- Uploaded Image Preview Area (Appears above the tools if an image is uploaded) -->
-          <div v-if="previewImageUrl" class="px-2 pb-2">
-            <div class="relative inline-block group/preview">
-              <img :src="previewImageUrl"
-                class="w-16 h-16 object-cover rounded-xl border border-[var(--border-main)] shadow-sm" />
-              <button @click="removeAttachedImage"
-                class="absolute -top-1.5 -right-1.5 size-5 bg-black text-white rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover/preview:opacity-100 transition-opacity">
-                <X :size="10" stroke-width="3" />
-              </button>
-            </div>
-          </div>
+          <input type="file" ref="fileInput" class="hidden" accept="image/*" :multiple="supportsMultipleImages" @change="handleFileUpload" />
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Asset Picker Modal -->
+  <AssetPickerModal :show="showAssetPicker" :multiple="supportsMultipleImages" file-type="image"
+    @close="showAssetPicker = false"
+    @select="onAssetsSelected" />
 </template>
 
 <script setup lang="ts">
@@ -369,7 +430,8 @@ import {
   Download,
   ChevronDown,
   LayoutGrid,
-  Sparkles
+  Sparkles,
+  Plus
 } from 'lucide-vue-next'
 import {
   getModels,
@@ -397,7 +459,10 @@ import ModelSelector from '@/components/ModelSelector.vue'
 
 const modelStore = useModelStore()
 const selectedModel = computed(() => modelStore.selectedModel)
-const isImageModel = computed(() => selectedModel.value?.capabilities?.includes('image_generation') ?? false)
+const isImageModel = computed(() => {
+  const model = selectedModel.value
+  return model?.capabilities?.includes('image_generation') || model?.model_input?.capability === 'image_generation' || false
+})
 
 const dynamicParams = ref<Record<string, any>>({})
 
@@ -407,7 +472,11 @@ const modelInputFields = computed(() => {
 })
 
 const supportsImageUpload = computed(() => {
-  return 'image_urls' in modelInputFields.value || 'file_ids' in modelInputFields.value
+  return 'image' in modelInputFields.value || 'input_images' in modelInputFields.value
+})
+
+const supportsMultipleImages = computed(() => {
+  return 'input_images' in modelInputFields.value
 })
 
 const dynamicSelectFields = computed(() => {
@@ -449,9 +518,18 @@ watch(selectedModel, () => {
 // File Upload State
 const fileInput = ref<HTMLInputElement | null>(null)
 const isUploading = ref(false)
-const uploadedImageKey = ref('')
-const previewImageUrl = ref('')
+const uploadedImages = ref<Array<{ key: string, url: string, uploading?: boolean }>>([])
+const openImageUploadDropdown = ref(false)
+const showAssetPicker = ref(false)
 const inputRef = ref<HTMLDivElement | null>(null)
+
+const onAssetsSelected = (assets: Array<{ key: string, url: string }>) => {
+  if (supportsMultipleImages.value) {
+    uploadedImages.value.push(...assets)
+  } else {
+    uploadedImages.value = [assets[0]]
+  }
+}
 
 const categories = [
   'All', 'Trending', 'Sci-Fi', 'Nature', 'Portrait', 'Abstract'
@@ -477,6 +555,9 @@ const controlBarRef = ref<HTMLDivElement | null>(null)
 const handleClickOutside = (event: MouseEvent) => {
   if (openDropdown.value && controlBarRef.value && !controlBarRef.value.contains(event.target as Node)) {
     openDropdown.value = null
+  }
+  if (openImageUploadDropdown.value && controlBarRef.value && !controlBarRef.value.contains(event.target as Node)) {
+    openImageUploadDropdown.value = false
   }
 }
 
@@ -558,26 +639,50 @@ const triggerFileUpload = () => {
 
 const handleFileUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (!file) return
+  const files = target.files
+  if (!files || files.length === 0) return
 
-  isUploading.value = true
-  try {
-    const { key, url } = await uploadFile(file)
-    uploadedImageKey.value = key
-    previewImageUrl.value = url
-  } catch (error) {
-    console.error('Failed to upload file:', error)
-  } finally {
-    isUploading.value = false
-    // Reset input value to allow re-uploading same file
-    if (fileInput.value) fileInput.value.value = ''
+  openImageUploadDropdown.value = false
+  const fileArray = Array.from(files)
+
+  // Immediately show local blob previews
+  const previews = fileArray.map(file => ({
+    key: '',
+    url: URL.createObjectURL(file),
+    uploading: true,
+  }))
+
+  if (supportsMultipleImages.value) {
+    const startIndex = uploadedImages.value.length
+    uploadedImages.value.push(...previews)
+    // Upload each file and replace blob URL in-place
+    for (let i = 0; i < fileArray.length; i++) {
+      try {
+        const { key, url } = await uploadFile(fileArray[i])
+        URL.revokeObjectURL(uploadedImages.value[startIndex + i].url)
+        uploadedImages.value[startIndex + i] = { key, url, uploading: false }
+      } catch (error) {
+        console.error('Failed to upload file:', error)
+        uploadedImages.value.splice(startIndex + i, 1)
+      }
+    }
+  } else {
+    uploadedImages.value = [previews[0]]
+    try {
+      const { key, url } = await uploadFile(fileArray[0])
+      URL.revokeObjectURL(uploadedImages.value[0].url)
+      uploadedImages.value = [{ key, url, uploading: false }]
+    } catch (error) {
+      console.error('Failed to upload file:', error)
+      uploadedImages.value = []
+    }
   }
+
+  if (fileInput.value) fileInput.value.value = ''
 }
 
-const removeAttachedImage = () => {
-  uploadedImageKey.value = ''
-  previewImageUrl.value = ''
+const removeImage = (index: number) => {
+  uploadedImages.value.splice(index, 1)
 }
 
 const generateImage = async () => {
@@ -587,13 +692,19 @@ const generateImage = async () => {
   const currentPrompt = prompt.value
   prompt.value = ''
   if (inputRef.value) inputRef.value.innerText = ''
+  const payload: Record<string, any> = {
+    model: `${selectedModel.value.provider}:${selectedModel.value.model}`,
+    ...dynamicParams.value,
+    prompt: currentPrompt,
+  }
+  const readyImages = uploadedImages.value.filter(i => !i.uploading && i.key)
+  if ('input_images' in modelInputFields.value && readyImages.length > 0) {
+    payload.input_images = readyImages.map(i => i.key)
+  } else if ('image' in modelInputFields.value && readyImages.length > 0) {
+    payload.image = readyImages[0].key
+  }
   await generateImageStream(
-    {
-      model: `${selectedModel.value.provider}:${selectedModel.value.model}`,
-      ...dynamicParams.value,
-      prompt: currentPrompt,
-      image: uploadedImageKey.value || undefined
-    },
+    payload,
     {
       onProgress: (percent) => {
         generationProgress.value = percent

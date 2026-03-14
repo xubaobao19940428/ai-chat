@@ -238,9 +238,10 @@
                                                     Upload
                                                 </button>
 
-                                                <!-- Select Asset Button (Dummy function for now) -->
-                                                <button @click="openStartFrameDropdown = false"
-                                                    class="w-full flex items-center justify-center gap-2 bg-transparent text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full py-3 text-[14px] font-medium transition-colors border border-transparent">
+                                                <!-- Select Asset Button -->
+                                                <button @click="openStartFrameDropdown = false; showAssetPicker = true"
+                                                    class="w-full flex items-center justify-center gap-2 bg-[var(--bg-main)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full py-3 text-[14px] font-medium transition-colors border border-[var(--border-main)] shadow-sm"
+                                                    style="background-color: var(--bg-main);">
                                                     <ImagePlus :size="16" />
                                                     Select asset
                                                 </button>
@@ -399,6 +400,11 @@
             </div>
         </div>
     </div>
+
+    <!-- Asset Picker Modal -->
+    <AssetPickerModal :show="showAssetPicker" :multiple="false" file-type="image"
+        @close="showAssetPicker = false"
+        @select="onAssetSelected" />
 </template>
 
 <script setup lang="ts">
@@ -433,7 +439,10 @@ import ModelSelector from '@/components/ModelSelector.vue'
 
 const modelStore = useModelStore()
 const selectedModel = computed(() => modelStore.selectedModel)
-const isVideoModel = computed(() => selectedModel.value?.capabilities?.includes('video_generation') ?? false)
+const isVideoModel = computed(() => {
+  const model = selectedModel.value
+  return model?.capabilities?.includes('video_generation') || model?.model_input?.capability === 'video_generation' || false
+})
 
 // --- Dynamic Input Logic ---
 const modelInputFields = computed(() => {
@@ -493,6 +502,14 @@ const uploadedImageKey = ref('')
 const previewImageUrl = ref('')
 const inputRef = ref<HTMLDivElement | null>(null)
 const openStartFrameDropdown = ref(false)
+const showAssetPicker = ref(false)
+
+const onAssetSelected = (assets: Array<{ key: string, url: string }>) => {
+  if (assets.length > 0) {
+    uploadedImageKey.value = assets[0].key
+    previewImageUrl.value = assets[0].url
+  }
+}
 
 const categories = [
     'All', 'Trending', 'Cinematic', 'Animation', 'Nature', 'Abstract'
