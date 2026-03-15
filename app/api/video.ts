@@ -1,7 +1,4 @@
-import request from '@/utils/request'
-import { randomString, generateSign } from '~/utils/sign'
-import type { AIModel } from './models'
-import type { GenerateStreamDoneData } from './image'
+import type { GenerateStreamDoneData, GenerateStreamTaskData, GenerateStreamImageData } from './image'
 
 /**
  * Get available video generation models
@@ -14,6 +11,8 @@ export const generateVideoStream = async (
   params: { prompt: string; model: string; mode?: string; [key: string]: any },
   callbacks: {
     onProgress?: (percent: number, message: string) => void
+    onTask?: (data: GenerateStreamTaskData) => void
+    onImage?: (data: GenerateStreamImageData) => void
     onDone?: (data: GenerateStreamDoneData) => void
     onError?: (error: Error) => void
   },
@@ -87,6 +86,10 @@ export const generateVideoStream = async (
               const json = JSON.parse(dataStr)
               if (lastEvent === 'progress') {
                 callbacks.onProgress?.(json.percent ?? 0, json.message ?? '')
+              } else if (lastEvent === 'task') {
+                callbacks.onTask?.(json)
+              } else if (lastEvent === 'image') {
+                callbacks.onImage?.(json)
               } else if (lastEvent === 'done') {
                 callbacks.onDone?.(json)
               } else if (lastEvent === 'error' || json.error) {

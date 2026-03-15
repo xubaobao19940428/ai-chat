@@ -12,7 +12,7 @@
 		</div>
 
 		<!-- Right: Actions -->
-		<div class="flex items-center gap-4">
+		<div v-if="isHomePage" class="flex items-center gap-4">
 			<!-- Notifications -->
 			<button
 				class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors relative flex items-center justify-center">
@@ -46,6 +46,8 @@ const currentCapability = computed(() => {
 	if (route.name === 'video-generation') return 'video_generation'
 	return undefined
 })
+
+const isHomePage = computed(() => ['index', 'chat'].includes(route.name as string))
 
 const handleProfileClick = () => {
 	if (!userStore.userInfo) {

@@ -7,11 +7,23 @@ export interface ImageGenerateParams {
   [key: string]: any
 }
 
+export interface GenerateStreamTaskData {
+  task_id: string
+  pid: number
+  usage: {
+    images: number
+    credits: number
+  }
+}
+
+export interface GenerateStreamImageData {
+  url: string
+}
+
 export interface GenerateStreamDoneData {
   provider_id: number
   original_model: string
   finish_reason: string
-  pid: number
 }
 
 const processStreamSSE = (
@@ -19,6 +31,8 @@ const processStreamSSE = (
   lastEvent: { value: string },
   callbacks: {
     onProgress?: (percent: number, message: string) => void
+    onTask?: (data: GenerateStreamTaskData) => void
+    onImage?: (data: GenerateStreamImageData) => void
     onDone?: (data: GenerateStreamDoneData) => void
     onError?: (error: Error) => void
   }
@@ -38,6 +52,10 @@ const processStreamSSE = (
         const json = JSON.parse(dataStr)
         if (lastEvent.value === 'progress') {
           callbacks.onProgress?.(json.percent ?? 0, json.message ?? '')
+        } else if (lastEvent.value === 'task') {
+          callbacks.onTask?.(json)
+        } else if (lastEvent.value === 'image') {
+          callbacks.onImage?.(json)
         } else if (lastEvent.value === 'done') {
           callbacks.onDone?.(json)
         } else if (lastEvent.value === 'error' || json.error) {
@@ -56,6 +74,8 @@ export const generateImageStream = async (
   params: ImageGenerateParams,
   callbacks: {
     onProgress?: (percent: number, message: string) => void
+    onTask?: (data: GenerateStreamTaskData) => void
+    onImage?: (data: GenerateStreamImageData) => void
     onDone?: (data: GenerateStreamDoneData) => void
     onError?: (error: Error) => void
   },
