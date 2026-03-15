@@ -48,12 +48,16 @@
 
 						<!-- Precision Particles -->
 						<div class="absolute inset-0 pointer-events-none">
-							<div v-for="i in 8" :key="i" class="absolute size-[1px] bg-[var(--text-primary)]/10 animate-float" :style="{ 
-								top: `${Math.random() * 60 + 20}%`, 
-								left: `${Math.random() * 60 + 20}%`,
-								animationDelay: `${Math.random() * 10}s`,
-								animationDuration: `${Math.random() * 15 + 10}s`
-							}"></div>
+							<div
+								v-for="i in 8"
+								:key="i"
+								class="absolute size-[1px] bg-[var(--text-primary)]/10 animate-float"
+								:style="{
+									top: `${Math.random() * 60 + 20}%`,
+									left: `${Math.random() * 60 + 20}%`,
+									animationDelay: `${Math.random() * 10}s`,
+									animationDuration: `${Math.random() * 15 + 10}s`,
+								}"></div>
 						</div>
 
 						<div class="relative group cursor-default">
@@ -70,12 +74,8 @@
 						</div>
 
 						<div class="text-center mt-14 relative z-10 space-y-3">
-							<h3 class="text-[15px] font-black text-[var(--text-primary)] tracking-[0.25em] uppercase">
-								Cinematic Dimensions
-							</h3>
-							<p class="text-[var(--text-tertiary)] text-[13.5px] max-w-[320px] px-4 leading-relaxed font-normal tracking-wide italic opacity-80">
-								Every visionary motion sequence is preserved in the Aura collection. Begin your orchestration.
-							</p>
+							<h3 class="text-[15px] font-black text-[var(--text-primary)] tracking-[0.25em] uppercase">Cinematic Dimensions</h3>
+							<p class="text-[var(--text-tertiary)] text-[13.5px] max-w-[320px] px-4 leading-relaxed font-normal tracking-wide italic opacity-80">Every visionary motion sequence is preserved in the Aura collection. Begin your orchestration.</p>
 						</div>
 
 						<button @click="triggerFocus" class="mt-14 px-12 py-3 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-xl font-black text-[11px] uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all shadow-xl hover:shadow-[var(--shadow-M)] flex items-center gap-4 group/btn">
@@ -83,27 +83,25 @@
 							<div class="size-1 bg-[var(--bg-main)] rounded-full group-hover:scale-150 transition-transform"></div>
 						</button>
 					</div>
- 
+
 					<!-- Premium Video Gallery Grid -->
 					<div v-if="generatedVideos.length > 0 || activeTasks.length > 0" class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
 						<!-- Noir Video Task Cards (Integrated) -->
 						<div v-for="task in activeTasks" :key="task.id" class="break-inside-avoid relative rounded-2xl overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] transition-all duration-700 shadow-2xl group/gen">
 							<!-- Technical Preview Area -->
-							<div class="relative aspect-video flex items-center justify-center overflow-hidden bg-[var(--bg-hover)]">
-								<!-- Subtle Placeholder Background -->
-								<div v-if="!task.videoUrl" class="absolute inset-0 opacity-[0.03] flex items-center justify-center pointer-events-none">
-									<Video :size="120" stroke-width="0.5" />
-								</div>
-								
+							<div class="relative aspect-video flex items-center justify-center overflow-hidden bg-black">
+								<!-- Premium Placeholder Background -->
+								<img v-if="!task.videoUrl" src="/noir_placeholder.png" class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-luminosity" />
+
 								<!-- Precision Scanner (Theme Aware) -->
-								<div v-if="!task.videoUrl" class="absolute inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-[var(--text-primary)]/20 to-transparent animate-scan-y z-10 pointer-events-none"></div>
+								<div v-if="!task.videoUrl" class="absolute inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/30 to-transparent animate-scan-y z-10 pointer-events-none"></div>
 
 								<!-- Negative-to-Positive Reveal -->
 								<template v-if="task.videoUrl">
-									<img v-if="task.videoUrl.startsWith('data:image')" :src="task.videoUrl" class="w-full h-full object-cover animate-noir-reveal" />
-									<video v-else :src="task.videoUrl" class="w-full h-full object-cover animate-noir-reveal" autoplay muted loop playsinline></video>
+									<img v-if="task.videoUrl.startsWith('data:image')" :src="task.videoUrl" class="w-full h-full object-cover animate-noir-reveal relative z-20" />
+									<video v-else :src="task.videoUrl" class="w-full h-full object-cover animate-noir-reveal relative z-20" autoplay muted loop playsinline></video>
 								</template>
-								
+
 								<!-- Industrial Loader (Integrated) -->
 								<div v-else class="flex flex-col items-center gap-8 z-20">
 									<div class="relative size-24 flex items-center justify-center">
@@ -128,31 +126,40 @@
 										<div class="size-1.5 bg-[var(--text-primary)] animate-pulse rounded-full"></div>
 										<span class="text-[10px] font-black text-[var(--text-primary)] tracking-[0.2em] uppercase">SYSTEM_ACTIVE</span>
 									</div>
-									<span v-if="task.usage" class="text-[10px] font-mono text-[var(--text-tertiary)] bg-[var(--fill-tsp-gray-main)] px-2.5 py-1 rounded-[6px] border border-[var(--border-main)]">
-										{{ task.usage.credits }} UNITS
-									</span>
+									<span v-if="task.usage" class="text-[10px] font-mono text-[var(--text-tertiary)] bg-[var(--fill-tsp-gray-main)] px-2.5 py-1 rounded-[6px] border border-[var(--border-main)]"> {{ task.usage.credits }} UNITS </span>
 								</div>
 								<p class="text-[var(--text-secondary)] text-[12.5px] font-normal line-clamp-2 leading-relaxed tracking-wide italic leading-snug">"{{ task.prompt }}"</p>
 							</div>
 						</div>
 
-						<div v-for="(video, index) in generatedVideos" :key="index" class="break-inside-avoid group relative rounded-[24px] overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] hover:border-purple-500/50 transition-all duration-500 shadow-sm hover:shadow-2xl hover:-translate-y-1">
+						<div v-for="(video, index) in filteredGeneratedVideos" :key="video.id" class="break-inside-avoid group relative rounded-[24px] overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] hover:border-purple-500/50 transition-all duration-500 shadow-sm hover:shadow-2xl hover:-translate-y-1">
 							<!-- Video Container -->
-							<div class="relative overflow-hidden aspect-video">
-								<img v-if="!playingVideoId || playingVideoId !== video.id" :src="video.thumbnail" class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110" />
-								<video v-else :src="getRecordPrimaryUrl(video)" class="w-full h-full object-cover" controls autoplay playsinline></video>
-								<div class="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-[24px]"></div>
+							<div class="relative overflow-hidden aspect-video bg-[var(--bg-hover)]">
+								<template v-if="video.status === 1">
+									<img v-if="!playingVideoId || playingVideoId !== video.id" :src="video.thumbnail || getRecordPrimaryUrl(video)" class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110" />
+									<video v-else :src="getRecordPrimaryUrl(video)" class="w-full h-full object-cover" controls autoplay playsinline></video>
+									<div class="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-[24px]"></div>
 
-								<!-- Play Button Overlay -->
-								<div v-if="!playingVideoId || playingVideoId !== video.id" class="absolute inset-0 flex items-center justify-center cursor-pointer" @click="playingVideoId = video.id">
-									<div class="size-16 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:scale-110 transition-transform">
-										<Play :size="28" class="text-white ml-1" fill="currentColor" />
+									<!-- Play Button Overlay -->
+									<div v-if="!playingVideoId || playingVideoId !== video.id" class="absolute inset-0 flex items-center justify-center cursor-pointer" @click="playingVideoId = video.id">
+										<div class="size-16 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:scale-110 transition-transform">
+											<Play :size="28" class="text-white ml-1" fill="currentColor" />
+										</div>
 									</div>
-								</div>
 
-								<!-- Duration Badge -->
-								<div class="absolute bottom-3 right-3 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-sm text-white text-[11px] font-bold">
-									{{ formatDuration(5) }}
+									<!-- Duration Badge -->
+									<div class="absolute bottom-3 right-3 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-sm text-white text-[11px] font-bold">
+										{{ formatDuration(5) }}
+									</div>
+								</template>
+
+								<!-- Processing State in History -->
+								<div v-else class="h-full relative flex flex-col items-center justify-center overflow-hidden bg-black/40">
+									<img src="/noir_placeholder.png" class="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay" />
+									<div class="relative z-10 flex flex-col items-center gap-4">
+										<div class="size-10 rounded-full border border-white/10 border-t-white/40 animate-spin"></div>
+										<span class="text-[9px] font-black text-white/40 tracking-[0.3em] uppercase">Processing</span>
+									</div>
 								</div>
 							</div>
 
@@ -175,6 +182,23 @@
 											{{ formatDate(video.created_at) }}
 										</span>
 									</div>
+
+									<!-- Technical Metadata (Noir Style for Video) -->
+									<div v-if="getRecordParams(video)" class="flex flex-wrap gap-2 mb-4 opacity-70">
+										<div v-if="getRecordParams(video).aspect_ratio" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
+											{{ getRecordParams(video).aspect_ratio }}
+										</div>
+										<div v-if="getRecordParams(video).resolution" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
+											{{ getRecordParams(video).resolution }}
+										</div>
+										<div v-if="getRecordParams(video).duration" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
+											{{ getRecordParams(video).duration }}S
+										</div>
+										<div v-if="getRecordParams(video).seed" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
+											SEED: {{ getRecordParams(video).seed }}
+										</div>
+									</div>
+
 									<p class="text-white text-[13px] font-medium mb-4 line-clamp-3 leading-relaxed italic">"{{ getRecordPrompt(video) || 'No description' }}"</p>
 									<button @click.stop="useExample(getRecordPrompt(video))" class="w-full py-2.5 bg-white text-black rounded-xl font-bold text-[12px] hover:bg-purple-50 transition-colors shadow-xl flex items-center justify-center gap-2 group/reuse">
 										<Zap :size="14" fill="currentColor" class="text-purple-600 group-hover/reuse:animate-pulse" />
@@ -199,7 +223,7 @@
 							<div class="absolute inset-0 bg-indigo-500/10 rounded-full animate-ping"></div>
 							<Loader2 :size="20" class="animate-spin text-[var(--text-primary)]" />
 						</div>
-						
+
 						<div class="flex flex-col">
 							<span class="text-[10px] font-black text-[var(--text-primary)] tracking-[0.2em] uppercase opacity-40">System Monitor</span>
 							<span class="text-[11px] font-bold text-[var(--text-primary)]">{{ activeTasks.length }} Active Processing</span>
@@ -368,7 +392,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { ImagePlus, Plus, Check, Zap, Loader2, X, Film, Download, ChevronDown, Sparkles, Play, Clock } from 'lucide-vue-next'
-import { getModels, generateVideoStream, getAsyncTaskOutputs, uploadFile, getRecordPrompt, getRecordPrimaryUrl, getRecordModel, type AIModel, type AsyncTaskRecord } from '@/utils/api'
+import { getModels, generateVideoStream, getAsyncTaskOutputs, uploadFile, getRecordPrompt, getRecordPrimaryUrl, getRecordModel, getRecordParams, type AIModel, type AsyncTaskRecord } from '@/utils/api'
 import { useModelStore } from '@/stores/models'
 import ModelSelector from '@/components/ModelSelector.vue'
 
@@ -463,10 +487,14 @@ const onAssetSelected = (assets: Array<{ key: string; url: string }>) => {
 const categories = ['All', 'Trending', 'Cinematic', 'Animation', 'Nature', 'Abstract']
 
 const generatedVideos = ref<AsyncTaskRecord[]>([])
+const filteredGeneratedVideos = computed(() => {
+	const activeIds = new Set(activeTasks.value.map((t) => t.taskId).filter(Boolean))
+	return generatedVideos.value.filter((img) => !activeIds.has(img.provider_task_id))
+})
 
 const fetchHistory = async () => {
 	try {
-		const res = await getAsyncTaskOutputs({ capability: 'video_generation', page_size: 50 })
+		const res = await getAsyncTaskOutputs({ capability: 'video', page_size: 50 })
 		if (res.data && res.data.list) {
 			generatedVideos.value = res.data.list
 		}
@@ -592,28 +620,28 @@ const removeAttachedImage = () => {
 
 const generateVideo = async () => {
 	if (!prompt.value.trim() || !selectedModel.value) return
-	
+
 	const currentPrompt = prompt.value
 	prompt.value = ''
 	if (inputRef.value) inputRef.value.innerText = ''
-	
+
 	const tempId = Math.random().toString(36).substring(7)
 	const newTask = reactive<ActiveTask>({
 		id: tempId,
 		prompt: currentPrompt,
 		progress: 0,
-		status: 'Preparing request...'
+		status: 'Preparing request...',
 	})
-	
+
 	const sessionTaskIds = [tempId]
 	activeTasks.value.unshift(newTask)
-	
+
 	const payload: { prompt: string; model: string; mode?: string; [key: string]: any } = {
 		model: `${selectedModel.value.provider}:${selectedModel.value.model}`,
 		...dynamicParams.value,
 		prompt: currentPrompt,
 	}
-	
+
 	// Add image if supported
 	if (supportsImageUpload.value && previewImageUrl.value) {
 		const imageField = modelInputFields.value['image_urls'] ? 'image_urls' : 'image'
@@ -628,7 +656,7 @@ const generateVideo = async () => {
 		onProgress: (percent, message) => {
 			newTask.progress = percent
 			newTask.status = percent > 0 ? `Generating... ${percent}%` : 'Processing...'
-			
+
 			// Detect base64 preview in message
 			if (message && message.startsWith('data:image')) {
 				newTask.videoUrl = message
@@ -653,7 +681,7 @@ const generateVideo = async () => {
 					...newTask,
 					id: newId,
 					videoUrl: data.url,
-					status: 'Video ready!'
+					status: 'Video ready!',
 				})
 				activeTasks.value.unshift(additionalTask)
 			} else {
@@ -664,14 +692,14 @@ const generateVideo = async () => {
 		onDone: async () => {
 			newTask.progress = 100
 			newTask.status = 'Generation complete!'
-			
+
 			// Refresh history to get the real asset
 			await fetchHistory()
-			
+
 			// Small delay to let the transition happen smoothly
 			setTimeout(() => {
-				sessionTaskIds.forEach(id => {
-					const index = activeTasks.value.findIndex(t => t.id === id)
+				sessionTaskIds.forEach((id) => {
+					const index = activeTasks.value.findIndex((t) => t.id === id)
 					if (index !== -1) activeTasks.value.splice(index, 1)
 				})
 				activeTab.value = 'creations'
@@ -681,7 +709,7 @@ const generateVideo = async () => {
 			console.error('Generation error:', error)
 			newTask.status = 'Error occurred'
 			setTimeout(() => {
-				const index = activeTasks.value.findIndex(t => t.id === tempId)
+				const index = activeTasks.value.findIndex((t) => t.id === tempId)
 				if (index !== -1) activeTasks.value.splice(index, 1)
 			}, 3000)
 		},
@@ -784,40 +812,88 @@ const setParamAndClose = (key: string, val: any) => {
 }
 
 @keyframes scan-y {
-	0% { top: 0; opacity: 0; }
-	10% { opacity: 1; }
-	90% { opacity: 1; }
-	100% { top: 100%; opacity: 0; }
+	0% {
+		top: 0;
+		opacity: 0;
+	}
+	10% {
+		opacity: 1;
+	}
+	90% {
+		opacity: 1;
+	}
+	100% {
+		top: 100%;
+		opacity: 0;
+	}
 }
-.animate-scan-y { animation: scan-y 3s linear infinite; }
+.animate-scan-y {
+	animation: scan-y 3s linear infinite;
+}
 
 @keyframes noir-reveal {
-	0% { filter: brightness(0) contrast(200%) blur(10px); opacity: 0; transform: scale(1.05); }
-	50% { filter: brightness(1.5) contrast(150%) blur(5px); opacity: 0.8; }
-	100% { filter: brightness(1) contrast(100%) blur(0); opacity: 1; transform: scale(1); }
+	0% {
+		filter: brightness(0) contrast(200%) blur(10px);
+		opacity: 0;
+		transform: scale(1.05);
+	}
+	50% {
+		filter: brightness(1.5) contrast(150%) blur(5px);
+		opacity: 0.8;
+	}
+	100% {
+		filter: brightness(1) contrast(100%) blur(0);
+		opacity: 1;
+		transform: scale(1);
+	}
 }
-.animate-noir-reveal { animation: noir-reveal 1.5s cubic-bezier(0.19, 1, 0.22, 1) forwards; }
+.animate-noir-reveal {
+	animation: noir-reveal 1.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
 
 @keyframes ping-slow {
-	0% { transform: scale(1); opacity: 0.3; }
-	100% { transform: scale(1.5); opacity: 0; }
+	0% {
+		transform: scale(1);
+		opacity: 0.3;
+	}
+	100% {
+		transform: scale(1.5);
+		opacity: 0;
+	}
 }
-.animate-ping-slow { animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite; }
+.animate-ping-slow {
+	animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
 
 .bg-mesh-video {
 	background: radial-gradient(circle at 50% 50%, var(--bg-hover) 0%, var(--bg-main) 100%);
 }
 
 @keyframes rotate-progress {
-	from { transform: rotate(0deg); }
-	to { transform: rotate(360deg); }
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
 }
-.animate-rotate-progress { animation: rotate-progress 2.5s linear infinite; }
+.animate-rotate-progress {
+	animation: rotate-progress 2.5s linear infinite;
+}
 
 @keyframes float {
-	0%, 100% { transform: translateY(0) translateX(0); }
-	33% { transform: translateY(-20px) translateX(15px); }
-	66% { transform: translateY(-8px) translateX(-15px); }
+	0%,
+	100% {
+		transform: translateY(0) translateX(0);
+	}
+	33% {
+		transform: translateY(-20px) translateX(15px);
+	}
+	66% {
+		transform: translateY(-8px) translateX(-15px);
+	}
 }
-.animate-float { animation: float 10s ease-in-out infinite; }
+.animate-float {
+	animation: float 10s ease-in-out infinite;
+}
 </style>

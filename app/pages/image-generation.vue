@@ -42,12 +42,16 @@
 
 						<!-- Precision Particles -->
 						<div class="absolute inset-0 pointer-events-none">
-							<div v-for="i in 8" :key="i" class="absolute size-[1px] bg-[var(--text-primary)]/10 animate-float" :style="{ 
-								top: `${Math.random() * 60 + 20}%`, 
-								left: `${Math.random() * 60 + 20}%`,
-								animationDelay: `${Math.random() * 10}s`,
-								animationDuration: `${Math.random() * 15 + 10}s`
-							}"></div>
+							<div
+								v-for="i in 8"
+								:key="i"
+								class="absolute size-[1px] bg-[var(--text-primary)]/10 animate-float"
+								:style="{
+									top: `${Math.random() * 60 + 20}%`,
+									left: `${Math.random() * 60 + 20}%`,
+									animationDelay: `${Math.random() * 10}s`,
+									animationDuration: `${Math.random() * 15 + 10}s`,
+								}"></div>
 						</div>
 
 						<div class="relative group cursor-default">
@@ -64,12 +68,8 @@
 						</div>
 
 						<div class="text-center mt-14 relative z-10 space-y-3">
-							<h3 class="text-[15px] font-black text-[var(--text-primary)] tracking-[0.25em] uppercase">
-								The Archive of Vision
-							</h3>
-							<p class="text-[var(--text-tertiary)] text-[13.5px] max-w-[320px] px-4 leading-relaxed font-normal tracking-wide italic opacity-80">
-								Every rendered reality finds its place in the Aura collection. Start your first orchestration.
-							</p>
+							<h3 class="text-[15px] font-black text-[var(--text-primary)] tracking-[0.25em] uppercase">The Archive of Vision</h3>
+							<p class="text-[var(--text-tertiary)] text-[13.5px] max-w-[320px] px-4 leading-relaxed font-normal tracking-wide italic opacity-80">Every rendered reality finds its place in the Aura collection. Start your first orchestration.</p>
 						</div>
 
 						<button @click="triggerFocus" class="mt-14 px-12 py-3 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-xl font-black text-[11px] uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all shadow-xl hover:shadow-[var(--shadow-M)] flex items-center gap-4 group/btn">
@@ -83,18 +83,16 @@
 						<!-- Noir Generation Task Cards (Integrated) -->
 						<div v-for="task in activeTasks" :key="task.id" class="break-inside-avoid relative rounded-2xl overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] transition-all duration-700 shadow-2xl group/gen">
 							<!-- Technical Preview Area -->
-							<div class="relative aspect-square flex items-center justify-center overflow-hidden bg-[var(--bg-hover)]">
-								<!-- Subtle Placeholder Background -->
-								<div v-if="!task.imageUrl" class="absolute inset-0 opacity-[0.03] flex items-center justify-center pointer-events-none">
-									<ImageIcon :size="120" stroke-width="0.5" />
-								</div>
-								
+							<div class="relative aspect-square flex items-center justify-center overflow-hidden bg-black">
+								<!-- Premium Placeholder Background -->
+								<img v-if="!task.imageUrl" src="/noir_placeholder.png" class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-luminosity" />
+
 								<!-- Precision Scanner (Theme Aware) -->
-								<div v-if="!task.imageUrl" class="absolute inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-[var(--text-primary)]/20 to-transparent animate-scan-y z-10 pointer-events-none"></div>
+								<div v-if="!task.imageUrl" class="absolute inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/30 to-transparent animate-scan-y z-10 pointer-events-none"></div>
 
 								<!-- Negative-to-Positive Reveal -->
-								<img v-if="task.imageUrl" :src="task.imageUrl" class="w-full h-full object-cover animate-noir-reveal" />
-								
+								<img v-if="task.imageUrl" :src="task.imageUrl" class="w-full h-full object-cover animate-noir-reveal relative z-20" />
+
 								<!-- Industrial Loader (Integrated) -->
 								<div v-else class="flex flex-col items-center gap-8 z-20">
 									<div class="relative size-24 flex items-center justify-center">
@@ -122,12 +120,10 @@
 										<div class="size-1.5 bg-[var(--text-primary)] animate-pulse rounded-full"></div>
 										<span class="text-[10px] font-black text-[var(--text-primary)] tracking-[0.2em] uppercase">SYSTEM_ACTIVE</span>
 									</div>
-									<span v-if="task.usage" class="text-[10px] font-mono text-[var(--text-tertiary)] bg-[var(--fill-tsp-gray-main)] px-2.5 py-1 rounded-[6px] border border-[var(--border-main)]">
-										{{ task.usage.credits }} UNITS
-									</span>
+									<span v-if="task.usage" class="text-[10px] font-mono text-[var(--text-tertiary)] bg-[var(--fill-tsp-gray-main)] px-2.5 py-1 rounded-[6px] border border-[var(--border-main)]"> {{ task.usage.credits }} UNITS </span>
 								</div>
 								<p class="text-[var(--text-secondary)] text-[12.5px] font-normal line-clamp-2 leading-relaxed tracking-wide italic leading-snug">"{{ task.prompt }}"</p>
-								
+
 								<div v-if="task.taskId" class="mt-5 pt-5 border-t border-dashed border-[var(--border-main)] flex items-center justify-between opacity-50">
 									<div class="flex flex-col">
 										<span class="text-[8px] text-[var(--text-tertiary)] uppercase font-black tracking-widest">RECORD_ID</span>
@@ -137,10 +133,23 @@
 							</div>
 						</div>
 
-						<div v-for="(image, index) in generatedImages" :key="index" class="break-inside-avoid group relative rounded-[24px] overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] hover:border-indigo-500/50 transition-all duration-500 shadow-sm hover:shadow-2xl hover:-translate-y-1">
+						<div v-for="(image, index) in filteredGeneratedImages" :key="image.id" class="break-inside-avoid group relative rounded-[24px] overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] hover:border-indigo-500/50 transition-all duration-500 shadow-sm hover:shadow-2xl hover:-translate-y-1">
 							<!-- Image Container with Inner Shadow -->
-							<div class="relative overflow-hidden aspect-auto">
-								<img :src="getRecordPrimaryUrl(image)" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110" />
+							<div class="relative overflow-hidden aspect-auto min-h-[100px] bg-[var(--bg-hover)]">
+								<!-- Image Grid Cell -->
+								<template v-if="image.status === 1">
+									<img :src="image.thumbnail || getRecordPrimaryUrl(image)" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110" />
+								</template>
+								
+								<!-- Processing State in History -->
+								<div v-else class="h-full min-h-[240px] relative flex flex-col items-center justify-center overflow-hidden bg-black/40">
+									<img src="/noir_placeholder.png" class="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay" />
+									<div class="relative z-10 flex flex-col items-center gap-4">
+										<div class="size-10 rounded-full border border-white/10 border-t-white/40 animate-spin"></div>
+										<span class="text-[9px] font-black text-white/40 tracking-[0.3em] uppercase">Synchronizing</span>
+									</div>
+								</div>
+
 								<div class="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-[24px]"></div>
 							</div>
 
@@ -163,6 +172,23 @@
 											{{ formatDate(image.created_at) }}
 										</span>
 									</div>
+									
+									<!-- Technical Metadata (Noir Style) -->
+									<div v-if="getRecordParams(image)" class="flex flex-wrap gap-2 mb-4 opacity-70">
+										<div v-if="getRecordParams(image).aspect_ratio" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
+											{{ getRecordParams(image).aspect_ratio }}
+										</div>
+										<div v-if="getRecordParams(image).resolution" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
+											{{ getRecordParams(image).resolution }}
+										</div>
+										<div v-if="getRecordParams(image).num_inference_steps" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
+											{{ getRecordParams(image).num_inference_steps }} STEPS
+										</div>
+										<div v-if="getRecordParams(image).seed" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
+											SEED: {{ getRecordParams(image).seed }}
+										</div>
+									</div>
+
 									<p class="text-white text-[13px] font-medium mb-4 line-clamp-3 leading-relaxed italic">"{{ getRecordPrompt(image) || 'No description' }}"</p>
 									<button @click.stop="useExample(getRecordPrompt(image))" class="w-full py-2.5 bg-white text-black rounded-xl font-bold text-[12px] hover:bg-indigo-50 transition-colors shadow-xl flex items-center justify-center gap-2 group/reuse">
 										<Zap :size="14" fill="currentColor" class="text-indigo-600 group-hover/reuse:animate-pulse" />
@@ -194,7 +220,7 @@
 							<div class="absolute inset-0 bg-indigo-500/10 rounded-full animate-ping"></div>
 							<Loader2 :size="20" class="animate-spin text-[var(--text-primary)]" />
 						</div>
-						
+
 						<div class="flex flex-col pr-4">
 							<span class="text-[10px] font-black text-[var(--text-primary)] tracking-[0.2em] uppercase opacity-40">System Monitor</span>
 							<span class="text-[11px] font-bold text-[var(--text-primary)]">{{ activeTasks.length }} Active Processing</span>
@@ -371,10 +397,10 @@
 						</div>
 
 						<!-- Generate Button -->
-							<button @click="generateImage" :disabled="!prompt.trim()" class="flex items-center justify-center shrink-0 w-10 h-10 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] hover:opacity-90 transition-all disabled:opacity-50 disabled:pointer-events-none self-end relative">
-								<Sparkles v-if="!isGenerating" :size="18" fill="currentColor" />
-								<Loader2 v-else :size="18" class="animate-spin" />
-							</button>
+						<button @click="generateImage" :disabled="!prompt.trim()" class="flex items-center justify-center shrink-0 w-10 h-10 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] hover:opacity-90 transition-all disabled:opacity-50 disabled:pointer-events-none self-end relative">
+							<Sparkles v-if="!isGenerating" :size="18" fill="currentColor" />
+							<Loader2 v-else :size="18" class="animate-spin" />
+						</button>
 					</div>
 
 					<!-- Hidden File Input -->
@@ -391,7 +417,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { Link2, ImagePlus, Palette, Square, Gem, Sparkle, Paperclip, Zap, Loader2, Monitor, X, Image as ImageIcon, Download, ChevronDown, LayoutGrid, Sparkles, Plus } from 'lucide-vue-next'
-import { getModels, generateImageStream, getAsyncTaskOutputs, uploadFile, getRecordPrompt, getRecordPrimaryUrl, getRecordModel, type AIModel, type AsyncTaskRecord } from '@/utils/api'
+import { getModels, generateImageStream, getAsyncTaskOutputs, uploadFile, getRecordPrompt, getRecordPrimaryUrl, getRecordModel, getRecordParams, type AIModel, type AsyncTaskRecord } from '@/utils/api'
 
 const activeTab = ref<'inspiration' | 'creations'>('inspiration')
 const prompt = ref('')
@@ -496,10 +522,14 @@ const onAssetsSelected = (assets: Array<{ key: string; url: string }>) => {
 const categories = ['All', 'Trending', 'Sci-Fi', 'Nature', 'Portrait', 'Abstract']
 
 const generatedImages = ref<AsyncTaskRecord[]>([])
+const filteredGeneratedImages = computed(() => {
+	const activeIds = new Set(activeTasks.value.map((t) => t.taskId).filter(Boolean))
+	return generatedImages.value.filter((img) => !activeIds.has(img.provider_task_id))
+})
 
 const fetchHistory = async () => {
 	try {
-		const res = await getAsyncTaskOutputs({ capability: 'image_generation', page_size: 50 })
+		const res = await getAsyncTaskOutputs({ capability: 'image', page_size: 50 })
 		if (res.data && res.data.list) {
 			generatedImages.value = res.data.list
 		}
@@ -673,28 +703,28 @@ const removeImage = (index: number) => {
 
 const generateImage = async () => {
 	if (!prompt.value.trim() || !selectedModel.value) return
-	
+
 	const currentPrompt = prompt.value
 	prompt.value = ''
 	if (inputRef.value) inputRef.value.innerText = ''
-	
+
 	const tempId = Math.random().toString(36).substring(7)
 	const newTask = reactive<ActiveTask>({
 		id: tempId,
 		prompt: currentPrompt,
 		progress: 0,
-		status: 'Preparing request...'
+		status: 'Preparing request...',
 	})
-	
+
 	const sessionTaskIds = [tempId]
 	activeTasks.value.unshift(newTask)
-	
+
 	const payload: { prompt: string; model: string; mode?: string; [key: string]: any } = {
 		model: `${selectedModel.value.provider}:${selectedModel.value.model}`,
 		...dynamicParams.value,
 		prompt: currentPrompt,
 	}
-	
+
 	const readyImages = uploadedImages.value.filter((i) => !i.uploading && i.url)
 	if ('input_images' in modelInputFields.value && readyImages.length > 0) {
 		payload.input_images = readyImages.map((i) => i.url)
@@ -706,7 +736,7 @@ const generateImage = async () => {
 		onProgress: (percent, message) => {
 			newTask.progress = percent
 			newTask.status = percent > 0 ? `Generating... ${percent}%` : 'Processing...'
-			
+
 			// Detect base64 preview in message
 			if (message && message.startsWith('data:image')) {
 				newTask.imageUrl = message
@@ -731,7 +761,7 @@ const generateImage = async () => {
 					...newTask,
 					id: newId,
 					imageUrl: data.url,
-					status: 'Image ready!'
+					status: 'Image ready!',
 				})
 				activeTasks.value.unshift(additionalTask)
 			} else {
@@ -742,14 +772,14 @@ const generateImage = async () => {
 		onDone: async () => {
 			newTask.progress = 100
 			newTask.status = 'Generation complete!'
-			
+
 			// Refresh history to get the real asset
 			await fetchHistory()
-			
+
 			// Small delay to let the transition happen smoothly
 			setTimeout(() => {
-				sessionTaskIds.forEach(id => {
-					const index = activeTasks.value.findIndex(t => t.id === id)
+				sessionTaskIds.forEach((id) => {
+					const index = activeTasks.value.findIndex((t) => t.id === id)
 					if (index !== -1) activeTasks.value.splice(index, 1)
 				})
 				activeTab.value = 'creations'
@@ -759,7 +789,7 @@ const generateImage = async () => {
 			console.error('Generation error:', error)
 			newTask.status = 'Error occurred'
 			setTimeout(() => {
-				const index = activeTasks.value.findIndex(t => t.id === tempId)
+				const index = activeTasks.value.findIndex((t) => t.id === tempId)
 				if (index !== -1) activeTasks.value.splice(index, 1)
 			}, 3000)
 		},
@@ -912,25 +942,58 @@ textarea::placeholder {
 }
 
 @keyframes scan-y {
-	0% { top: 0; opacity: 0; }
-	10% { opacity: 1; }
-	90% { opacity: 1; }
-	100% { top: 100%; opacity: 0; }
+	0% {
+		top: 0;
+		opacity: 0;
+	}
+	10% {
+		opacity: 1;
+	}
+	90% {
+		opacity: 1;
+	}
+	100% {
+		top: 100%;
+		opacity: 0;
+	}
 }
-.animate-scan-y { animation: scan-y 3s linear infinite; }
+.animate-scan-y {
+	animation: scan-y 3s linear infinite;
+}
 
 @keyframes noir-reveal {
-	0% { filter: brightness(0) contrast(200%) blur(10px); opacity: 0; transform: scale(1.05); }
-	50% { filter: brightness(1.5) contrast(150%) blur(5px); opacity: 0.8; }
-	100% { filter: brightness(1) contrast(100%) blur(0); opacity: 1; transform: scale(1); }
+	0% {
+		filter: brightness(0) contrast(200%) blur(10px);
+		opacity: 0;
+		transform: scale(1.05);
+	}
+	50% {
+		filter: brightness(1.5) contrast(150%) blur(5px);
+		opacity: 0.8;
+	}
+	100% {
+		filter: brightness(1) contrast(100%) blur(0);
+		opacity: 1;
+		transform: scale(1);
+	}
 }
-.animate-noir-reveal { animation: noir-reveal 1.5s cubic-bezier(0.19, 1, 0.22, 1) forwards; }
+.animate-noir-reveal {
+	animation: noir-reveal 1.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
 
 @keyframes ping-slow {
-	0% { transform: scale(1); opacity: 0.3; }
-	100% { transform: scale(1.5); opacity: 0; }
+	0% {
+		transform: scale(1);
+		opacity: 0.3;
+	}
+	100% {
+		transform: scale(1.5);
+		opacity: 0;
+	}
 }
-.animate-ping-slow { animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite; }
+.animate-ping-slow {
+	animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
 
 .bg-mesh {
 	background: radial-gradient(circle at 50% 50%, var(--bg-hover) 0%, var(--bg-main) 100%);
@@ -950,9 +1013,16 @@ textarea::placeholder {
 }
 
 @keyframes float {
-	0%, 100% { transform: translateY(0) translateX(0); }
-	33% { transform: translateY(-15px) translateX(10px); }
-	66% { transform: translateY(-5px) translateX(-10px); }
+	0%,
+	100% {
+		transform: translateY(0) translateX(0);
+	}
+	33% {
+		transform: translateY(-15px) translateX(10px);
+	}
+	66% {
+		transform: translateY(-5px) translateX(-10px);
+	}
 }
 
 .animate-float {

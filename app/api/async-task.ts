@@ -90,34 +90,42 @@ export const likeAsyncTaskRecord = (id: number, action: 'like' | 'unlike') => {
 // ---- Helper: parse task record fields ----
 
 export const getRecordPrompt = (record: AsyncTaskRecord): string => {
-  try {
-    const params = JSON.parse(record.task_params_json || '{}')
-    return params.prompt || ''
-  } catch {
-    return ''
-  }
+	const params = getRecordParams(record)
+	return params.prompt || ''
 }
 
-export const getRecordOutputs = (record: AsyncTaskRecord): Array<{ type: string; url: string }> => {
-  try {
-    return JSON.parse(record.task_output_json || '[]')
-  } catch {
-    return []
-  }
+export const getRecordOutputs = (record: AsyncTaskRecord): any[] => {
+	try {
+		const outputs = JSON.parse(record.task_output_json || '[]')
+		return Array.isArray(outputs) ? outputs : [outputs]
+	} catch {
+		return []
+	}
 }
 
 export const getRecordPrimaryUrl = (record: AsyncTaskRecord): string => {
-  const outputs = getRecordOutputs(record)
-  return outputs[0]?.url || record.thumbnail || ''
+	const outputs = getRecordOutputs(record)
+	if (outputs.length === 0) return record.thumbnail || ''
+	
+	const first = outputs[0]
+	if (typeof first === 'string') return first
+	if (first && typeof first === 'object') {
+		return first.url || first.file_url || first.thumbnail || record.thumbnail || ''
+	}
+	return record.thumbnail || ''
+}
+
+export const getRecordParams = (record: AsyncTaskRecord): Record<string, any> => {
+	try {
+		return JSON.parse(record.task_params_json || '{}')
+	} catch {
+		return {}
+	}
 }
 
 export const getRecordModel = (record: AsyncTaskRecord): string => {
-  try {
-    const params = JSON.parse(record.task_params_json || '{}')
-    return params.model || ''
-  } catch {
-    return ''
-  }
+	const params = getRecordParams(record)
+	return params.model || ''
 }
 
 // Keep old interface name as alias for backwards compat
