@@ -5,116 +5,84 @@
 			<div id="chat-home-view-container" class="w-full max-w-full sm:max-w-[768px] sm:min-w-[390px] mx-auto">
 				<div class="relative w-full flex flex-col items-center gap-[40px]">
 					<!-- Title using conditional text -->
-					<h1 class="text-[var(--text-primary)] text-center w-full font-serif text-[36px] mb-[34px] tracking-tight animate-fade-in-up"
-						style="animation-delay: 0.2s; animation-fill-mode: forwards">
-						<span v-if="activeTool && activeTool !== 'website'" class="opacity-0">{{
-							$t('chat.welcome_title') }}</span>
+					<h1 class="text-[var(--text-primary)] text-center w-full font-serif text-[36px] mb-[34px] tracking-tight animate-fade-in-up" style="animation-delay: 0.2s; animation-fill-mode: forwards">
+						<span v-if="activeTool && activeTool !== 'website'" class="opacity-0">{{ $t('chat.welcome_title') }}</span>
 						<span v-else>{{ $t('chat.welcome_title') }}</span>
 					</h1>
 				</div>
 
 				<!-- Input Card Area -->
-				<div class="flex flex-col gap-1 w-full animate-fade-in-up"
-					style="animation-delay: 0.3s; animation-fill-mode: forwards">
+				<div class="flex flex-col gap-1 w-full animate-fade-in-up" style="animation-delay: 0.3s; animation-fill-mode: forwards">
 					<div class="flex flex-col w-full">
 						<div class="relative bg-[var(--fill-tsp-gray-main)] rounded-[22px]">
 							<!-- Main Input Box with dynamic padding if tool is active -->
-							<div
-								class="flex flex-col gap-3 rounded-[22px] relative bg-[var(--fill-input-chat)] py-3 w-full z-[20] shadow-[0px_12px_32px_0px_rgba(0,0,0,0.02)] border border-black/5 dark:border-[var(--border-main)] focus-within:border-black/10 transition-all duration-300">
+							<div class="flex flex-col gap-3 rounded-[22px] relative bg-[var(--fill-input-chat)] py-3 w-full z-[20] shadow-[0px_12px_32px_0px_rgba(0,0,0,0.02)] border border-black/5 dark:border-[var(--border-main)] focus-within:border-black/10 transition-all duration-300">
 								<!-- Text Area -->
-								<div
-									class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[50px] max-h-[216px]">
+								<div class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[50px] max-h-[216px]">
 									<TiptapEditorContent :editor="editor" class="w-full" />
 								</div>
 
 								<!-- Uploaded Files Preview -->
 								<div v-if="uploadedFiles.length > 0" class="flex flex-wrap gap-2 px-4 pb-2">
-									<div v-for="(file, index) in uploadedFiles" :key="index"
-										class="relative group/file flex items-center gap-2 border border-[var(--border-main)] bg-[var(--bg-main)]/50 rounded-xl pr-2 pl-1 py-1 max-w-[200px] shadow-sm">
+									<div v-for="(file, index) in uploadedFiles" :key="index" class="relative group/file flex items-center gap-2 border border-[var(--border-main)] bg-[var(--bg-main)]/50 rounded-xl pr-2 pl-1 py-1 max-w-[200px] shadow-sm">
 										<!-- Preview for images -->
-										<img v-if="file.type.startsWith('image/')" :src="file.url"
-											class="w-8 h-8 rounded-lg object-cover bg-black/5" />
+										<img v-if="file.type.startsWith('image/')" :src="file.url" class="w-8 h-8 rounded-lg object-cover bg-black/5" />
 										<!-- Icon for other files -->
-										<div v-else
-											class="w-8 h-8 rounded-lg bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[var(--text-secondary)]">
+										<div v-else class="w-8 h-8 rounded-lg bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[var(--text-secondary)]">
 											<FileText :size="16" />
 										</div>
 										<div class="flex flex-col min-w-0 flex-1">
-											<span class="text-[12px] font-medium text-[var(--text-primary)] truncate"
-												:title="file.name">{{ file.name }}</span>
+											<span class="text-[12px] font-medium text-[var(--text-primary)] truncate" :title="file.name">{{ file.name }}</span>
 										</div>
 										<!-- Remove Button -->
-										<button @click="removeFile(index)"
-											class="absolute -top-1.5 -right-1.5 size-5 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover/file:opacity-100 transition-opacity">
+										<button @click="removeFile(index)" class="absolute -top-1.5 -right-1.5 size-5 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover/file:opacity-100 transition-opacity">
 											<X :size="10" stroke-width="3" />
 										</button>
 									</div>
-									<div v-if="isUploading"
-										class="flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--fill-tsp-gray-main)] border border-[var(--border-main)] animate-pulse">
+									<div v-if="isUploading" class="flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--fill-tsp-gray-main)] border border-[var(--border-main)] animate-pulse">
 										<Loader2 :size="16" class="animate-spin text-[var(--text-secondary)]" />
 									</div>
 								</div>
 
-								<input type="file" ref="fileInputRef" class="hidden" multiple
-									@change="handleFileUpload" />
+								<input type="file" ref="fileInputRef" class="hidden" multiple @change="handleFileUpload" />
 
 								<!-- Toolbar -->
 								<div class="px-3">
 									<div class="flex gap-2 items-center">
-										<div ref="mediaToolbarRef"
-											class="flex gap-1.5 items-center flex-shrink min-w-0 no-scrollbar"
-											:class="openMediaDropdown ? 'overflow-visible' : 'overflow-x-auto'">
+										<div ref="mediaToolbarRef" class="flex gap-1.5 items-center flex-shrink min-w-0 no-scrollbar" :class="openMediaDropdown ? 'overflow-visible' : 'overflow-x-auto'">
 											<!-- Plus -->
 											<Tooltip v-if="supportsFileUpload" :text="$t('chat.add_attachment')">
-												<button @click="triggerFileUpload" :disabled="isUploading"
-													class="rounded-full border border-[var(--border-main)] inline-flex items-center justify-center gap-1 clickable cursor-pointer text-xs text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-gray-main)] disabled:opacity-50 disabled:cursor-not-allowed w-8 h-8 p-0 shrink-0 transition-colors">
+												<button @click="triggerFileUpload" :disabled="isUploading" class="rounded-full border border-[var(--border-main)] inline-flex items-center justify-center gap-1 clickable cursor-pointer text-xs text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-gray-main)] disabled:opacity-50 disabled:cursor-not-allowed w-8 h-8 p-0 shrink-0 transition-colors">
 													<Plus :size="18" />
 												</button>
 											</Tooltip>
 
 											<!-- Browser/Globe Icon Pill Popover -->
-											<Popover v-if="!activeTool && supportsWebSearch && !isMediaModel"
-												class="relative" v-slot="{ open }">
+											<Popover v-if="!activeTool && supportsWebSearch && !isMediaModel" class="relative" v-slot="{ open }">
 												<Tooltip :text="$t('chat.browse_web')">
-													<PopoverButton
-														class="flex items-center gap-[4px] p-[6px] px-[8px] cursor-pointer rounded-[100px] border border-[var(--border-main)] transition-colors relative"
-														:class="{ 'bg-[var(--fill-tsp-gray-main)]': open || isWebSearchEnabled, 'hover:bg-[var(--fill-tsp-gray-main)]': !open }">
+													<PopoverButton class="flex items-center gap-[4px] p-[6px] px-[8px] cursor-pointer rounded-[100px] border border-[var(--border-main)] transition-colors relative" :class="{ 'bg-[var(--fill-tsp-gray-main)]': open || isWebSearchEnabled, 'hover:bg-[var(--fill-tsp-gray-main)]': !open }">
 														<Globe :size="16" class="text-[var(--text-secondary)]" />
-														<span
-															class="text-[12px] text-[var(--text-secondary)] font-medium">{{
-																$t('chat.my_browser') }}</span>
-														<div v-if="isWebSearchEnabled"
-															class="absolute top-0 right-0 -mr-1 w-2 h-2 bg-[var(--text-primary)] rounded-full border-[1.5px] border-[var(--bg-main)]">
-														</div>
+														<span class="text-[12px] text-[var(--text-secondary)] font-medium">{{ $t('chat.my_browser') }}</span>
+														<div v-if="isWebSearchEnabled" class="absolute top-0 right-0 -mr-1 w-2 h-2 bg-[var(--text-primary)] rounded-full border-[1.5px] border-[var(--bg-main)]"></div>
 													</PopoverButton>
 												</Tooltip>
-												<Transition enter-active-class="transition duration-150 ease-out"
-													enter-from-class="translate-y-1.5 opacity-0 scale-[0.98]"
-													enter-to-class="translate-y-0 opacity-100 scale-100"
-													leave-active-class="transition duration-100 ease-in"
-													leave-from-class="translate-y-0 opacity-100"
-													leave-to-class="translate-y-1.5 opacity-0">
-													<PopoverPanel
-														class="absolute bottom-full left-0 mb-3 z-50 w-[300px] max-w-[calc(100vw-2rem)] bg-[var(--bg-main)] rounded-2xl shadow-lg border border-[var(--border-light)] p-4 cursor-default text-left">
-														<div
-															class="text-[14px] font-semibold text-[var(--text-primary)] mb-3">
-															{{ $t('chat.web_search') }}</div>
+												<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1.5 opacity-0 scale-[0.98]" enter-to-class="translate-y-0 opacity-100 scale-100" leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1.5 opacity-0">
+													<PopoverPanel class="absolute bottom-full left-0 mb-3 z-50 w-[300px] max-w-[calc(100vw-2rem)] bg-[var(--bg-main)] rounded-2xl shadow-lg border border-[var(--border-light)] p-4 cursor-default text-left">
+														<div class="text-[14px] font-semibold text-[var(--text-primary)] mb-3">
+															{{ $t('chat.web_search') }}
+														</div>
 														<div class="h-[1px] bg-[var(--border-light)] -mx-4 mb-3"></div>
 														<div class="flex items-start justify-between">
 															<div class="pr-4">
-																<div
-																	class="text-[13px] font-medium text-[var(--text-primary)]">
-																	{{ $t('chat.enable_web_search') }}</div>
-																<div
-																	class="text-[12px] text-[var(--text-tertiary)] leading-relaxed mt-0.5 whitespace-normal">
-																	{{ $t('chat.enable_web_search_desc') }}</div>
+																<div class="text-[13px] font-medium text-[var(--text-primary)]">
+																	{{ $t('chat.enable_web_search') }}
+																</div>
+																<div class="text-[12px] text-[var(--text-tertiary)] leading-relaxed mt-0.5 whitespace-normal">
+																	{{ $t('chat.enable_web_search_desc') }}
+																</div>
 															</div>
-															<Switch v-model="isWebSearchEnabled"
-																:class="isWebSearchEnabled ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'"
-																class="relative inline-flex h-5 w-[36px] shrink-0 items-center rounded-full transition-colors focus:outline-none mt-1">
-																<span
-																	:class="isWebSearchEnabled ? 'translate-x-[18px]' : 'translate-x-0.5'"
-																	class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm" />
+															<Switch v-model="isWebSearchEnabled" :class="isWebSearchEnabled ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'" class="relative inline-flex h-5 w-[36px] shrink-0 items-center rounded-full transition-colors focus:outline-none mt-1">
+																<span :class="isWebSearchEnabled ? 'translate-x-[18px]' : 'translate-x-0.5'" class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm" />
 															</Switch>
 														</div>
 													</PopoverPanel>
@@ -122,64 +90,42 @@
 											</Popover>
 
 											<!-- Tool Pill (Active Mode) -->
-											<div v-if="activeTool"
-												class="flex items-center gap-[6px] pl-[10px] pr-[12px] py-[6px] cursor-pointer rounded-full bg-[var(--fill-blue)] text-[var(--text-blue)] border border-[var(--text-blue)]/20 transition-colors group">
+											<div v-if="activeTool" class="flex items-center gap-[6px] pl-[10px] pr-[12px] py-[6px] cursor-pointer rounded-full bg-[var(--fill-blue)] text-[var(--text-blue)] border border-[var(--text-blue)]/20 transition-colors group">
 												<Tooltip :text="$t('chat.remove_tool')">
-													<button @click.stop="activeTool = null"
-														class="hover:bg-[var(--text-blue)]/10 rounded-full p-0.5 transition-colors">
+													<button @click.stop="activeTool = null" class="hover:bg-[var(--text-blue)]/10 rounded-full p-0.5 transition-colors">
 														<X :size="14" />
 													</button>
 												</Tooltip>
 												<div class="flex items-center gap-1">
-													<component :is="currentTool?.icon" v-if="currentTool?.icon"
-														:size="14" />
+													<component :is="currentTool?.icon" v-if="currentTool?.icon" :size="14" />
 													<!-- Special case for Slides if icon is null in config -->
-													<svg v-else-if="activeTool === 'slides'"
-														xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-														fill="none" class="w-3.5 h-3.5" stroke="currentColor"
-														stroke-width="2">
-														<path
-															d="M6.99976 5.9974V4.26406C6.99976 3.38041 7.7161 2.66406 8.59976 2.66406H15.3998C16.2834 2.66406 16.9998 3.38041 16.9998 4.26406V5.9974"
-															stroke-linecap="round" stroke-linejoin="round" />
-														<path
-															d="M5.00024 10V8C5.00024 6.89543 5.89567 6 7.00024 6H17.0002C18.1048 6 19.0002 6.89543 19.0002 8V10"
-															stroke-linecap="round" stroke-linejoin="round" />
-														<path
-															d="M19 10H5C3.89543 10 3 10.8954 3 12V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V12C21 10.8954 20.1046 10 19 10Z"
-															stroke-linecap="round" stroke-linejoin="round" />
+													<svg v-else-if="activeTool === 'slides'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="w-3.5 h-3.5" stroke="currentColor" stroke-width="2">
+														<path d="M6.99976 5.9974V4.26406C6.99976 3.38041 7.7161 2.66406 8.59976 2.66406H15.3998C16.2834 2.66406 16.9998 3.38041 16.9998 4.26406V5.9974" stroke-linecap="round" stroke-linejoin="round" />
+														<path d="M5.00024 10V8C5.00024 6.89543 5.89567 6 7.00024 6H17.0002C18.1048 6 19.0002 6.89543 19.0002 8V10" stroke-linecap="round" stroke-linejoin="round" />
+														<path d="M19 10H5C3.89543 10 3 10.8954 3 12V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V12C21 10.8954 20.1046 10 19 10Z" stroke-linecap="round" stroke-linejoin="round" />
 													</svg>
-													<span class="text-[13px] font-medium leading-none pb-[1px]">{{
-														currentTool?.name }}</span>
-													<span v-if="activeTool === 'app'"
-														class="ml-1 text-[11px] text-blue-400 font-normal">Beta</span>
+													<span class="text-[13px] font-medium leading-none pb-[1px]">{{ currentTool?.name }}</span>
+													<span v-if="activeTool === 'app'" class="ml-1 text-[11px] text-blue-400 font-normal">Beta</span>
 												</div>
 											</div>
 
 											<!-- Media generation dynamic tool pills -->
 											<template v-if="isMediaModel && !activeTool">
-												<div v-for="field in dynamicSelectFields" :key="field.key"
-													class="relative">
-
+												<div v-for="field in dynamicSelectFields" :key="field.key" class="relative">
 													<!-- Aspect Ratio -->
 													<template v-if="field.key === 'aspect_ratio'">
 														<!-- Image style -->
 														<template v-if="isImageModel">
-															<button
-																@click="openMediaDropdown = openMediaDropdown === field.key ? null : field.key"
-																class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
-																:class="openMediaDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
-																<Square :size="16"
-																	class="text-[var(--text-secondary)]" />
-																<span
-																	class="text-[13px] font-medium text-[var(--text-primary)]">{{
-																		dynamicParams[field.key] }}</span>
+															<button @click="openMediaDropdown = openMediaDropdown === field.key ? null : field.key" class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="openMediaDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+																<Square :size="16" class="text-[var(--text-secondary)]" />
+																<span class="text-[13px] font-medium text-[var(--text-primary)]">{{ dynamicParams[field.key] }}</span>
 															</button>
-															<div v-if="openMediaDropdown === field.key"
-																class="absolute bottom-full left-0 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-6 z-[60] flex gap-8 items-center min-w-max"
-																style="background-color: var(--bg-main);">
+															<div v-if="openMediaDropdown === field.key" class="absolute bottom-full left-0 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-6 z-[60] flex gap-8 items-center min-w-max" style="background-color: var(--bg-main)">
 																<!-- Left: Ratio Buttons Grid -->
 																<div class="flex flex-wrap gap-2 w-[280px]">
-																	<button v-for="r in field.options" :key="r"
+																	<button
+																		v-for="r in field.options"
+																		:key="r"
 																		@click="dynamicParams[field.key] = r"
 																		class="px-3 py-2 rounded-xl text-[13px] font-bold border transition-all min-w-[64px] flex-1 text-center"
 																		:class="dynamicParams[field.key] === r ? 'bg-[var(--text-primary)] border-[var(--text-primary)] text-[var(--bg-main)] shadow-sm scale-[1.02]' : 'bg-transparent text-[var(--text-primary)] border-[var(--border-main)] hover:border-[var(--text-primary)]/20 hover:bg-[var(--bg-hover)]'">
@@ -187,29 +133,16 @@
 																	</button>
 																</div>
 																<!-- Right: Visual Preview -->
-																<div
-																	class="relative flex items-center justify-center w-[160px] h-[160px] bg-transparent shrink-0">
-																	<div class="relative bg-[var(--fill-tsp-gray-main)] rounded-xl border border-[var(--border-main)] transition-all duration-300 flex items-center justify-center overflow-hidden shadow-inner"
-																		:style="getPreviewStyle(dynamicParams[field.key])">
-																		<div
-																			class="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none">
-																			<div v-for="i in 9" :key="i"
-																				class="border-[0.5px] border-[var(--border-main)] opacity-50">
-																			</div>
+																<div class="relative flex items-center justify-center w-[160px] h-[160px] bg-transparent shrink-0">
+																	<div class="relative bg-[var(--fill-tsp-gray-main)] rounded-xl border border-[var(--border-main)] transition-all duration-300 flex items-center justify-center overflow-hidden shadow-inner" :style="getPreviewStyle(dynamicParams[field.key])">
+																		<div class="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none">
+																			<div v-for="i in 9" :key="i" class="border-[0.5px] border-[var(--border-main)] opacity-50"></div>
 																		</div>
 																	</div>
-																	<div
-																		class="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-[var(--text-tertiary)] rounded-full">
-																	</div>
-																	<div
-																		class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-[var(--text-tertiary)] rounded-full">
-																	</div>
-																	<div
-																		class="absolute top-1/2 -left-1 -translate-y-1/2 w-1 h-3 bg-[var(--text-tertiary)] rounded-full">
-																	</div>
-																	<div
-																		class="absolute top-1/2 -right-1 -translate-y-1/2 w-1 h-3 bg-[var(--text-tertiary)] rounded-full">
-																	</div>
+																	<div class="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-[var(--text-tertiary)] rounded-full"></div>
+																	<div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-[var(--text-tertiary)] rounded-full"></div>
+																	<div class="absolute top-1/2 -left-1 -translate-y-1/2 w-1 h-3 bg-[var(--text-tertiary)] rounded-full"></div>
+																	<div class="absolute top-1/2 -right-1 -translate-y-1/2 w-1 h-3 bg-[var(--text-tertiary)] rounded-full"></div>
 																</div>
 															</div>
 														</template>
@@ -219,42 +152,19 @@
 																@click="openMediaDropdown = openMediaDropdown === field.key ? null : field.key"
 																class="inline-flex h-[30px] shrink-0 items-center justify-center gap-2 rounded-full px-4 py-1.5 font-medium whitespace-nowrap cursor-pointer bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
 																:class="openMediaDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'">
-																<div v-if="String(dynamicParams[field.key]).startsWith('16:') || String(dynamicParams[field.key]).startsWith('21:') || !dynamicParams[field.key]"
-																	class="w-4 h-2.5 border-[2px] border-current rounded-[2px]">
-																</div>
-																<div v-else-if="String(dynamicParams[field.key]).startsWith('1:')"
-																	class="w-3.5 h-3.5 border-[2px] border-current rounded-[2px]">
-																</div>
-																<div v-else
-																	class="w-2.5 h-4 border-[2px] border-current rounded-[2px]">
-																</div>
+																<div v-if="String(dynamicParams[field.key]).startsWith('16:') || String(dynamicParams[field.key]).startsWith('21:') || !dynamicParams[field.key]" class="w-4 h-2.5 border-[2px] border-current rounded-[2px]"></div>
+																<div v-else-if="String(dynamicParams[field.key]).startsWith('1:')" class="w-3.5 h-3.5 border-[2px] border-current rounded-[2px]"></div>
+																<div v-else class="w-2.5 h-4 border-[2px] border-current rounded-[2px]"></div>
 															</button>
-															<div v-if="openMediaDropdown === field.key"
-																class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-3 z-[60] flex flex-col gap-3"
-																style="background-color: var(--bg-main);">
-																<span
-																	class="text-[var(--text-primary)] px-2 font-medium text-[13px] text-center pt-1">Aspect
-																	Ratio</span>
-																<div
-																	class="flex gap-2 min-w-[max-content] pb-1 overflow-x-auto no-scrollbar">
-																	<button v-for="opt in field.options" :key="opt"
-																		@click="dynamicParams[field.key] = opt; openMediaDropdown = null"
-																		class="flex flex-col items-center justify-center gap-3 w-[84px] h-[84px] rounded-[16px] transition-colors"
-																		:class="dynamicParams[field.key] === opt ? 'bg-[var(--fill-tsp-gray-main)]' : 'bg-transparent hover:bg-[var(--bg-hover)]'">
-																		<div v-if="String(opt).startsWith('16:') || String(opt).startsWith('21:') || String(opt).startsWith('3:2')"
-																			class="w-[28px] h-[18px] border-[2.5px] border-[var(--text-primary)] rounded-[4px]">
-																		</div>
-																		<div v-else-if="String(opt).startsWith('9:16') || String(opt).startsWith('3:4') || String(opt).startsWith('4:5')"
-																			class="w-[16px] h-[26px] border-[2.5px] border-[var(--text-primary)] rounded-[4px]">
-																		</div>
-																		<div v-else
-																			class="w-[24px] h-[24px] border-[2.5px] border-[var(--text-primary)] rounded-[4px]">
-																		</div>
-																		<span
-																			class="text-[12px] font-medium text-[var(--text-primary)] whitespace-nowrap">
-																			{{ opt === '16:9' ? 'Landscape' : opt ===
-																				'9:16' ? 'Portrait' : opt === '1:1' ?
-																				'Square' : opt }}
+															<div v-if="openMediaDropdown === field.key" class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-3 z-[60] flex flex-col gap-3" style="background-color: var(--bg-main)">
+																<span class="text-[var(--text-primary)] px-2 font-medium text-[13px] text-center pt-1">Aspect Ratio</span>
+																<div class="flex gap-2 min-w-[max-content] pb-1 overflow-x-auto no-scrollbar">
+																	<button v-for="opt in field.options" :key="opt" @click="setMediaParamAndClose(field.key, opt)" class="flex flex-col items-center justify-center gap-3 w-[84px] h-[84px] rounded-[16px] transition-colors" :class="dynamicParams[field.key] === opt ? 'bg-[var(--fill-tsp-gray-main)]' : 'bg-transparent hover:bg-[var(--bg-hover)]'">
+																		<div v-if="String(opt).startsWith('16:') || String(opt).startsWith('21:') || String(opt).startsWith('3:2')" class="w-[28px] h-[18px] border-[2.5px] border-[var(--text-primary)] rounded-[4px]"></div>
+																		<div v-else-if="String(opt).startsWith('9:16') || String(opt).startsWith('3:4') || String(opt).startsWith('4:5')" class="w-[16px] h-[26px] border-[2.5px] border-[var(--text-primary)] rounded-[4px]"></div>
+																		<div v-else class="w-[24px] h-[24px] border-[2.5px] border-[var(--text-primary)] rounded-[4px]"></div>
+																		<span class="text-[12px] font-medium text-[var(--text-primary)] whitespace-nowrap">
+																			{{ opt === '16:9' ? 'Landscape' : opt === '9:16' ? 'Portrait' : opt === '1:1' ? 'Square' : opt }}
 																		</span>
 																	</button>
 																</div>
@@ -268,33 +178,19 @@
 															@click="openMediaDropdown = openMediaDropdown === field.key ? null : field.key"
 															class="inline-flex h-[30px] shrink-0 items-center justify-center gap-1.5 rounded-full px-4 py-1.5 font-medium whitespace-nowrap cursor-pointer bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
 															:class="openMediaDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'">
-															<Clock :size="14"
-																class="text-[var(--text-secondary)] opacity-80" />
+															<Clock :size="14" class="text-[var(--text-secondary)] opacity-80" />
 															{{ dynamicParams[field.key] }}s
 														</button>
-														<div v-if="openMediaDropdown === field.key"
-															class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-4 z-[60] min-w-[170px] flex flex-col gap-3"
-															style="background-color: var(--bg-main);">
-															<span
-																class="text-[var(--text-tertiary)] font-medium text-[12px] text-center pt-1">Duration</span>
-															<div
-																class="flex flex-col gap-1 max-h-[200px] overflow-y-auto no-scrollbar">
-																<button v-for="opt in field.options" :key="opt"
-																	@click="dynamicParams[field.key] = opt; openMediaDropdown = null"
-																	class="w-full flex items-center justify-between gap-4 py-2.5 px-3 rounded-2xl hover:bg-[var(--bg-hover)] transition-colors">
-																	<span
-																		class="text-[14px] font-bold text-black dark:text-white">{{
-																			opt }}s</span>
+														<div v-if="openMediaDropdown === field.key" class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-4 z-[60] min-w-[170px] flex flex-col gap-3" style="background-color: var(--bg-main)">
+															<span class="text-[var(--text-tertiary)] font-medium text-[12px] text-center pt-1">Duration</span>
+															<div class="flex flex-col gap-1 max-h-[200px] overflow-y-auto no-scrollbar">
+																<button v-for="opt in field.options" :key="opt" @click="setMediaParamAndClose(field.key, opt)" class="w-full flex items-center justify-between gap-4 py-2.5 px-3 rounded-2xl hover:bg-[var(--bg-hover)] transition-colors">
+																	<span class="text-[14px] font-bold text-black dark:text-white">{{ opt }}s</span>
 																	<div class="flex items-center justify-center">
-																		<div v-if="dynamicParams[field.key] === opt"
-																			class="w-5 h-5 rounded-full bg-black dark:bg-white flex items-center justify-center">
-																			<Check :size="12"
-																				class="text-white dark:text-black"
-																				stroke-width="4" />
+																		<div v-if="dynamicParams[field.key] === opt" class="w-5 h-5 rounded-full bg-black dark:bg-white flex items-center justify-center">
+																			<Check :size="12" class="text-white dark:text-black" stroke-width="4" />
 																		</div>
-																		<div v-else
-																			class="w-5 h-5 rounded-full border-[2.5px] border-black dark:border-white">
-																		</div>
+																		<div v-else class="w-5 h-5 rounded-full border-[2.5px] border-black dark:border-white"></div>
 																	</div>
 																</button>
 															</div>
@@ -303,116 +199,71 @@
 
 													<!-- Style Transfer -->
 													<template v-else-if="field.key === 'style'">
-														<button
-															@click="openMediaDropdown = openMediaDropdown === field.key ? null : field.key"
-															class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
-															:class="openMediaDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+														<button @click="openMediaDropdown = openMediaDropdown === field.key ? null : field.key" class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="openMediaDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
 															<Palette :size="16" class="text-[var(--text-secondary)]" />
-															<span
-																class="text-[13px] font-medium text-[var(--text-primary)]">
-																{{ dynamicParams[field.key] === 'No Style' ||
-																	!dynamicParams[field.key] ? 'Style transfer' :
-																	dynamicParams[field.key] }}
+															<span class="text-[13px] font-medium text-[var(--text-primary)]">
+																{{ dynamicParams[field.key] === 'No Style' || !dynamicParams[field.key] ? 'Style transfer' : dynamicParams[field.key] }}
 															</span>
 														</button>
-														<div v-if="openMediaDropdown === field.key"
-															class="absolute bottom-full left-0 mb-3 w-48 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-1.5 z-[60] max-h-60 overflow-y-auto custom-scrollbar"
-															style="background-color: var(--bg-main);">
-															<button v-for="s in field.options" :key="s"
-																@click="dynamicParams[field.key] = s; openMediaDropdown = null"
-																class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-[var(--bg-hover)] transition-colors text-left">
-																<span class="text-[13px] font-medium"
-																	:class="dynamicParams[field.key] === s ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'">{{
-																		s }}</span>
+														<div v-if="openMediaDropdown === field.key" class="absolute bottom-full left-0 mb-3 w-48 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-1.5 z-[60] max-h-60 overflow-y-auto custom-scrollbar" style="background-color: var(--bg-main)">
+															<button v-for="s in field.options" :key="s" @click="setMediaParamAndClose(field.key, s)" class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-[var(--bg-hover)] transition-colors text-left">
+																<span class="text-[13px] font-medium" :class="dynamicParams[field.key] === s ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'">{{ s }}</span>
 															</button>
 														</div>
 													</template>
 
 													<!-- Generic (resolution, etc.) -->
 													<template v-else>
-														<button
-															@click="openMediaDropdown = openMediaDropdown === field.key ? null : field.key"
-															class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
-															:class="openMediaDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
-															<Gem v-if="field.key === 'resolution'" :size="16"
-																class="text-[var(--text-secondary)]" />
-															<LayoutGrid v-else :size="16"
-																class="text-[var(--text-secondary)]" />
-															<span
-																class="text-[13px] font-medium text-[var(--text-primary)]">
-																<span v-if="field.key !== 'resolution'"
-																	class="uppercase font-bold text-[10px] tracking-wider opacity-60 mr-1">{{
-																		field.key }}:</span>{{ dynamicParams[field.key] }}
+														<button @click="openMediaDropdown = openMediaDropdown === field.key ? null : field.key" class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="openMediaDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+															<Gem v-if="field.key === 'resolution'" :size="16" class="text-[var(--text-secondary)]" />
+															<LayoutGrid v-else :size="16" class="text-[var(--text-secondary)]" />
+															<span class="text-[13px] font-medium text-[var(--text-primary)]">
+																<span v-if="field.key !== 'resolution'" class="uppercase font-bold text-[10px] tracking-wider opacity-60 mr-1">{{ field.key }}:</span>{{ dynamicParams[field.key] }}
 															</span>
 														</button>
-														<div v-if="openMediaDropdown === field.key"
-															class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-4 z-[60] min-w-[200px]"
-															style="background-color: var(--bg-main);">
-															<p
-																class="text-[12px] font-medium text-[var(--text-tertiary)] mb-3 px-2 uppercase tracking-wide">
-																{{ field.key.replace(/_/g, ' ') }}</p>
-															<div
-																class="flex flex-col gap-0.5 max-h-[180px] overflow-y-auto custom-scrollbar px-1 relative z-10">
-																<button v-for="opt in field.options" :key="opt"
-																	@click="dynamicParams[field.key] = opt; openMediaDropdown = null"
-																	class="w-full flex items-center justify-between gap-3 py-2 px-3 rounded-[12px] group transition-all duration-200"
-																	:class="dynamicParams[field.key] === opt ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-md' : 'hover:bg-[var(--bg-hover)] text-[var(--text-primary)]'">
-																	<span
-																		class="text-[13px] font-semibold tracking-tight">{{
-																			opt }}</span>
-																	<div class="flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-																		:class="dynamicParams[field.key] === opt ? 'opacity-100' : ''">
-																		<Check :size="14" :stroke-width="3"
-																			:class="dynamicParams[field.key] === opt ? 'text-[var(--bg-main)]' : 'text-[var(--text-tertiary)]'" />
+														<div v-if="openMediaDropdown === field.key" class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-4 z-[60] min-w-[200px]" style="background-color: var(--bg-main)">
+															<p class="text-[12px] font-medium text-[var(--text-tertiary)] mb-3 px-2 uppercase tracking-wide">
+																{{ field.key.replace(/_/g, ' ') }}
+															</p>
+															<div class="flex flex-col gap-0.5 max-h-[180px] overflow-y-auto custom-scrollbar px-1 relative z-10">
+																<button v-for="opt in field.options" :key="opt" @click="setMediaParamAndClose(field.key, opt)" class="w-full flex items-center justify-between gap-3 py-2 px-3 rounded-[12px] group transition-all duration-200" :class="dynamicParams[field.key] === opt ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-md' : 'hover:bg-[var(--bg-hover)] text-[var(--text-primary)]'">
+																	<span class="text-[13px] font-semibold tracking-tight">{{ opt }}</span>
+																	<div class="flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" :class="dynamicParams[field.key] === opt ? 'opacity-100' : ''">
+																		<Check :size="14" :stroke-width="3" :class="dynamicParams[field.key] === opt ? 'text-[var(--bg-main)]' : 'text-[var(--text-tertiary)]'" />
 																	</div>
 																</button>
 															</div>
 														</div>
 													</template>
-
 												</div>
 
 												<!-- Dynamic Number Fields (e.g. num_outputs for image models) -->
-												<div v-for="field in dynamicNumberFields" :key="field.key"
-													class="relative">
-													<button
-														@click="openMediaDropdown = openMediaDropdown === field.key ? null : field.key"
-														class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
-														:class="openMediaDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+												<div v-for="field in dynamicNumberFields" :key="field.key" class="relative">
+													<button @click="openMediaDropdown = openMediaDropdown === field.key ? null : field.key" class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="openMediaDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
 														<Monitor :size="16" class="text-[var(--text-secondary)]" />
-														<span
-															class="text-[13px] font-medium text-[var(--text-primary)]">{{
-																dynamicParams[field.key] }} Outputs</span>
+														<span class="text-[13px] font-medium text-[var(--text-primary)]">{{ dynamicParams[field.key] }} Outputs</span>
 													</button>
-													<div v-if="openMediaDropdown === field.key"
-														class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-4 z-[60] min-w-[200px]"
-														style="background-color: var(--bg-main);">
-														<p
-															class="text-[12px] font-medium text-[var(--text-tertiary)] mb-3 px-2 uppercase tracking-wide">
-															Outputs Quantity</p>
+													<div v-if="openMediaDropdown === field.key" class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-4 z-[60] min-w-[200px]" style="background-color: var(--bg-main)">
+														<p class="text-[12px] font-medium text-[var(--text-tertiary)] mb-3 px-2 uppercase tracking-wide">Outputs Quantity</p>
 														<div class="flex flex-wrap gap-2 justify-center max-w-[240px]">
-															<button v-for="n in (field.max - field.min + 1)" :key="n"
-																@click="dynamicParams[field.key] = n + field.min - 1; openMediaDropdown = null"
+															<button
+																v-for="n in field.max - field.min + 1"
+																:key="n"
+																@click="setMediaParamAndClose(field.key, n + field.min - 1)"
 																class="size-10 rounded-xl font-bold flex items-center justify-center transition-colors border"
-																:class="dynamicParams[field.key] === (n + field.min - 1) ? 'bg-[var(--text-primary)] text-[var(--bg-main)] border-[var(--text-primary)] shadow-md' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-primary)]'">
+																:class="dynamicParams[field.key] === n + field.min - 1 ? 'bg-[var(--text-primary)] text-[var(--bg-main)] border-[var(--text-primary)] shadow-md' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-primary)]'">
 																{{ n + field.min - 1 }}
 															</button>
 														</div>
 													</div>
 												</div>
 											</template>
-
 										</div>
 
 										<div class="min-w-0 flex gap-2 ml-auto flex-shrink items-center">
 											<!-- Inline generation error -->
-											<Transition enter-active-class="transition-opacity duration-200"
-												enter-from-class="opacity-0" enter-to-class="opacity-100"
-												leave-active-class="transition-opacity duration-200"
-												leave-from-class="opacity-100" leave-to-class="opacity-0">
-												<span v-if="generateError && isMediaModel"
-													class="text-[11px] text-red-500 shrink-0 max-w-[160px] truncate"
-													:title="generateError">{{ generateError }}</span>
+											<Transition enter-active-class="transition-opacity duration-200" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition-opacity duration-200" leave-from-class="opacity-100" leave-to-class="opacity-0">
+												<span v-if="generateError && isMediaModel" class="text-[11px] text-red-500 shrink-0 max-w-[160px] truncate" :title="generateError">{{ generateError }}</span>
 											</Transition>
 
 											<!-- Model Selection -->
@@ -420,23 +271,16 @@
 
 											<div class="flex items-center gap-1">
 												<Tooltip :text="$t('chat.voice_input')">
-													<button
-														class="flex items-center justify-center cursor-pointer hover:bg-[var(--fill-tsp-gray-main)] size-8 flex-shrink-0 rounded-full transition-colors">
+													<button class="flex items-center justify-center cursor-pointer hover:bg-[var(--fill-tsp-gray-main)] size-8 flex-shrink-0 rounded-full transition-colors">
 														<Mic :size="16" class="text-[var(--text-secondary)]" />
 													</button>
 												</Tooltip>
 											</div>
 
 											<!-- Send / Generate Button -->
-											<Tooltip
-												:text="isMediaModel ? (isGeneratingMedia ? 'Generating...' : 'Generate') : (props.isLoading ? $t('chat.creating') : hasContent ? $t('chat.send_message') : $t('chat.type_something'))">
-												<button
-													@click="isMediaModel ? handleMediaGenerate() : handleSendMessage()"
-													:disabled="!hasContent || (isMediaModel ? isGeneratingMedia : props.isLoading)"
-													class="flex items-center justify-center w-8 h-8 rounded-full transition-all bg-[var(--text-primary)] text-white disabled:bg-[var(--fill-tsp-white-dark)] disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-95">
-													<div v-if="isMediaModel ? isGeneratingMedia : props.isLoading"
-														class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin">
-													</div>
+											<Tooltip :text="isMediaModel ? (isGeneratingMedia ? 'Generating...' : 'Generate') : props.isLoading ? $t('chat.creating') : hasContent ? $t('chat.send_message') : $t('chat.type_something')">
+												<button @click="isMediaModel ? handleMediaGenerate() : handleSendMessage()" :disabled="!hasContent || (isMediaModel ? isGeneratingMedia : props.isLoading)" class="flex items-center justify-center w-8 h-8 rounded-full transition-all bg-[var(--text-primary)] text-white disabled:bg-[var(--fill-tsp-white-dark)] disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-95">
+													<div v-if="isMediaModel ? isGeneratingMedia : props.isLoading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
 													<Sparkles v-else-if="isMediaModel" :size="15" fill="currentColor" />
 													<ArrowUp v-else :size="18" :stroke-width="2.5" />
 												</button>
@@ -447,21 +291,16 @@
 							</div>
 
 							<!-- "Connect your tools" Banner (Matches user screenshot) -->
-							<div v-if="showConnectBanner && (!activeTool || activeTool === 'website')"
-								class="mx-3 mt-1 mb-1 py-2 px-3 flex items-center justify-between group animate-fade-in-up"
-								style="animation-delay: 0.1s">
+							<div v-if="showConnectBanner && (!activeTool || activeTool === 'website')" class="mx-3 mt-1 mb-1 py-2 px-3 flex items-center justify-between group animate-fade-in-up" style="animation-delay: 0.1s">
 								<div class="flex items-center gap-2">
 									<Cable :size="16" class="text-[var(--icon-secondary)]" />
-									<span class="text-[13px] text-[var(--text-secondary)] font-medium">{{
-										$t('chat.connect_tools') }}</span>
+									<span class="text-[13px] text-[var(--text-secondary)] font-medium">{{ $t('chat.connect_tools') }}</span>
 								</div>
 								<div class="flex items-center gap-2">
 									<div class="flex items-center -space-x-1">
 										<img src="/other.png" alt="" class="h-[22px]" />
 									</div>
-									<button
-										class="text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors p-1"
-										@click="showConnectBanner = false">
+									<button class="text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors p-1" @click="showConnectBanner = false">
 										<X :size="16" />
 									</button>
 								</div>
@@ -471,8 +310,7 @@
 				</div>
 
 				<!-- Suggestions / Home View -->
-				<div v-if="!activeTool" class="mt-8 flex flex-wrap justify-center gap-2 animate-fade-in-up"
-					style="animation-delay: 0.4s; animation-fill-mode: forwards">
+				<div v-if="!activeTool" class="mt-8 flex flex-wrap justify-center gap-2 animate-fade-in-up" style="animation-delay: 0.4s; animation-fill-mode: forwards">
 					<!-- Create slides -->
 					<!-- <Tooltip text="Generate a presentation">
 						<button @click="handleToolSelect('slides')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
@@ -543,9 +381,7 @@
 				<div v-if="activeTool && currentTool" class="mt-8 flex flex-col gap-8 w-full animate-fade-in-up">
 					<!-- Website Layout -->
 					<div v-if="activeTool === 'website'" class="flex flex-col gap-6 w-full">
-						<ToolChips title="What would you like to build?" :chips="currentTool.chips || []"
-							:links="currentTool.links || []" @select="handlePromptSelect"
-							@link-click="handleLinkClick" />
+						<ToolChips title="What would you like to build?" :chips="currentTool.chips || []" :links="currentTool.links || []" @select="handlePromptSelect" @link-click="handleLinkClick" />
 
 						<ToolIntegrations v-if="currentTool.showIntegrations" />
 					</div>
@@ -553,34 +389,25 @@
 					<!-- Schedule Layout -->
 					<div v-if="activeTool === 'schedule'" class="flex flex-col gap-6 w-full">
 						<div class="flex items-center justify-between mb-2">
-							<h3 class="text-[14px] font-medium text-[var(--text-primary)]">{{ $t('chat.get_started') }}
-							</h3>
+							<h3 class="text-[14px] font-medium text-[var(--text-primary)]">{{ $t('chat.get_started') }}</h3>
 							<div class="flex items-center gap-2">
-								<button
-									class="h-8 w-8 rounded-lg border border-[var(--border-main)] flex items-center justify-center hover:bg-[var(--fill-tsp-white-light)] transition-colors">
+								<button class="h-8 w-8 rounded-lg border border-[var(--border-main)] flex items-center justify-center hover:bg-[var(--fill-tsp-white-light)] transition-colors">
 									<Calendar :size="16" class="text-[var(--text-secondary)]" />
 								</button>
-								<button
-									class="h-8 px-3 rounded-lg border border-[var(--border-main)] flex items-center gap-1.5 hover:bg-[var(--fill-tsp-white-light)] transition-colors">
+								<button class="h-8 px-3 rounded-lg border border-[var(--border-main)] flex items-center gap-1.5 hover:bg-[var(--fill-tsp-white-light)] transition-colors">
 									<Plus :size="16" class="text-[var(--text-secondary)]" />
-									<span class="text-[13px] font-medium text-[var(--text-primary)]">{{
-										$t('chat.new_schedule')
-										}}</span>
+									<span class="text-[13px] font-medium text-[var(--text-primary)]">{{ $t('chat.new_schedule') }}</span>
 								</button>
 							</div>
 						</div>
 
 						<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-							<button v-for="(item, index) in currentTool.prompts" :key="index"
-								@click="handlePromptSelect(item.text)"
-								class="flex items-center justify-between p-4 px-5 rounded-2xl border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] transition-colors group text-left">
+							<button v-for="(item, index) in currentTool.prompts" :key="index" @click="handlePromptSelect(item.text)" class="flex items-center justify-between p-4 px-5 rounded-2xl border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] transition-colors group text-left">
 								<div class="flex items-center gap-4 min-w-0">
 									<div class="w-5 h-5 flex items-center justify-center flex-shrink-0">
-										<component :is="item.icon" :size="16"
-											class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
+										<component :is="item.icon" :size="16" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
 									</div>
-									<span class="text-[14px] text-[var(--text-primary)] truncate font-normal">{{
-										item.text }}</span>
+									<span class="text-[14px] text-[var(--text-primary)] truncate font-normal">{{ item.text }}</span>
 								</div>
 								<ArrowUpRight :size="14" class="text-[var(--text-tertiary)] flex-shrink-0" />
 							</button>
@@ -589,45 +416,31 @@
 
 					<!-- Default Tool Layout (Slides, App, Design) -->
 					<div v-else class="flex flex-col gap-8 w-full">
-						<SamplePrompts v-if="currentTool.prompts && currentTool.prompts.length"
-							:prompts="currentTool.prompts"
-							:title="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? '' : 'Sample prompts'"
-							:layout="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? 'list' : 'grid'"
-							@select="handlePromptSelect" />
+						<SamplePrompts v-if="currentTool.prompts && currentTool.prompts.length" :prompts="currentTool.prompts" :title="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? '' : 'Sample prompts'" :layout="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? 'list' : 'grid'" @select="handlePromptSelect" />
 
-						<TemplateSelector v-if="currentTool.templates && currentTool.templates.length"
-							:templates="currentTool.templates" />
+						<TemplateSelector v-if="currentTool.templates && currentTool.templates.length" :templates="currentTool.templates" />
 					</div>
 				</div>
 
 				<!-- Footer Promo Cards -->
-				<div v-if="!activeTool" class="mt-20 flex gap-3 overflow-x-auto pb-4 scrollbar-none animate-fade-in-up"
-					style="animation-delay: 0.5s; animation-fill-mode: forwards">
-					<div
-						class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
+				<div v-if="!activeTool" class="mt-20 flex gap-3 overflow-x-auto pb-4 scrollbar-none animate-fade-in-up" style="animation-delay: 0.5s; animation-fill-mode: forwards">
+					<div class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
 						<div class="w-10 h-10 rounded-lg bg-[var(--fill-blue)] flex items-center justify-center mb-2">
 							<Puzzle :size="24" class="text-[var(--text-blue)]" />
 						</div>
-						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">{{ $t('chat.get_skills')
-							}}</p>
+						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">{{ $t('chat.get_skills') }}</p>
 					</div>
-					<div
-						class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
-						<div
-							class="w-10 h-10 rounded-lg bg-[var(--function-error-tsp)] flex items-center justify-center mb-2">
+					<div class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
+						<div class="w-10 h-10 rounded-lg bg-[var(--function-error-tsp)] flex items-center justify-center mb-2">
 							<Mail :size="24" class="text-[var(--function-error)]" />
 						</div>
-						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">{{
-							$t('chat.stay_updated') }}</p>
+						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">{{ $t('chat.stay_updated') }}</p>
 					</div>
-					<div
-						class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
-						<div
-							class="w-10 h-10 rounded-lg bg-[var(--function-success-tsp)] flex items-center justify-center mb-2">
+					<div class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
+						<div class="w-10 h-10 rounded-lg bg-[var(--function-success-tsp)] flex items-center justify-center mb-2">
 							<Globe :size="24" class="text-[var(--function-success)]" />
 						</div>
-						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">{{
-							$t('chat.explore_community') }}</p>
+						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">{{ $t('chat.explore_community') }}</p>
 					</div>
 				</div>
 			</div>
@@ -894,8 +707,8 @@ watch(activeTool, (newTool) => {
 const modelStore = useModelStore()
 
 const supportsFileUpload = computed(() => {
-	const fields = modelStore.selectedModel?.model_input?.fields
-	return !!(fields?.file_ids || fields?.image_urls)
+	const fields = modelStore.selectedModel?.model_input?.fields || {}
+	return !!(fields.file_ids || fields.image_urls || fields.image || fields.image_url || fields.input_images || fields.input_image || fields.init_image || fields.ref_image)
 })
 
 const supportsWebSearch = computed(() => {
@@ -920,7 +733,7 @@ const isMediaModel = computed(() => isImageModel.value || isVideoModel.value)
 const modelInputFields = computed(() => modelStore.selectedModel?.model_input?.fields || {})
 
 const dynamicSelectFields = computed(() => {
-	const result: Array<{ key: string; options: string[];[k: string]: any }> = []
+	const result: Array<{ key: string; options: string[]; [k: string]: any }> = []
 	for (const [key, field] of Object.entries(modelInputFields.value)) {
 		if ((field as any).type === 'select') {
 			result.push({ key, ...(field as any) })
@@ -930,7 +743,7 @@ const dynamicSelectFields = computed(() => {
 })
 
 const dynamicNumberFields = computed(() => {
-	const result: Array<{ key: string; min: number; max: number;[k: string]: any }> = []
+	const result: Array<{ key: string; min: number; max: number; [k: string]: any }> = []
 	for (const [key, field] of Object.entries(modelInputFields.value)) {
 		if ((field as any).type === 'number') {
 			result.push({ key, ...(field as any) })
@@ -944,14 +757,35 @@ const getPreviewStyle = (ratio: string) => {
 	let width = baseSize
 	let height = baseSize
 	switch (ratio) {
-		case '16:9': width = baseSize; height = (baseSize * 9) / 16; break
-		case '4:3': width = baseSize; height = (baseSize * 3) / 4; break
-		case '3:2': width = baseSize; height = (baseSize * 2) / 3; break
-		case '2.35:1': width = baseSize; height = baseSize / 2.35; break
-		case '4:5': width = (baseSize * 4) / 5; break
-		case '2:3': width = (baseSize * 2) / 3; break
-		case '9:16': width = (baseSize * 9) / 16; break
-		case '1:1': default: width = baseSize; height = baseSize
+		case '16:9':
+			width = baseSize
+			height = (baseSize * 9) / 16
+			break
+		case '4:3':
+			width = baseSize
+			height = (baseSize * 3) / 4
+			break
+		case '3:2':
+			width = baseSize
+			height = (baseSize * 2) / 3
+			break
+		case '2.35:1':
+			width = baseSize
+			height = baseSize / 2.35
+			break
+		case '4:5':
+			width = (baseSize * 4) / 5
+			break
+		case '2:3':
+			width = (baseSize * 2) / 3
+			break
+		case '9:16':
+			width = (baseSize * 9) / 16
+			break
+		case '1:1':
+		default:
+			width = baseSize
+			height = baseSize
 	}
 	return { width: `${width}px`, height: `${height}px` }
 }
@@ -962,24 +796,28 @@ const isGeneratingMedia = ref(false)
 const generateError = ref('')
 const mediaToolbarRef = ref<HTMLElement | null>(null)
 
-watch(() => modelStore.selectedModel, (model) => {
-	if (!model?.model_input?.fields) {
-		dynamicParams.value = {}
-		return
-	}
-	const fields = model.model_input.fields
-	const newParams: Record<string, any> = {}
-	for (const [key, field] of Object.entries(fields)) {
-		if ((field as any).default !== undefined) {
-			newParams[key] = (field as any).default
-		} else if ((field as any).type === 'select' && (field as any).options?.length > 0) {
-			newParams[key] = (field as any).options[0]
-		} else if ((field as any).type === 'number') {
-			newParams[key] = (field as any).min || 1
+watch(
+	() => modelStore.selectedModel,
+	(model) => {
+		if (!model?.model_input?.fields) {
+			dynamicParams.value = {}
+			return
 		}
-	}
-	dynamicParams.value = newParams
-}, { immediate: true })
+		const fields = model.model_input.fields
+		const newParams: Record<string, any> = {}
+		for (const [key, field] of Object.entries(fields)) {
+			if ((field as any).default !== undefined) {
+				newParams[key] = (field as any).default
+			} else if ((field as any).type === 'select' && (field as any).options?.length > 0) {
+				newParams[key] = (field as any).options[0]
+			} else if ((field as any).type === 'number') {
+				newParams[key] = (field as any).min || 1
+			}
+		}
+		dynamicParams.value = newParams
+	},
+	{ immediate: true },
+)
 
 const handleMediaGenerate = async () => {
 	const content = editor.value?.getText()?.trim() || ''
@@ -988,10 +826,8 @@ const handleMediaGenerate = async () => {
 	isGeneratingMedia.value = true
 	const model = modelStore.selectedModel
 	// Filter out null/undefined/empty values from dynamicParams
-	const cleanParams = Object.fromEntries(
-		Object.entries(dynamicParams.value).filter(([, v]) => v !== null && v !== undefined && v !== '')
-	)
-	const payload: Record<string, any> = {
+	const cleanParams = Object.fromEntries(Object.entries(dynamicParams.value).filter(([, v]) => v !== null && v !== undefined && v !== ''))
+	const payload: { prompt: string; model: string; [key: string]: any } = {
 		model: `${model.provider}:${model.model}`,
 		...cleanParams,
 		prompt: content,
@@ -999,7 +835,7 @@ const handleMediaGenerate = async () => {
 
 	// Attach uploaded images if the model supports it
 	if (uploadedFiles.value.length > 0) {
-		const imageKeys = uploadedFiles.value.filter(f => f.type.startsWith('image/')).map(f => f.key)
+		const imageKeys = uploadedFiles.value.filter((f) => f.type.startsWith('image/')).map((f) => f.key)
 		if (imageKeys.length > 0) {
 			const fields = model.model_input?.fields || {}
 			if (fields.image_urls) payload.image_urls = imageKeys
@@ -1013,22 +849,21 @@ const handleMediaGenerate = async () => {
 	const streamFn = isImageModel.value ? generateImageStream : generateVideoStream
 	const targetRoute = isImageModel.value ? '/image-generation' : '/video-generation'
 
-	await streamFn(
-		payload,
-		{
-			onDone: async () => {
-				isGeneratingMedia.value = false
-				router.push(targetRoute)
-			},
-			onError: (error: Error) => {
-				isGeneratingMedia.value = false
-				const msg = error?.message || 'Generation failed'
-				generateError.value = msg
-				setTimeout(() => { generateError.value = '' }, 4000)
-				uiStore.showToast(msg, 'error')
-			}
-		}
-	)
+	await streamFn(payload, {
+		onDone: async () => {
+			isGeneratingMedia.value = false
+			router.push(targetRoute)
+		},
+		onError: (error: Error) => {
+			isGeneratingMedia.value = false
+			const msg = error?.message || 'Generation failed'
+			generateError.value = msg
+			setTimeout(() => {
+				generateError.value = ''
+			}, 4000)
+			uiStore.showToast(msg, 'error')
+		},
+	})
 }
 
 const fileInputRef = ref<HTMLInputElement | null>(null)
@@ -1168,6 +1003,11 @@ function handleLinkClick(text: string) {
 	if (text === 'Add website reference') {
 		uiStore.openWebsiteReferenceModal()
 	}
+}
+
+function setMediaParamAndClose(key: string, val: any) {
+	dynamicParams.value[key] = val
+	openMediaDropdown.value = null
 }
 
 onBeforeUnmount(() => {

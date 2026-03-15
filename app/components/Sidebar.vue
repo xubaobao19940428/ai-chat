@@ -181,7 +181,11 @@
 									<span class="truncate">{{ $t('common.all_sessions') }}</span>
 								</div>
 							</div>
-							<div v-for="group in projectStore.projects" :key="group.id" @click="selectProject(group.id)" :class="['w-full group flex items-center rounded-[10px] h-[36px] transition-colors clickable relative transition-all', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px] pe-[8px] gap-[8px]', conversationStore.selectedGroupId == group.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', conversationStore.isGroupSwitching ? 'opacity-50 pointer-events-none' : '']">
+							<div
+								v-for="group in projectStore.projects"
+								:key="group.id"
+								@click="selectProject(group.id)"
+								:class="['w-full group flex items-center rounded-[10px] h-[36px] transition-colors clickable relative transition-all', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px] pe-[8px] gap-[8px]', conversationStore.selectedGroupId == group.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', conversationStore.isGroupSwitching ? 'opacity-50 pointer-events-none' : '']">
 								<div class="shrink-0 size-[18px] flex items-center justify-center opacity-80" :style="{ color: getProjectColor(group.color) }">
 									<component :is="getProjectIcon(group.icon)" :size="16" />
 								</div>
@@ -695,6 +699,8 @@ const handleMoreItemClick = (item: any) => {
 	} else if (item.id === 'ai-reading') {
 		// Mock for now or point to search/docs if relevant
 		router.push('/ai-search')
+	} else if (item.id === 'library') {
+		router.push('/library')
 	} else {
 		// Default fallback
 		console.warn('No navigation defined for item:', item.id)
@@ -763,7 +769,9 @@ const sidebarNavItems = ref([
 		id: 'library',
 		label: 'Library',
 		icon: markRaw(Library),
-		handler: () => {},
+		handler: () => {
+			router.push('/library')
+		},
 		iconClass: 'text-[var(--text-secondary)]',
 	},
 ])
@@ -790,7 +798,15 @@ const NAV_DEFS: Record<string, any> = {
 		},
 		iconClass: 'text-[var(--text-secondary)]',
 	},
-	library: { id: 'library', label: 'Library', icon: markRaw(Library), handler: () => {}, iconClass: 'text-[var(--text-secondary)]' },
+	library: {
+		id: 'library',
+		label: 'Library',
+		icon: markRaw(Library),
+		handler: () => {
+			router.push('/library')
+		},
+		iconClass: 'text-[var(--text-secondary)]',
+	},
 	'ai-bots': {
 		id: 'ai-bots',
 		label: 'AI bots',

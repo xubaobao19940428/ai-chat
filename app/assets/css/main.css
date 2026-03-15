@@ -1,4 +1,6 @@
 @import './markdown.css';
+@import 'highlight.js/styles/atom-one-dark.css';
+@import 'katex/dist/katex.min.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

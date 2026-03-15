@@ -8,11 +8,12 @@ import {
   logout as logoutApi,
   sendLoginCode,
   sendRegisterCode,
-  getUploadUrl,
+  uploadFile,
   getAccountRecords,
   type LoginParams,
-  type RegisterParams
+  type RegisterParams,
 } from '~/utils/api'
+import request from '../utils/request'
 
 export const useUserStore = defineStore('user', () => {
   const token = ref<string>('')
@@ -124,37 +125,13 @@ export const useUserStore = defineStore('user', () => {
 
   const uploadAvatar = async (file: File) => {
     try {
-      // 1. Get presigned URL
-      const res: any = await getUploadUrl({
-        file_name: file.name,
-        content_type: file.type
-      })
-      const { url, key } = res.data
+      // 1. Upload file using the helper (this also records it in the backend)
+      const { key } = await uploadFile(file, 'avatar')
 
-      // 2. Upload file to cloud storage
-      await fetch(url, {
-        method: 'PUT',
-        body: file,
-        headers: { 'Content-Type': file.type }
-      })
+      // 2. Update user profile with new avatar key using established request utility
+      await request.post('/v1/sso/user', { avatar: key })
 
-      // 3. Update user profile with new avatar key
-      const runtimeConfig = useRuntimeConfig().public
-      const apiBase = runtimeConfig.apiBase || '/api'
-      const authToken = localStorage.getItem('token')
-
-      await fetch(`${apiBase}/v1/sso/user`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': authToken || '',
-          'x-app-domain': 'ai-test.iappdaily.com',
-          'x-app-id': runtimeConfig.appId || '1'
-        },
-        body: JSON.stringify({ avatar: key })
-      })
-
-      // 4. Refresh user info to reflect changes
+      // 3. Refresh user info to reflect changes
       await fetchUserInfo()
       return true
     } catch (error) {

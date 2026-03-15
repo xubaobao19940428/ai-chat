@@ -32,10 +32,17 @@ export interface CreateFileParams {
   file_type?: string
   mime_type?: string
   file_size?: number
+  file_hash?: string
+  storage?: string
   purpose?: string
+  source_type?: string
+  source_id?: number
   meta?: Record<string, any>
 }
 
 export const createFile = (data: CreateFileParams) => {
   return request.post('/v1/files', data)
+}
+export const deleteFile = (id: number) => {
+  return request.post('/v1/files/delete', { id })
 }
