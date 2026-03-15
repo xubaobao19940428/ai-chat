@@ -686,6 +686,7 @@ const generateImage = async () => {
 		status: 'Preparing request...'
 	})
 	
+	const sessionTaskIds = [tempId]
 	activeTasks.value.unshift(newTask)
 	
 	const payload: { prompt: string; model: string; mode?: string; [key: string]: any } = {
@@ -713,12 +714,30 @@ const generateImage = async () => {
 		},
 		onTask: (data) => {
 			newTask.taskId = data.task_id
-			newTask.usage = data.usage
+			// Support both new (root credits) and old (usage object) formats
+			if (data.credits !== undefined) {
+				newTask.usage = { images: 1, credits: data.credits }
+			} else if (data.usage) {
+				newTask.usage = data.usage
+			}
 			newTask.status = 'Task initialized...'
 		},
 		onImage: (data) => {
-			newTask.imageUrl = data.url
-			newTask.status = 'Image ready!'
+			if (newTask.imageUrl && !newTask.imageUrl.startsWith('data:')) {
+				// Multiple images in one session - spawn a new card
+				const newId = Math.random().toString(36).substring(7)
+				sessionTaskIds.push(newId)
+				const additionalTask = reactive<ActiveTask>({
+					...newTask,
+					id: newId,
+					imageUrl: data.url,
+					status: 'Image ready!'
+				})
+				activeTasks.value.unshift(additionalTask)
+			} else {
+				newTask.imageUrl = data.url
+				newTask.status = 'Image ready!'
+			}
 		},
 		onDone: async () => {
 			newTask.progress = 100
@@ -729,8 +748,10 @@ const generateImage = async () => {
 			
 			// Small delay to let the transition happen smoothly
 			setTimeout(() => {
-				const index = activeTasks.value.findIndex(t => t.id === tempId)
-				if (index !== -1) activeTasks.value.splice(index, 1)
+				sessionTaskIds.forEach(id => {
+					const index = activeTasks.value.findIndex(t => t.id === id)
+					if (index !== -1) activeTasks.value.splice(index, 1)
+				})
 				activeTab.value = 'creations'
 			}, 1000)
 		},

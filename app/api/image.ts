@@ -10,7 +10,10 @@ export interface ImageGenerateParams {
 export interface GenerateStreamTaskData {
   task_id: string
   pid: number
-  usage: {
+  provider_id?: number
+  original_model?: string
+  credits?: number
+  usage?: {
     images: number
     credits: number
   }
