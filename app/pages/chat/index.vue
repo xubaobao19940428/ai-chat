@@ -19,7 +19,7 @@ const conversationStore = useConversationStore()
 const chatStore = useChatStore()
 const modelStore = useModelStore()
 
-const handleWelcomeSendMessage = async (content: string, model: string) => {
+const handleWelcomeSendMessage = async (content: string, model: string, options?: any, capability?: string) => {
 	// 0. Set loading state immediately for instant feedback
 	chatStore.setLoading(true)
 
@@ -29,6 +29,8 @@ const handleWelcomeSendMessage = async (content: string, model: string) => {
 		model: model,
 		model_id: modelStore.selectedModel?.id,
 		group_id: conversationStore.selectedGroupId || 0,
+		params: options,
+		capability: capability || 'chat'
 	})
 
 	// 2. Add user message to store for immediate visibility on next page

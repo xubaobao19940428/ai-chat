@@ -7,6 +7,7 @@ export interface CreateConversationParams {
   model_id?: number
   group_id?: number
   meta?: any
+  capability?: string
 }
 
 export interface ConversationListItem {

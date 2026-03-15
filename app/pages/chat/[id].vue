@@ -180,9 +180,163 @@
 						<editor-content :editor="editor" class="w-full max-h-48 overflow-y-auto custom-scrollbar" />
 
 						<input type="file" ref="fileInputRef" class="hidden" multiple @change="handleFileUpload" />
+						<div class="flex items-center justify-between px-3 pb-2 bg-[var(--bg-main)] gap-2">
+							<div class="flex items-center gap-2 flex-wrap flex-1">
+								<!-- Model Selector -->
+								<ModelSelector variant="pill" :capability="selectorCapability" />
 
-						<div class="flex items-center justify-between px-2 pb-1 bg-[var(--bg-main)]">
-							<div class="flex items-center gap-1">
+								<!-- Media Parameters Integrated -->
+								<template v-if="isImageModel || isVideoModel">
+									<!-- Integrated Image/Video Prompt Buttons -->
+									<div class="group/chip relative" v-if="supportsMediaPrompt">
+										<button @click="toggleDropdown('media_prompt')" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="activeDropdownField === 'media_prompt' ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : uploadedMediaFiles.length > 0 ? 'border-[var(--border-main)]' : ''" :disabled="isUploading">
+											<Loader2 v-if="isUploading" :size="14" class="animate-spin text-[var(--text-secondary)]" />
+											<template v-else-if="uploadedMediaFiles.length > 0">
+												<div class="relative shrink-0">
+													<img :src="uploadedMediaFiles[0]?.url" class="w-4 h-4 rounded-sm object-cover" />
+													<div v-if="uploadedMediaFiles.length > 1" class="absolute -top-1.5 -right-1.5 min-w-[12px] h-[12px] bg-[var(--text-primary)] rounded-full text-[7px] text-[var(--bg-main)] flex items-center justify-center font-bold px-0.5 leading-none">
+														{{ uploadedMediaFiles.length }}
+													</div>
+												</div>
+											</template>
+											<ImagePlus v-else :size="14" class="text-[var(--text-secondary)]" />
+											<span class="text-[12px] font-medium text-[var(--text-primary)]">
+												{{ uploadedMediaFiles.length > 0 ? `${uploadedMediaFiles.length} ${isVideoModel ? 'frame' : 'prompt image'}${uploadedMediaFiles.length > 1 ? 's' : ''}` : isVideoModel ? 'Start frame' : 'Image prompt' }}
+											</span>
+										</button>
+
+										<!-- Media Prompt Popover -->
+										<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1 opacity-0 scale-95" enter-to-class="translate-y-0 opacity-100 scale-100" leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1 opacity-0">
+											<div v-if="activeDropdownField === 'media_prompt'" class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[280px]">
+												<div class="rounded-2xl bg-[var(--bg-main)] border border-[var(--border-light)] p-4 shadow-xl flex flex-col gap-4" style="background-color: var(--bg-main)">
+													<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
+														{{ isVideoModel ? 'Start frame anchors the opening of your video.' : 'Image prompts apply style and content to your generation.' }}
+														Upload or select from assets.
+													</p>
+													<div class="flex flex-col gap-2">
+														<button @click="triggerFileUploadAndClose" class="w-full flex items-center justify-center gap-2 bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 rounded-full py-2.5 text-[13px] font-bold transition-colors">
+															<Plus :size="14" stroke-width="3" />
+															Upload
+														</button>
+														<button @click="selectAssetAndClose" class="w-full flex items-center justify-center gap-2 bg-[var(--bg-main)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full py-2.5 text-[13px] font-bold transition-colors border border-[var(--border-main)] shadow-sm" style="background-color: var(--bg-main)">
+															<ImagePlus :size="14" />
+															Select asset
+														</button>
+													</div>
+												</div>
+											</div>
+										</Transition>
+									</div>
+
+									<!-- Dynamic Select Fields -->
+									<div v-for="field in dynamicSelectFields" :key="field.key" class="relative group/chip">
+										<template v-if="field.key === 'aspect_ratio'">
+											<button @click="toggleDropdown(field.key)" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="activeDropdownField === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+												<span class="flex items-center justify-center">
+													<div v-if="String(currentConversation?.params?.[field.key] || field.default).startsWith('16:') || String(currentConversation?.params?.[field.key] || field.default).startsWith('21:') || String(currentConversation?.params?.[field.key] || field.default).startsWith('3:2')" class="w-3.5 h-2 border-[1.5px] border-current rounded-[1px]"></div>
+													<div v-else-if="String(currentConversation?.params?.[field.key] || field.default).startsWith('1:')" class="w-3 h-3 border-[1.5px] border-current rounded-[1px]"></div>
+													<div v-else class="w-2 h-3.5 border-[1.5px] border-current rounded-[1px]"></div>
+												</span>
+												<span class="text-[12px] font-medium text-[var(--text-primary)]">{{ currentConversation?.params?.[field.key] || field.default }}</span>
+											</button>
+											<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1 opacity-0 scale-95" enter-to-class="translate-y-0 opacity-100 scale-100" leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1 opacity-0">
+												<div v-if="activeDropdownField === field.key" class="absolute bottom-full left-0 mb-2 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-xl p-4 z-[60] flex gap-5 items-center min-w-[max-content]" style="background-color: var(--bg-main)">
+													<div class="flex flex-col gap-2.5">
+														<span class="text-[var(--text-tertiary)] px-1 font-bold text-[10px] uppercase tracking-widest text-center">Aspect Ratio</span>
+														<div class="flex gap-1.5 min-w-[max-content]">
+															<button v-for="opt in field.options" :key="opt" @click="setParamAndClose(field.key, opt)" class="flex flex-col items-center justify-center gap-2 w-16 h-16 rounded-xl transition-all border" :class="(currentConversation?.params?.[field.key] || field.default) === opt ? 'bg-[var(--fill-tsp-gray-main)] border-[var(--text-primary)]/20 shadow-sm' : 'bg-transparent border-transparent hover:bg-[var(--bg-hover)] hover:border-[var(--border-main)]'">
+																<div v-if="String(opt).startsWith('16:') || String(opt).startsWith('21:') || String(opt).startsWith('3:2')" class="w-6 h-3.5 border-[1.8px] border-[var(--text-primary)] rounded-[2px] opacity-80"></div>
+																<div v-else-if="String(opt).startsWith('9:16') || String(opt).startsWith('3:4') || String(opt).startsWith('4:5')" class="w-3.5 h-6 border-[1.8px] border-[var(--text-primary)] rounded-[2px] opacity-80"></div>
+																<div v-else class="w-5 h-5 border-[1.8px] border-[var(--text-primary)] rounded-[2px] opacity-80"></div>
+																<span class="text-[10px] font-bold text-[var(--text-primary)]">{{ opt }}</span>
+															</button>
+														</div>
+													</div>
+													<div class="relative flex items-center justify-center w-[120px] h-[120px] bg-transparent shrink-0">
+														<div class="relative bg-[var(--fill-tsp-gray-main)] rounded-lg border border-[var(--border-main)] transition-all duration-300 flex items-center justify-center overflow-hidden shadow-inner" :style="getPreviewStyle(currentConversation?.params?.[field.key] || field.default)">
+															<div class="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none opacity-20">
+																<div v-for="i in 9" :key="i" class="border-[0.5px] border-[var(--text-primary)]"></div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</Transition>
+										</template>
+
+										<!-- Style Transfer -->
+										<template v-else-if="field.key === 'style'">
+											<button @click="toggleDropdown(field.key)" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="activeDropdownField === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+												<Palette :size="14" class="text-[var(--text-secondary)]" />
+												<span class="text-[12px] font-medium text-[var(--text-primary)]">
+													{{ currentConversation?.params?.[field.key] === 'No Style' || !currentConversation?.params?.[field.key] ? 'Style' : currentConversation?.params?.[field.key] }}
+												</span>
+											</button>
+											<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1 opacity-0" enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1 opacity-0">
+												<div v-if="activeDropdownField === field.key" class="absolute bottom-full left-0 mb-2 w-44 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-xl p-1.5 z-[60] max-h-56 overflow-y-auto custom-scrollbar" style="background-color: var(--bg-main)">
+													<button v-for="s in field.options" :key="s" @click="setParamAndClose(field.key, s)" class="w-full flex items-center justify-between p-2 rounded-xl hover:bg-[var(--bg-hover)] transition-colors text-left">
+														<span class="text-[12px] font-medium" :class="currentConversation?.params?.[field.key] === s ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'">{{ s }}</span>
+													</button>
+												</div>
+											</Transition>
+										</template>
+
+										<!-- Generic Tools (Quality, Duration, etc.) -->
+										<template v-else>
+											<button @click="toggleDropdown(field.key)" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="activeDropdownField === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+												<Gem v-if="field.key === 'resolution'" :size="14" class="text-[var(--text-secondary)]" />
+												<Clock v-else-if="field.key === 'duration'" :size="14" class="text-[var(--text-secondary)]" />
+												<LayoutGrid v-else :size="14" class="text-[var(--text-secondary)]" />
+												<span class="text-[12px] font-medium text-[var(--text-primary)] mb-[-2px]">
+													<span v-if="field.key !== 'resolution' && field.key !== 'duration'" class="uppercase font-bold text-[9px] tracking-wider opacity-60 mr-1">{{ field.key.substring(0, 3) }}:</span>
+													{{ currentConversation?.params?.[field.key] || field.default }}{{ field.key === 'duration' ? 's' : '' }}
+												</span>
+											</button>
+											<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1 opacity-0 scale-95" enter-to-class="translate-y-0 opacity-100 scale-100" leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1 opacity-0">
+												<div v-if="activeDropdownField === field.key" class="absolute bottom-full left-0 mb-2 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-xl p-3.5 z-[60] min-w-[170px]" style="background-color: var(--bg-main)">
+													<p class="text-[10px] font-bold text-[var(--text-tertiary)] mb-2.5 px-1 uppercase tracking-widest text-center">{{ field.label || field.key.replace(/_/g, ' ') }}</p>
+													<div class="flex flex-col gap-1 max-h-[220px] overflow-y-auto custom-scrollbar">
+														<button v-for="opt in field.options" :key="opt" @click="setParamAndClose(field.key, opt)" class="w-full flex items-center justify-between gap-4 py-2.5 px-3 rounded-xl group transition-all" :class="(currentConversation?.params?.[field.key] || field.default) === opt ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-sm' : 'hover:bg-[var(--bg-hover)] text-[var(--text-primary)]'">
+															<span class="text-[13px] font-bold">{{ opt }}{{ field.key === 'duration' ? 's' : '' }}</span>
+															<div class="flex items-center justify-center">
+																<div v-if="(currentConversation?.params?.[field.key] || field.default) === opt" class="w-4 h-4 rounded-full bg-black dark:bg-white flex items-center justify-center" style="background-color: var(--text-primary)">
+																	<Check :size="10" class="text-[var(--bg-main)]" stroke-width="4" />
+																</div>
+																<div v-else class="w-4 h-4 rounded-full border-[2px] border-black/20 dark:border-white/20"></div>
+															</div>
+														</button>
+													</div>
+												</div>
+											</Transition>
+										</template>
+									</div>
+
+									<!-- Dynamic Number Fields (Outputs) -->
+									<div v-for="field in dynamicNumberFields" :key="field.key" class="relative group/chip">
+										<button @click="toggleDropdown(field.key)" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="activeDropdownField === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+											<Monitor :size="14" class="text-[var(--text-secondary)]" />
+											<span class="text-[12px] font-medium text-[var(--text-primary)]">{{ currentConversation?.params?.[field.key] || field.default }} Outputs</span>
+										</button>
+										<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1 opacity-0" enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1 opacity-0">
+											<div v-if="activeDropdownField === field.key" class="absolute bottom-full left-0 mb-2 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-xl p-3 z-[60] min-w-[180px]" style="background-color: var(--bg-main)">
+												<p class="text-[11px] font-bold text-[var(--text-tertiary)] mb-2 px-1 uppercase tracking-widest text-center">{{ field.label || 'Outputs' }}</p>
+												<div class="flex flex-wrap gap-1.5 justify-center">
+													<button
+														v-for="n in field.max - field.min + 1"
+														:key="n"
+														@click="setParamAndClose(field.key, n + field.min - 1)"
+														class="size-9 rounded-xl font-bold flex items-center justify-center transition-all border text-[13px]"
+														:class="(currentConversation?.params?.[field.key] || field.default) === n + field.min - 1 ? 'bg-[var(--text-primary)] text-[var(--bg-main)] border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-primary)]'">
+														{{ n + field.min - 1 }}
+													</button>
+												</div>
+											</div>
+										</Transition>
+									</div>
+								</template>
+
+								<div class="h-4 w-px bg-[var(--border-light)]/50 mx-1 self-center" v-if="supportsFileUpload || supportsWebSearch"></div>
+
+								<!-- Bottom Left Tools -->
 								<!-- Attach Button -->
 								<Tooltip v-if="supportsFileUpload" text="Add Attachment">
 									<button @click="triggerFileUpload" :disabled="isUploading" class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] disabled:opacity-50 disabled:cursor-not-allowed rounded-full transition-colors">
@@ -190,7 +344,7 @@
 									</button>
 								</Tooltip>
 
-								<!-- Web Search Popover -->
+								<!-- Web Search -->
 								<Popover v-if="supportsWebSearch" class="relative" v-slot="{ open }">
 									<Tooltip text="Web Search">
 										<PopoverButton class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors relative" :class="{ 'text-[var(--text-primary)] bg-[var(--bg-hover)]': open || isWebSearchEnabled }">
@@ -215,8 +369,8 @@
 									</Transition>
 								</Popover>
 
-								<!-- Parameters Popover -->
-								<Popover class="relative" v-slot="{ open }">
+								<!-- Parameters Settings (Hidden for Media Models) -->
+								<Popover v-if="!isImageModel && !isVideoModel" class="relative" v-slot="{ open }">
 									<Tooltip text="Model Parameters">
 										<PopoverButton class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors" :class="{ 'text-[var(--text-primary)] bg-[var(--bg-hover)]': open }">
 											<Settings :size="18" />
@@ -240,10 +394,10 @@
 
 							<!-- Stop / Send Button -->
 							<Tooltip :text="chatStore.isLoading ? 'Stop generating' : hasContent ? 'Send Message' : 'Type something...'">
-								<button v-if="chatStore.isLoading" @click="stopGeneration" class="flex items-center justify-center w-8 h-8 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full transition-transform active:scale-90 dark:bg-[var(--text-white)] dark:text-[var(--bg-main)]">
+								<button v-if="chatStore.isLoading" @click="stopGeneration" class="flex items-center justify-center w-8 h-8 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full transition-transform active:scale-90 dark:bg-[var(--text-white)] dark:text-[var(--bg-main)] shrink-0 self-end mb-1">
 									<Square :size="12" fill="currentColor" />
 								</button>
-								<button v-else @click="() => sendMessage()" :disabled="(!hasContent && uploadedFiles.length === 0) || isUploading" class="flex items-center justify-center w-8 h-8 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full transition-transform active:scale-90 disabled:opacity-20 disabled:scale-100 dark:bg-[var(--text-white)] dark:text-[var(--bg-main)]">
+								<button v-else @click="() => sendMessage()" :disabled="(!hasContent && uploadedFiles.length === 0) || isUploading" class="flex items-center justify-center w-8 h-8 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full transition-transform active:scale-90 disabled:opacity-20 disabled:scale-100 dark:bg-[var(--text-white)] dark:text-[var(--bg-main)] shrink-0 self-end mb-1">
 									<ArrowUp :size="16" :stroke-width="2.5" />
 								</button>
 							</Tooltip>
@@ -260,13 +414,15 @@
 				</div>
 			</div>
 		</div>
+
+		<!-- Asset Picker Modal -->
+		<AssetPickerModal :show="isAssetPickerOpen" @close="isAssetPickerOpen = false" @select="onAssetsSelected" />
 	</div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, nextTick, h, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { fetchChatStream } from '../../utils/api'
 import MarkdownContent from '../../components/MarkdownContent.vue'
 import { PROMPT_SUGGESTIONS, type PromptSuggestion } from '../../utils/prompts'
 import { Popover, PopoverButton, PopoverPanel, Switch } from '@headlessui/vue'
@@ -280,8 +436,9 @@ import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import Tooltip from '../../components/Tooltip.vue'
-import { Copy, Pencil, Plus, Globe, Settings, ArrowUp, Square, SlidersHorizontal, Loader2, X, FileText, Share2, RefreshCw } from 'lucide-vue-next'
-import { uploadFile } from '../../utils/api'
+import AssetPickerModal from '../../components/AssetPickerModal.vue'
+import { Copy, Pencil, Plus, Globe, Settings, ArrowUp, Square, SlidersHorizontal, Loader2, X, FileText, Share2, RefreshCw, Palette, Gem, LayoutGrid, Check, ImagePlus, Monitor, Clock } from 'lucide-vue-next'
+import { fetchChatStream, generateImageStream, generateVideoStream, uploadFile, type ModelInputField } from '../../utils/api'
 const { t } = useI18n()
 
 const route = useRoute()
@@ -302,6 +459,106 @@ const supportsWebSearch = computed(() => {
 	const fields = modelStore.selectedModel?.model_input?.fields
 	return !!fields?.enable_web_search
 })
+
+const supportsMediaPrompt = computed(() => {
+	const fields = modelStore.selectedModel?.model_input?.fields || {}
+	return !!(fields.image_urls || fields.file_ids || fields.image || fields.images || fields.input_images || fields.input_image || fields.init_image || fields.ref_image)
+})
+
+const uploadedMediaFiles = computed(() => {
+	return uploadedFiles.value.filter((f) => f.type.startsWith('image/'))
+})
+
+const isAssetPickerOpen = ref(false)
+
+const triggerFileUploadAndClose = () => {
+	activeDropdownField.value = null
+	triggerFileUpload()
+}
+
+const selectAssetAndClose = () => {
+	activeDropdownField.value = null
+	isAssetPickerOpen.value = true
+}
+
+const selectorCapability = computed(() => {
+	const cap = currentConversation.value?.capability
+	if (cap === 'image') return 'image_generation'
+	if (cap === 'video') return 'video_generation'
+	return 'chat'
+})
+
+const onAssetsSelected = (assets: { key: string; url: string }[]) => {
+	assets.forEach((asset) => {
+		uploadedFiles.value.push({
+			id: Math.random().toString(36).slice(2),
+			name: 'Asset',
+			key: asset.key,
+			url: asset.url,
+			type: 'image/png',
+			uploading: false,
+		})
+	})
+	isAssetPickerOpen.value = false
+}
+
+const isImageModel = computed(() => {
+	const model = modelStore.selectedModel
+	return model?.capabilities?.includes('image_generation') || model?.model_input?.capability === 'image_generation' || false
+})
+
+const isVideoModel = computed(() => {
+	const model = modelStore.selectedModel
+	return model?.capabilities?.includes('video_generation') || model?.model_input?.capability === 'video_generation' || false
+})
+
+const modelInputFields = computed(() => {
+	return modelStore.selectedModel?.model_input?.fields || {}
+})
+
+const dynamicSelectFields = computed(() => {
+	const fields = []
+	for (const [key, field] of Object.entries(modelInputFields.value)) {
+		if ((field as any).type === 'select') {
+			fields.push({ key, ...(field as any) })
+		}
+	}
+	return fields
+})
+
+const dynamicNumberFields = computed(() => {
+	const fields = []
+	for (const [key, field] of Object.entries(modelInputFields.value)) {
+		if ((field as any).type === 'number') {
+			fields.push({ key, ...(field as any) })
+		}
+	}
+	return fields
+})
+
+const activeDropdownField = ref<string | null>(null)
+const toggleDropdown = (key: string) => {
+	activeDropdownField.value = activeDropdownField.value === key ? null : key
+}
+
+const setParamAndClose = (key: string, val: any) => {
+	updateParams({ ...currentConversation.value?.params, [key]: val })
+	activeDropdownField.value = null
+}
+
+const getPreviewStyle = (ratio: string) => {
+	const baseSize = 120
+	if (ratio === '1:1') return { width: baseSize + 'px', height: baseSize + 'px' }
+	if (ratio === '16:9') return { width: baseSize + 'px', height: baseSize * (9 / 16) + 'px' }
+	if (ratio === '9:16') return { width: baseSize * (9 / 16) + 'px', height: baseSize + 'px' }
+	if (ratio === '4:3') return { width: baseSize + 'px', height: baseSize * (3 / 4) + 'px' }
+	if (ratio === '3:4') return { width: baseSize * (3 / 4) + 'px', height: baseSize + 'px' }
+	if (ratio === '21:9') return { width: baseSize + 'px', height: baseSize * (9 / 21) + 'px' }
+	if (ratio === '9:21') return { width: baseSize * (9 / 21) + 'px', height: baseSize + 'px' }
+	if (ratio === '3:2') return { width: baseSize + 'px', height: baseSize * (2 / 3) + 'px' }
+	if (ratio === '2:3') return { width: baseSize * (2 / 3) + 'px', height: baseSize + 'px' }
+	return { width: baseSize + 'px', height: baseSize + 'px' }
+}
 const messagesContainer = ref<HTMLElement | null>(null)
 const inputMessage = ref('')
 const activeSubPrompts = ref<string[]>([])
@@ -579,6 +836,16 @@ onMounted(async () => {
 
 		if (conversation) {
 			syncConversationModel(conversation)
+
+			// Re-hydrate uploaded files from params if available
+			if (conversation.params?.files && Array.isArray(conversation.params.files)) {
+				uploadedFiles.value = conversation.params.files.map((f: any) => ({
+					...f,
+					uploading: false,
+					localUrl: f.url, // Fallback to remote URL for re-hydration
+				}))
+			}
+
 			nextTick(() => {
 				scrollToBottom(true, true)
 				setTimeout(() => {
@@ -658,6 +925,7 @@ const scrollToBottom = (instant = false, force = false) => {
 const sendMessage = async (isInitial = false) => {
 	// For initial messages, the message is already in the store,
 	// but we need to derive userMessage for the stream.
+	// Allow sending just files without text
 	let userMessage = inputMessage.value.trim()
 
 	if (isInitial && chatStore.pendingMessage) {
@@ -665,7 +933,11 @@ const sendMessage = async (isInitial = false) => {
 		chatStore.setPendingMessage(null) // Consume it
 	}
 
-	// Allow sending just files without text
+	// Double check editor content if inputMessage is empty (to avoid race conditions)
+	if (!userMessage && editor.value) {
+		userMessage = editor.value.getText().trim()
+	}
+
 	if (!userMessage && uploadedFiles.value.length === 0 && !isInitial) {
 		return
 	}
@@ -685,22 +957,52 @@ const sendMessage = async (isInitial = false) => {
 		}
 	}
 
-	const image_urls: string[] = []
-	const file_ids: string[] = []
-
-	uploadedFiles.value
-		.filter((f) => !f.uploading)
-		.forEach((f) => {
-			if (f.type.startsWith('image/')) {
-				image_urls.push(f.key)
+	// Merge user-defined parameters with model defaults and initial conversation params
+	const currentParams = currentConversation.value.params || {}
+	const mergedParams = {
+		...currentParams,
+		...uploadedFiles.value.reduce((acc: any, file) => {
+			if (file.type.startsWith('image/')) {
+				acc.image_urls = acc.image_urls || []
+				acc.image_urls.push(file.key)
 			} else {
-				file_ids.push(f.key)
+				acc.file_ids = acc.file_ids || []
+				acc.file_ids.push(file.key)
 			}
-		})
+			return acc
+		}, {}),
+	}
 
-	const payloadOptions: any = { file_ids, image_urls }
-	if (supportsWebSearch.value) {
-		payloadOptions.enable_web_search = isWebSearchEnabled.value
+	// For initial messages, ensure we don't clear existing file lists if current uploadedFiles is empty
+	if (isInitial && uploadedFiles.value.length === 0) {
+		mergedParams.image_urls = mergedParams.image_urls || currentParams.image_urls || []
+		mergedParams.file_ids = mergedParams.file_ids || currentParams.file_ids || []
+	}
+
+	const payloadOptions: any = {
+		...mergedParams,
+		enable_web_search: isWebSearchEnabled.value,
+	}
+
+	// Advanced Media Field Mapping (e.g. input_images, image, ref_image)
+	if (isImageModel.value || isVideoModel.value) {
+		const fields = modelInputFields.value
+		const readyMedia = uploadedFiles.value.filter((f) => !f.uploading && f.type.startsWith('image/'))
+
+		// Use re-hydrated media if local uploadedFiles is empty (for initial send)
+		const effectiveMedia = readyMedia.length > 0 ? readyMedia : (isInitial ? (currentParams.files || []).filter((f: any) => f?.type?.startsWith('image/')) : [])
+
+		if (effectiveMedia.length > 0) {
+			if ('input_images' in fields) {
+				payloadOptions.input_images = effectiveMedia.map((f: any) => f.url)
+			} else if ('image' in fields) {
+				payloadOptions.image = effectiveMedia[0]?.url
+			} else if ('images' in fields) {
+				payloadOptions.images = effectiveMedia.map((f: any) => f.url)
+			} else if ('ref_image' in fields) {
+				payloadOptions.ref_image = effectiveMedia[0]?.url
+			}
+		}
 	}
 
 	// Reset scroll lock when user sends a new message
@@ -716,11 +1018,16 @@ const sendMessage = async (isInitial = false) => {
 	}
 
 	// 2. Add user message ONLY IF not already there (initial messages are added by the caller)
-	if (!isInitial) {
-		conversationStore.addMessage(conversationId, {
-			role: 'user',
-			content: userMessage,
-		})
+	// Correction: For initial send from WelcomeScreen, we MUST add it to the UI list
+	if (!isInitial || (isInitial && userMessage)) {
+		// Only add if the message isn't already the last one (avoid duplicates on reload)
+		const lastMsg = currentConversation.value?.messages[currentConversation.value.messages.length - 1]
+		if (lastMsg?.content !== userMessage || lastMsg?.role !== 'user') {
+			conversationStore.addMessage(conversationId, {
+				role: 'user',
+				content: userMessage,
+			})
+		}
 
 		// Auto-update title if needed
 		const currentTitle = currentConversation.value?.title
@@ -749,9 +1056,9 @@ const sendMessage = async (isInitial = false) => {
 		}
 
 		const userParams = currentConversation.value.params || {}
-		const mergedParams = { ...modelDefaults, ...userParams, ...payloadOptions }
+		const finalParams = { ...modelDefaults, ...userParams, ...payloadOptions }
 		const options: Record<string, any> = {}
-		Object.entries(mergedParams).forEach(([k, v]) => {
+		Object.entries(finalParams).forEach(([k, v]) => {
 			if (v !== null) options[k] = v
 		})
 
@@ -768,45 +1075,75 @@ const sendMessage = async (isInitial = false) => {
 		let lastFlushTime = Date.now()
 		const FLUSH_INTERVAL = 60 // 60ms throttle for UI updates
 
-		await fetchChatStream({
-			message: userMessage,
-			model,
-			options: {
-				...options,
-				context,
-			},
-			signal: abortController.value.signal,
-			onMessage: (content) => {
-				tokenBuffer += content
-				const now = Date.now()
-				if (now - lastFlushTime > FLUSH_INTERVAL) {
-					// Use the lightweight update method
-					conversationStore.updateLastMessageContent(conversationId, tokenBuffer)
-					tokenBuffer = ''
-					lastFlushTime = now
-				}
-			},
-			onError: (error) => {
-				const lastMsg = currentConversation.value?.messages[currentConversation.value.messages.length - 1]
-				if (lastMsg?.role === 'assistant' && !lastMsg.content) {
-					conversationStore.removeLastAssistantMessage(conversationId)
-				}
-				failedMessageContent.value = userMessage
-				uiStore.showToast(error?.message || t('chat.connection_failed'), 'error')
-			},
-			onFinish: () => {
-				abortController.value = null
-				// Final flush of any remaining tokens
-				if (tokenBuffer) {
-					conversationStore.updateLastMessageContent(conversationId, tokenBuffer)
-				}
-				// Call the full update method once at the end to sync updatedAt and trigger storage save
-				const finalContent = currentConversation.value?.messages[currentConversation.value.messages.length - 1]?.content || ''
-				conversationStore.updateLastMessage(conversationId, finalContent, false)
+		if (isImageModel.value || isVideoModel.value) {
+			const { image_urls, file_ids, files, capability, enable_web_search, ...cleanOptions } = options
+			const apiToCall = isImageModel.value ? generateImageStream : generateVideoStream
+			await apiToCall(
+				{
+					...cleanOptions,
+					prompt: userMessage,
+					model,
+				},
+				{
+					onTask: (data) => {
+						console.log('Task started:', data)
+					},
+					onImage: (data) => {
+						conversationStore.updateLastMessageContent(conversationId, `![Generated Image](${data.url})`)
+					},
+					onDone: () => {
+						// Fix: onDone signature changed, no data argument
+						abortController.value = null
+					},
+					onError: (error) => {
+						console.error('Generation error:', error)
+						conversationStore.removeLastAssistantMessage(conversationId)
+						failedMessageContent.value = userMessage
+						uiStore.showToast(error?.message || t('chat.connection_failed'), 'error')
+					},
+				},
+				abortController.value.signal,
+			)
+		} else {
+			await fetchChatStream({
+				message: userMessage,
+				model,
+				options: {
+					...options,
+					context,
+				},
+				signal: abortController.value.signal,
+				onMessage: (content) => {
+					tokenBuffer += content
+					const now = Date.now()
+					if (now - lastFlushTime > FLUSH_INTERVAL) {
+						conversationStore.updateLastMessageContent(conversationId, tokenBuffer)
+						tokenBuffer = ''
+						lastFlushTime = now
+					}
+				},
+				onError: (error) => {
+					console.error('Chat error:', error)
+					const lastMsg = currentConversation.value?.messages[currentConversation.value.messages.length - 1]
+					if (lastMsg?.role === 'assistant' && !lastMsg.content) {
+						conversationStore.removeLastAssistantMessage(conversationId)
+					}
+					failedMessageContent.value = userMessage
+					uiStore.showToast(error?.message || t('chat.connection_failed'), 'error')
+				},
+				onFinish: () => {
+					abortController.value = null
+					if (tokenBuffer) {
+						conversationStore.updateLastMessageContent(conversationId, tokenBuffer)
+					}
+				},
+			})
+		}
+		// Call the full update method once at the end to sync updatedAt and trigger storage save
+		const finalContent = currentConversation.value?.messages[currentConversation.value.messages.length - 1]?.content || ''
+		conversationStore.updateLastMessage(conversationId, finalContent, false)
 
-				chatStore.setLoading(false)
-			},
-		})
+		chatStore.setLoading(false)
 	} catch (error: any) {
 		abortController.value = null
 		conversationStore.removeLastAssistantMessage(conversationId)
@@ -950,7 +1287,11 @@ const handleMessageClick = (e: MouseEvent) => {
 
 .prose {
 	/* Improve prose readability */
-	@apply dark:text-[var(--text-primary)] leading-relaxed;
+	line-height: 1.625;
+}
+
+:deep(.dark) .prose {
+	color: var(--text-primary);
 }
 
 /* Tiptap Styles */

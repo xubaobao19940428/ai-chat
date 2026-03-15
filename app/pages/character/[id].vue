@@ -309,7 +309,7 @@ onMounted(async () => {
 const ensureConversation = async () => {
 	if (conversationId.value) return conversationId.value
 	if (!character.value) return null
-	const id = await conversationStore.createConversation({ character_id: character.value.id })
+	const id = await conversationStore.createConversation({ character_id: character.value.id, capability: 'chat' })
 	conversationId.value = id
 	conversationStore.currentConversationId = id
 	router.replace({ query: { ...route.query, conv: id } })
@@ -391,7 +391,7 @@ const sendMessage = async () => {
 
 const handleStartChat = async () => {
 	if (!character.value) return
-	const id = await conversationStore.createConversation({ character_id: character.value.id })
+	const id = await conversationStore.createConversation({ character_id: character.value.id, capability: 'chat' })
 	router.push(`/character/${character.value.id}?conv=${id}`)
 }
 

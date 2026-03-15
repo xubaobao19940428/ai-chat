@@ -460,6 +460,7 @@ import { useProjectStore } from '../stores/projects'
 import { useUIStore } from '../stores/ui'
 import { useDiscoveryStore } from '../stores/discovery'
 import { useUserStore } from '../stores/user'
+import { useModelStore } from '../stores/models'
 import ProjectModal from './ProjectModal.vue'
 import ConfirmDialog from './ConfirmDialog.vue'
 import Tooltip from './Tooltip.vue'
@@ -470,6 +471,7 @@ const projectStore = useProjectStore()
 const uiStore = useUIStore()
 const discoveryStore = useDiscoveryStore()
 const userStore = useUserStore()
+const modelStore = useModelStore()
 
 onMounted(() => {
 	if (discoveryStore.allItems.length === 0) {
@@ -691,10 +693,21 @@ const handleMouseLeave = () => {
 
 const handleMoreItemClick = (item: any) => {
 	if (item.id === 'ai-image') {
-		router.push('/image-generation')
+		const model = modelStore.models.find(m => {
+			const cap = m.model_input?.capability || m.capabilities?.[0]
+			return cap === 'image_generation' || cap === 'image'
+		})
+		if (model) modelStore.selectModel(`${model.provider}:${model.model}`)
+		router.push('/chat')
 	} else if (item.id === 'ai-video') {
-		router.push('/video-generation')
-	} else if (item.id === 'ai-bots') {
+		const model = modelStore.models.find(m => {
+			const cap = m.model_input?.capability || m.capabilities?.[0]
+			return cap === 'video_generation' || cap === 'video'
+		})
+		if (model) modelStore.selectModel(`${model.provider}:${model.model}`)
+		router.push('/chat')
+	}
+ else if (item.id === 'ai-bots') {
 		router.push('/explore')
 	} else if (item.id === 'ai-reading') {
 		// Mock for now or point to search/docs if relevant

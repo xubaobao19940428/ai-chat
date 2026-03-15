@@ -41,6 +41,7 @@ export interface Conversation {
   groupId: number
   characterId?: number
   updatedAt: number
+  capability?: string
 }
 
 export const useConversationStore = defineStore('conversation', () => {
@@ -72,7 +73,8 @@ export const useConversationStore = defineStore('conversation', () => {
           params: item.meta?.params || item.params || {},
           groupId: item.group_id,
           characterId: item.character_id,
-          updatedAt: item.updated_at * 1000
+          updatedAt: item.updated_at * 1000,
+          capability: item.capability || item.meta?.capability
         }
 
         const existingIndex = conversations.value.findIndex(c => c.id == id)
@@ -109,7 +111,8 @@ export const useConversationStore = defineStore('conversation', () => {
           params: item.meta?.params || item.params || {},
           groupId: item.group_id,
           characterId: item.character_id,
-          updatedAt: item.updated_at * 1000
+          updatedAt: item.updated_at * 1000,
+          capability: item.capability || item.meta?.capability
         }
       })
       conversations.value = newConversations
@@ -186,12 +189,14 @@ export const useConversationStore = defineStore('conversation', () => {
 
 
   // 创建新会话 — 乐观更新，不再阻塞等 fetchConversations
-  const createConversation = async (params: { character_id: number, group_id?: number, model?: string, model_id?: number }) => {
+  const createConversation = async (params: { character_id: number, group_id?: number, model?: string, model_id?: number, params?: Record<string, any>, capability?: string }) => {
     try {
       const res: any = await apiCreateConversation({
         character_id: params.character_id,
         group_id: params.group_id || 0,
-        model_id: params.model_id
+        model_id: params.model_id,
+        meta: { params: params.params },
+        capability: params.capability
       })
       
       const newId = res.data.conversation_id
@@ -203,10 +208,11 @@ export const useConversationStore = defineStore('conversation', () => {
         messages: [],
         model: params.model || '',
         modelId: params.model_id,
-        params: {},
+        params: params.params || {},
         groupId: params.group_id || 0,
         characterId: params.character_id,
         updatedAt: Date.now(),
+        capability: params.capability
       }
       conversations.value.unshift(newConv)
       currentConversationId.value = newId

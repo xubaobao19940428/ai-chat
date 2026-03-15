@@ -820,50 +820,7 @@ watch(
 )
 
 const handleMediaGenerate = async () => {
-	const content = editor.value?.getText()?.trim() || ''
-	if (!content || isGeneratingMedia.value || !modelStore.selectedModel) return
-
-	isGeneratingMedia.value = true
-	const model = modelStore.selectedModel
-	// Filter out null/undefined/empty values from dynamicParams
-	const cleanParams = Object.fromEntries(Object.entries(dynamicParams.value).filter(([, v]) => v !== null && v !== undefined && v !== ''))
-	const payload: { prompt: string; model: string; [key: string]: any } = {
-		model: `${model.provider}:${model.model}`,
-		...cleanParams,
-		prompt: content,
-	}
-
-	// Attach uploaded images if the model supports it
-	if (uploadedFiles.value.length > 0) {
-		const imageKeys = uploadedFiles.value.filter((f) => f.type.startsWith('image/')).map((f) => f.key)
-		if (imageKeys.length > 0) {
-			const fields = model.model_input?.fields || {}
-			if (fields.image_urls) payload.image_urls = imageKeys
-			else if (fields.image) payload.image = imageKeys[0]
-		}
-	}
-
-	editor.value?.commands.clearContent()
-	uploadedFiles.value = []
-
-	const streamFn = isImageModel.value ? generateImageStream : generateVideoStream
-	const targetRoute = isImageModel.value ? '/image-generation' : '/video-generation'
-
-	await streamFn(payload, {
-		onDone: async () => {
-			isGeneratingMedia.value = false
-			router.push(targetRoute)
-		},
-		onError: (error: Error) => {
-			isGeneratingMedia.value = false
-			const msg = error?.message || 'Generation failed'
-			generateError.value = msg
-			setTimeout(() => {
-				generateError.value = ''
-			}, 4000)
-			uiStore.showToast(msg, 'error')
-		},
-	})
+	handleSendMessage()
 }
 
 const fileInputRef = ref<HTMLInputElement | null>(null)
@@ -916,6 +873,7 @@ function handleSendMessage(directContent?: string) {
 		// Group files by type
 		const image_urls: string[] = []
 		const file_ids: string[] = []
+		const readyMedia: any[] = []
 
 		uploadedFiles.value.forEach((f) => {
 			if (f.type.startsWith('image/')) {
@@ -923,17 +881,37 @@ function handleSendMessage(directContent?: string) {
 				// Assuming the API wants the `key` or `url`.
 				// Let's pass the remote URL or key.
 				image_urls.push(f.key)
+				readyMedia.push(f)
 			} else {
 				file_ids.push(f.key)
 			}
 		})
 
-		const payloadOptions: any = { file_ids, image_urls }
+		// Merge file info with dynamic params (aspect ratio, duration, etc.)
+		const cleanParams = Object.fromEntries(
+			Object.entries(dynamicParams.value).filter(([, v]) => v !== null && v !== undefined && v !== '')
+		)
+		const capability = isImageModel.value ? 'image' : (isVideoModel.value ? 'video' : 'chat')
+		const payloadOptions: any = { ...cleanParams, file_ids, image_urls, files: uploadedFiles.value }
+
+		// Advanced Media Field Mapping
+		if (isImageModel.value || isVideoModel.value) {
+			const fields = modelInputFields.value
+			if ('input_images' in fields && readyMedia.length > 0) {
+				payloadOptions.input_images = readyMedia.map((f) => f.url)
+			} else if ('image' in fields && readyMedia.length > 0) {
+				payloadOptions.image = readyMedia[0]?.url
+			} else if ('images' in fields && readyMedia.length > 0) {
+				payloadOptions.images = readyMedia.map((f) => f.url)
+			} else if ('ref_image' in fields && readyMedia.length > 0) {
+				payloadOptions.ref_image = readyMedia[0]?.url
+			}
+		}
 		if (supportsWebSearch.value) {
 			payloadOptions.enable_web_search = isWebSearchEnabled.value
 		}
 
-		emit('send-message', content, modelId, payloadOptions)
+		emit('send-message', content, modelId, payloadOptions, capability)
 
 		editor.value?.commands.clearContent()
 		uploadedFiles.value = []

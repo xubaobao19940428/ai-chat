@@ -152,7 +152,14 @@ const filteredModels = computed(() => {
 
 	// Filter by capability if provided
 	if (props.capability) {
-		models = models.filter((m) => m.model_input?.capability === props.capability || m.capabilities?.includes(props.capability!))
+		if (props.capability === 'chat') {
+			models = models.filter((m) => {
+				const cap = m.model_input?.capability || (m.capabilities && m.capabilities[0])
+				return cap !== 'image_generation' && cap !== 'video_generation'
+			})
+		} else {
+			models = models.filter((m) => m.model_input?.capability === props.capability || m.capabilities?.includes(props.capability!))
+		}
 	}
 
 	const q = searchQuery.value.trim().toLowerCase()
