@@ -48,14 +48,13 @@ const currentCapability = computed(() => {
 	if (route.name === 'video-generation') return 'video_generation'
 	if (route.name === 'chat-id') {
 		const conv = conversationStore.currentConversation
-		// 只有当已加载的会话 id 与当前路由匹配时才限制，否则返回 undefined 避免错误 override
 		if (!conv || String(conv.id) !== String(route.params.id)) return undefined
 		const cap = conv.capability
-		if (cap === 'image') return 'image_generation'
-		if (cap === 'video') return 'video_generation'
+		if (cap === 'image' || cap === 'image_generation') return 'image_generation'
+		if (cap === 'video' || cap === 'video_generation') return 'video_generation'
 		return 'chat'
 	}
-	return undefined
+	return 'chat'
 })
 
 const isHomePage = computed(() => ['index', 'chat'].includes(route.name as string))

@@ -84,11 +84,6 @@
 									>
 										<img :src="url" class="w-full h-full object-cover block cursor-zoom-in" @click="previewImage = url" />
 
-										<!-- Model badge top-left -->
-										<div class="absolute top-2 left-2 flex items-center gap-1 px-2 py-1 rounded-full bg-black/40 backdrop-blur-sm text-white text-[11px] font-medium">
-											<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-											{{ getModelDisplayName(currentConversation?.model) }}
-										</div>
 
 										<!-- Hover overlay: zoom + download -->
 										<div class="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 transition-colors flex items-end justify-end p-2 gap-1.5 opacity-0 group-hover/img:opacity-100">
@@ -603,8 +598,8 @@ const selectAssetAndClose = () => {
 
 const selectorCapability = computed(() => {
 	const cap = currentConversation.value?.capability
-	if (cap === 'image') return 'image_generation'
-	if (cap === 'video') return 'video_generation'
+	if (cap === 'image' || cap === 'image_generation') return 'image_generation'
+	if (cap === 'video' || cap === 'video_generation') return 'video_generation'
 	return 'chat'
 })
 
@@ -624,16 +619,20 @@ const onAssetsSelected = (assets: { key: string; url: string }[]) => {
 
 const isImageModel = computed(() => {
 	const model = modelStore.selectedModel
-	const modelMatch = model?.capabilities?.includes('image_generation') || model?.model_input?.capability === 'image_generation'
-	const convMatch = currentConversation.value?.capability === 'image'
-	return modelMatch || convMatch
+	const mCap = model?.model_input?.capability || model?.capabilities?.[0]
+	const mMatch = mCap === 'image_generation' || mCap === 'image'
+	const cCap = currentConversation.value?.capability
+	const cMatch = cCap === 'image_generation' || cCap === 'image'
+	return mMatch || cMatch
 })
 
 const isVideoModel = computed(() => {
 	const model = modelStore.selectedModel
-	const modelMatch = model?.capabilities?.includes('video_generation') || model?.model_input?.capability === 'video_generation'
-	const convMatch = currentConversation.value?.capability === 'video'
-	return modelMatch || convMatch
+	const mCap = model?.model_input?.capability || model?.capabilities?.[0]
+	const mMatch = mCap === 'video_generation' || mCap === 'video'
+	const cCap = currentConversation.value?.capability
+	const cMatch = cCap === 'video_generation' || cCap === 'video'
+	return mMatch || cMatch
 })
 
 const modelInputFields = computed(() => {

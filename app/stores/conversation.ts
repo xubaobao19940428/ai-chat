@@ -106,13 +106,13 @@ export const useConversationStore = defineStore('conversation', () => {
           id: String(item.id),
           title: item.title,
           messages: existing?.messages || [],
-          model: item.model || '',
-          modelId: item.model_id || undefined,
-          params: item.meta?.params || item.params || {},
+          model: item.model || existing?.model || '',
+          modelId: item.model_id || existing?.modelId || undefined,
+          params: item.meta?.params || item.params || existing?.params || {},
           groupId: item.group_id,
           characterId: item.character_id,
           updatedAt: item.updated_at * 1000,
-          capability: item.capability || item.meta?.capability
+          capability: item.capability || item.meta?.capability || existing?.capability
         }
       })
       conversations.value = newConversations

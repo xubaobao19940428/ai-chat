@@ -147,25 +147,44 @@ const dropdownStyle = ref<Record<string, string>>({})
 const searchQuery = ref('')
 const searchInputRef = ref<HTMLInputElement | null>(null)
 
+const IMAGE_CAPS = ['image', 'image_generation']
+const VIDEO_CAPS = ['video', 'video_generation']
+
+const isImageMatch = (cap?: string) => IMAGE_CAPS.includes(cap || '')
+const isVideoMatch = (cap?: string) => VIDEO_CAPS.includes(cap || '')
+
+const getEffectiveCap = (m: any) => m.model_input?.capability || m.capabilities?.[0] || ''
+
 const filteredModels = computed(() => {
 	let models = modelStore.models
+	const cap = props.capability || 'chat'
 
-	// Filter by capability if provided
-	if (props.capability) {
-		if (props.capability === 'chat') {
-			models = models.filter((m) => {
-				const cap = m.model_input?.capability || (m.capabilities && m.capabilities[0])
-				return cap !== 'image_generation' && cap !== 'video_generation'
-			})
-		} else {
-			models = models.filter((m) => m.model_input?.capability === props.capability || m.capabilities?.includes(props.capability!))
-		}
+	if (isImageMatch(cap)) {
+		models = models.filter((m) => {
+			const mCap = getEffectiveCap(m)
+			return isImageMatch(mCap) || m.capabilities?.some(isImageMatch)
+		})
+	} else if (isVideoMatch(cap)) {
+		models = models.filter((m) => {
+			const mCap = getEffectiveCap(m)
+			return isVideoMatch(mCap) || m.capabilities?.some(isVideoMatch)
+		})
+	} else {
+		// Chat mode: exclude all media models
+		models = models.filter((m) => {
+			const mCap = getEffectiveCap(m)
+			const isMedia = isImageMatch(mCap) || m.capabilities?.some(isImageMatch) || isVideoMatch(mCap) || m.capabilities?.some(isVideoMatch)
+			return !isMedia
+		})
 	}
 
+	// 2. Filter by search query (within the filtered set)
 	const q = searchQuery.value.trim().toLowerCase()
-	if (!q) return models
+	if (q) {
+		return models.filter((m) => m.display_name?.toLowerCase().includes(q) || m.provider?.toLowerCase().includes(q) || m.model?.toLowerCase().includes(q))
+	}
 
-	return models.filter((m) => m.display_name?.toLowerCase().includes(q) || m.provider?.toLowerCase().includes(q) || m.model?.toLowerCase().includes(q))
+	return models
 })
 
 const updateDropdownPosition = () => {
@@ -208,9 +227,23 @@ watch(isOpen, async (val) => {
 	}
 })
 
+const initialValidModels = computed(() => {
+	const cap = props.capability || 'chat'
+	
+	return modelStore.models.filter((m) => {
+		const mCap = getEffectiveCap(m)
+		if (isImageMatch(cap)) return isImageMatch(mCap) || m.capabilities?.some(isImageMatch)
+		if (isVideoMatch(cap)) return isVideoMatch(mCap) || m.capabilities?.some(isVideoMatch)
+		
+		// Chat mode
+		const isMedia = isImageMatch(mCap) || m.capabilities?.some(isImageMatch) || isVideoMatch(mCap) || m.capabilities?.some(isVideoMatch)
+		return !isMedia
+	})
+})
+
 // Auto-select first model when filtering changes (e.g. page navigation)
 watch(
-	() => filteredModels.value,
+	() => initialValidModels.value,
 	(newModels) => {
 		if (props.capability && newModels.length > 0) {
 			const currentSelected = modelStore.selectedModelId
@@ -274,10 +307,10 @@ const selectModel = (id: string) => {
 	console.log('model', model)
 
 	// Resolve capability
-	const cap = model?.model_input?.capability || model?.capabilities?.[0] || ''
+	const cap = getEffectiveCap(model)
 
-	const isImageCap = cap === 'image_generation' || cap === 'image'
-	const isVideoCap = cap === 'video_generation' || cap === 'video'
+	const isImageCap = isImageMatch(cap)
+	const isVideoCap = isVideoMatch(cap)
 	const currentRoute = route.name as string
 	const onImagePage = currentRoute === 'image-generation'
 	const onVideoPage = currentRoute === 'video-generation'

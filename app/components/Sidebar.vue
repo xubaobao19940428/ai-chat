@@ -225,15 +225,20 @@
 							</div>
 						</template>
 						<template v-else>
-							<div v-for="conversation in sortedConversations" :key="conversation.id" @click="handleSelectConversation(String(conversation.id))" :class="['group flex items-center rounded-[10px] clickable cursor-pointer transition-all w-full h-[36px]', conversationStore.currentConversationId == conversation.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px] pe-[2px] gap-[12px]']">
+							<div
+								v-for="conversation in sortedConversations"
+								:key="conversation.id"
+								@click="handleSelectConversation(String(conversation.id))"
+								:data-cap="conversation.capability"
+								:class="['group flex items-center rounded-[10px] clickable cursor-pointer transition-all w-full h-[36px]', conversationStore.currentConversationId == conversation.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px] pe-[2px] gap-[12px]']">
 								<div class="shrink-0 size-[18px] flex items-center justify-center overflow-hidden transition-all">
 									<img v-if="getConversationAvatar(conversation)" :src="getConversationAvatar(conversation)" class="size-full object-cover rounded-[4px] border border-[var(--border-light)]/50" />
 									<template v-else>
 										<div v-if="conversation.characterId && conversation.characterId > 1" class="size-full flex items-center justify-center bg-blue-500/10 rounded-[4px]">
 											<Bot :size="15" class="text-blue-500 opacity-80" />
 										</div>
-										<Image v-else-if="conversation.capability === 'image'" :size="15" class="text-purple-500 opacity-60 group-hover:opacity-100 transition-opacity" />
-										<Video v-else-if="conversation.capability === 'video'" :size="15" class="text-pink-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+										<Image v-else-if="conversation.capability === 'image' || conversation.capability === 'image_generation'" :size="15" class="text-purple-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+										<Video v-else-if="conversation.capability === 'video' || conversation.capability === 'video_generation'" :size="15" class="text-pink-500 opacity-60 group-hover:opacity-100 transition-opacity" />
 										<MessageSquare v-else :size="16" class="text-[var(--text-secondary)] opacity-40 group-hover:opacity-100 transition-opacity" />
 									</template>
 								</div>
@@ -695,21 +700,20 @@ const handleMouseLeave = () => {
 
 const handleMoreItemClick = (item: any) => {
 	if (item.id === 'ai-image') {
-		const model = modelStore.models.find(m => {
+		const model = modelStore.models.find((m) => {
 			const cap = m.model_input?.capability || m.capabilities?.[0]
 			return cap === 'image_generation' || cap === 'image'
 		})
 		if (model) modelStore.selectModel(`${model.provider}:${model.model}`)
 		router.push('/chat')
 	} else if (item.id === 'ai-video') {
-		const model = modelStore.models.find(m => {
+		const model = modelStore.models.find((m) => {
 			const cap = m.model_input?.capability || m.capabilities?.[0]
 			return cap === 'video_generation' || cap === 'video'
 		})
 		if (model) modelStore.selectModel(`${model.provider}:${model.model}`)
 		router.push('/chat')
-	}
- else if (item.id === 'ai-bots') {
+	} else if (item.id === 'ai-bots') {
 		router.push('/explore')
 	} else if (item.id === 'ai-reading') {
 		// Mock for now or point to search/docs if relevant
