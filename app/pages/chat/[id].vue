@@ -32,16 +32,98 @@
 		</header> -->
 
 		<!-- Main Chat Area -->
-		<div class="flex-1 overflow-y-auto px-4 pb-48 pt-20 custom-scrollbar relative z-10" ref="messagesContainer" @scroll="onMessagesScroll">
-			<div class="max-w-[840px] mx-auto py-6">
+		<div class="flex-1 overflow-y-auto px-4 pb-48 pt-6 custom-scrollbar relative z-10" ref="messagesContainer" @scroll="onMessagesScroll">
+			<div class="max-w-[1100px] mx-auto py-6">
 				<!-- Initial Loading State -->
 				<div v-if="conversationStore.isLoading && (!currentConversation?.messages || currentConversation.messages.length === 0)" class="flex flex-col items-center justify-center py-20 space-y-4">
 					<div class="w-10 h-10 border-4 border-[var(--border-light)] border-t-[var(--text-primary)] rounded-full animate-spin"></div>
 					<p class="text-[var(--text-tertiary)] text-sm font-medium animate-pulse">Loading messages...</p>
 				</div>
 
-				<!-- Conditional TransitionGroup or Div to prevent initial load jitter -->
-				<component :is="isMountedInitial ? 'TransitionGroup' : 'div'" name="message-list" class="space-y-10">
+				<!-- Image Generation Mode: Prompt left, Images right -->
+				<div v-if="isImageModel" class="space-y-6">
+					<div v-for="group in imageGenerationGroups" :key="group.userMsg.id" class="flex gap-4 items-start">
+						<!-- Left: Prompt Card -->
+						<div class="w-[220px] shrink-0 flex flex-col justify-between gap-3">
+							<div class="bg-[var(--background-gray-subtle,#f4f4f5)] dark:bg-[var(--background-gray-subtle)] rounded-2xl px-4 py-4 text-[13.5px] text-[var(--text-primary)] leading-relaxed tracking-tight whitespace-pre-wrap break-words">
+								{{ group.userMsg.content }}
+							</div>
+							<div class="px-1 text-[12px] text-[var(--text-tertiary)] self-end">
+								{{ getModelDisplayName(currentConversation?.model) }}
+							</div>
+						</div>
+
+						<!-- Right: Images or Loading -->
+						<div class="flex-1 min-w-0 flex flex-col gap-2">
+							<!-- Loading state -->
+							<div v-if="group.isLoading">
+								<div class="grid gap-1" :class="Number(currentConversation?.params?.num_outputs || 1) >= 3 ? 'grid-cols-3' : Number(currentConversation?.params?.num_outputs || 1) === 2 ? 'grid-cols-2' : 'grid-cols-1'">
+									<div
+										v-for="n in Number(currentConversation?.params?.num_outputs || 1)"
+										:key="n"
+										class="rounded-xl bg-[var(--background-gray-subtle,#f4f4f5)] overflow-hidden flex items-center justify-center"
+										style="aspect-ratio: 1 / 1"
+									>
+										<div class="flex flex-col items-center gap-2">
+											<div class="w-5 h-5 border-2 border-[var(--border-light)] border-t-[var(--text-secondary)] rounded-full animate-spin"></div>
+											<p class="text-[11px] text-[var(--text-tertiary)]">Generating...</p>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- Images grid -->
+							<div v-else-if="group.images.length > 0">
+								<div class="grid gap-1" :class="group.images.length >= 3 ? 'grid-cols-3' : group.images.length === 2 ? 'grid-cols-2' : 'grid-cols-1'">
+									<div
+										v-for="(url, idx) in group.images"
+										:key="idx"
+										class="relative rounded-xl overflow-hidden group/img bg-[var(--background-gray-subtle,#f4f4f5)]"
+										:class="group.images.length === 1 ? 'max-w-[420px]' : ''"
+										style="aspect-ratio: 1 / 1"
+									>
+										<img :src="url" class="w-full h-full object-cover block cursor-zoom-in" @click="previewImage = url" />
+
+										<!-- Model badge top-left -->
+										<div class="absolute top-2 left-2 flex items-center gap-1 px-2 py-1 rounded-full bg-black/40 backdrop-blur-sm text-white text-[11px] font-medium">
+											<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+											{{ getModelDisplayName(currentConversation?.model) }}
+										</div>
+
+										<!-- Hover overlay: zoom + download -->
+										<div class="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 transition-colors flex items-end justify-end p-2 gap-1.5 opacity-0 group-hover/img:opacity-100">
+											<button @click.stop="previewImage = url" class="flex items-center justify-center w-7 h-7 rounded-full bg-black/50 backdrop-blur-sm text-white hover:bg-black/70 transition-colors">
+												<Expand :size="13" />
+											</button>
+											<a :href="url" :download="`image-${idx + 1}.jpg`" target="_blank" @click.stop class="flex items-center justify-center w-7 h-7 rounded-full bg-black/50 backdrop-blur-sm text-white hover:bg-black/70 transition-colors">
+												<Download :size="13" />
+											</a>
+										</div>
+									</div>
+								</div>
+
+								<!-- Action bar — right aligned -->
+								<div class="flex items-center justify-end gap-0.5 mt-1.5 text-[12px] text-[var(--text-tertiary)]">
+									<button @click="regenerateFromGroup(group)" :disabled="chatStore.isLoading" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-40">
+										<RefreshCw :size="12" />
+										Retry
+									</button>
+									<button @click="reuseGroupPrompt(group)" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors">
+										<ArrowUp :size="12" />
+										Reuse parameters
+									</button>
+									<button @click="downloadAllImages(group.images)" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors">
+										<Download :size="12" />
+										Download all
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Chat Mode: standard message list -->
+				<component v-else :is="isMountedInitial ? 'TransitionGroup' : 'div'" name="message-list" class="space-y-10">
 					<div v-for="message in currentConversation?.messages" :key="message.id" class="flex gap-4 group" :class="message.role === 'user' ? 'flex-row-reverse' : ''" @click="handleMessageClick">
 						<!-- Avatar -->
 						<div class="flex-shrink-0 mt-1">
@@ -131,6 +213,22 @@
 					</button>
 					<button @click="failedMessageContent = null" class="p-1 text-red-400 hover:text-red-500 transition-colors">
 						<X :size="13" />
+					</button>
+				</div>
+				<!-- Follow-up Questions -->
+				<div v-if="followUpLoading || followUpQuestions.length > 0" class="mt-4 ml-12 flex flex-col gap-2 max-w-[600px]">
+					<template v-if="followUpLoading">
+						<div v-for="i in 3" :key="i" class="h-[46px] rounded-2xl bg-[var(--background-gray-subtle)] animate-pulse" />
+					</template>
+					<button
+						v-else
+						v-for="(q, i) in followUpQuestions"
+						:key="i"
+						@click="fillFollowUpQuestion(q)"
+						class="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.07] dark:hover:bg-white/[0.1] text-[14px] text-[var(--text-primary)] text-left transition-colors group/fq"
+					>
+						<span>{{ q }}</span>
+						<span class="text-[var(--text-tertiary)] group-hover/fq:text-[var(--text-secondary)] shrink-0 transition-colors">→</span>
 					</button>
 				</div>
 			</div>
@@ -417,6 +515,26 @@
 
 		<!-- Asset Picker Modal -->
 		<AssetPickerModal :show="isAssetPickerOpen" @close="isAssetPickerOpen = false" @select="onAssetsSelected" />
+
+		<!-- Image Preview Lightbox -->
+		<Teleport to="body">
+			<Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0">
+				<div v-if="previewImage" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm" @click="previewImage = null" @keydown.esc.window="previewImage = null">
+					<div class="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center" @click.stop>
+						<img :src="previewImage" class="max-w-full max-h-[90vh] rounded-2xl shadow-2xl object-contain" />
+						<!-- Close -->
+						<button @click="previewImage = null" class="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white flex items-center justify-center transition-colors border border-white/20">
+							<X :size="14" />
+						</button>
+						<!-- Download -->
+						<a :href="previewImage" download="image.jpg" target="_blank" @click.stop class="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white text-[12px] font-medium transition-colors border border-white/10">
+							<Download :size="13" />
+							Download
+						</a>
+					</div>
+				</div>
+			</Transition>
+		</Teleport>
 	</div>
 </template>
 
@@ -437,8 +555,9 @@ import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import Tooltip from '../../components/Tooltip.vue'
 import AssetPickerModal from '../../components/AssetPickerModal.vue'
-import { Copy, Pencil, Plus, Globe, Settings, ArrowUp, Square, SlidersHorizontal, Loader2, X, FileText, Share2, RefreshCw, Palette, Gem, LayoutGrid, Check, ImagePlus, Monitor, Clock } from 'lucide-vue-next'
+import { Copy, Pencil, Plus, Globe, Settings, ArrowUp, Square, SlidersHorizontal, Loader2, X, FileText, Share2, RefreshCw, Palette, Gem, LayoutGrid, Check, ImagePlus, Monitor, Clock, Download, Expand } from 'lucide-vue-next'
 import { fetchChatStream, generateImageStream, generateVideoStream, uploadFile, type ModelInputField } from '../../utils/api'
+import { generateConversationTitle, generateFollowUpQuestions } from '../../api/conversation'
 const { t } = useI18n()
 
 const route = useRoute()
@@ -470,6 +589,7 @@ const uploadedMediaFiles = computed(() => {
 })
 
 const isAssetPickerOpen = ref(false)
+const previewImage = ref<string | null>(null)
 
 const triggerFileUploadAndClose = () => {
 	activeDropdownField.value = null
@@ -504,12 +624,16 @@ const onAssetsSelected = (assets: { key: string; url: string }[]) => {
 
 const isImageModel = computed(() => {
 	const model = modelStore.selectedModel
-	return model?.capabilities?.includes('image_generation') || model?.model_input?.capability === 'image_generation' || false
+	const modelMatch = model?.capabilities?.includes('image_generation') || model?.model_input?.capability === 'image_generation'
+	const convMatch = currentConversation.value?.capability === 'image'
+	return modelMatch || convMatch
 })
 
 const isVideoModel = computed(() => {
 	const model = modelStore.selectedModel
-	return model?.capabilities?.includes('video_generation') || model?.model_input?.capability === 'video_generation' || false
+	const modelMatch = model?.capabilities?.includes('video_generation') || model?.model_input?.capability === 'video_generation'
+	const convMatch = currentConversation.value?.capability === 'video'
+	return modelMatch || convMatch
 })
 
 const modelInputFields = computed(() => {
@@ -571,6 +695,9 @@ const editContentRef = ref<HTMLElement | null>(null)
 
 // Failed message retry state
 const failedMessageContent = ref<string | null>(null)
+const titleTriggered = ref(false)
+const followUpQuestions = ref<string[]>([])
+const followUpLoading = ref(false)
 
 // Scroll lock: don't auto-scroll when user has scrolled up
 const isUserScrolledUp = ref(false)
@@ -800,6 +927,135 @@ const getModelIcon = (modelId?: string) => {
 	return '/icons/openai.svg'
 }
 
+const getModelDisplayName = (modelId?: string): string => {
+	if (!modelId) return 'AI'
+	const model = modelStore.models.find((m: any) => m.model === modelId || `${m.provider}:${m.model}` === modelId)
+	if (model?.display_name) return model.display_name
+	// Fall back to the part after ':' or the full string
+	return (modelId.includes(':') ? modelId.split(':')[1] : modelId) ?? modelId
+}
+
+const extractImageUrls = (content: string): string[] => {
+	// JSON format: {"capability":"image","success":true,"data":[{"type":"image","url":"..."}]}
+	try {
+		const json = JSON.parse(content)
+		if (json.data && Array.isArray(json.data)) {
+			return json.data.filter((item: any) => item.type === 'image' && item.url).map((item: any) => item.url)
+		}
+	} catch {}
+	// Fallback: markdown image format
+	const matches = [...content.matchAll(/!\[.*?\]\((https?:\/\/[^)]+)\)/g)]
+	return matches.map((m) => m[1]).filter((u): u is string => !!u)
+}
+
+const imageGenerationGroups = computed(() => {
+	if (!currentConversation.value?.messages) return []
+	const messages = currentConversation.value.messages
+	const groups: { userMsg: any; assistantMsg: any | null; images: string[]; isLoading: boolean }[] = []
+
+	// Build id→message map for parent_id lookup
+	const msgById = new Map(messages.map((m: any) => [m.id, m]))
+
+	// Collect assistant messages keyed by parent_id
+	const assistantByParentId = new Map<string | number, any>()
+	const assignedAssistants = new Set<string | number>()
+	for (const m of messages) {
+		const pid = (m as any).parent_id
+		if (m.role === 'assistant' && pid && msgById.has(pid)) {
+			assistantByParentId.set(pid, m)
+		}
+	}
+
+	const isCurrentlyLoading = chatStore.isLoading && chatStore.loadingConversationId === currentConversationId.value
+	const lastMsg = messages[messages.length - 1]
+
+	for (let i = 0; i < messages.length; i++) {
+		const msg = messages[i]
+		if (!msg || msg.role !== 'user') continue
+
+		// Try parent_id-based match first, then fall back to next sequential message
+		let assistantMsg: any = null
+		const msgParentKey = (msg as any).id
+		if (assistantByParentId.has(msgParentKey)) {
+			assistantMsg = assistantByParentId.get(msgParentKey)
+			assignedAssistants.add(assistantMsg.id)
+		} else {
+			const next = messages[i + 1]
+			if (next?.role === 'assistant' && !assignedAssistants.has(next.id)) {
+				assistantMsg = next
+				assignedAssistants.add(next.id)
+				i++
+			}
+		}
+
+		const isLastGroup = !assistantMsg || assistantMsg.id === lastMsg?.id
+		groups.push({
+			userMsg: msg,
+			assistantMsg,
+			images: assistantMsg ? extractImageUrls(assistantMsg.content) : [],
+			isLoading: isCurrentlyLoading && isLastGroup && (!assistantMsg || !assistantMsg.content),
+		})
+	}
+	return groups
+})
+
+const regenerateFromGroup = (group: { userMsg: any }) => {
+	if (!currentConversation.value || chatStore.isLoading) return
+	conversationStore.truncateFromMessage(currentConversationId.value, group.userMsg.id)
+	if (editor.value) {
+		editor.value.commands.setContent(group.userMsg.content)
+		inputMessage.value = group.userMsg.content
+		sendMessage()
+	}
+}
+
+const fillFollowUpQuestion = (q: string) => {
+	inputMessage.value = q
+	if (editor.value) {
+		editor.value.commands.setContent(q)
+	}
+}
+
+const reuseGroupPrompt = (group: { userMsg: any }) => {
+	if (editor.value) {
+		editor.value.commands.setContent(group.userMsg.content)
+		inputMessage.value = group.userMsg.content
+		editor.value.commands.focus()
+	}
+}
+
+const downloadAllImages = (urls: string[]) => {
+	urls.forEach((url, idx) => {
+		const a = document.createElement('a')
+		a.href = url
+		a.download = `generated-image-${idx + 1}.jpg`
+		a.target = '_blank'
+		document.body.appendChild(a)
+		a.click()
+		document.body.removeChild(a)
+	})
+}
+
+// 触发标题生成（每条消息结束时调用一次，由 titleTriggered 控制不重复）
+const triggerTitleGeneration = (convId: number | string, messages: { role: string; content: string }[]) => {
+	let generated = ''
+	generateConversationTitle(
+		convId,
+		messages,
+		(chunk) => {
+			generated += chunk
+			// 实时更新当前会话标题
+			if (currentConversation.value) currentConversation.value.title = generated
+			// 实时更新侧边栏标题
+			const c = conversationStore.conversations.find((c: any) => c.id == convId)
+			if (c) c.title = generated
+		},
+		() => {
+			// done: 最终标题已由服务端写入，本地已实时更新
+		},
+	)
+}
+
 const formatMessageTime = (timestamp?: number) => {
 	if (!timestamp) return ''
 	return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -1008,6 +1264,9 @@ const sendMessage = async (isInitial = false) => {
 	// Reset scroll lock when user sends a new message
 	isUserScrolledUp.value = false
 	failedMessageContent.value = null
+	titleTriggered.value = false
+	followUpQuestions.value = []
+	followUpLoading.value = false
 
 	// 1. Clear input if not initial
 	if (!isInitial) {
@@ -1029,12 +1288,6 @@ const sendMessage = async (isInitial = false) => {
 			})
 		}
 
-		// Auto-update title if needed
-		const currentTitle = currentConversation.value?.title
-		if (!currentTitle || currentTitle === 'New conversation') {
-			const newTitle = userMessage.length > 40 ? userMessage.substring(0, 40) + '...' : userMessage
-			conversationStore.updateTitle(conversationId, newTitle)
-		}
 	}
 
 	// 3. Set loading and add assistant placeholder
@@ -1083,6 +1336,7 @@ const sendMessage = async (isInitial = false) => {
 					...cleanOptions,
 					prompt: userMessage,
 					model,
+					context: { conversation_id: conversationId },
 				},
 				{
 					onTask: (data) => {
@@ -1092,8 +1346,8 @@ const sendMessage = async (isInitial = false) => {
 						conversationStore.updateLastMessageContent(conversationId, `![Generated Image](${data.url})`)
 					},
 					onDone: () => {
-						// Fix: onDone signature changed, no data argument
 						abortController.value = null
+						triggerTitleGeneration(conversationId, [{ role: 'user', content: userMessage }])
 					},
 					onError: (error) => {
 						console.error('Generation error:', error)
@@ -1105,11 +1359,12 @@ const sendMessage = async (isInitial = false) => {
 				abortController.value.signal,
 			)
 		} else {
+			const { image_urls, file_ids, files, capability, ...chatOptions } = options
 			await fetchChatStream({
 				message: userMessage,
 				model,
 				options: {
-					...options,
+					...chatOptions,
 					context,
 				},
 				signal: abortController.value.signal,
@@ -1120,6 +1375,12 @@ const sendMessage = async (isInitial = false) => {
 						conversationStore.updateLastMessageContent(conversationId, tokenBuffer)
 						tokenBuffer = ''
 						lastFlushTime = now
+					}
+					// 累计回复达 200 字时触发标题生成（只触发一次）
+					const accum = currentConversation.value?.messages[currentConversation.value.messages.length - 1]?.content || ''
+					if (!titleTriggered.value && accum.length >= 200) {
+						titleTriggered.value = true
+						triggerTitleGeneration(conversationId, [{ role: 'user', content: userMessage }, { role: 'assistant', content: accum.substring(0, 200) }])
 					}
 				},
 				onError: (error) => {
@@ -1136,6 +1397,21 @@ const sendMessage = async (isInitial = false) => {
 					if (tokenBuffer) {
 						conversationStore.updateLastMessageContent(conversationId, tokenBuffer)
 					}
+					const assistantContent = currentConversation.value?.messages[currentConversation.value.messages.length - 1]?.content || ''
+					// 回复结束时若还没触发过（回复不足 200 字），现在触发
+					if (!titleTriggered.value) {
+						titleTriggered.value = true
+						triggerTitleGeneration(conversationId, [{ role: 'user', content: userMessage }, { role: 'assistant', content: assistantContent }])
+					}
+					// 生成衍生问题
+					followUpLoading.value = true
+					generateFollowUpQuestions(
+						[{ role: 'user', content: userMessage }, { role: 'assistant', content: assistantContent }],
+						(questions) => {
+							followUpQuestions.value = questions
+							followUpLoading.value = false
+						},
+					)
 				},
 			})
 		}
@@ -1197,16 +1473,17 @@ const startEditing = (message: any) => {
 	editingMessageId.value = message.id
 	editingContent.value = message.content
 	nextTick(() => {
-		if (editContentRef.value) {
-			editContentRef.value.textContent = message.content
+		const el = Array.isArray(editContentRef.value) ? editContentRef.value[0] : editContentRef.value
+		if (el) {
+			el.textContent = message.content
 			// Place cursor at end
 			const range = document.createRange()
 			const sel = window.getSelection()
-			range.selectNodeContents(editContentRef.value)
+			range.selectNodeContents(el)
 			range.collapse(false)
 			sel?.removeAllRanges()
 			sel?.addRange(range)
-			editContentRef.value.focus()
+			el.focus()
 		}
 	})
 }
@@ -1217,7 +1494,8 @@ const cancelEditing = () => {
 }
 
 const submitEdit = () => {
-	const content = (editContentRef.value?.textContent || editingContent.value).trim()
+	const el = Array.isArray(editContentRef.value) ? editContentRef.value[0] : editContentRef.value
+	const content = (el?.textContent || editingContent.value).trim()
 	if (!content) return
 
 	const messageId = editingMessageId.value!

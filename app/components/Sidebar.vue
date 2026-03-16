@@ -232,6 +232,8 @@
 										<div v-if="conversation.characterId && conversation.characterId > 1" class="size-full flex items-center justify-center bg-blue-500/10 rounded-[4px]">
 											<Bot :size="15" class="text-blue-500 opacity-80" />
 										</div>
+										<Image v-else-if="conversation.capability === 'image'" :size="15" class="text-purple-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+										<Video v-else-if="conversation.capability === 'video'" :size="15" class="text-pink-500 opacity-60 group-hover:opacity-100 transition-opacity" />
 										<MessageSquare v-else :size="16" class="text-[var(--text-secondary)] opacity-40 group-hover:opacity-100 transition-opacity" />
 									</template>
 								</div>

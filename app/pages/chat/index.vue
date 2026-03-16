@@ -42,11 +42,7 @@ const handleWelcomeSendMessage = async (content: string, model: string, options?
 	// 3. Set pending message so [id].vue knows to trigger sendMessage on mount
 	chatStore.setPendingMessage(content)
 
-	// 4. Trigger title update in background (don't await)
-	const newTitle = content.length > 40 ? content.substring(0, 40) + '...' : content
-	conversationStore.updateTitle(conversationId, newTitle)
-
-	// 5. Navigate to the new conversation page
+	// 4. Navigate to the new conversation page
 	router.push(`/chat/${conversationId}`)
 }
 
