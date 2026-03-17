@@ -21,14 +21,16 @@ import {
 // Track freshly created conversations to skip redundant API fetches on navigation
 const _freshIds = new Set<string>()
 
-// Debounced save for streaming — avoids IndexedDB storm
-let _saveTimer: ReturnType<typeof setTimeout> | null = null
+// Debounced save for streaming — per-conversation timers to avoid cross-session cancellation
+const _saveTimers = new Map<string, ReturnType<typeof setTimeout>>()
 const debouncedSaveMessages = (conversationId: number | string, messages: Message[]) => {
-  if (_saveTimer) clearTimeout(_saveTimer)
-  _saveTimer = setTimeout(() => {
+  const key = String(conversationId)
+  const existing = _saveTimers.get(key)
+  if (existing) clearTimeout(existing)
+  _saveTimers.set(key, setTimeout(() => {
     saveLocalMessages(conversationId, messages)
-    _saveTimer = null
-  }, 500)
+    _saveTimers.delete(key)
+  }, 500))
 }
 
 export interface Conversation {
@@ -158,7 +160,8 @@ export const useConversationStore = defineStore('conversation', () => {
           id: String(m.id),
           role: m.role,
           content: m.content,
-          timestamp: m.created_at * 1000
+          timestamp: m.created_at * 1000,
+          model: m.model || undefined
         }))
 
         // 合并策略：以后端返回为基础，补充本地尚未同步的消息
@@ -166,9 +169,9 @@ export const useConversationStore = defineStore('conversation', () => {
         
         if (localMsgs && localMsgs.length > 0) {
           localMsgs.forEach(l => {
-            const isSynced = remoteMessages.some((r: Message) => 
-              (r.id === l.id) || 
-              (r.content === l.content && Math.abs(r.timestamp - l.timestamp) < 10000)
+            const isSynced = remoteMessages.some((r: Message) =>
+              r.id === l.id ||
+              (r.role === l.role && r.content === l.content)
             )
             if (!isSynced) {
               mergedMessages.push(l)

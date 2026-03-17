@@ -144,14 +144,12 @@ export const sendChatMessage = async (
     nonce
   }
 
-  const productionDomain = 'https://ai-test.iappdaily.com'
-  const signingPath = 'v1/chat/completions'
-  const fullPath = productionDomain.replace(/\/$/, '') + '/' + signingPath
+  const apiBase = (runtimeConfig.apiBase || 'https://ai-test.iappdaily.com').replace(/\/$/, '')
+  const fullPath = `${apiBase}/v1/chat/completions`
 
-  const secretKey = runtimeConfig.appKey || '49f68a5c8493ec2c0bf489821c21fc3b'
+  const secretKey = runtimeConfig.appKey
   const sign = generateSign(fullPath, allParams, secretKey)
 
-  const apiBase = runtimeConfig.apiBase || '/api'
   const url = `${apiBase}/v1/chat/completions?timestamp=${timestamp}&nonce=${nonce}&sign=${sign}`
 
   try {
@@ -183,13 +181,23 @@ export const sendChatMessage = async (
       const decoder = new TextDecoder()
       let buffer = ''
       const state: StreamState = { lastEvent: '' }
+      let hadError = false
+
+      // Wrap onError to track whether an error occurred
+      const wrappedOptions: ChatModelOptions = {
+        ...options,
+        onError: (err: any) => {
+          hadError = true
+          options.onError?.(err)
+        }
+      }
 
       try {
         while (true) {
           const { done, value } = await reader.read()
           if (done) {
             if (buffer) {
-              processStreamLine(buffer, options, state)
+              processStreamLine(buffer, wrappedOptions, state)
             }
             break
           }
@@ -201,7 +209,7 @@ export const sendChatMessage = async (
 
           let shouldBreak = false
           for (const line of lines) {
-            if (processStreamLine(line, options, state)) {
+            if (processStreamLine(line, wrappedOptions, state)) {
               shouldBreak = true
               break
             }
@@ -214,6 +222,7 @@ export const sendChatMessage = async (
       } catch (e: any) {
         // Don't report abort as error
         if (e.name !== 'AbortError') {
+          hadError = true
           try { void reader.cancel() } catch (_) {}
           throw e
         }
@@ -221,7 +230,9 @@ export const sendChatMessage = async (
         reader.releaseLock()
       }
 
-      options.onFinish?.()
+      if (!hadError) {
+        options.onFinish?.()
+      }
       return
     } else {
       const data = await response.json()

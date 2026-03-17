@@ -44,12 +44,15 @@
 				<div v-if="isImageModel" class="space-y-6">
 					<div v-for="group in imageGenerationGroups" :key="group.userMsg.id" class="flex gap-4 items-start">
 						<!-- Left: Prompt Card -->
-						<div class="w-[220px] shrink-0 flex flex-col justify-between gap-3">
-							<div class="bg-[var(--background-gray-subtle,#f4f4f5)] dark:bg-[var(--background-gray-subtle)] rounded-2xl px-4 py-4 text-[13.5px] text-[var(--text-primary)] leading-relaxed tracking-tight whitespace-pre-wrap break-words">
-								{{ group.userMsg.content }}
-							</div>
-							<div class="px-1 text-[12px] text-[var(--text-tertiary)] self-end">
-								{{ getModelDisplayName(currentConversation?.model) }}
+						<div class="w-[260px] shrink-0">
+							<div class="bg-[var(--background-gray-subtle,#f4f4f5)] dark:bg-[var(--background-gray-subtle)] rounded-2xl px-4 py-4 text-[13.5px] text-[var(--text-primary)] leading-relaxed tracking-tight whitespace-pre-wrap break-words flex flex-col gap-3 min-h-[90px]">
+								<span>{{ group.userMsg.content }}</span>
+								<div class="flex justify-end mt-auto">
+									<span class="text-[12px] text-[var(--text-tertiary)] flex items-center gap-1">
+										<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="opacity-60"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+										{{ getModelDisplayName(currentConversation?.model, currentConversation?.modelId) }}
+									</span>
+								</div>
 							</div>
 						</div>
 
@@ -57,7 +60,7 @@
 						<div class="flex-1 min-w-0 flex flex-col gap-2">
 							<!-- Loading state -->
 							<div v-if="group.isLoading">
-								<div class="grid gap-1" :class="Number(currentConversation?.params?.num_outputs || 1) >= 3 ? 'grid-cols-3' : Number(currentConversation?.params?.num_outputs || 1) === 2 ? 'grid-cols-2' : 'grid-cols-1'">
+								<div class="grid gap-1" :class="Number(currentConversation?.params?.num_outputs || 1) === 4 ? 'grid-cols-2' : Number(currentConversation?.params?.num_outputs || 1) >= 3 ? 'grid-cols-3' : Number(currentConversation?.params?.num_outputs || 1) === 2 ? 'grid-cols-2' : 'grid-cols-1'">
 									<div
 										v-for="n in Number(currentConversation?.params?.num_outputs || 1)"
 										:key="n"
@@ -74,7 +77,7 @@
 
 							<!-- Images grid -->
 							<div v-else-if="group.images.length > 0">
-								<div class="grid gap-1" :class="group.images.length >= 3 ? 'grid-cols-3' : group.images.length === 2 ? 'grid-cols-2' : 'grid-cols-1'">
+								<div class="grid gap-1" :class="group.images.length === 4 ? 'grid-cols-2' : group.images.length === 3 ? 'grid-cols-3' : group.images.length === 2 ? 'grid-cols-2' : 'grid-cols-1'">
 									<div
 										v-for="(url, idx) in group.images"
 										:key="idx"
@@ -117,13 +120,70 @@
 					</div>
 				</div>
 
+				<!-- Video Generation Mode: Card layout -->
+				<div v-else-if="isVideoModel" class="space-y-6">
+					<div v-for="group in videoGenerationGroups" :key="group.userMsg.id"
+						class="bg-[var(--bg-main)] border border-[var(--border-main)] rounded-2xl overflow-hidden shadow-sm w-full max-w-[640px] mx-auto">
+						<!-- Card Header -->
+						<div class="flex items-start justify-between px-4 pt-4 pb-3 border-b border-[var(--border-light)]">
+							<div class="flex-1 min-w-0 pr-4">
+								<p class="text-[13.5px] text-[var(--text-primary)] leading-relaxed whitespace-pre-wrap break-words">{{ group.userMsg.content }}</p>
+							</div>
+							<div class="flex items-center gap-2 shrink-0 text-[12px] text-[var(--text-tertiary)]">
+								<img :src="getModelIcon(currentConversation?.model, currentConversation?.modelId)" class="w-5 h-5 rounded object-contain" />
+								<span class="font-medium">{{ getModelDisplayName(currentConversation?.model, currentConversation?.modelId) }}</span>
+							</div>
+						</div>
+
+						<!-- Card Body: Video or Loading -->
+						<div class="bg-black">
+							<!-- Loading state -->
+							<div v-if="group.isLoading" class="flex flex-col items-center justify-center gap-3 py-14">
+								<div class="w-7 h-7 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+								<p class="text-[12px] text-white/60">Generating video...</p>
+							</div>
+							<!-- Video player -->
+							<video v-else-if="group.videoUrl"
+								:src="group.videoUrl"
+								controls
+								playsinline
+								class="w-full max-h-[480px] object-contain"
+							></video>
+							<!-- Error / empty state -->
+							<div v-else class="flex items-center justify-center py-16 text-white/40 text-[13px]">
+								Video generation failed
+							</div>
+						</div>
+
+						<!-- Card Footer: Actions -->
+						<div v-if="!group.isLoading" class="flex items-center gap-0 px-2 py-2 border-t border-[var(--border-light)] overflow-x-auto no-scrollbar">
+							<button @click="regenerateFromGroup(group)" :disabled="chatStore.isLoading" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-40 text-[12px] whitespace-nowrap">
+								<RefreshCw :size="12" />
+								Retry
+							</button>
+							<button @click="reuseGroupPrompt(group)" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors text-[12px] whitespace-nowrap">
+								<ArrowUp :size="12" />
+								Reuse parameters
+							</button>
+							<button v-if="group.videoUrl" @click="copyMessage(group.userMsg.content)" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors text-[12px] whitespace-nowrap">
+								<Copy :size="12" />
+								Copy prompt
+							</button>
+							<a v-if="group.videoUrl" :href="group.videoUrl" download="video.mp4" target="_blank" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors text-[12px] whitespace-nowrap">
+								<Download :size="12" />
+								Download
+							</a>
+						</div>
+					</div>
+				</div>
+
 				<!-- Chat Mode: standard message list -->
 				<component v-else :is="isMountedInitial ? 'TransitionGroup' : 'div'" name="message-list" class="space-y-10">
 					<div v-for="message in currentConversation?.messages" :key="message.id" class="flex gap-4 group" :class="message.role === 'user' ? 'flex-row-reverse' : ''" @click="handleMessageClick">
 						<!-- Avatar -->
 						<div class="flex-shrink-0 mt-1">
 							<div class="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden bg-[var(--bg-main)] border border-[var(--border-light)] shadow-sm">
-								<img :src="message.role === 'user' ? userStore.userInfo?.avatar || '/logo.png' : currentCharacter?.icon || currentCharacter?.avatar || getModelIcon(currentConversation?.model)" class="w-full h-full object-cover" :class="{ 'p-1': message.role !== 'user' && !currentCharacter }" :alt="message.role" />
+								<img :src="message.role === 'user' ? userStore.userInfo?.avatar || '/logo.png' : getModelIcon(message.model || currentConversation?.model, currentConversation?.modelId)" class="w-full h-full object-cover p-0.5" :alt="message.role" />
 							</div>
 						</div>
 
@@ -190,7 +250,7 @@
 
 							<!-- Time/Meta (Hidden by default, shown on hover) -->
 							<div class="mt-1 px-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2 text-[11px] text-[var(--text-tertiary)] font-medium">
-								<span>{{ message.role === 'user' ? 'You' : currentConversation?.model || 'AI' }}</span>
+								<span>{{ message.role === 'user' ? 'You' : getModelDisplayName(message.model || currentConversation?.model, currentConversation?.modelId) }}</span>
 								<ClientOnly>
 									<span>· {{ formatMessageTime(message.timestamp) }}</span>
 								</ClientOnly>
@@ -294,7 +354,7 @@
 											</template>
 											<ImagePlus v-else :size="14" class="text-[var(--text-secondary)]" />
 											<span class="text-[12px] font-medium text-[var(--text-primary)]">
-												{{ uploadedMediaFiles.length > 0 ? `${uploadedMediaFiles.length} ${isVideoModel ? 'frame' : 'prompt image'}${uploadedMediaFiles.length > 1 ? 's' : ''}` : isVideoModel ? 'Start frame' : 'Image prompt' }}
+												{{ uploadedMediaFiles.length > 0 ? `${uploadedMediaFiles.length} ${isVideoModel ? 'frame' : 'prompt image'}${uploadedMediaFiles.length > 1 ? 's' : ''}` : isVideoModel ? (modelInputFields.end_image ? 'Start / End frame' : 'Start frame') : 'Image prompt' }}
 											</span>
 										</button>
 
@@ -303,7 +363,7 @@
 											<div v-if="activeDropdownField === 'media_prompt'" class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[280px]">
 												<div class="rounded-2xl bg-[var(--bg-main)] border border-[var(--border-light)] p-4 shadow-xl flex flex-col gap-4" style="background-color: var(--bg-main)">
 													<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
-														{{ isVideoModel ? 'Start frame anchors the opening of your video.' : 'Image prompts apply style and content to your generation.' }}
+														{{ isVideoModel ? (modelInputFields.end_image ? 'Upload a start frame and/or end frame to anchor your video.' : 'Start frame anchors the opening of your video.') : 'Image prompts apply style and content to your generation.' }}
 														Upload or select from assets.
 													</p>
 													<div class="flex flex-col gap-2">
@@ -576,7 +636,17 @@ const supportsWebSearch = computed(() => {
 
 const supportsMediaPrompt = computed(() => {
 	const fields = modelStore.selectedModel?.model_input?.fields || {}
-	return !!(fields.image_urls || fields.file_ids || fields.image || fields.images || fields.input_images || fields.input_image || fields.init_image || fields.ref_image)
+	return !!(fields.image_urls || fields.file_ids || fields.image || fields.images || fields.input_images || fields.input_image || fields.init_image || fields.end_image || fields.ref_image)
+})
+
+// Max images allowed based on model field type:
+// 'image'/'init_image'/'end_image'/'ref_image'/'input_image' → single (or 2 if both init+end)
+// 'input_images'/'images' → multiple
+const mediaImageUploadLimit = computed(() => {
+	const fields = modelStore.selectedModel?.model_input?.fields || {}
+	if (fields.input_images || fields.images) return Infinity
+	if (fields.init_image && fields.end_image) return 2
+	return 1
 })
 
 const uploadedMediaFiles = computed(() => {
@@ -588,6 +658,10 @@ const previewImage = ref<string | null>(null)
 
 const triggerFileUploadAndClose = () => {
 	activeDropdownField.value = null
+	_mediaUploadContext.value = true
+	if (fileInputRef.value) {
+		fileInputRef.value.multiple = mediaImageUploadLimit.value > 1
+	}
 	triggerFileUpload()
 }
 
@@ -737,12 +811,23 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
 const isUploading = ref(false)
 const uploadedFiles = ref<{ id: string; name: string; key: string; url: string; type: string; uploading: boolean; localUrl?: string }[]>([])
 const isWebSearchEnabled = ref(true)
+const _mediaUploadContext = ref(false)
 
 const triggerFileUpload = () => {
 	fileInputRef.value?.click()
 }
 
-const handleFilesUpload = async (files: File[]) => {
+const handleFilesUpload = async (files: File[], applyMediaLimit = false) => {
+	if (applyMediaLimit) {
+		const limit = mediaImageUploadLimit.value
+		const currentImageCount = uploadedMediaFiles.value.length
+		const remaining = Math.max(0, limit - currentImageCount)
+		if (remaining === 0) {
+			uiStore.showToast(limit === 1 ? t('chat.max_one_image') : t('chat.max_images_reached'), 'error')
+			return
+		}
+		files = files.slice(0, remaining)
+	}
 	const placeholders = files.map((file) => ({
 		id: Math.random().toString(36).slice(2),
 		name: file.name,
@@ -782,7 +867,9 @@ const handleFileUpload = async (event: Event) => {
 	if (!target.files?.length) return
 	const files = Array.from(target.files)
 	if (fileInputRef.value) fileInputRef.value.value = ''
-	await handleFilesUpload(files)
+	const fromMedia = _mediaUploadContext.value
+	_mediaUploadContext.value = false
+	await handleFilesUpload(files, fromMedia)
 }
 
 const removeFile = (id: string) => {
@@ -907,9 +994,11 @@ const loadDraft = () => {
 }
 watch(inputMessage, (val) => saveDraft(val))
 
-const getModelIcon = (modelId?: string) => {
+const getModelIcon = (modelId?: string, numericId?: number) => {
 	const id = (modelId || '').toLowerCase()
-	const model = modelStore.models.find((m) => m.model === modelId)
+	const model = numericId
+		? modelStore.models.find((m) => m.id === numericId) || modelStore.models.find((m) => m.model === modelId)
+		: modelStore.models.find((m) => m.model === modelId)
 	const provider = (model?.provider || '').toLowerCase()
 
 	if (provider.includes('openai') || id.includes('gpt') || id.includes('o1')) return '/icons/openai.svg'
@@ -926,11 +1015,12 @@ const getModelIcon = (modelId?: string) => {
 	return '/icons/openai.svg'
 }
 
-const getModelDisplayName = (modelId?: string): string => {
+const getModelDisplayName = (modelId?: string, numericId?: number): string => {
+	const byNumeric = numericId ? modelStore.models.find((m: any) => m.id === numericId) : null
+	if (byNumeric?.display_name) return byNumeric.display_name
 	if (!modelId) return 'AI'
 	const model = modelStore.models.find((m: any) => m.model === modelId || `${m.provider}:${m.model}` === modelId)
 	if (model?.display_name) return model.display_name
-	// Fall back to the part after ':' or the full string
 	return (modelId.includes(':') ? modelId.split(':')[1] : modelId) ?? modelId
 }
 
@@ -945,6 +1035,21 @@ const extractImageUrls = (content: string): string[] => {
 	// Fallback: markdown image format
 	const matches = [...content.matchAll(/!\[.*?\]\((https?:\/\/[^)]+)\)/g)]
 	return matches.map((m) => m[1]).filter((u): u is string => !!u)
+}
+
+const extractVideoUrl = (content: string): string | null => {
+	// JSON format: {"capability":"video","data":[{"type":"video","url":"..."}]}
+	try {
+		const json = JSON.parse(content)
+		if (json.data && Array.isArray(json.data)) {
+			const item = json.data.find((i: any) => i.type === 'video' && i.url)
+			if (item) return item.url
+		}
+	} catch {}
+	// Fallback: markdown video link format
+	const match = content.match(/\[Generated Video\]\((https?:\/\/[^)]+)\)/)
+	if (match) return match[1]
+	return null
 }
 
 const imageGenerationGroups = computed(() => {
@@ -992,6 +1097,53 @@ const imageGenerationGroups = computed(() => {
 			userMsg: msg,
 			assistantMsg,
 			images: assistantMsg ? extractImageUrls(assistantMsg.content) : [],
+			isLoading: isCurrentlyLoading && isLastGroup && (!assistantMsg || !assistantMsg.content),
+		})
+	}
+	return groups
+})
+
+const videoGenerationGroups = computed(() => {
+	if (!currentConversation.value?.messages) return []
+	const messages = currentConversation.value.messages
+	const groups: { userMsg: any; assistantMsg: any | null; videoUrl: string | null; isLoading: boolean }[] = []
+
+	const msgById = new Map(messages.map((m: any) => [m.id, m]))
+	const assistantByParentId = new Map<string | number, any>()
+	const assignedAssistants = new Set<string | number>()
+	for (const m of messages) {
+		const pid = (m as any).parent_id
+		if (m.role === 'assistant' && pid && msgById.has(pid)) {
+			assistantByParentId.set(pid, m)
+		}
+	}
+
+	const isCurrentlyLoading = chatStore.isLoading && chatStore.loadingConversationId === currentConversationId.value
+	const lastMsg = messages[messages.length - 1]
+
+	for (let i = 0; i < messages.length; i++) {
+		const msg = messages[i]
+		if (!msg || msg.role !== 'user') continue
+
+		let assistantMsg: any = null
+		const msgParentKey = (msg as any).id
+		if (assistantByParentId.has(msgParentKey)) {
+			assistantMsg = assistantByParentId.get(msgParentKey)
+			assignedAssistants.add(assistantMsg.id)
+		} else {
+			const next = messages[i + 1]
+			if (next?.role === 'assistant' && !assignedAssistants.has(next.id)) {
+				assistantMsg = next
+				assignedAssistants.add(next.id)
+				i++
+			}
+		}
+
+		const isLastGroup = !assistantMsg || assistantMsg.id === lastMsg?.id
+		groups.push({
+			userMsg: msg,
+			assistantMsg,
+			videoUrl: assistantMsg ? extractVideoUrl(assistantMsg.content) : null,
 			isLoading: isCurrentlyLoading && isLastGroup && (!assistantMsg || !assistantMsg.content),
 		})
 	}
@@ -1125,7 +1277,9 @@ onBeforeUnmount(() => {
 
 watch(
 	() => currentConversationId.value,
-	async (newId) => {
+	async (newId, oldId) => {
+		// oldId 为 null 说明是 onMounted 里 switchConversation 触发的首次赋值，已经处理过，跳过
+		if (!oldId || !newId || newId === oldId) return
 		if (newId) {
 			hasScrolledToBottom.value = false
 			isUserScrolledUp.value = false
@@ -1256,6 +1410,16 @@ const sendMessage = async (isInitial = false) => {
 				payloadOptions.images = effectiveMedia.map((f: any) => f.url)
 			} else if ('ref_image' in fields) {
 				payloadOptions.ref_image = effectiveMedia[0]?.url
+			} else if ('init_image' in fields) {
+				payloadOptions.init_image = effectiveMedia[0]?.url
+				// If model also has end_image, second uploaded image maps to it
+				if ('end_image' in fields && effectiveMedia[1]) {
+					payloadOptions.end_image = effectiveMedia[1].url
+				}
+			} else if ('end_image' in fields) {
+				payloadOptions.end_image = effectiveMedia[0]?.url
+			} else if ('input_image' in fields) {
+				payloadOptions.input_image = effectiveMedia[0]?.url
 			}
 		}
 	}
@@ -1342,7 +1506,11 @@ const sendMessage = async (isInitial = false) => {
 						console.log('Task started:', data)
 					},
 					onImage: (data) => {
-						conversationStore.updateLastMessageContent(conversationId, `![Generated Image](${data.url})`)
+						if (isVideoModel.value) {
+							conversationStore.updateLastMessageContent(conversationId, JSON.stringify({ capability: 'video', data: [{ type: 'video', url: data.url }] }))
+						} else {
+							conversationStore.updateLastMessageContent(conversationId, `![Generated Image](${data.url})`)
+						}
 					},
 					onDone: () => {
 						abortController.value = null

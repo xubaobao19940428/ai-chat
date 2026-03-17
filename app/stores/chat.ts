@@ -6,6 +6,7 @@ export interface Message {
   role: 'user' | 'assistant' | 'system'
   content: string
   timestamp: number
+  model?: string
 }
 
 export const useChatStore = defineStore('chat', () => {

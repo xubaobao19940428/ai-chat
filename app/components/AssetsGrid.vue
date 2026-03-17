@@ -1,7 +1,18 @@
 <template>
 	<div class="w-full">
+		<!-- Skeleton: initial load -->
+		<div v-if="isLoading && items.length === 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
+			<div v-for="n in 18" :key="n" class="rounded-2xl overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] animate-pulse">
+				<div class="aspect-square bg-[var(--fill-tsp-gray-main)]"></div>
+				<div class="p-3 space-y-2">
+					<div class="h-3 bg-[var(--fill-tsp-gray-main)] rounded w-3/4"></div>
+					<div class="h-2.5 bg-[var(--fill-tsp-gray-main)] rounded w-1/2"></div>
+				</div>
+			</div>
+		</div>
+
 		<!-- Empty State -->
-		<div v-if="items.length === 0" class="py-40 flex flex-col items-center justify-center">
+		<div v-else-if="items.length === 0" class="py-40 flex flex-col items-center justify-center">
 			<div class="size-20 rounded-3xl bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[var(--text-tertiary)] mb-4">
 				<Library :size="32" />
 			</div>
@@ -14,8 +25,8 @@
 			<AssetCard v-for="asset in items" :key="asset.id" :asset="asset" :is-selected="assetStore.isSelected(asset.id)" @click="$emit('preview', asset)" @toggle-select="assetStore.toggleSelection" />
 		</div>
 
-		<!-- Loading State -->
-		<div v-if="isLoading" class="flex justify-center py-10">
+		<!-- Load more spinner -->
+		<div v-if="isLoading && items.length > 0" class="flex justify-center py-10">
 			<Loader2 :size="24" class="animate-spin text-[var(--text-tertiary)]" />
 		</div>
 

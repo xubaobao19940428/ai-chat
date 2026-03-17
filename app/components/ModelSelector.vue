@@ -18,7 +18,7 @@
 
 		<!-- Variant: Pill (Chat Input style) -->
 		<button v-else-if="variant === 'pill'" @click="isOpen = !isOpen"
-			class="flex items-center gap-1.5 rounded-full px-2.5 h-[32px] text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-gray-main)] transition-colors cursor-pointer border border-transparent hover:border-[var(--border-main)] group">
+			class="flex items-center gap-1.5 rounded-full px-2.5 h-[32px] text-[var(--text-secondary)] bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer border border-[var(--border-main)] hover:border-[var(--border-dark)] group">
 			<ClientOnly>
 				<div class="flex items-center gap-1.5">
 					<img v-if="showIcon" :src="getModelIcon(modelStore.selectedModel)"
@@ -157,7 +157,7 @@ const getEffectiveCap = (m: any) => m.model_input?.capability || m.capabilities?
 
 const filteredModels = computed(() => {
 	let models = modelStore.models
-	const cap = props.capability || 'chat'
+	const cap = props.capability
 
 	if (isImageMatch(cap)) {
 		models = models.filter((m) => {
@@ -169,14 +169,15 @@ const filteredModels = computed(() => {
 			const mCap = getEffectiveCap(m)
 			return isVideoMatch(mCap) || m.capabilities?.some(isVideoMatch)
 		})
-	} else {
-		// Chat mode: exclude all media models
+	} else if (cap === 'chat') {
+		// 明确指定 chat 时才排除媒体模型
 		models = models.filter((m) => {
 			const mCap = getEffectiveCap(m)
 			const isMedia = isImageMatch(mCap) || m.capabilities?.some(isImageMatch) || isVideoMatch(mCap) || m.capabilities?.some(isVideoMatch)
 			return !isMedia
 		})
 	}
+	// cap 为 undefined：不过滤，显示全部模型
 
 	// 2. Filter by search query (within the filtered set)
 	const q = searchQuery.value.trim().toLowerCase()
@@ -228,14 +229,15 @@ watch(isOpen, async (val) => {
 })
 
 const initialValidModels = computed(() => {
-	const cap = props.capability || 'chat'
-	
+	const cap = props.capability
+	if (!cap) return modelStore.models
+
 	return modelStore.models.filter((m) => {
 		const mCap = getEffectiveCap(m)
 		if (isImageMatch(cap)) return isImageMatch(mCap) || m.capabilities?.some(isImageMatch)
 		if (isVideoMatch(cap)) return isVideoMatch(mCap) || m.capabilities?.some(isVideoMatch)
-		
-		// Chat mode
+
+		// chat: 排除媒体模型
 		const isMedia = isImageMatch(mCap) || m.capabilities?.some(isImageMatch) || isVideoMatch(mCap) || m.capabilities?.some(isVideoMatch)
 		return !isMedia
 	})

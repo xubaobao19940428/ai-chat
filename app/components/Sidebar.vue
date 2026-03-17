@@ -915,9 +915,18 @@ watch(
 
 const handleDeleteConversation = (id: string) => {
 	openConfirm('Delete Conversation', 'This conversation will be permanently deleted.', async () => {
+		const wasActive = conversationStore.currentConversationId == id
 		await conversationStore.deleteConversation(id)
 		confirmDialog.value.show = false
 		uiStore.showToast('Conversation deleted')
+		if (wasActive) {
+			const nextId = conversationStore.currentConversationId
+			if (nextId) {
+				router.push(`/chat/${nextId}`)
+			} else {
+				router.push('/chat')
+			}
+		}
 	})
 }
 

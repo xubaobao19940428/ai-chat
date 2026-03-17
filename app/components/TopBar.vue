@@ -54,7 +54,8 @@ const currentCapability = computed(() => {
 		if (cap === 'video' || cap === 'video_generation') return 'video_generation'
 		return 'chat'
 	}
-	return 'chat'
+	// 首页/新建对话页：显示全部模型，不过滤
+	return undefined
 })
 
 const isHomePage = computed(() => ['index', 'chat'].includes(route.name as string))

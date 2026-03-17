@@ -34,6 +34,8 @@
 		"copied": "Copied to clipboard",
 		"copy_failed": "Copy failed. Please copy manually.",
 		"upload_failed": "Failed to upload {name}",
+		"max_one_image": "This model only supports 1 image",
+		"max_images_reached": "Maximum number of images reached",
 		"send_failed": "Failed to send. Please check your connection and retry.",
 		"retry": "Retry",
 		"connection_failed": "Connection failed. Please try again.",

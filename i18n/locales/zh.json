@@ -34,6 +34,8 @@
 		"copied": "已复制到剪贴板",
 		"copy_failed": "复制失败，请手动复制",
 		"upload_failed": "上传 {name} 失败",
+		"max_one_image": "该模型只支持上传 1 张图片",
+		"max_images_reached": "已达到最大图片上传数量",
 		"send_failed": "发送失败，请检查网络后重试",
 		"retry": "重试",
 		"connection_failed": "连接失败，请重试",

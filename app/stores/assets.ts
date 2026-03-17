@@ -59,7 +59,8 @@ export const useAssetStore = defineStore('assets', {
         this.items = []
         this.hasMore = true
       }
-      if (!this.hasMore || this.isLoading) return
+      if (!this.hasMore) return
+      if (!reset && this.isLoading) return
 
       this.isLoading = true
       try {

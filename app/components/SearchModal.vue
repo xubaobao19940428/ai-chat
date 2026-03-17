@@ -98,6 +98,7 @@ import { Search, X, Plus } from 'lucide-vue-next'
 
 const uiStore = useUIStore()
 const conversationStore = useConversationStore()
+const router = useRouter()
 const { t } = useI18n()
 const searchQuery = ref('')
 
@@ -143,13 +144,13 @@ const formatTime = (timestamp: number) => {
 }
 
 const handleConversationClick = (id: number | string) => {
-    conversationStore.switchConversation(id)
     uiStore.closeSearchModal()
+    router.push(`/chat/${id}`)
 }
 
-const handleNewTask = async () => {
-    const id = await conversationStore.createConversation({ character_id: 1 })
+const handleNewTask = () => {
     uiStore.closeSearchModal()
+    router.push('/chat')
 }
 </script>
 
