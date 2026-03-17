@@ -179,7 +179,7 @@
 
 				<!-- Chat Mode: standard message list -->
 				<component v-else :is="isMountedInitial ? 'TransitionGroup' : 'div'" name="message-list" class="space-y-10">
-					<div v-for="message in currentConversation?.messages" :key="message.id" class="flex gap-4 group" :class="message.role === 'user' ? 'flex-row-reverse' : ''" @click="handleMessageClick">
+					<div v-for="message in visibleMessages" :key="message.id" class="flex gap-4 group" :class="message.role === 'user' ? 'flex-row-reverse' : ''" @click="handleMessageClick">
 						<!-- Avatar -->
 						<div class="flex-shrink-0 mt-1">
 							<div class="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden bg-[var(--bg-main)] border border-[var(--border-light)] shadow-sm">
@@ -885,6 +885,18 @@ const stopGeneration = () => {
 
 const currentConversationId = computed(() => route.params.id as string)
 const currentConversation = computed(() => conversationStore.currentConversation)
+
+// Only show derivative messages whose parent_id is the last non-derivative message
+const visibleMessages = computed(() => {
+	const msgs = currentConversation.value?.messages
+	if (!msgs) return []
+	const nonDerivative = msgs.filter((m: any) => m.role !== 'derivative')
+	const lastNonDerivative = nonDerivative[nonDerivative.length - 1]
+	return msgs.filter((m: any) => {
+		if (m.role !== 'derivative') return true
+		return lastNonDerivative && String(m.parent_id) === String(lastNonDerivative.id)
+	})
+})
 
 const currentCharacter = computed(() => {
 	if (!currentConversation.value?.characterId || currentConversation.value.characterId <= 1) return null

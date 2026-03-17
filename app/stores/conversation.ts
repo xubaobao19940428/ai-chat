@@ -161,7 +161,8 @@ export const useConversationStore = defineStore('conversation', () => {
           role: m.role,
           content: m.content,
           timestamp: m.created_at * 1000,
-          model: m.model || undefined
+          model: m.model || undefined,
+          parent_id: m.parent_id != null ? String(m.parent_id) : undefined,
         }))
 
         // 合并策略：以后端返回为基础，补充本地尚未同步的消息

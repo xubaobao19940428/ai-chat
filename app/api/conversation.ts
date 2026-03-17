@@ -70,7 +70,7 @@ export const generateConversationTitle = async (
   const { randomString, generateSign } = await import('../utils/sign')
   const runtimeConfig = useRuntimeConfig().public
 
-  const requestBody = { id: Number(id), messages }
+  const requestBody = { conversation_id: Number(id), messages }
   const timestamp = Math.floor(Date.now() / 1000)
   const nonce = randomString(16)
   const allParams: Record<string, any> = { ...requestBody, timestamp, nonce }
