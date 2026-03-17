@@ -61,6 +61,7 @@
 		"dark": "Dark",
 		"system": "Follow System",
 		"search": "Search",
+		"new-task": "New Task",
 		"library": "Library",
 		"more_tools": "More Tools",
 		"collapse": "Collapse",
@@ -78,9 +79,11 @@
 	},
 	"settings": {
 		"usage": "Usage",
+		"billing": "Billing",
 		"scheduled_tasks": "Scheduled tasks",
 		"mail_aura": "Mail Aura",
 		"data_controls": "Data controls",
+		"security": "Security",
 		"cloud_browser": "Cloud browser",
 		"personalization": "Personalization",
 		"skills": "Skills",
@@ -104,7 +107,146 @@
 		"email_queue": "Email me when my queued task starts",
 		"email_queue_desc": "When enabled, we'll send you a timely email once your task finishes queuing and begins processing.",
 		"manage_cookies": "Manage Cookies",
-		"manage": "Manage"
+		"manage": "Manage",
+		"personalization_tab": {
+			"basic_style_tone": "Basic style and tone",
+			"basic_style_tone_desc": "Set the style and tone ChatGPT uses to reply. This doesn't affect ChatGPT's capabilities.",
+			"characteristics": "Characteristics",
+			"characteristics_desc": "Choose extra customizations on top of the basic style and tone.",
+			"gentle_considerate": "Gentle & considerate",
+			"passionate": "Passionate",
+			"titles_lists": "Titles & lists",
+			"emojis": "Emojis",
+			"default": "Default",
+			"custom_instructions": "Custom instructions",
+			"custom_inst_placeholder": "Other behavioral, style, and tone preferences",
+			"about_you": "About you",
+			"nickname": "Nickname",
+			"nickname_placeholder": "How should ChatGPT address you?",
+			"occupation": "Occupation",
+			"occupation_placeholders": ["Software Engineer", "Product Manager", "UI Designer", "Data Scientist", "Freelance Writer", "College Student", "Entrepreneur", "Marketing Ops", "High School Teacher", "Full-Stack Developer"],
+			"your_details": "Your details",
+			"your_details_placeholder": "Interests, values, or preferences to remember",
+			"memory": "Memory",
+			"manage": "Manage",
+			"ref_saved_mem": "Reference saved memories",
+			"ref_saved_mem_desc": "Let ChatGPT save memories and use them in replies.",
+			"ref_chat_history": "Reference chat history",
+			"ref_chat_history_desc": "Let ChatGPT reference recent conversations in replies.",
+			"memory_footer": "GPT can use memory to personalize searches via providers like Bing. {link}",
+			"learn_more": "Learn more",
+			"advanced": "Advanced",
+			"web_search": "Web search",
+			"web_search_desc": "Let ChatGPT automatically search the web for answers.",
+			"canvas": "Canvas",
+			"canvas_desc": "Collaborate on text and code with ChatGPT.",
+			"voice": "ChatGPT Voice",
+			"voice_desc": "Enable the voice feature for ChatGPT.",
+			"adv_voice": "Advanced Voice",
+			"adv_voice_desc": "Have more natural conversations using voice.",
+			"connector_search": "Connector search",
+			"connector_search_desc": "Let ChatGPT automatically search connected sources for answers.",
+			"style_tones": {
+				"default": {
+					"title": "Default",
+					"desc": "Preset style and tone"
+				},
+				"professional": {
+					"title": "Professional & Reliable",
+					"desc": "Finely crafted"
+				},
+				"friendly": {
+					"title": "Friendly & Approachable",
+					"desc": "Warm and talkative"
+				},
+				"direct": {
+					"title": "Direct & Optimistic",
+					"desc": "Straightforward and optimistic"
+				},
+				"creative": {
+					"title": "Imaginative",
+					"desc": "Fun fantasy"
+				},
+				"practical": {
+					"title": "Efficient & Practical",
+					"desc": "Concise and straightforward"
+				},
+				"tech": {
+					"title": "Tech Geek",
+					"desc": "Passionate explorer"
+				},
+				"sarcastic": {
+					"title": "Sarcastic Roaster",
+					"desc": "Sharp and witty"
+				}
+			},
+			"characteristics_options": {
+				"gentle": {
+					"increase": { "title": "Enhance", "desc": "Friendlier, closer" },
+					"default": { "title": "Default", "desc": "" },
+					"decrease": { "title": "Reduce", "desc": "More professional, highly factual" }
+				},
+				"passionate": {
+					"increase": { "title": "Enhance", "desc": "More energetic" },
+					"default": { "title": "Default", "desc": "" },
+					"decrease": { "title": "Reduce", "desc": "Cooler and neutral" }
+				},
+				"titles_lists": {
+					"increase": { "title": "Enhance", "desc": "Use clear formats and list structures" },
+					"default": { "title": "Default", "desc": "" },
+					"decrease": { "title": "Reduce", "desc": "More paragraph text, fewer list structures" }
+				},
+				"emojis": {
+					"increase": { "title": "Enhance", "desc": "Use more emojis" },
+					"default": { "title": "Default", "desc": "" },
+					"decrease": { "title": "Reduce", "desc": "Use as few emojis as possible" }
+				}
+			}
+		},
+		"security_tab": {
+			"title": "Security",
+			"password": "Password",
+			"passkey": "Passkey",
+			"passkey_desc": "Passkeys are secure and convenient. They protect your account with multi-factor authentication without any extra steps.",
+			"add": "Add",
+			"mfa_title": "Multi-factor authentication (MFA)",
+			"authenticator_app": "Authenticator app",
+			"authenticator_app_desc": "Use a one-time code from an authenticator app.",
+			"text_message": "Text message",
+			"text_message_desc": "Send a 6-digit verification code via SMS or WhatsApp (depending on country code)",
+			"trusted_devices": "Trusted devices",
+			"trusted_devices_desc": "When you sign in on other devices, they will be added here and can automatically receive device sign-in prompts.",
+			"logout_device": "Log out this device",
+			"logout_btn": "Log out",
+			"logout_all": "Log out all devices",
+			"logout_all_desc": "Log out all active sessions on all devices, including the current session. Other devices may take up to 30 minutes to log out.",
+			"logout_all_btn": "Log out all"
+		},
+		"data_controls_tab": {
+			"improve_model": "Improve the model for everyone",
+			"on": "On",
+			"shared_links": "Shared links",
+			"manage": "Manage",
+			"archived_chats": "Archived chats",
+			"archive_all": "Archive all chats",
+			"archive_all_btn": "Archive all",
+			"delete_all": "Delete all chats",
+			"delete_all_btn": "Delete all",
+			"export_data": "Export data",
+			"export_btn": "Export"
+		},
+		"billing_tab": {
+			"current_plan": "Current plan",
+			"free_plan_desc": "Basic features with limited usage",
+			"upgrade": "Upgrade",
+			"payment_method": "Payment method",
+			"manage": "Manage",
+			"credit_usage": "Credit usage",
+			"view": "View",
+			"invoices": "Invoices",
+			"no_invoices": "No invoices",
+			"no_invoices_desc": "You don't have any invoices yet."
+		}
 	},
 	"auth": {
 		"headline": "Your intelligent chat assistant",

@@ -34,6 +34,8 @@
 		"copied": "Copiado para a área de transferência",
 		"copy_failed": "Falha ao copiar. Por favor, copie manualmente.",
 		"upload_failed": "Falha ao enviar {name}",
+		"max_one_image": "Este modelo suporta apenas 1 imagem",
+		"max_images_reached": "Número máximo de imagens atingido",
 		"send_failed": "Falha ao enviar. Verifique sua conexão e tente novamente.",
 		"retry": "Tentar novamente",
 		"connection_failed": "Falha na conexão. Por favor, tente novamente.",
@@ -48,6 +50,10 @@
 		"account": "Conta",
 		"select_model": "Selecionar modelo",
 		"search_models": "Pesquisar modelos...",
+		"all": "Todos",
+		"chat": "Chat",
+		"image": "Imagem",
+		"video": "Vídeo",
 		"general": "Geral",
 		"language": "Idioma",
 		"appearance": "Aparência",
@@ -55,6 +61,7 @@
 		"dark": "Escuro",
 		"system": "Seguir sistema",
 		"search": "Pesquisar",
+		"new-task": "Nova tarefa",
 		"library": "Biblioteca",
 		"more_tools": "Mais ferramentas",
 		"collapse": "Recolher",
@@ -72,9 +79,11 @@
 	},
 	"settings": {
 		"usage": "Uso",
+		"billing": "Faturamento",
 		"scheduled_tasks": "Tarefas agendadas",
 		"mail_aura": "E-mail Aura",
 		"data_controls": "Controle de dados",
+		"security": "Segurança",
 		"cloud_browser": "Navegador em nuvem",
 		"personalization": "Personalização",
 		"skills": "Habilidades",
@@ -98,7 +107,146 @@
 		"email_queue": "Me enviar e-mail quando minha tarefa na fila começar",
 		"email_queue_desc": "Quando ativado, enviaremos um e-mail assim que sua tarefa sair da fila e começar a ser processada.",
 		"manage_cookies": "Gerenciar cookies",
-		"manage": "Gerenciar"
+		"manage": "Gerenciar",
+		"personalization_tab": {
+			"basic_style_tone": "Estilo e tom básicos",
+			"basic_style_tone_desc": "Defina o estilo e o tom que o ChatGPT usa para responder. Isso não afeta as capacidades do ChatGPT.",
+			"characteristics": "Características",
+			"characteristics_desc": "Escolha personalizações extras além do estilo e tom básicos.",
+			"gentle_considerate": "Gentil & atencioso",
+			"passionate": "Apaixonado",
+			"titles_lists": "Títulos & listas",
+			"emojis": "Emojis",
+			"default": "Padrão",
+			"custom_instructions": "Instruções personalizadas",
+			"custom_inst_placeholder": "Outras preferências de comportamento, estilo e tom",
+			"about_you": "Sobre você",
+			"nickname": "Apelido",
+			"nickname_placeholder": "Como o ChatGPT deve chamá-lo?",
+			"occupation": "Ocupação",
+			"occupation_placeholders": ["Engenheiro de Software", "Gerente de Produto", "Designer UI", "Cientista de Dados", "Escritor Freelancer", "Estudante Universitário", "Empreendedor", "Marketing", "Professor", "Desenvolvedor Full-Stack"],
+			"your_details": "Seus detalhes",
+			"your_details_placeholder": "Interesses, valores ou preferências a serem lembrados",
+			"memory": "Memória",
+			"manage": "Gerenciar",
+			"ref_saved_mem": "Referenciar memórias salvas",
+			"ref_saved_mem_desc": "Deixe o ChatGPT salvar memórias e usá-las nas respostas.",
+			"ref_chat_history": "Referenciar histórico de chat",
+			"ref_chat_history_desc": "Deixe o ChatGPT referenciar conversas recentes nas respostas.",
+			"memory_footer": "O GPT pode usar a memória para personalizar pesquisas via provedores como o Bing. {link}",
+			"learn_more": "Saiba mais",
+			"advanced": "Avançado",
+			"web_search": "Pesquisa na web",
+			"web_search_desc": "Deixe o ChatGPT pesquisar automaticamente na web.",
+			"canvas": "Canvas",
+			"canvas_desc": "Colabore em texto e código com o ChatGPT.",
+			"voice": "Voz do ChatGPT",
+			"voice_desc": "Ative o recurso de voz para o ChatGPT.",
+			"adv_voice": "Voz avançada",
+			"adv_voice_desc": "Tenha conversas mais naturais usando a voz.",
+			"connector_search": "Pesquisa de conectores",
+			"connector_search_desc": "Deixe o ChatGPT pesquisar automaticamente em fontes conectadas.",
+			"style_tones": {
+				"default": {
+					"title": "Padrão",
+					"desc": "Estilo e tom predefinidos"
+				},
+				"professional": {
+					"title": "Profissional & Confiável",
+					"desc": "Finamente elaborado"
+				},
+				"friendly": {
+					"title": "Amigável & Acessível",
+					"desc": "Caloroso e comunicativo"
+				},
+				"direct": {
+					"title": "Direto & Otimista",
+					"desc": "Direto e positivo"
+				},
+				"creative": {
+					"title": "Imaginativo",
+					"desc": "Fantasia divertida"
+				},
+				"practical": {
+					"title": "Eficiente & Prático",
+					"desc": "Conciso e direto"
+				},
+				"tech": {
+					"title": "Entusiasta de tecnologia",
+					"desc": "Explorador apaixonado"
+				},
+				"sarcastic": {
+					"title": "Sarcástico",
+					"desc": "Afiado e espirituoso"
+				}
+			},
+			"characteristics_options": {
+				"gentle": {
+					"increase": { "title": "Aumentar", "desc": "Mais amigável, mais próximo" },
+					"default": { "title": "Padrão", "desc": "" },
+					"decrease": { "title": "Diminuir", "desc": "Mais profissional, mais factual" }
+				},
+				"passionate": {
+					"increase": { "title": "Aumentar", "desc": "Mais enérgico" },
+					"default": { "title": "Padrão", "desc": "" },
+					"decrease": { "title": "Diminuir", "desc": "Mais frio e neutro" }
+				},
+				"titles_lists": {
+					"increase": { "title": "Aumentar", "desc": "Usar formatos claros e estruturas de lista" },
+					"default": { "title": "Padrão", "desc": "" },
+					"decrease": { "title": "Diminuir", "desc": "Mais texto em parágrafos, menos listas" }
+				},
+				"emojis": {
+					"increase": { "title": "Aumentar", "desc": "Usar mais emojis" },
+					"default": { "title": "Padrão", "desc": "" },
+					"decrease": { "title": "Diminuir", "desc": "Usar o mínimo possível de emojis" }
+				}
+			}
+		},
+		"security_tab": {
+			"title": "Segurança",
+			"password": "Senha",
+			"passkey": "Chave de acesso",
+			"passkey_desc": "As chaves de acesso são seguras e convenientes. Elas protegem sua conta com autenticação multifator sem etapas extras.",
+			"add": "Adicionar",
+			"mfa_title": "Autenticação multifator (MFA)",
+			"authenticator_app": "App autenticador",
+			"authenticator_app_desc": "Use um código de uso único de um app autenticador.",
+			"text_message": "Mensagem de texto",
+			"text_message_desc": "Envie um código de verificação de 6 dígitos via SMS ou WhatsApp (dependendo do código do país)",
+			"trusted_devices": "Dispositivos confiáveis",
+			"trusted_devices_desc": "Quando você entra em outros dispositivos, eles serão adicionados aqui e poderão receber automaticamente solicitações de entrada.",
+			"logout_device": "Sair deste dispositivo",
+			"logout_btn": "Sair",
+			"logout_all": "Sair de todos os dispositivos",
+			"logout_all_desc": "Encerre todas as sessões ativas em todos os dispositivos, incluindo a sessão atual. Outros dispositivos podem levar até 30 minutos para sair.",
+			"logout_all_btn": "Sair de tudo"
+		},
+		"data_controls_tab": {
+			"improve_model": "Melhorar o modelo para todos",
+			"on": "Ativado",
+			"shared_links": "Links compartilhados",
+			"manage": "Gerenciar",
+			"archived_chats": "Chats arquivados",
+			"archive_all": "Arquivar todos os chats",
+			"archive_all_btn": "Arquivar tudo",
+			"delete_all": "Excluir todos os chats",
+			"delete_all_btn": "Excluir tudo",
+			"export_data": "Exportar dados",
+			"export_btn": "Exportar"
+		},
+		"billing_tab": {
+			"current_plan": "Plano atual",
+			"free_plan_desc": "Recursos básicos com uso limitado",
+			"upgrade": "Atualizar",
+			"payment_method": "Forma de pagamento",
+			"manage": "Gerenciar",
+			"credit_usage": "Uso de créditos",
+			"view": "Ver",
+			"invoices": "Faturas",
+			"no_invoices": "Nenhuma fatura",
+			"no_invoices_desc": "Você ainda não tem faturas."
+		}
 	},
 	"auth": {
 		"headline": "Seu assistente de chat inteligente",
@@ -170,7 +318,7 @@
 		"enter_name": "Digite o nome",
 		"color": "Cor",
 		"icon": "Ícone",
-		"instructions": "Instruções (opcional)",
+		"instructions": "Instrucciones (opcional)",
 		"saving": "Salvando...",
 		"creating": "Criando...",
 		"save": "Salvar",

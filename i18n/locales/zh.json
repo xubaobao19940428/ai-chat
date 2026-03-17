@@ -61,6 +61,7 @@
 		"dark": "深色",
 		"system": "跟随系统",
 		"search": "搜索",
+		"new-task": "新任务",
 		"library": "库",
 		"more_tools": "更多工具",
 		"collapse": "收起",
@@ -78,9 +79,11 @@
 	},
 	"settings": {
 		"usage": "用量",
+		"billing": "账单",
 		"scheduled_tasks": "定时任务",
 		"mail_aura": "邮件 Aura",
-		"data_controls": "数据控制",
+		"data_controls": "数据管理",
+		"security": "安全",
 		"cloud_browser": "云浏览器",
 		"personalization": "个性化",
 		"skills": "技能",
@@ -104,7 +107,146 @@
 		"email_queue": "任务开始时发送邮件通知",
 		"email_queue_desc": "开启后，您的任务完成排队并开始处理时，我们将发送邮件通知您。",
 		"manage_cookies": "管理 Cookies",
-		"manage": "管理"
+		"manage": "管理",
+		"personalization_tab": {
+			"basic_style_tone": "基本风格和语调",
+			"basic_style_tone_desc": "设置 ChatGPT 回复你的风格和语调。这不会影响 ChatGPT 的功能。",
+			"characteristics": "特征",
+			"characteristics_desc": "在基本风格和语调的基础上选择额外的自定义项。",
+			"gentle_considerate": "温和体贴",
+			"passionate": "热情洋溢",
+			"titles_lists": "标题和列表",
+			"emojis": "表情符号",
+			"default": "默认",
+			"custom_instructions": "自定义指令",
+			"custom_inst_placeholder": "其他行为、风格和语调偏好设置",
+			"about_you": "关于你",
+			"nickname": "昵称",
+			"nickname_placeholder": "ChatGPT 应该怎么称呼你？",
+			"occupation": "职业",
+			"occupation_placeholders": ["软件工程师", "产品经理", "UI 设计师", "数据科学家", "自由撰稿人", "大学生", "创业者", "市场运营", "高中教师", "全栈开发者"],
+			"your_details": "你的详情",
+			"your_details_placeholder": "需要记住的兴趣、价值观或偏好",
+			"memory": "记忆",
+			"manage": "管理",
+			"ref_saved_mem": "参考保存的记忆",
+			"ref_saved_mem_desc": "让 ChatGPT 保存记忆并在回复时使用记忆。",
+			"ref_chat_history": "参考历史聊天记录",
+			"ref_chat_history_desc": "让 ChatGPT 在回复时参考最近的对话。",
+			"memory_footer": "GPT 可使用记忆库，通过必应等搜索提供商进行个性化查询。 {link}",
+			"learn_more": "了解更多",
+			"advanced": "高级",
+			"web_search": "网页搜索",
+			"web_search_desc": "让 ChatGPT 自动搜索网页以获取答案。",
+			"canvas": "画布",
+			"canvas_desc": "与 ChatGPT 协作处理文本和代码。",
+			"voice": "ChatGPT 语音",
+			"voice_desc": "启用 ChatGPT 的语音功能",
+			"adv_voice": "高级语音",
+			"adv_voice_desc": "使用语音功能开展更自然的对话。",
+			"connector_search": "连接器搜索",
+			"connector_search_desc": "让 ChatGPT 自动搜索关联的来源以获取答案。",
+			"style_tones": {
+				"default": {
+					"title": "默认",
+					"desc": "预设风格和语调"
+				},
+				"professional": {
+					"title": "专业可靠",
+					"desc": "精雕细琢"
+				},
+				"friendly": {
+					"title": "亲和友善",
+					"desc": "温和健谈"
+				},
+				"direct": {
+					"title": "直言不讳",
+					"desc": "直率乐观"
+				},
+				"creative": {
+					"title": "天马行空",
+					"desc": "趣味幻想"
+				},
+				"practical": {
+					"title": "高效务实",
+					"desc": "简练直白"
+				},
+				"tech": {
+					"title": "技术宅",
+					"desc": "热情探究型"
+				},
+				"sarcastic": {
+					"title": "吐槽达人",
+					"desc": "犀利毒舌型"
+				}
+			},
+			"characteristics_options": {
+				"gentle": {
+					"increase": { "title": "增强", "desc": "更友好、更亲近" },
+					"default": { "title": "默认", "desc": "" },
+					"decrease": { "title": "减弱", "desc": "更专业，事实性更强" }
+				},
+				"passionate": {
+					"increase": { "title": "增强", "desc": "更加活力充沛" },
+					"default": { "title": "默认", "desc": "" },
+					"decrease": { "title": "减弱", "desc": "更加冷静中立" }
+				},
+				"titles_lists": {
+					"increase": { "title": "增强", "desc": "采用清晰格式与列表结构" },
+					"default": { "title": "默认", "desc": "" },
+					"decrease": { "title": "减弱", "desc": "更多段落文本，而非列表结构" }
+				},
+				"emojis": {
+					"increase": { "title": "增强", "desc": "使用更多表情符号" },
+					"default": { "title": "默认", "desc": "" },
+					"decrease": { "title": "减弱", "desc": "尽量少用表情符号" }
+				}
+			}
+		},
+		"security_tab": {
+			"title": "安全",
+			"password": "密码",
+			"passkey": "密钥",
+			"passkey_desc": "密钥安全可靠，能通过多因素身份验证保护你的帐户，而无需任何额外步骤。",
+			"add": "添加",
+			"mfa_title": "多因素身份验证 (MFA)",
+			"authenticator_app": "Authenticator app",
+			"authenticator_app_desc": "使用来自验证器应用的一次性验证码。",
+			"text_message": "Text message",
+			"text_message_desc": "通过短信或 WhatsApp 发送 6 位数字验证码（依国家代码而定）",
+			"trusted_devices": "可信设备",
+			"trusted_devices_desc": "当你登录其他设备时，相应设备将添加到此处并能自动接收设备登录提示。",
+			"logout_device": "退出此设备",
+			"logout_btn": "退出登录",
+			"logout_all": "退出所有设备",
+			"logout_all_desc": "退出所有设备上的活跃会话，包括当前的会话。其他设备可能需要最多 30 分钟才能退出。",
+			"logout_all_btn": "全部退出登录"
+		},
+		"data_controls_tab": {
+			"improve_model": "为所有用户改进模型",
+			"on": "开",
+			"shared_links": "共享链接",
+			"manage": "管理",
+			"archived_chats": "已归档的聊天",
+			"archive_all": "归档所有聊天",
+			"archive_all_btn": "全部归档",
+			"delete_all": "删除所有聊天",
+			"delete_all_btn": "全部删除",
+			"export_data": "导出数据",
+			"export_btn": "导出"
+		},
+		"billing_tab": {
+			"current_plan": "当前套餐",
+			"free_plan_desc": "基础功能，有限用量",
+			"upgrade": "升级",
+			"payment_method": "支付方式",
+			"manage": "管理",
+			"credit_usage": "积分用量",
+			"view": "查看",
+			"invoices": "账单",
+			"no_invoices": "暂无账单",
+			"no_invoices_desc": "您目前没有任何账单记录。"
+		}
 	},
 	"auth": {
 		"headline": "您的智能聊天助手",

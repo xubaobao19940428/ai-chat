@@ -191,12 +191,8 @@
 										<div v-if="getRecordParams(video).resolution" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
 											{{ getRecordParams(video).resolution }}
 										</div>
-										<div v-if="getRecordParams(video).duration" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
-											{{ getRecordParams(video).duration }}S
-										</div>
-										<div v-if="getRecordParams(video).seed" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
-											SEED: {{ getRecordParams(video).seed }}
-										</div>
+										<div v-if="getRecordParams(video).duration" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">{{ getRecordParams(video).duration }}S</div>
+										<div v-if="getRecordParams(video).seed" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">SEED: {{ getRecordParams(video).seed }}</div>
 									</div>
 
 									<p class="text-white text-[13px] font-medium mb-4 line-clamp-3 leading-relaxed italic">"{{ getRecordPrompt(video) || 'No description' }}"</p>
@@ -231,15 +227,15 @@
 					</div>
 				</transition>
 
-				<div ref="controlBarRef" class="bg-[var(--bg-main)] rounded-[40px] border border-[var(--border-main)] p-5 shadow-[var(--shadow-pill)] flex flex-col gap-4 transition-all">
-					<div class="flex w-full min-w-0 flex-col gap-2">
+				<div ref="controlBarRef" class="bg-[var(--fill-input-chat)] rounded-[22px] border border-black/5 dark:border-[var(--border-main)] py-3 shadow-[0px_12px_32px_0px_rgba(0,0,0,0.02)] flex flex-col gap-3 transition-all duration-300 focus-within:border-black/10">
+					<div class="flex w-full min-w-0 flex-col gap-6">
 						<!-- Input Area -->
-						<div class="px-2">
-							<textarea v-model="prompt" class="w-full bg-transparent border-none text-[var(--text-primary)] focus:outline-none font-medium text-[17px] py-1 max-h-32 overflow-y-auto no-scrollbar relative min-h-[28px] outline-none resize-none px-0" placeholder="Describe a video and click generate..." autocomplete="off" rows="1" @keydown.enter="handleEnterKey"></textarea>
+						<div class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 w-full text-[var(--text-primary)] placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[50px] max-h-[216px]">
+							<textarea v-model="prompt" class="w-full bg-transparent border-none outline-none font-normal resize-none px-0 text-inherit leading-inherit" :placeholder="displayedPlaceholder" autocomplete="off" rows="2" @keydown.enter="handleEnterKey"></textarea>
 						</div>
 
 						<!-- Bottom Row: Tools + Generate -->
-						<div class="flex justify-between gap-2 px-1 mt-auto">
+						<div class="flex justify-between gap-2 px-3 mt-auto">
 							<!-- Tool Pills -->
 							<div class="flex items-center gap-1 flex-wrap">
 								<!-- Model Selector -->
@@ -250,7 +246,7 @@
 								<div class="group/button relative" v-if="supportsImageUpload">
 									<button
 										@click="toggleStartFrameDropdown"
-										class="focus-visible:ring-ring/50 inline-flex shrink-0 items-center justify-center gap-2 font-medium whitespace-nowrap outline-none disabled:pointer-events-none disabled:opacity-50 h-[30px] px-4 py-1.5 rounded-full shadow-none bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+										class="focus-visible:ring-ring/50 inline-flex shrink-0 items-center justify-center gap-2 font-medium whitespace-nowrap outline-none disabled:pointer-events-none disabled:opacity-50 h-[30px] px-3 py-1.5 rounded-full shadow-none bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
 										:class="openStartFrameDropdown ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'"
 										type="button"
 										:disabled="isUploading">
@@ -374,7 +370,7 @@
 							</div>
 
 							<!-- Generate Button -->
-							<button @click="generateVideo" :disabled="!prompt.trim()" class="flex items-center justify-center shrink-0 w-10 h-10 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] hover:opacity-90 transition-all disabled:opacity-50 disabled:pointer-events-none self-end relative">
+							<button @click="generateVideo" :disabled="!prompt.trim()" class="flex items-center justify-center shrink-0 size-8 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] hover:opacity-90 transition-all disabled:opacity-50 disabled:pointer-events-none self-end relative">
 								<Sparkles v-if="!isGenerating" :size="18" fill="currentColor" />
 								<Loader2 v-else :size="18" class="animate-spin" />
 							</button>
@@ -392,16 +388,41 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { ImagePlus, Plus, Check, Zap, Loader2, X, Film, Download, ChevronDown, Sparkles, Play, Clock } from 'lucide-vue-next'
-import { getModels, generateVideoStream, getAsyncTaskOutputs, uploadFile, getRecordPrompt, getRecordPrimaryUrl, getRecordModel, getRecordParams, type AIModel, type AsyncTaskRecord } from '@/utils/api'
+import { getModels, getAsyncTaskOutputs, uploadFile, getRecordPrompt, getRecordPrimaryUrl, getRecordModel, getRecordParams, type AIModel, type AsyncTaskRecord } from '@/utils/api'
 import { useModelStore } from '@/stores/models'
 import ModelSelector from '@/components/ModelSelector.vue'
+import { useRouter } from 'vue-router'
+import { useConversationStore } from '@/stores/conversation'
+import { useChatStore } from '@/stores/chat'
 
+const router = useRouter()
+const conversationStore = useConversationStore()
+const chatStore = useChatStore()
 const modelStore = useModelStore()
 const selectedModel = computed(() => modelStore.selectedModel)
 const isVideoModel = computed(() => {
 	const model = selectedModel.value
 	return model?.capabilities?.includes('video_generation') || model?.model_input?.capability === 'video_generation' || false
 })
+
+// --- Typewriter Placeholder Effect ---
+const displayedPlaceholder = ref('')
+let typewriterInterval: ReturnType<typeof setInterval> | null = null
+
+const runTypewriter = () => {
+	if (typewriterInterval) clearInterval(typewriterInterval)
+	displayedPlaceholder.value = ''
+	let i = 0
+	const text = 'Describe a video and click generate...'
+	typewriterInterval = setInterval(() => {
+		if (i < text.length) {
+			displayedPlaceholder.value += text[i]
+			i++
+		} else {
+			clearInterval(typewriterInterval!)
+		}
+	}, 20)
+}
 
 // --- Dynamic Input Logic ---
 const modelInputFields = computed(() => {
@@ -516,6 +537,7 @@ const handleClickOutside = (event: MouseEvent) => {
 }
 
 onMounted(() => {
+	runTypewriter()
 	fetchHistory()
 	window.addEventListener('mousedown', handleClickOutside)
 })
@@ -625,22 +647,13 @@ const generateVideo = async () => {
 	prompt.value = ''
 	if (inputRef.value) inputRef.value.innerText = ''
 
-	const tempId = Math.random().toString(36).substring(7)
-	const newTask = reactive<ActiveTask>({
-		id: tempId,
-		prompt: currentPrompt,
-		progress: 0,
-		status: 'Preparing request...',
-	})
-
-	const sessionTaskIds = [tempId]
-	activeTasks.value.unshift(newTask)
-
-	const payload: { prompt: string; model: string; mode?: string; [key: string]: any } = {
-		model: `${selectedModel.value.provider}:${selectedModel.value.model}`,
+	const payload: { [key: string]: any } = {
 		...dynamicParams.value,
-		prompt: currentPrompt,
 	}
+
+	const file_ids: string[] = []
+	const image_urls: string[] = []
+	const files: any[] = []
 
 	// Add image if supported
 	if (supportsImageUpload.value && previewImageUrl.value) {
@@ -650,70 +663,38 @@ const generateVideo = async () => {
 		} else {
 			payload['image'] = previewImageUrl.value
 		}
+		image_urls.push(uploadedImageKey.value)
+		files.push({ key: uploadedImageKey.value, url: previewImageUrl.value, name: 'Start Frame', type: 'image/jpeg' })
 	}
 
-	await generateVideoStream(payload, {
-		onProgress: (percent, message) => {
-			newTask.progress = percent
-			newTask.status = percent > 0 ? `Generating... ${percent}%` : 'Processing...'
+	const model = `${selectedModel.value.provider}:${selectedModel.value.model}`
 
-			// Detect base64 preview in message
-			if (message && message.startsWith('data:image')) {
-				newTask.videoUrl = message
-			}
-		},
-		onTask: (data) => {
-			newTask.taskId = data.task_id
-			// Support both new (root credits) and old (usage object) formats
-			if (data.credits !== undefined) {
-				newTask.usage = { images: 1, credits: data.credits }
-			} else if (data.usage) {
-				newTask.usage = data.usage
-			}
-			newTask.status = 'Task initialized...'
-		},
-		onImage: (data) => {
-			if (newTask.videoUrl && !newTask.videoUrl.startsWith('data:')) {
-				// Multiple videos in one session - spawn a new card
-				const newId = Math.random().toString(36).substring(7)
-				sessionTaskIds.push(newId)
-				const additionalTask = reactive<ActiveTask>({
-					...newTask,
-					id: newId,
-					videoUrl: data.url,
-					status: 'Video ready!',
-				})
-				activeTasks.value.unshift(additionalTask)
-			} else {
-				newTask.videoUrl = data.url
-				newTask.status = 'Video ready!'
-			}
-		},
-		onDone: async () => {
-			newTask.progress = 100
-			newTask.status = 'Generation complete!'
+	try {
+		chatStore.setLoading(true)
 
-			// Refresh history to get the real asset
-			await fetchHistory()
+		const conversationId = await conversationStore.createConversation({
+			character_id: 1,
+			model: model,
+			model_id: selectedModel.value.id,
+			group_id: conversationStore.selectedGroupId || 0,
+			params: { ...payload, file_ids, image_urls, files },
+			capability: 'video',
+		})
 
-			// Small delay to let the transition happen smoothly
-			setTimeout(() => {
-				sessionTaskIds.forEach((id) => {
-					const index = activeTasks.value.findIndex((t) => t.id === id)
-					if (index !== -1) activeTasks.value.splice(index, 1)
-				})
-				activeTab.value = 'creations'
-			}, 1000)
-		},
-		onError: (error) => {
-			console.error('Generation error:', error)
-			newTask.status = 'Error occurred'
-			setTimeout(() => {
-				const index = activeTasks.value.findIndex((t) => t.id === tempId)
-				if (index !== -1) activeTasks.value.splice(index, 1)
-			}, 3000)
-		},
-	})
+		conversationStore.addMessage(conversationId, {
+			role: 'user',
+			content: currentPrompt,
+		})
+
+		chatStore.setPendingMessage(currentPrompt)
+
+		removeAttachedImage()
+
+		router.push(`/chat/${conversationId}`)
+	} catch (e) {
+		console.error('Failed to start chat:', e)
+		chatStore.setLoading(false)
+	}
 }
 
 const handleDownload = (videoUrl: string) => {

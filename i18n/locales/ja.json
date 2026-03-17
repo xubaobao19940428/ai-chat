@@ -34,6 +34,8 @@
 		"copied": "クリップボードにコピーしました",
 		"copy_failed": "コピーに失敗しました。手動でコピーしてください。",
 		"upload_failed": "{name} のアップロードに失敗しました",
+		"max_one_image": "このモデルは画像1枚のみ対応しています",
+		"max_images_reached": "画像の最大枚数に達しました",
 		"send_failed": "送信に失敗しました。接続を確認して再試行してください。",
 		"retry": "再試行",
 		"connection_failed": "接続に失敗しました。再試行してください。",
@@ -48,6 +50,10 @@
 		"account": "アカウント",
 		"select_model": "モデルを選択",
 		"search_models": "モデルを検索...",
+		"all": "すべて",
+		"chat": "チャット",
+		"image": "画像",
+		"video": "動画",
 		"general": "一般",
 		"language": "言語",
 		"appearance": "外観",
@@ -55,6 +61,7 @@
 		"dark": "ダーク",
 		"system": "システムに従う",
 		"search": "検索",
+		"new-task": "新しいタスク",
 		"library": "ライブラリ",
 		"more_tools": "その他のツール",
 		"collapse": "折りたたむ",
@@ -72,9 +79,11 @@
 	},
 	"settings": {
 		"usage": "使用状況",
+		"billing": "請求",
 		"scheduled_tasks": "スケジュールタスク",
 		"mail_aura": "メールAura",
 		"data_controls": "データ管理",
+		"security": "セキュリティ",
 		"cloud_browser": "クラウドブラウザ",
 		"personalization": "パーソナライズ",
 		"skills": "スキル",
@@ -98,7 +107,146 @@
 		"email_queue": "タスク開始時にメールで通知",
 		"email_queue_desc": "有効にすると、タスクのキューが完了して処理が開始されたときにメールでお知らせします。",
 		"manage_cookies": "Cookieを管理",
-		"manage": "管理"
+		"manage": "管理",
+		"personalization_tab": {
+			"basic_style_tone": "基本スタイルとトーン",
+			"basic_style_tone_desc": "ChatGPTの返信スタイルとトーンを設定します。ChatGPTの機能には影響しません。",
+			"characteristics": "特性",
+			"characteristics_desc": "基本スタイルとトーンに加えて、追加のカスタマイズを選択してください。",
+			"gentle_considerate": "穏やかで思いやり",
+			"passionate": "情熱的",
+			"titles_lists": "タイトルとリスト",
+			"emojis": "絵文字",
+			"default": "デフォルト",
+			"custom_instructions": "カスタム指示",
+			"custom_inst_placeholder": "その他の動作、スタイル、トーンの設定",
+			"about_you": "あなたについて",
+			"nickname": "ニックネーム",
+			"nickname_placeholder": "ChatGPTにどう呼ばれたいですか？",
+			"occupation": "職業",
+			"occupation_placeholders": ["ソフトウェアエンジニア", "プロダクトマネージャー", "UIデザイナー", "データサイエンティスト", "フリーランスライター", "大学生", "起業家", "マーケティング", "高校教師", "フルスタック開発者"],
+			"your_details": "あなたの詳細",
+			"your_details_placeholder": "覚えておくべき興味、価値観、好み",
+			"memory": "メモリ",
+			"manage": "管理",
+			"ref_saved_mem": "保存したメモリを参照",
+			"ref_saved_mem_desc": "ChatGPTにメモリを保存し、返信に使用させます。",
+			"ref_chat_history": "チャット履歴を参照",
+			"ref_chat_history_desc": "ChatGPTに最近の会話を返信に参照させます。",
+			"memory_footer": "GPTはBingなどのプロバイダーを通じて、メモリを使用して検索をパーソナライズできます。 {link}",
+			"learn_more": "詳しくはこちら",
+			"advanced": "詳細設定",
+			"web_search": "ウェブ検索",
+			"web_search_desc": "ChatGPTに自動的にウェブを検索させます。",
+			"canvas": "キャンバス",
+			"canvas_desc": "ChatGPTとテキストやコードを共同作業します。",
+			"voice": "ChatGPTボイス",
+			"voice_desc": "ChatGPTの音声機能を有効にします。",
+			"adv_voice": "高度な音声",
+			"adv_voice_desc": "音声を使用してより自然な会話をします。",
+			"connector_search": "コネクター検索",
+			"connector_search_desc": "ChatGPTに接続されたソースを自動検索させます。",
+			"style_tones": {
+				"default": {
+					"title": "デフォルト",
+					"desc": "プリセットスタイルとトーン"
+				},
+				"professional": {
+					"title": "プロフェッショナル＆信頼",
+					"desc": "精巧に作り込まれた"
+				},
+				"friendly": {
+					"title": "フレンドリー＆親しみやすい",
+					"desc": "温かくて話しやすい"
+				},
+				"direct": {
+					"title": "率直＆楽観的",
+					"desc": "ストレートで前向き"
+				},
+				"creative": {
+					"title": "想像力豊か",
+					"desc": "楽しいファンタジー"
+				},
+				"practical": {
+					"title": "効率的＆実用的",
+					"desc": "簡潔で率直"
+				},
+				"tech": {
+					"title": "テックギーク",
+					"desc": "情熱的な探究者"
+				},
+				"sarcastic": {
+					"title": "皮肉屋",
+					"desc": "鋭くて機知に富む"
+				}
+			},
+			"characteristics_options": {
+				"gentle": {
+					"increase": { "title": "強化", "desc": "より親しみやすく" },
+					"default": { "title": "デフォルト", "desc": "" },
+					"decrease": { "title": "抑制", "desc": "よりプロフェッショナルで事実重視" }
+				},
+				"passionate": {
+					"increase": { "title": "強化", "desc": "よりエネルギッシュに" },
+					"default": { "title": "デフォルト", "desc": "" },
+					"decrease": { "title": "抑制", "desc": "よりクールで中立的に" }
+				},
+				"titles_lists": {
+					"increase": { "title": "強化", "desc": "明確なフォーマットとリスト構造を使用" },
+					"default": { "title": "デフォルト", "desc": "" },
+					"decrease": { "title": "抑制", "desc": "段落テキストを多く、リスト構造を少なく" }
+				},
+				"emojis": {
+					"increase": { "title": "強化", "desc": "絵文字をもっと使う" },
+					"default": { "title": "デフォルト", "desc": "" },
+					"decrease": { "title": "抑制", "desc": "絵文字をできるだけ少なく" }
+				}
+			}
+		},
+		"security_tab": {
+			"title": "セキュリティ",
+			"password": "パスワード",
+			"passkey": "パスキー",
+			"passkey_desc": "パスキーは安全で便利です。追加の手順なしに多要素認証でアカウントを保護します。",
+			"add": "追加",
+			"mfa_title": "多要素認証 (MFA)",
+			"authenticator_app": "認証アプリ",
+			"authenticator_app_desc": "認証アプリからのワンタイムコードを使用します。",
+			"text_message": "テキストメッセージ",
+			"text_message_desc": "SMSまたはWhatsAppで6桁の認証コードを送信します（国コードにより異なります）",
+			"trusted_devices": "信頼済みデバイス",
+			"trusted_devices_desc": "他のデバイスでサインインすると、ここに追加され、デバイスサインインプロンプトを自動的に受け取れます。",
+			"logout_device": "このデバイスからログアウト",
+			"logout_btn": "ログアウト",
+			"logout_all": "すべてのデバイスからログアウト",
+			"logout_all_desc": "現在のセッションを含む、すべてのデバイスのアクティブセッションからログアウトします。他のデバイスはログアウトに最大30分かかる場合があります。",
+			"logout_all_btn": "すべてログアウト"
+		},
+		"data_controls_tab": {
+			"improve_model": "すべてのユーザーのためにモデルを改善",
+			"on": "オン",
+			"shared_links": "共有リンク",
+			"manage": "管理",
+			"archived_chats": "アーカイブされたチャット",
+			"archive_all": "すべてのチャットをアーカイブ",
+			"archive_all_btn": "すべてアーカイブ",
+			"delete_all": "すべてのチャットを削除",
+			"delete_all_btn": "すべて削除",
+			"export_data": "データをエクスポート",
+			"export_btn": "エクスポート"
+		},
+		"billing_tab": {
+			"current_plan": "現在のプラン",
+			"free_plan_desc": "制限付きの基本機能",
+			"upgrade": "アップグレード",
+			"payment_method": "支払い方法",
+			"manage": "管理",
+			"credit_usage": "クレジット使用量",
+			"view": "表示",
+			"invoices": "請求書",
+			"no_invoices": "請求書はありません",
+			"no_invoices_desc": "まだ請求書がありません。"
+		}
 	},
 	"auth": {
 		"headline": "インテリジェントチャットアシスタント",

@@ -303,13 +303,12 @@
 		<div class="absolute bottom-8 left-0 right-0 z-50 px-4 pointer-events-none">
 			<div class="max-w-[840px] mx-auto relative pointer-events-auto">
 				<!-- Input Container -->
-				<div class="bg-[var(--bg-main)] rounded-[26px] shadow-[var(--shadow-pill)] border border-[var(--border-light)] transition-all duration-300 focus-within:shadow-lg focus-within:border-[var(--text-disable)] relative p-2">
-					<div class="flex flex-col">
+				<div class="flex flex-col gap-3 rounded-[22px] relative bg-[var(--fill-input-chat)] py-3 w-full shadow-[0px_12px_32px_0px_rgba(0,0,0,0.02)] border border-black/5 dark:border-[var(--border-main)] focus-within:border-black/10 transition-all duration-300">
 						<!-- Uploaded Files Preview — above editor -->
 						<div v-if="uploadedFiles.length > 0" class="flex flex-wrap gap-2 px-3 pt-2 pb-1">
 							<div v-for="file in uploadedFiles" :key="file.id" class="relative group/file shrink-0">
 								<!-- Image file -->
-								<div v-if="file.type.startsWith('image/')" class="relative w-16 h-16 rounded-xl overflow-hidden border border-[var(--border-light)] shadow-sm bg-[var(--bg-hover)]">
+								<div v-if="file.type?.startsWith('image/')" class="relative w-16 h-16 rounded-xl overflow-hidden border border-[var(--border-light)] shadow-sm bg-[var(--bg-hover)]">
 									<img :src="file.localUrl || file.url" class="w-full h-full object-cover" />
 									<div v-if="file.uploading" class="absolute inset-0 bg-black/40 flex items-center justify-center">
 										<Loader2 :size="18" class="animate-spin text-white" />
@@ -330,10 +329,12 @@
 							</div>
 						</div>
 
-						<editor-content :editor="editor" class="w-full max-h-48 overflow-y-auto custom-scrollbar" />
+						<div class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[50px] max-h-[216px]">
+							<editor-content :editor="editor" class="w-full" />
+						</div>
 
 						<input type="file" ref="fileInputRef" class="hidden" multiple @change="handleFileUpload" />
-						<div class="flex items-center justify-between px-3 pb-2 bg-[var(--bg-main)] gap-2">
+						<div class="flex items-center justify-between px-3 gap-2">
 							<div class="flex items-center gap-2 flex-wrap flex-1">
 								<!-- Model Selector -->
 								<ModelSelector variant="pill" :capability="selectorCapability" />
@@ -555,7 +556,6 @@
 								</button>
 							</Tooltip>
 						</div>
-					</div>
 				</div>
 
 				<!-- Suggestions -->
@@ -650,7 +650,7 @@ const mediaImageUploadLimit = computed(() => {
 })
 
 const uploadedMediaFiles = computed(() => {
-	return uploadedFiles.value.filter((f) => f.type.startsWith('image/'))
+	return uploadedFiles.value.filter((f) => f.type?.startsWith('image/'))
 })
 
 const isAssetPickerOpen = ref(false)
@@ -835,7 +835,7 @@ const handleFilesUpload = async (files: File[], applyMediaLimit = false) => {
 		url: '',
 		type: file.type,
 		uploading: true,
-		localUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
+		localUrl: file.type?.startsWith('image/') ? URL.createObjectURL(file) : undefined,
 	}))
 	uploadedFiles.value.push(...placeholders)
 	isUploading.value = true
@@ -910,6 +910,28 @@ const currentCharacter = computed(() => {
 		: null
 })
 
+// --- Typewriter Placeholder Effect ---
+const displayedPlaceholder = ref('')
+let typewriterInterval: ReturnType<typeof setInterval> | null = null
+
+const runTypewriter = () => {
+	if (typewriterInterval) clearInterval(typewriterInterval)
+	displayedPlaceholder.value = ''
+	let i = 0
+	const text = t('chat.assign_task')
+	typewriterInterval = setInterval(() => {
+		if (i < text.length) {
+			displayedPlaceholder.value += text[i]
+			i++
+			if (editor.value) {
+				editor.value.view.dispatch(editor.value.state.tr)
+			}
+		} else {
+			clearInterval(typewriterInterval!)
+		}
+	}, 20)
+}
+
 const editor = useEditor({
 	content: '',
 	extensions: [
@@ -922,7 +944,7 @@ const editor = useEditor({
 			horizontalRule: false,
 		}),
 		Placeholder.configure({
-			placeholder: 'Ask anything...',
+			placeholder: () => displayedPlaceholder.value,
 		}),
 	],
 	editorProps: {
@@ -961,7 +983,7 @@ watch(
 					handlePaste: (view, event) => {
 						if (!supportsFileUpload.value) return false
 						const items = Array.from(event.clipboardData?.items || [])
-						const imageItems = items.filter((item) => item.type.startsWith('image/'))
+						const imageItems = items.filter((item) => item.type?.startsWith('image/'))
 						if (imageItems.length === 0) return false
 						event.preventDefault()
 						const files = imageItems.map((item) => item.getAsFile()).filter(Boolean) as File[]
@@ -1245,6 +1267,9 @@ const handleApplyPrompt = (suggestion: PromptSuggestion) => {
 }
 
 onMounted(async () => {
+	// Start typewriter placeholder animation
+	runTypewriter()
+
 	// 1. 初始化本地存储
 	await conversationStore.initFromLocalStorage()
 
@@ -1383,7 +1408,7 @@ const sendMessage = async (isInitial = false) => {
 	const mergedParams = {
 		...currentParams,
 		...uploadedFiles.value.reduce((acc: any, file) => {
-			if (file.type.startsWith('image/')) {
+			if (file.type?.startsWith('image/')) {
 				acc.image_urls = acc.image_urls || []
 				acc.image_urls.push(file.key)
 			} else {
@@ -1408,7 +1433,7 @@ const sendMessage = async (isInitial = false) => {
 	// Advanced Media Field Mapping (e.g. input_images, image, ref_image)
 	if (isImageModel.value || isVideoModel.value) {
 		const fields = modelInputFields.value
-		const readyMedia = uploadedFiles.value.filter((f) => !f.uploading && f.type.startsWith('image/'))
+		const readyMedia = uploadedFiles.value.filter((f) => !f.uploading && f.type?.startsWith('image/'))
 
 		// Use re-hydrated media if local uploadedFiles is empty (for initial send)
 		const effectiveMedia = readyMedia.length > 0 ? readyMedia : (isInitial ? (currentParams.files || []).filter((f: any) => f?.type?.startsWith('image/')) : [])

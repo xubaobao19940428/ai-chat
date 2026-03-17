@@ -20,7 +20,7 @@ const discoveryStore = useDiscoveryStore()
 const handleGlobalKeydown = (e: KeyboardEvent) => {
 	if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
 		e.preventDefault()
-		uiStore.openSearchModal()
+		navigateTo('/chat')
 	}
 }
 

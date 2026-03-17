@@ -140,7 +140,7 @@
 								<template v-if="image.status === 1">
 									<img :src="image.thumbnail || getRecordPrimaryUrl(image)" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110" />
 								</template>
-								
+
 								<!-- Processing State in History -->
 								<div v-else class="h-full min-h-[240px] relative flex flex-col items-center justify-center overflow-hidden bg-black/40">
 									<img src="/noir_placeholder.png" class="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay" />
@@ -172,7 +172,7 @@
 											{{ formatDate(image.created_at) }}
 										</span>
 									</div>
-									
+
 									<!-- Technical Metadata (Noir Style) -->
 									<div v-if="getRecordParams(image)" class="flex flex-wrap gap-2 mb-4 opacity-70">
 										<div v-if="getRecordParams(image).aspect_ratio" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
@@ -181,12 +181,8 @@
 										<div v-if="getRecordParams(image).resolution" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
 											{{ getRecordParams(image).resolution }}
 										</div>
-										<div v-if="getRecordParams(image).num_inference_steps" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
-											{{ getRecordParams(image).num_inference_steps }} STEPS
-										</div>
-										<div v-if="getRecordParams(image).seed" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
-											SEED: {{ getRecordParams(image).seed }}
-										</div>
+										<div v-if="getRecordParams(image).num_inference_steps" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">{{ getRecordParams(image).num_inference_steps }} STEPS</div>
+										<div v-if="getRecordParams(image).seed" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">SEED: {{ getRecordParams(image).seed }}</div>
 									</div>
 
 									<p class="text-white text-[13px] font-medium mb-4 line-clamp-3 leading-relaxed italic">"{{ getRecordPrompt(image) || 'No description' }}"</p>
@@ -228,9 +224,9 @@
 					</div>
 				</transition>
 
-				<div ref="controlBarRef" class="bg-[var(--bg-main)] rounded-[40px] border border-[var(--border-main)] p-5 shadow-[var(--shadow-pill)] flex flex-col gap-3 transition-all">
+				<div ref="controlBarRef" class="bg-[var(--fill-input-chat)] rounded-[22px] border border-black/5 dark:border-[var(--border-main)] py-3 shadow-[0px_12px_32px_0px_rgba(0,0,0,0.02)] flex flex-col gap-3 transition-all duration-300 focus-within:border-black/10">
 					<!-- Uploaded Image Previews (above input) -->
-					<div v-if="uploadedImages.length > 0" class="px-2 flex items-center gap-2 flex-wrap">
+					<div v-if="uploadedImages.length > 0" class="px-2 flex items-center gap-6 flex-wrap">
 						<div v-for="(img, index) in uploadedImages" :key="img.url" class="relative shrink-0 group/preview">
 							<img :src="img.url" class="w-14 h-14 object-cover rounded-2xl border border-[var(--border-main)] shadow-sm" />
 							<!-- Upload loading overlay -->
@@ -248,12 +244,12 @@
 					</div>
 
 					<!-- Input Area -->
-					<div class="px-2">
-						<div ref="inputRef" contenteditable="true" class="w-full bg-transparent border-none text-[var(--text-primary)] focus:outline-none font-medium text-[17px] py-1 max-h-32 overflow-y-auto no-scrollbar relative min-h-[28px] outline-none" :data-placeholder="'Describe an image and click generate...'" @input="handleInput" @keydown.enter="handleEnterKey" @paste="handlePaste"></div>
+					<div class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 w-full text-[var(--text-primary)] placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[50px] max-h-[216px]">
+						<div ref="inputRef" contenteditable="true" class="w-full outline-none font-normal" :data-placeholder="displayedPlaceholder" @input="handleInput" @keydown.enter="handleEnterKey" @paste="handlePaste"></div>
 					</div>
 
 					<!-- Bottom Row: Tools + Generate -->
-					<div class="flex items-center justify-between gap-2 px-1">
+					<div class="flex items-center justify-between gap-2 px-3">
 						<!-- Tool Pills -->
 						<div class="flex items-center gap-2 flex-wrap">
 							<!-- Model Selector -->
@@ -397,7 +393,7 @@
 						</div>
 
 						<!-- Generate Button -->
-						<button @click="generateImage" :disabled="!prompt.trim()" class="flex items-center justify-center shrink-0 w-10 h-10 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] hover:opacity-90 transition-all disabled:opacity-50 disabled:pointer-events-none self-end relative">
+						<button @click="generateImage" :disabled="!prompt.trim()" class="flex items-center justify-center shrink-0 size-8 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] hover:opacity-90 transition-all disabled:opacity-50 disabled:pointer-events-none self-end relative">
 							<Sparkles v-if="!isGenerating" :size="18" fill="currentColor" />
 							<Loader2 v-else :size="18" class="animate-spin" />
 						</button>
@@ -415,9 +411,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { Link2, ImagePlus, Palette, Square, Gem, Sparkle, Paperclip, Zap, Loader2, Monitor, X, Image as ImageIcon, Download, ChevronDown, LayoutGrid, Sparkles, Plus } from 'lucide-vue-next'
-import { getModels, generateImageStream, getAsyncTaskOutputs, uploadFile, getRecordPrompt, getRecordPrimaryUrl, getRecordModel, getRecordParams, type AIModel, type AsyncTaskRecord } from '@/utils/api'
+import { getModels, getAsyncTaskOutputs, uploadFile, getRecordPrompt, getRecordPrimaryUrl, getRecordModel, getRecordParams, type AIModel, type AsyncTaskRecord } from '@/utils/api'
+import { useRouter } from 'vue-router'
+import { useConversationStore } from '@/stores/conversation'
+import { useChatStore } from '@/stores/chat'
+
+const router = useRouter()
+const conversationStore = useConversationStore()
+const chatStore = useChatStore()
 
 const activeTab = ref<'inspiration' | 'creations'>('inspiration')
 const prompt = ref('')
@@ -435,6 +438,25 @@ const activeTasks = ref<ActiveTask[]>([])
 const isGenerating = computed(() => activeTasks.value.length > 0)
 const selectedCategory = ref('All')
 const openDropdown = ref<string | null>(null)
+
+// --- Typewriter Placeholder Effect ---
+const displayedPlaceholder = ref('')
+let typewriterInterval: ReturnType<typeof setInterval> | null = null
+
+const runTypewriter = () => {
+	if (typewriterInterval) clearInterval(typewriterInterval)
+	displayedPlaceholder.value = ''
+	let i = 0
+	const text = 'Describe an image and click generate...'
+	typewriterInterval = setInterval(() => {
+		if (i < text.length) {
+			displayedPlaceholder.value += text[i]
+			i++
+		} else {
+			clearInterval(typewriterInterval!)
+		}
+	}, 20)
+}
 
 // Model & Options State
 import { useModelStore } from '@/stores/models'
@@ -569,6 +591,7 @@ const setParamAndClose = (key: string, val: any) => {
 }
 
 onMounted(() => {
+	runTypewriter()
 	fetchHistory()
 	window.addEventListener('mousedown', handleClickOutside)
 })
@@ -708,92 +731,55 @@ const generateImage = async () => {
 	prompt.value = ''
 	if (inputRef.value) inputRef.value.innerText = ''
 
-	const tempId = Math.random().toString(36).substring(7)
-	const newTask = reactive<ActiveTask>({
-		id: tempId,
-		prompt: currentPrompt,
-		progress: 0,
-		status: 'Preparing request...',
-	})
-
-	const sessionTaskIds = [tempId]
-	activeTasks.value.unshift(newTask)
-
-	const payload: { prompt: string; model: string; mode?: string; [key: string]: any } = {
-		model: `${selectedModel.value.provider}:${selectedModel.value.model}`,
+	const payload: { [key: string]: any } = {
 		...dynamicParams.value,
-		prompt: currentPrompt,
 	}
 
 	const readyImages = uploadedImages.value.filter((i) => !i.uploading && i.url)
-	if ('input_images' in modelInputFields.value && readyImages.length > 0) {
-		payload.input_images = readyImages.map((i) => i.url)
-	} else if ('image' in modelInputFields.value && readyImages.length > 0) {
-		payload.image = readyImages[0]?.url
+	const file_ids: string[] = []
+	const image_urls: string[] = []
+	const files: any[] = []
+
+	if (readyImages.length > 0) {
+		if ('input_images' in modelInputFields.value) {
+			payload.input_images = readyImages.map((i) => i.url)
+			image_urls.push(...readyImages.map((i) => i.key))
+			files.push(...readyImages)
+		} else if ('image' in modelInputFields.value) {
+			payload.image = readyImages[0]?.url
+			image_urls.push(readyImages[0]?.key || '')
+			files.push(readyImages[0])
+		}
 	}
 
-	await generateImageStream(payload, {
-		onProgress: (percent, message) => {
-			newTask.progress = percent
-			newTask.status = percent > 0 ? `Generating... ${percent}%` : 'Processing...'
+	const model = `${selectedModel.value.provider}:${selectedModel.value.model}`
 
-			// Detect base64 preview in message
-			if (message && message.startsWith('data:image')) {
-				newTask.imageUrl = message
-			}
-		},
-		onTask: (data) => {
-			newTask.taskId = data.task_id
-			// Support both new (root credits) and old (usage object) formats
-			if (data.credits !== undefined) {
-				newTask.usage = { images: 1, credits: data.credits }
-			} else if (data.usage) {
-				newTask.usage = data.usage
-			}
-			newTask.status = 'Task initialized...'
-		},
-		onImage: (data) => {
-			if (newTask.imageUrl && !newTask.imageUrl.startsWith('data:')) {
-				// Multiple images in one session - spawn a new card
-				const newId = Math.random().toString(36).substring(7)
-				sessionTaskIds.push(newId)
-				const additionalTask = reactive<ActiveTask>({
-					...newTask,
-					id: newId,
-					imageUrl: data.url,
-					status: 'Image ready!',
-				})
-				activeTasks.value.unshift(additionalTask)
-			} else {
-				newTask.imageUrl = data.url
-				newTask.status = 'Image ready!'
-			}
-		},
-		onDone: async () => {
-			newTask.progress = 100
-			newTask.status = 'Generation complete!'
+	try {
+		chatStore.setLoading(true)
 
-			// Refresh history to get the real asset
-			await fetchHistory()
+		const conversationId = await conversationStore.createConversation({
+			character_id: 1,
+			model: model,
+			model_id: selectedModel.value.id,
+			group_id: conversationStore.selectedGroupId || 0,
+			params: { ...payload, file_ids, image_urls, files },
+			capability: 'image',
+		})
 
-			// Small delay to let the transition happen smoothly
-			setTimeout(() => {
-				sessionTaskIds.forEach((id) => {
-					const index = activeTasks.value.findIndex((t) => t.id === id)
-					if (index !== -1) activeTasks.value.splice(index, 1)
-				})
-				activeTab.value = 'creations'
-			}, 1000)
-		},
-		onError: (error) => {
-			console.error('Generation error:', error)
-			newTask.status = 'Error occurred'
-			setTimeout(() => {
-				const index = activeTasks.value.findIndex((t) => t.id === tempId)
-				if (index !== -1) activeTasks.value.splice(index, 1)
-			}, 3000)
-		},
-	})
+		conversationStore.addMessage(conversationId, {
+			role: 'user',
+			content: currentPrompt,
+		})
+
+		chatStore.setPendingMessage(currentPrompt)
+
+		uploadedImages.value = []
+
+		router.push(`/chat/${conversationId}`)
+	} catch (e) {
+		console.error('Failed to start chat:', e)
+		chatStore.setLoading(false)
+	}
 }
 
 const getPreviewStyle = (ratio: string) => {
@@ -882,7 +868,7 @@ textarea::placeholder {
 
 [contenteditable]:empty:before {
 	content: attr(data-placeholder);
-	color: #999;
+	color: var(--text-disable);
 	font-weight: 500;
 	pointer-events: none;
 	display: block;

@@ -54,11 +54,11 @@
 			<!-- Mobile: Row 2 — Type / Desktop: single row with source toggle in header -->
 			<div class="flex items-center gap-2 px-4 sm:px-6 py-2 overflow-x-auto no-scrollbar">
 				<!-- Source toggle desktop -->
-				<div class="hidden sm:flex bg-[var(--fill-tsp-gray-main)] p-1 rounded-xl border border-[var(--border-main)] items-center shrink-0 mr-2">
+				<!-- <div class="md:hidden sm:flex bg-[var(--fill-tsp-gray-main)] p-1 rounded-xl border border-[var(--border-main)] items-center shrink-0 mr-2">
 					<button v-for="s in sources" :key="s.id" @click="assetStore.filters.source = s.id as any" class="px-3 py-1.5 text-[12px] font-bold rounded-lg transition-all" :class="assetStore.filters.source === s.id ? 'bg-white text-[var(--text-primary)] shadow-sm dark:bg-[var(--bg-hover)]' : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'">
 						{{ s.label }}
 					</button>
-				</div>
+				</div> -->
 				<!-- Type chips -->
 				<button v-for="t in types" :key="t.id" @click="assetStore.filters.type = t.id as any" :class="['px-3 sm:px-4 py-1.5 text-[12px] font-bold rounded-full border transition-all whitespace-nowrap', assetStore.filters.type === t.id ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm' : 'bg-[var(--bg-main)] text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]']">
 					{{ t.label }}

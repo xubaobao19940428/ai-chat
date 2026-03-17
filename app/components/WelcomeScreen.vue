@@ -290,21 +290,6 @@
 								</div>
 							</div>
 
-							<!-- "Connect your tools" Banner (Matches user screenshot) -->
-							<div v-if="showConnectBanner && (!activeTool || activeTool === 'website')" class="mx-3 mt-1 mb-1 py-2 px-3 flex items-center justify-between group animate-fade-in-up" style="animation-delay: 0.1s">
-								<div class="flex items-center gap-2">
-									<Cable :size="16" class="text-[var(--icon-secondary)]" />
-									<span class="text-[13px] text-[var(--text-secondary)] font-medium">{{ $t('chat.connect_tools') }}</span>
-								</div>
-								<div class="flex items-center gap-2">
-									<div class="flex items-center -space-x-1">
-										<img src="/other.png" alt="" class="h-[22px]" />
-									</div>
-									<button class="text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors p-1" @click="showConnectBanner = false">
-										<X :size="16" />
-									</button>
-								</div>
-							</div>
 						</div>
 					</div>
 				</div>
@@ -386,34 +371,6 @@
 						<ToolIntegrations v-if="currentTool.showIntegrations" />
 					</div>
 
-					<!-- Schedule Layout -->
-					<div v-if="activeTool === 'schedule'" class="flex flex-col gap-6 w-full">
-						<div class="flex items-center justify-between mb-2">
-							<h3 class="text-[14px] font-medium text-[var(--text-primary)]">{{ $t('chat.get_started') }}</h3>
-							<div class="flex items-center gap-2">
-								<button class="h-8 w-8 rounded-lg border border-[var(--border-main)] flex items-center justify-center hover:bg-[var(--fill-tsp-white-light)] transition-colors">
-									<Calendar :size="16" class="text-[var(--text-secondary)]" />
-								</button>
-								<button class="h-8 px-3 rounded-lg border border-[var(--border-main)] flex items-center gap-1.5 hover:bg-[var(--fill-tsp-white-light)] transition-colors">
-									<Plus :size="16" class="text-[var(--text-secondary)]" />
-									<span class="text-[13px] font-medium text-[var(--text-primary)]">{{ $t('chat.new_schedule') }}</span>
-								</button>
-							</div>
-						</div>
-
-						<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-							<button v-for="(item, index) in currentTool.prompts" :key="index" @click="handlePromptSelect(item.text)" class="flex items-center justify-between p-4 px-5 rounded-2xl border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] transition-colors group text-left">
-								<div class="flex items-center gap-4 min-w-0">
-									<div class="w-5 h-5 flex items-center justify-center flex-shrink-0">
-										<component :is="item.icon" :size="16" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
-									</div>
-									<span class="text-[14px] text-[var(--text-primary)] truncate font-normal">{{ item.text }}</span>
-								</div>
-								<ArrowUpRight :size="14" class="text-[var(--text-tertiary)] flex-shrink-0" />
-							</button>
-						</div>
-					</div>
-
 					<!-- Default Tool Layout (Slides, App, Design) -->
 					<div v-else class="flex flex-col gap-8 w-full">
 						<SamplePrompts v-if="currentTool.prompts && currentTool.prompts.length" :prompts="currentTool.prompts" :title="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? '' : 'Sample prompts'" :layout="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? 'list' : 'grid'" @select="handlePromptSelect" />
@@ -422,21 +379,8 @@
 					</div>
 				</div>
 
-				<!-- Footer Promo Cards -->
 				<div v-if="!activeTool" class="mt-20 flex gap-3 overflow-x-auto pb-4 scrollbar-none animate-fade-in-up" style="animation-delay: 0.5s; animation-fill-mode: forwards">
-					<div class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
-						<div class="w-10 h-10 rounded-lg bg-[var(--fill-blue)] flex items-center justify-center mb-2">
-							<Puzzle :size="24" class="text-[var(--text-blue)]" />
-						</div>
-						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">{{ $t('chat.get_skills') }}</p>
-					</div>
-					<div class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
-						<div class="w-10 h-10 rounded-lg bg-[var(--function-error-tsp)] flex items-center justify-center mb-2">
-							<Mail :size="24" class="text-[var(--function-error)]" />
-						</div>
-						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">{{ $t('chat.stay_updated') }}</p>
-					</div>
-					<div class="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.33%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
+					<div class="flex-shrink-0 w-full sm:w-[calc(100%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
 						<div class="w-10 h-10 rounded-lg bg-[var(--function-success-tsp)] flex items-center justify-center mb-2">
 							<Globe :size="24" class="text-[var(--function-success)]" />
 						</div>
@@ -523,7 +467,6 @@ const isMoreMenuOpen = ref(false)
 const moreMenuRef = ref<HTMLElement | null>(null)
 
 const moreMenuItems = [
-	{ name: 'Schedule task', id: 'schedule', icon: Calendar },
 	{ name: 'Wide Research', id: 'research', icon: Search },
 	{ name: 'Spreadsheet', id: 'spreadsheet', icon: Table },
 	{ name: 'Visualization', icon: BarChart3 },
@@ -611,22 +554,6 @@ const tools: Record<string, ToolConfig> = {
 		color: 'text-pink-500',
 		placeholder: 'Describe the image you want to create',
 		prompts: [{ icon: Sparkles, text: 'Try Nano Banana' }, { text: 'Meditation app UI/UX' }, { text: 'Coffee brand design' }, { text: 'Music festival print materials' }, { text: 'Data infographic' }, { text: 'App illustrations' }],
-		templates: [],
-	},
-	schedule: {
-		id: 'schedule',
-		name: 'Schedule task',
-		icon: Calendar,
-		color: 'text-blue-500',
-		placeholder: 'Describe the task you want to schedule',
-		prompts: [
-			{ text: 'Daily tech briefing', icon: Signal },
-			{ text: '24 hours hot topics feed', icon: Newspaper },
-			{ text: 'Monthly market trend analysis', icon: BarChart2 },
-			{ text: 'Weekly picks for food and fun', icon: Cake },
-			{ text: 'Track weekly industry trends', icon: SlidersHorizontal },
-			{ text: 'Market insights before the bell', icon: Presentation },
-		],
 		templates: [],
 	},
 	research: {

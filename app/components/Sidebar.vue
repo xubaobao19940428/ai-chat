@@ -19,7 +19,7 @@
 		<!-- Nav Items Section -->
 		<div class="flex flex-col flex-1 min-h-0 p-[8px] pb-0 gap-px transition-all">
 			<!-- Static New Task Item (Not draggable as requested) -->
-			<div @click="handleNewChat" :class="['flex items-center rounded-[10px] clickable cursor-pointer transition-colors w-full h-[36px] hover:bg-[var(--bg-hover)] group', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px] pe-[2px] gap-[12px]']">
+			<div @click="handleNewChat" :class="['flex items-center rounded-[10px] clickable cursor-pointer transition-colors w-full h-[36px] hover:bg-[var(--bg-hover)] group relative', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px] pe-[2px] gap-[12px]']">
 				<Tooltip :text="$t('chat.new_chat')" position="right" :disabled="!uiStore.sidebarCollapsed" fullWidth>
 					<div :class="['flex items-center', uiStore.sidebarCollapsed ? 'justify-center' : 'w-full gap-[12px]']">
 						<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
@@ -30,6 +30,11 @@
 						</div>
 					</div>
 				</Tooltip>
+				<div v-if="!uiStore.sidebarCollapsed" class="absolute right-0 top-0 bottom-0 flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+					<div class="text-[var(--text-tertiary)] text-sm inline-flex items-center gap-1 pe-[8px]">
+						⌘ K
+					</div>
+				</div>
 			</div>
 
 			<!-- Main Nav Items (Draggable) -->
@@ -53,11 +58,6 @@
 						</div>
 						<div v-if="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex gap-[4px] items-center text-[14px] font-medium text-[var(--text-primary)]">
 							<span class="truncate">{{ $t('common.' + item.id) }}</span>
-						</div>
-						<div v-if="!uiStore.sidebarCollapsed && item.shortcut" class="shrink-0 flex items-center">
-							<div class="text-[var(--text-tertiary)] text-sm hidden group-hover:inline-flex items-center gap-1 pe-[8px]">
-								{{ item.shortcut }}
-							</div>
 						</div>
 					</div>
 				</Tooltip>
@@ -329,35 +329,33 @@
 				<HandHeart :size="18" class="shrink-0" />
 			</button> -->
 
-			<div :class="['flex w-full p-[2px] transition-all', uiStore.sidebarCollapsed ? 'flex-col items-center justify-center gap-2' : 'items-center justify-between']">
-				<div :class="['flex items-center justify-center', uiStore.sidebarCollapsed ? 'flex-col gap-2' : 'gap-[4px]']">
-					<!-- Settings -->
+				<div :class="['flex w-full p-[2px] transition-all', uiStore.sidebarCollapsed ? 'flex-col items-center justify-center gap-2' : 'items-center justify-between px-1']">
+				<!-- Expanded: User Profile -->
+				<div v-if="!uiStore.sidebarCollapsed" class="flex items-center gap-2.5 min-w-0 flex-1">
+					<div class="size-8 rounded-full bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[13px] font-bold text-[var(--text-primary)] uppercase shrink-0 border border-[var(--border-main)]">
+						{{ userStore.userInfo?.email?.charAt(0) || 'U' }}
+					</div>
+					<div class="min-w-0 flex-1">
+						<div class="text-[13px] font-medium text-[var(--text-primary)] truncate leading-tight">{{ userStore.userInfo?.email?.split('@')[0] || 'User' }}</div>
+						<div class="text-[11px] text-[var(--text-tertiary)] leading-tight mt-0.5">Free</div>
+					</div>
+				</div>
+				<!-- Collapsed: avatar only -->
+				<Tooltip v-if="uiStore.sidebarCollapsed" :text="userStore.userInfo?.email?.split('@')[0] || 'User'" position="right">
+					<div class="size-8 rounded-full bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[13px] font-bold text-[var(--text-primary)] uppercase shrink-0 border border-[var(--border-main)] cursor-pointer" @click="uiStore.openSettingsModal()">
+						{{ userStore.userInfo?.email?.charAt(0) || 'U' }}
+					</div>
+				</Tooltip>
+				<!-- Settings + Mobile -->
+				<div :class="['flex items-center', uiStore.sidebarCollapsed ? 'flex-col gap-2' : 'gap-[4px]']">
 					<Tooltip :text="$t('common.settings')" position="right" :disabled="!uiStore.sidebarCollapsed">
 						<div @click="uiStore.openSettingsModal()" class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
 							<Settings2 :size="18" class="text-[var(--icon-primary)]" />
 						</div>
 					</Tooltip>
-
-					<!-- Tools / Apps -->
-					<!-- <Tooltip text="Tools & Apps" position="right" :disabled="!uiStore.sidebarCollapsed">
-						<div
-							class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
-							<Shapes :size="18" class="text-[var(--icon-primary)]" />
-						</div>
-					</Tooltip> -->
-					<!-- Smartphone / Apps -->
 					<div @click="uiStore.openMobileMenu()" class="flex items-center justify-center lg:hidden cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
 						<Smartphone :size="18" class="text-[var(--icon-primary)]" />
 					</div>
-				</div>
-
-				<div :class="['flex items-center justify-center', uiStore.sidebarCollapsed ? 'flex-col gap-2' : 'gap-[4px]']">
-					<!-- Book / Docs -->
-					<Tooltip text="Docs" position="right" :disabled="!uiStore.sidebarCollapsed">
-						<a href="https://aura.im/docs" target="_blank" rel="noreferrer" class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
-							<BookOpen :size="18" class="text-[var(--icon-primary)]" />
-						</a>
-					</Tooltip>
 				</div>
 			</div>
 		</div>
@@ -376,7 +374,6 @@ import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import {
 	PanelLeft,
 	SquarePen,
-	Search,
 	Library,
 	LayoutGrid,
 	ChevronRight,
@@ -700,19 +697,9 @@ const handleMouseLeave = () => {
 
 const handleMoreItemClick = (item: any) => {
 	if (item.id === 'ai-image') {
-		const model = modelStore.models.find((m) => {
-			const cap = m.model_input?.capability || m.capabilities?.[0]
-			return cap === 'image_generation' || cap === 'image'
-		})
-		if (model) modelStore.selectModel(`${model.provider}:${model.model}`)
-		router.push('/chat')
+		router.push('/image-generation')
 	} else if (item.id === 'ai-video') {
-		const model = modelStore.models.find((m) => {
-			const cap = m.model_input?.capability || m.capabilities?.[0]
-			return cap === 'video_generation' || cap === 'video'
-		})
-		if (model) modelStore.selectModel(`${model.provider}:${model.model}`)
-		router.push('/chat')
+		router.push('/video-generation')
 	} else if (item.id === 'ai-bots') {
 		router.push('/explore')
 	} else if (item.id === 'ai-reading') {
@@ -775,16 +762,6 @@ const handleNewChat = () => {
 
 const sidebarNavItems = ref([
 	{
-		id: 'search',
-		label: 'Search',
-		icon: markRaw(Search),
-		shortcut: '⌘ K',
-		handler: () => {
-			uiStore.openSearchModal()
-		},
-		iconClass: 'text-[var(--text-secondary)]',
-	},
-	{
 		id: 'library',
 		label: 'Library',
 		icon: markRaw(Library),
@@ -807,16 +784,6 @@ const SIDEBAR_KEY = (email: string) => `sidebar-order-${email}`
 
 // All possible items that can appear in either zone
 const NAV_DEFS: Record<string, any> = {
-	search: {
-		id: 'search',
-		label: 'Search',
-		icon: markRaw(Search),
-		shortcut: '⌘ K',
-		handler: () => {
-			uiStore.openSearchModal()
-		},
-		iconClass: 'text-[var(--text-secondary)]',
-	},
 	library: {
 		id: 'library',
 		label: 'Library',
@@ -868,7 +835,8 @@ const MORE_DEFS: Record<string, any> = {
 	'ai-reading': { id: 'ai-reading', name: 'AI Reading', icon: markRaw(BookOpen) },
 	'ai-image': { id: 'ai-image', name: 'AI Image Generator', icon: markRaw(Image) },
 	'ai-video': { id: 'ai-video', name: 'AI Video Generator', icon: markRaw(Video) },
-	search: { id: 'search', name: 'Search', icon: markRaw(Search) },
+
+
 	library: { id: 'library', name: 'Library', icon: markRaw(Library) },
 }
 
@@ -895,11 +863,13 @@ const loadSidebarLayout = () => {
 	try {
 		const { main, more } = JSON.parse(raw)
 		if (Array.isArray(main)) {
-			const items = main.map(getNavItemDef).filter(Boolean)
+			const filtered = main.filter((id: string) => id !== 'search')
+			const items = filtered.map(getNavItemDef).filter(Boolean)
 			if (items.length) sidebarNavItems.value = items
 		}
 		if (Array.isArray(more)) {
-			moreItems.value = more.map(getMoreItemDef).filter(Boolean)
+			const filtered = more.filter((id: string) => id !== 'search')
+			moreItems.value = filtered.map(getMoreItemDef).filter(Boolean)
 		}
 	} catch {}
 }
