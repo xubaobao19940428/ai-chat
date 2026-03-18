@@ -1,10 +1,16 @@
 <template>
-	<div class="flex-1 flex flex-col h-full bg-[var(--bg-main)] transition-colors relative overflow-hidden" @dragenter.prevent="onDragEnter" @dragover.prevent @dragleave="onDragLeave" @drop.prevent="onDrop">
+	<div class="flex-1 flex flex-col h-full bg-[var(--bg-main)] transition-colors relative overflow-hidden"
+		@dragenter.prevent="onDragEnter" @dragover.prevent @dragleave="onDragLeave" @drop.prevent="onDrop">
 		<!-- Drag Overlay -->
-		<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0">
-			<div v-if="isDraggingOver && supportsFileUpload" class="absolute inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-[var(--bg-main)]/90 backdrop-blur-sm border-2 border-dashed border-[var(--brand-primary)] rounded-none pointer-events-none">
+		<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="opacity-0"
+			enter-to-class="opacity-100" leave-active-class="transition duration-150 ease-in"
+			leave-from-class="opacity-100" leave-to-class="opacity-0">
+			<div v-if="isDraggingOver && supportsFileUpload"
+				class="absolute inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-[var(--bg-main)]/90 backdrop-blur-sm border-2 border-dashed border-[var(--brand-primary)] rounded-none pointer-events-none">
 				<div class="w-16 h-16 rounded-2xl bg-[var(--brand-primary)]/10 flex items-center justify-center">
-					<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--brand-primary)]">
+					<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+						stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+						class="text-[var(--brand-primary)]">
 						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
 						<polyline points="17 8 12 3 7 8" />
 						<line x1="12" y1="3" x2="12" y2="15" />
@@ -32,11 +38,15 @@
 		</header> -->
 
 		<!-- Main Chat Area -->
-		<div class="flex-1 overflow-y-auto px-4 pb-48 pt-6 custom-scrollbar relative z-10" ref="messagesContainer" @scroll="onMessagesScroll">
+		<div class="flex-1 overflow-y-auto px-4 pb-48 pt-6 custom-scrollbar relative z-10" ref="messagesContainer"
+			@scroll="onMessagesScroll">
 			<div class="max-w-[1100px] mx-auto py-6">
 				<!-- Initial Loading State -->
-				<div v-if="conversationStore.isLoading && (!currentConversation?.messages || currentConversation.messages.length === 0)" class="flex flex-col items-center justify-center py-20 space-y-4">
-					<div class="w-10 h-10 border-4 border-[var(--border-light)] border-t-[var(--text-primary)] rounded-full animate-spin"></div>
+				<div v-if="conversationStore.isLoading && (!currentConversation?.messages || currentConversation.messages.length === 0)"
+					class="flex flex-col items-center justify-center py-20 space-y-4">
+					<div
+						class="w-10 h-10 border-4 border-[var(--border-light)] border-t-[var(--text-primary)] rounded-full animate-spin">
+					</div>
 					<p class="text-[var(--text-tertiary)] text-sm font-medium animate-pulse">Loading messages...</p>
 				</div>
 
@@ -45,12 +55,18 @@
 					<div v-for="group in imageGenerationGroups" :key="group.userMsg.id" class="flex gap-4 items-start">
 						<!-- Left: Prompt Card -->
 						<div class="w-[260px] shrink-0">
-							<div class="bg-[var(--background-gray-subtle,#f4f4f5)] dark:bg-[var(--background-gray-subtle)] rounded-2xl px-4 py-4 text-[13.5px] text-[var(--text-primary)] leading-relaxed tracking-tight whitespace-pre-wrap break-words flex flex-col gap-3 min-h-[90px]">
+							<div
+								class="bg-[var(--background-gray-subtle,#f4f4f5)] dark:bg-[var(--background-gray-subtle)] rounded-2xl px-4 py-4 text-[13.5px] text-[var(--text-primary)] leading-relaxed tracking-tight whitespace-pre-wrap break-words flex flex-col gap-3 min-h-[90px]">
 								<span>{{ group.userMsg.content }}</span>
 								<div class="flex justify-end mt-auto">
 									<span class="text-[12px] text-[var(--text-tertiary)] flex items-center gap-1">
-										<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="opacity-60"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-										{{ getModelDisplayName(currentConversation?.model, currentConversation?.modelId) }}
+										<svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+											stroke="currentColor" stroke-width="2" class="opacity-60">
+											<rect x="2" y="3" width="20" height="14" rx="2" />
+											<path d="M8 21h8M12 17v4" />
+										</svg>
+										{{ getModelDisplayName(currentConversation?.model, currentConversation?.modelId)
+										}}
 									</span>
 								</div>
 							</div>
@@ -60,15 +76,15 @@
 						<div class="flex-1 min-w-0 flex flex-col gap-2">
 							<!-- Loading state -->
 							<div v-if="group.isLoading">
-								<div class="grid gap-1" :class="Number(currentConversation?.params?.num_outputs || 1) === 4 ? 'grid-cols-2' : Number(currentConversation?.params?.num_outputs || 1) >= 3 ? 'grid-cols-3' : Number(currentConversation?.params?.num_outputs || 1) === 2 ? 'grid-cols-2' : 'grid-cols-1'">
-									<div
-										v-for="n in Number(currentConversation?.params?.num_outputs || 1)"
-										:key="n"
+								<div class="grid gap-1"
+									:class="Number(currentConversation?.params?.num_outputs || 1) === 4 ? 'grid-cols-2' : Number(currentConversation?.params?.num_outputs || 1) >= 3 ? 'grid-cols-3' : Number(currentConversation?.params?.num_outputs || 1) === 2 ? 'grid-cols-2' : 'grid-cols-1'">
+									<div v-for="n in Number(currentConversation?.params?.num_outputs || 1)" :key="n"
 										class="rounded-xl bg-[var(--background-gray-subtle,#f4f4f5)] overflow-hidden flex items-center justify-center"
-										style="aspect-ratio: 1 / 1"
-									>
+										style="aspect-ratio: 1 / 1">
 										<div class="flex flex-col items-center gap-2">
-											<div class="w-5 h-5 border-2 border-[var(--border-light)] border-t-[var(--text-secondary)] rounded-full animate-spin"></div>
+											<div
+												class="w-5 h-5 border-2 border-[var(--border-light)] border-t-[var(--text-secondary)] rounded-full animate-spin">
+											</div>
 											<p class="text-[11px] text-[var(--text-tertiary)]">Generating...</p>
 										</div>
 									</div>
@@ -77,23 +93,26 @@
 
 							<!-- Images grid -->
 							<div v-else-if="group.images.length > 0">
-								<div class="grid gap-1" :class="group.images.length === 4 ? 'grid-cols-2' : group.images.length === 3 ? 'grid-cols-3' : group.images.length === 2 ? 'grid-cols-2' : 'grid-cols-1'">
-									<div
-										v-for="(url, idx) in group.images"
-										:key="idx"
+								<div class="grid gap-1"
+									:class="group.images.length === 4 ? 'grid-cols-2' : group.images.length === 3 ? 'grid-cols-3' : group.images.length === 2 ? 'grid-cols-2' : 'grid-cols-1'">
+									<div v-for="(url, idx) in group.images" :key="idx"
 										class="relative rounded-xl overflow-hidden group/img bg-[var(--background-gray-subtle,#f4f4f5)]"
 										:class="group.images.length === 1 ? 'max-w-[420px]' : ''"
-										style="aspect-ratio: 1 / 1"
-									>
-										<img :src="url" class="w-full h-full object-cover block cursor-zoom-in" @click="previewImage = url" />
+										style="aspect-ratio: 1 / 1">
+										<img :src="url" class="w-full h-full object-cover block cursor-zoom-in"
+											@click="previewImage = url" />
 
 
 										<!-- Hover overlay: zoom + download -->
-										<div class="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 transition-colors flex items-end justify-end p-2 gap-1.5 opacity-0 group-hover/img:opacity-100">
-											<button @click.stop="previewImage = url" class="flex items-center justify-center w-7 h-7 rounded-full bg-black/50 backdrop-blur-sm text-white hover:bg-black/70 transition-colors">
+										<div
+											class="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 transition-colors flex items-end justify-end p-2 gap-1.5 opacity-0 group-hover/img:opacity-100">
+											<button @click.stop="previewImage = url"
+												class="flex items-center justify-center w-7 h-7 rounded-full bg-black/50 backdrop-blur-sm text-white hover:bg-black/70 transition-colors">
 												<Expand :size="13" />
 											</button>
-											<a :href="url" :download="`image-${idx + 1}.jpg`" target="_blank" @click.stop class="flex items-center justify-center w-7 h-7 rounded-full bg-black/50 backdrop-blur-sm text-white hover:bg-black/70 transition-colors">
+											<a :href="url" :download="`image-${idx + 1}.jpg`" target="_blank"
+												@click.stop
+												class="flex items-center justify-center w-7 h-7 rounded-full bg-black/50 backdrop-blur-sm text-white hover:bg-black/70 transition-colors">
 												<Download :size="13" />
 											</a>
 										</div>
@@ -101,16 +120,20 @@
 								</div>
 
 								<!-- Action bar — right aligned -->
-								<div class="flex items-center justify-end gap-0.5 mt-1.5 text-[12px] text-[var(--text-tertiary)]">
-									<button @click="regenerateFromGroup(group)" :disabled="chatStore.isLoading" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-40">
+								<div
+									class="flex items-center justify-end gap-0.5 mt-1.5 text-[12px] text-[var(--text-tertiary)]">
+									<button @click="regenerateFromGroup(group)" :disabled="chatStore.isLoading"
+										class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-40">
 										<RefreshCw :size="12" />
 										Retry
 									</button>
-									<button @click="reuseGroupPrompt(group)" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors">
+									<button @click="reuseGroupPrompt(group)"
+										class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors">
 										<ArrowUp :size="12" />
 										Reuse parameters
 									</button>
-									<button @click="downloadAllImages(group.images)" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors">
+									<button @click="downloadAllImages(group.images)"
+										class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors">
 										<Download :size="12" />
 										Download all
 									</button>
@@ -125,13 +148,18 @@
 					<div v-for="group in videoGenerationGroups" :key="group.userMsg.id"
 						class="bg-[var(--bg-main)] border border-[var(--border-main)] rounded-2xl overflow-hidden shadow-sm w-full max-w-[640px] mx-auto">
 						<!-- Card Header -->
-						<div class="flex items-start justify-between px-4 pt-4 pb-3 border-b border-[var(--border-light)]">
+						<div
+							class="flex items-start justify-between px-4 pt-4 pb-3 border-b border-[var(--border-light)]">
 							<div class="flex-1 min-w-0 pr-4">
-								<p class="text-[13.5px] text-[var(--text-primary)] leading-relaxed whitespace-pre-wrap break-words">{{ group.userMsg.content }}</p>
+								<p
+									class="text-[13.5px] text-[var(--text-primary)] leading-relaxed whitespace-pre-wrap break-words">
+									{{ group.userMsg.content }}</p>
 							</div>
 							<div class="flex items-center gap-2 shrink-0 text-[12px] text-[var(--text-tertiary)]">
-								<img :src="getModelIcon(currentConversation?.model, currentConversation?.modelId)" class="w-5 h-5 rounded object-contain" />
-								<span class="font-medium">{{ getModelDisplayName(currentConversation?.model, currentConversation?.modelId) }}</span>
+								<img :src="getModelIcon(currentConversation?.model, currentConversation?.modelId)"
+									class="w-5 h-5 rounded object-contain" />
+								<span class="font-medium">{{ getModelDisplayName(currentConversation?.model,
+									currentConversation?.modelId) }}</span>
 							</div>
 						</div>
 
@@ -139,16 +167,13 @@
 						<div class="bg-black">
 							<!-- Loading state -->
 							<div v-if="group.isLoading" class="flex flex-col items-center justify-center gap-3 py-14">
-								<div class="w-7 h-7 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+								<div class="w-7 h-7 border-2 border-white/20 border-t-white rounded-full animate-spin">
+								</div>
 								<p class="text-[12px] text-white/60">Generating video...</p>
 							</div>
 							<!-- Video player -->
-							<video v-else-if="group.videoUrl"
-								:src="group.videoUrl"
-								controls
-								playsinline
-								class="w-full max-h-[480px] object-contain"
-							></video>
+							<video v-else-if="group.videoUrl" :src="group.videoUrl" controls playsinline
+								class="w-full max-h-[480px] object-contain"></video>
 							<!-- Error / empty state -->
 							<div v-else class="flex items-center justify-center py-16 text-white/40 text-[13px]">
 								Video generation failed
@@ -156,20 +181,25 @@
 						</div>
 
 						<!-- Card Footer: Actions -->
-						<div v-if="!group.isLoading" class="flex items-center gap-0 px-2 py-2 border-t border-[var(--border-light)] overflow-x-auto no-scrollbar">
-							<button @click="regenerateFromGroup(group)" :disabled="chatStore.isLoading" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-40 text-[12px] whitespace-nowrap">
+						<div v-if="!group.isLoading"
+							class="flex items-center gap-0 px-2 py-2 border-t border-[var(--border-light)] overflow-x-auto no-scrollbar">
+							<button @click="regenerateFromGroup(group)" :disabled="chatStore.isLoading"
+								class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-40 text-[12px] whitespace-nowrap">
 								<RefreshCw :size="12" />
 								Retry
 							</button>
-							<button @click="reuseGroupPrompt(group)" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors text-[12px] whitespace-nowrap">
+							<button @click="reuseGroupPrompt(group)"
+								class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors text-[12px] whitespace-nowrap">
 								<ArrowUp :size="12" />
 								Reuse parameters
 							</button>
-							<button v-if="group.videoUrl" @click="copyMessage(group.userMsg.content)" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors text-[12px] whitespace-nowrap">
+							<button v-if="group.videoUrl" @click="copyMessage(group.userMsg.content)"
+								class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors text-[12px] whitespace-nowrap">
 								<Copy :size="12" />
 								Copy prompt
 							</button>
-							<a v-if="group.videoUrl" :href="group.videoUrl" download="video.mp4" target="_blank" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors text-[12px] whitespace-nowrap">
+							<a v-if="group.videoUrl" :href="group.videoUrl" download="video.mp4" target="_blank"
+								class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors text-[12px] whitespace-nowrap">
 								<Download :size="12" />
 								Download
 							</a>
@@ -178,39 +208,57 @@
 				</div>
 
 				<!-- Chat Mode: standard message list -->
-				<component v-else :is="isMountedInitial ? 'TransitionGroup' : 'div'" name="message-list" class="space-y-10">
-					<div v-for="message in visibleMessages" :key="message.id" class="flex gap-4 group" :class="message.role === 'user' ? 'flex-row-reverse' : ''" @click="handleMessageClick">
+				<component v-else :is="isMountedInitial ? 'TransitionGroup' : 'div'" name="message-list"
+					class="space-y-10">
+					<div v-for="message in visibleMessages" :key="message.id" class="flex gap-4 group"
+						:class="message.role === 'user' ? 'flex-row-reverse' : ''" @click="handleMessageClick">
 						<!-- Avatar -->
 						<div class="flex-shrink-0 mt-1">
-							<div class="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden bg-[var(--bg-main)] border border-[var(--border-light)] shadow-sm">
-								<img :src="message.role === 'user' ? userStore.userInfo?.avatar || '/logo.png' : getModelIcon(message.model || currentConversation?.model, currentConversation?.modelId)" class="w-full h-full object-cover p-0.5" :alt="message.role" />
+							<div
+								class="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden bg-[var(--bg-main)] border border-[var(--border-light)] shadow-sm">
+								<img :src="message.role === 'user' ? userStore.userInfo?.avatar || '/logo.png' : getModelIcon(message.model || currentConversation?.model, currentConversation?.modelId)"
+									class="w-full h-full object-cover p-0.5" :alt="message.role" />
 							</div>
 						</div>
 
 						<!-- Message Content -->
-						<div class="flex flex-col relative" :class="message.role === 'user' ? 'items-end max-w-[85%] sm:max-w-[80%]' : 'items-start w-full min-w-0'">
+						<div class="flex flex-col relative"
+							:class="message.role === 'user' ? 'items-end max-w-[85%] sm:max-w-[80%]' : 'items-start w-full min-w-0'">
 							<!-- User Message -->
 							<div v-if="message.role === 'user'" class="w-full flex justify-end">
 								<!-- Edit Mode -->
-								<div v-if="editingMessageId === message.id" class="w-[500px] max-w-full bg-[var(--bg-chat-bubble-user)] rounded-[24px] border border-[var(--border-light)] p-2 shadow-sm animate-in fade-in duration-200">
-									<div ref="editContentRef" contenteditable="true" @input="editingContent = ($event.target as HTMLElement).textContent || ''" @keydown.enter.exact.prevent="submitEdit" @keydown.escape="cancelEditing" class="w-full bg-transparent outline-none text-[15px] font-medium leading-relaxed px-3 py-1 min-h-[32px] max-h-48 overflow-y-auto custom-scrollbar whitespace-pre-wrap break-words"></div>
+								<div v-if="editingMessageId === message.id"
+									class="w-[500px] max-w-full bg-[var(--bg-chat-bubble-user)] rounded-[24px] border border-[var(--border-light)] p-2 shadow-sm animate-in fade-in duration-200">
+									<div ref="editContentRef" contenteditable="true"
+										@input="editingContent = ($event.target as HTMLElement).textContent || ''"
+										@keydown.enter.exact.prevent="submitEdit" @keydown.escape="cancelEditing"
+										class="w-full bg-transparent outline-none text-[15px] font-medium leading-relaxed px-3 py-1 min-h-[32px] max-h-48 overflow-y-auto custom-scrollbar whitespace-pre-wrap break-words">
+									</div>
 									<div class="flex justify-end gap-2 mt-1">
-										<button @click="cancelEditing" class="px-3 py-1 text-xs font-semibold rounded-full hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-secondary)]">Cancel</button>
-										<button @click="submitEdit" class="px-4 py-1.5 text-xs font-semibold bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full hover:opacity-90 transition-opacity">Send</button>
+										<button @click="cancelEditing"
+											class="px-3 py-1 text-xs font-semibold rounded-full hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-secondary)]">Cancel</button>
+										<button @click="submitEdit"
+											class="px-4 py-1.5 text-xs font-semibold bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full hover:opacity-90 transition-opacity">Send</button>
 									</div>
 								</div>
 								<!-- View Mode -->
 								<div v-else class="relative group/bubble">
-									<div class="bg-[var(--bg-chat-bubble-user)] text-[var(--text-primary)] px-5 py-3 rounded-[24px] text-[15px] font-medium leading-relaxed tracking-tight shadow-sm border border-[var(--border-light)]">
+									<div
+										class="bg-[var(--bg-chat-bubble-user)] text-[var(--text-primary)] px-5 py-3 rounded-[24px] text-[15px] font-medium leading-relaxed tracking-tight shadow-sm border border-[var(--border-light)]">
 										<div class="whitespace-pre-wrap break-words">{{ message.content }}</div>
 									</div>
 
 									<!-- Action bar (Hover only) -->
-									<div class="absolute -top-10 right-0 flex items-center gap-1 opacity-0 group-hover/bubble:opacity-100 transition-opacity bg-[var(--bg-main)]/80 backdrop-blur-sm border border-[var(--border-light)] rounded-lg p-1 shadow-sm">
-										<button @click="copyMessage(message.content)" class="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors" :title="$t('chat.copy')">
+									<div
+										class="absolute -top-10 right-0 flex items-center gap-1 opacity-0 group-hover/bubble:opacity-100 transition-opacity bg-[var(--bg-main)]/80 backdrop-blur-sm border border-[var(--border-light)] rounded-lg p-1 shadow-sm">
+										<button @click="copyMessage(message.content)"
+											class="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors"
+											:title="$t('chat.copy')">
 											<Copy :size="14" />
 										</button>
-										<button @click="startEditing(message)" class="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors" :title="$t('common.edit')">
+										<button @click="startEditing(message)"
+											class="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors"
+											:title="$t('common.edit')">
 											<Pencil :size="14" />
 										</button>
 									</div>
@@ -218,39 +266,56 @@
 							</div>
 
 							<!-- Bot Message -->
-							<div v-else class="text-[var(--text-primary)] px-1 py-1 text-[15px] leading-relaxed tracking-tight break-words font-normal">
-								<div v-if="!message.content && chatStore.isLoading && chatStore.loadingConversationId === currentConversationId && currentConversation?.messages[currentConversation.messages.length - 1]?.id === message.id" class="py-2">
+							<div v-else
+								class="text-[var(--text-primary)] px-1 py-1 text-[15px] leading-relaxed tracking-tight break-words font-normal">
+								<div v-if="!message.content && chatStore.isLoading && chatStore.loadingConversationId === currentConversationId && currentConversation?.messages[currentConversation.messages.length - 1]?.id === message.id"
+									class="py-2">
 									<div class="flex space-x-1.5">
-										<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce" style="animation-delay: 0s"></div>
-										<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
-										<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+										<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce"
+											style="animation-delay: 0s"></div>
+										<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce"
+											style="animation-delay: 0.15s"></div>
+										<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce"
+											style="animation-delay: 0.3s"></div>
 									</div>
 								</div>
 								<div v-else class="relative inline-block w-full">
 									<MarkdownContent :content="message.content" />
-									<span v-if="chatStore.isLoading && chatStore.loadingConversationId === currentConversationId && currentConversation?.messages[currentConversation.messages.length - 1]?.id === message.id" class="inline-block w-1.5 h-4 bg-[var(--text-primary)] dark:bg-white ml-1 animate-pulse align-middle"></span>
+									<span
+										v-if="chatStore.isLoading && chatStore.loadingConversationId === currentConversationId && currentConversation?.messages[currentConversation.messages.length - 1]?.id === message.id"
+										class="inline-block w-1.5 h-4 bg-[var(--text-primary)] dark:bg-white ml-1 animate-pulse align-middle"></span>
 								</div>
 
 								<!-- Assistant Action Bar -->
 								<div class="mt-3 flex items-center gap-0.5">
 									<!-- Copy -->
-									<button @click.stop="copyMessage(message.content)" class="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors" :title="$t('chat.copy')">
+									<button @click.stop="copyMessage(message.content)"
+										class="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors"
+										:title="$t('chat.copy')">
 										<Copy :size="15" />
 									</button>
 									<!-- Share -->
-									<button @click.stop="shareMessage(message.content)" class="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors" :title="$t('chat.share')">
+									<button @click.stop="shareMessage(message.content)"
+										class="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors"
+										:title="$t('chat.share')">
 										<Share2 :size="15" />
 									</button>
 									<!-- Regenerate (only show on last assistant message) -->
-									<button v-if="currentConversation?.messages[currentConversation.messages.length - 1]?.id === message.id" @click.stop="regenerateMessage()" :disabled="chatStore.isLoading" class="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors disabled:opacity-40" :title="$t('chat.regenerate')">
+									<button
+										v-if="currentConversation?.messages[currentConversation.messages.length - 1]?.id === message.id"
+										@click.stop="regenerateMessage()" :disabled="chatStore.isLoading"
+										class="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors disabled:opacity-40"
+										:title="$t('chat.regenerate')">
 										<RefreshCw :size="15" :class="chatStore.isLoading ? 'animate-spin' : ''" />
 									</button>
 								</div>
 							</div>
 
 							<!-- Time/Meta (Hidden by default, shown on hover) -->
-							<div class="mt-1 px-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2 text-[11px] text-[var(--text-tertiary)] font-medium">
-								<span>{{ message.role === 'user' ? 'You' : getModelDisplayName(message.model || currentConversation?.model, currentConversation?.modelId) }}</span>
+							<div
+								class="mt-1 px-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2 text-[11px] text-[var(--text-tertiary)] font-medium">
+								<span>{{ message.role === 'user' ? 'You' : getModelDisplayName(message.model ||
+									currentConversation?.model, currentConversation?.modelId) }}</span>
 								<ClientOnly>
 									<span>· {{ formatMessageTime(message.timestamp) }}</span>
 								</ClientOnly>
@@ -260,39 +325,44 @@
 				</component>
 
 				<!-- Send Failed Retry Banner -->
-				<div v-if="failedMessageContent" class="flex items-center gap-3 mt-4 px-3 py-2.5 rounded-xl bg-red-500/8 border border-red-500/20 text-[13px]">
+				<div v-if="failedMessageContent"
+					class="flex items-center gap-3 mt-4 px-3 py-2.5 rounded-xl bg-red-500/8 border border-red-500/20 text-[13px]">
 					<span class="text-red-500 flex-1">{{ $t('chat.send_failed') }}</span>
-					<button @click="retryMessage" class="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 font-medium transition-colors">
+					<button @click="retryMessage"
+						class="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 font-medium transition-colors">
 						<RefreshCw :size="13" />
 						{{ $t('chat.retry') }}
 					</button>
-					<button @click="failedMessageContent = null" class="p-1 text-red-400 hover:text-red-500 transition-colors">
+					<button @click="failedMessageContent = null"
+						class="p-1 text-red-400 hover:text-red-500 transition-colors">
 						<X :size="13" />
 					</button>
 				</div>
 				<!-- Follow-up Questions -->
-				<div v-if="followUpLoading || followUpQuestions.length > 0" class="mt-4 ml-12 flex flex-col gap-2 max-w-[600px]">
+				<div v-if="followUpLoading || followUpQuestions.length > 0"
+					class="mt-4 ml-12 flex flex-col gap-2 max-w-[600px]">
 					<template v-if="followUpLoading">
-						<div v-for="i in 3" :key="i" class="h-[46px] rounded-2xl bg-[var(--background-gray-subtle)] animate-pulse" />
+						<div v-for="i in 3" :key="i"
+							class="h-[46px] rounded-2xl bg-[var(--background-gray-subtle)] animate-pulse" />
 					</template>
-					<button
-						v-else
-						v-for="(q, i) in followUpQuestions"
-						:key="i"
-						@click="fillFollowUpQuestion(q)"
-						class="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.07] dark:hover:bg-white/[0.1] text-[14px] text-[var(--text-primary)] text-left transition-colors group/fq"
-					>
+					<button v-else v-for="(q, i) in followUpQuestions" :key="i" @click="fillFollowUpQuestion(q)"
+						class="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.07] dark:hover:bg-white/[0.1] text-[14px] text-[var(--text-primary)] text-left transition-colors group/fq">
 						<span>{{ q }}</span>
-						<span class="text-[var(--text-tertiary)] group-hover/fq:text-[var(--text-secondary)] shrink-0 transition-colors">→</span>
+						<span
+							class="text-[var(--text-tertiary)] group-hover/fq:text-[var(--text-secondary)] shrink-0 transition-colors">→</span>
 					</button>
 				</div>
 			</div>
 		</div>
 
 		<!-- Scroll to Bottom Button -->
-		<Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-2" enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-2">
-			<button v-if="isUserScrolledUp" @click="scrollToBottom(false, true)" class="absolute bottom-36 right-8 z-40 size-9 flex items-center justify-center rounded-full bg-[var(--bg-main)] border border-[var(--border-light)] shadow-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:shadow-xl transition-all">
-				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+		<Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-2"
+			enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in"
+			leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-2">
+			<button v-if="isUserScrolledUp" @click="scrollToBottom(false, true)"
+				class="absolute bottom-36 right-8 z-40 size-9 flex items-center justify-center rounded-full bg-[var(--bg-main)] border border-[var(--border-light)] shadow-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:shadow-xl transition-all">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+					stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
 					<path d="M12 5v14" />
 					<path d="m19 12-7 7-7-7" />
 				</svg>
@@ -303,264 +373,419 @@
 		<div class="absolute bottom-8 left-0 right-0 z-50 px-4 pointer-events-none">
 			<div class="max-w-[840px] mx-auto relative pointer-events-auto">
 				<!-- Input Container -->
-				<div class="flex flex-col gap-3 rounded-[22px] relative bg-[var(--fill-input-chat)] py-3 w-full shadow-[0px_12px_32px_0px_rgba(0,0,0,0.02)] border border-black/5 dark:border-[var(--border-main)] focus-within:border-black/10 transition-all duration-300">
-						<!-- Uploaded Files Preview — above editor -->
-						<div v-if="uploadedFiles.length > 0" class="flex flex-wrap gap-2 px-3 pt-2 pb-1">
-							<div v-for="file in uploadedFiles" :key="file.id" class="relative group/file shrink-0">
-								<!-- Image file -->
-								<div v-if="file.type?.startsWith('image/')" class="relative w-16 h-16 rounded-xl overflow-hidden border border-[var(--border-light)] shadow-sm bg-[var(--bg-hover)]">
-									<img :src="file.localUrl || file.url" class="w-full h-full object-cover" />
-									<div v-if="file.uploading" class="absolute inset-0 bg-black/40 flex items-center justify-center">
-										<Loader2 :size="18" class="animate-spin text-white" />
-									</div>
+				<div
+					class="flex flex-col gap-6 rounded-[22px] relative bg-[var(--fill-input-chat)] py-3 w-full shadow-[0px_12px_32px_0px_rgba(0,0,0,0.02)] border border-black/5 dark:border-[var(--border-main)] focus-within:border-black/10 transition-all duration-300">
+					<!-- Uploaded Files Preview — above editor -->
+					<div v-if="uploadedFiles.length > 0" class="flex flex-wrap gap-2 px-3 pt-2 pb-1">
+						<div v-for="file in uploadedFiles" :key="file.id" class="relative group/file shrink-0">
+							<!-- Image file -->
+							<div v-if="file.type?.startsWith('image/')"
+								class="relative w-16 h-16 rounded-xl overflow-hidden border border-[var(--border-light)] shadow-sm bg-[var(--bg-hover)]">
+								<img :src="file.localUrl || file.url" class="w-full h-full object-cover" />
+								<div v-if="file.uploading"
+									class="absolute inset-0 bg-black/40 flex items-center justify-center">
+									<Loader2 :size="18" class="animate-spin text-white" />
 								</div>
-								<!-- Non-image file -->
-								<div v-else class="relative flex items-center gap-2 h-12 px-3 rounded-xl border border-[var(--border-light)] shadow-sm bg-[var(--bg-hover)] max-w-[180px]">
-									<div class="shrink-0 w-7 h-7 rounded-lg bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[var(--text-secondary)]">
-										<Loader2 v-if="file.uploading" :size="14" class="animate-spin" />
-										<FileText v-else :size="14" />
-									</div>
-									<span class="text-[12px] font-medium text-[var(--text-primary)] truncate">{{ file.name }}</span>
-								</div>
-								<!-- Delete button (only when upload is done) -->
-								<button v-if="!file.uploading" @click="removeFile(file.id)" class="absolute -top-1.5 -right-1.5 size-5 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full flex items-center justify-center shadow-md opacity-0 group-hover/file:opacity-100 transition-opacity z-10">
-									<X :size="10" stroke-width="3" />
-								</button>
 							</div>
+							<!-- Non-image file -->
+							<div v-else
+								class="relative flex items-center gap-2 h-12 px-3 rounded-xl border border-[var(--border-light)] shadow-sm bg-[var(--bg-hover)] max-w-[180px]">
+								<div
+									class="shrink-0 w-7 h-7 rounded-lg bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[var(--text-secondary)]">
+									<Loader2 v-if="file.uploading" :size="14" class="animate-spin" />
+									<FileText v-else :size="14" />
+								</div>
+								<span class="text-[12px] font-medium text-[var(--text-primary)] truncate">{{ file.name
+								}}</span>
+							</div>
+							<!-- Delete button (only when upload is done) -->
+							<button v-if="!file.uploading" @click="removeFile(file.id)"
+								class="absolute -top-1.5 -right-1.5 size-5 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full flex items-center justify-center shadow-md opacity-0 group-hover/file:opacity-100 transition-opacity z-10">
+								<X :size="10" stroke-width="3" />
+							</button>
 						</div>
+					</div>
 
-						<div class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[50px] max-h-[216px]">
-							<editor-content :editor="editor" class="w-full" />
-						</div>
+					<div
+						class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[50px] max-h-[216px]">
+						<editor-content :editor="editor" class="w-full" />
+					</div>
 
-						<input type="file" ref="fileInputRef" class="hidden" multiple @change="handleFileUpload" />
-						<div class="flex items-center justify-between px-3 gap-2">
-							<div class="flex items-center gap-2 flex-wrap flex-1">
-								<!-- Model Selector -->
-								<ModelSelector variant="pill" :capability="selectorCapability" />
+					<input type="file" ref="fileInputRef" class="hidden" multiple @change="handleFileUpload" />
+					<div class="flex items-center justify-between px-3 gap-2">
+						<div class="flex items-center gap-2 flex-wrap flex-1">
+							<!-- Model Selector -->
+							<ModelSelector variant="pill" :capability="selectorCapability" />
 
-								<!-- Media Parameters Integrated -->
-								<template v-if="isImageModel || isVideoModel">
-									<!-- Integrated Image/Video Prompt Buttons -->
-									<div class="group/chip relative" v-if="supportsMediaPrompt">
-										<button @click="toggleDropdown('media_prompt')" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="activeDropdownField === 'media_prompt' ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : uploadedMediaFiles.length > 0 ? 'border-[var(--border-main)]' : ''" :disabled="isUploading">
-											<Loader2 v-if="isUploading" :size="14" class="animate-spin text-[var(--text-secondary)]" />
-											<template v-else-if="uploadedMediaFiles.length > 0">
-												<div class="relative shrink-0">
-													<img :src="uploadedMediaFiles[0]?.url" class="w-4 h-4 rounded-sm object-cover" />
-													<div v-if="uploadedMediaFiles.length > 1" class="absolute -top-1.5 -right-1.5 min-w-[12px] h-[12px] bg-[var(--text-primary)] rounded-full text-[7px] text-[var(--bg-main)] flex items-center justify-center font-bold px-0.5 leading-none">
-														{{ uploadedMediaFiles.length }}
+							<!-- Media Parameters Integrated -->
+							<template v-if="isImageModel || isVideoModel">
+								<!-- Integrated Image/Video Prompt Buttons -->
+								<div class="group/chip relative" v-if="supportsMediaPrompt">
+									<button @click="toggleDropdown('media_prompt')"
+										class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+										:class="activeDropdownField === 'media_prompt' ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : uploadedMediaFiles.length > 0 ? 'border-[var(--border-main)]' : ''"
+										:disabled="isUploading">
+										<Loader2 v-if="isUploading" :size="14"
+											class="animate-spin text-[var(--text-secondary)]" />
+										<template v-else-if="uploadedMediaFiles.length > 0">
+											<div class="relative shrink-0">
+												<img :src="uploadedMediaFiles[0]?.url"
+													class="w-4 h-4 rounded-sm object-cover" />
+												<div v-if="uploadedMediaFiles.length > 1"
+													class="absolute -top-1.5 -right-1.5 min-w-[12px] h-[12px] bg-[var(--text-primary)] rounded-full text-[7px] text-[var(--bg-main)] flex items-center justify-center font-bold px-0.5 leading-none">
+													{{ uploadedMediaFiles.length }}
+												</div>
+											</div>
+										</template>
+										<ImagePlus v-else :size="14" class="text-[var(--text-secondary)]" />
+										<span class="text-[12px] font-medium text-[var(--text-primary)]">
+											{{ uploadedMediaFiles.length > 0 ? `${uploadedMediaFiles.length}
+											${isVideoModel ? 'frame' :
+													'prompt image'}${uploadedMediaFiles.length > 1 ? 's' : ''}` : isVideoModel ?
+												(modelInputFields.end_image ? 'Start / End frame' : 'Start frame') : `Image
+											prompt` }}
+										</span>
+									</button>
+
+									<!-- Media Prompt Popover -->
+									<Transition enter-active-class="transition duration-150 ease-out"
+										enter-from-class="translate-y-1 opacity-0 scale-95"
+										enter-to-class="translate-y-0 opacity-100 scale-100"
+										leave-active-class="transition duration-100 ease-in"
+										leave-from-class="translate-y-0 opacity-100"
+										leave-to-class="translate-y-1 opacity-0">
+										<div v-if="activeDropdownField === 'media_prompt'"
+											class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[280px]">
+											<div class="rounded-2xl bg-[var(--bg-main)] border border-[var(--border-light)] p-4 shadow-xl flex flex-col gap-4"
+												style="background-color: var(--bg-main)">
+												<p
+													class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
+													{{ isVideoModel ? (modelInputFields.end_image ? `Upload a start
+													frame and / or end
+													frame to anchor your video` : `Start frame anchors the opening of
+													your video.`) :
+														`Image prompts apply style and content to your generation.` }}
+													Upload or select from assets.
+												</p>
+												<div class="flex flex-col gap-2">
+													<button @click="triggerFileUploadAndClose"
+														class="w-full flex items-center justify-center gap-2 bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 rounded-full py-2.5 text-[13px] font-bold transition-colors">
+														<Plus :size="14" stroke-width="3" />
+														Upload
+													</button>
+													<button @click="selectAssetAndClose"
+														class="w-full flex items-center justify-center gap-2 bg-[var(--bg-main)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full py-2.5 text-[13px] font-bold transition-colors border border-[var(--border-main)] shadow-sm"
+														style="background-color: var(--bg-main)">
+														<ImagePlus :size="14" />
+														Select asset
+													</button>
+												</div>
+											</div>
+										</div>
+									</Transition>
+								</div>
+
+								<!-- Dynamic Select Fields -->
+								<div v-for="field in dynamicSelectFields" :key="field.key" class="relative group/chip">
+									<template v-if="field.key === 'aspect_ratio'">
+										<button @click="toggleDropdown(field.key)"
+											class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+											:class="activeDropdownField === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+											<span class="flex items-center justify-center">
+												<div v-if="String(currentConversation?.params?.[field.key] || field.default).startsWith('16:') || String(currentConversation?.params?.[field.key] || field.default).startsWith('21:') || String(currentConversation?.params?.[field.key] || field.default).startsWith('3:2')"
+													class="w-3.5 h-2 border-[1.5px] border-current rounded-[1px]"></div>
+												<div v-else-if="String(currentConversation?.params?.[field.key] || field.default).startsWith('1:')"
+													class="w-3 h-3 border-[1.5px] border-current rounded-[1px]"></div>
+												<div v-else
+													class="w-2 h-3.5 border-[1.5px] border-current rounded-[1px]"></div>
+											</span>
+											<span class="text-[12px] font-medium text-[var(--text-primary)]">{{
+												currentConversation?.params?.[field.key] || field.default }}</span>
+										</button>
+										<Transition enter-active-class="transition duration-150 ease-out"
+											enter-from-class="translate-y-1 opacity-0 scale-95"
+											enter-to-class="translate-y-0 opacity-100 scale-100"
+											leave-active-class="transition duration-100 ease-in"
+											leave-from-class="translate-y-0 opacity-100"
+											leave-to-class="translate-y-1 opacity-0">
+											<div v-if="activeDropdownField === field.key"
+												class="absolute bottom-full left-0 mb-2 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-xl p-4 z-[60] flex gap-5 items-center min-w-[max-content]"
+												style="background-color: var(--bg-main)">
+												<div class="flex flex-col gap-2.5">
+													<span
+														class="text-[var(--text-tertiary)] px-1 font-bold text-[10px] uppercase tracking-widest text-center">Aspect
+														Ratio</span>
+													<div class="flex gap-1.5 min-w-[max-content]">
+														<button v-for="opt in field.options" :key="opt"
+															@click="setParamAndClose(field.key, opt)"
+															class="flex flex-col items-center justify-center gap-2 w-16 h-16 rounded-xl transition-all border"
+															:class="(currentConversation?.params?.[field.key] || field.default) === opt ? 'bg-[var(--fill-tsp-gray-main)] border-[var(--text-primary)]/20 shadow-sm' : 'bg-transparent border-transparent hover:bg-[var(--bg-hover)] hover:border-[var(--border-main)]'">
+															<div v-if="String(opt).startsWith('16:') || String(opt).startsWith('21:') || String(opt).startsWith('3:2')"
+																class="w-6 h-3.5 border-[1.8px] border-[var(--text-primary)] rounded-[2px] opacity-80">
+															</div>
+															<div v-else-if="String(opt).startsWith('9:16') || String(opt).startsWith('3:4') || String(opt).startsWith('4:5')"
+																class="w-3.5 h-6 border-[1.8px] border-[var(--text-primary)] rounded-[2px] opacity-80">
+															</div>
+															<div v-else
+																class="w-5 h-5 border-[1.8px] border-[var(--text-primary)] rounded-[2px] opacity-80">
+															</div>
+															<span
+																class="text-[10px] font-bold text-[var(--text-primary)]">{{
+																	opt }}</span>
+														</button>
 													</div>
 												</div>
-											</template>
-											<ImagePlus v-else :size="14" class="text-[var(--text-secondary)]" />
+												<div
+													class="relative flex items-center justify-center w-[120px] h-[120px] bg-transparent shrink-0">
+													<div class="relative bg-[var(--fill-tsp-gray-main)] rounded-lg border border-[var(--border-main)] transition-all duration-300 flex items-center justify-center overflow-hidden shadow-inner"
+														:style="getPreviewStyle(currentConversation?.params?.[field.key] || field.default)">
+														<div
+															class="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none opacity-20">
+															<div v-for="i in 9" :key="i"
+																class="border-[0.5px] border-[var(--text-primary)]">
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</Transition>
+									</template>
+
+									<!-- Style Transfer -->
+									<template v-else-if="field.key === 'style'">
+										<button @click="toggleDropdown(field.key)"
+											class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+											:class="activeDropdownField === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+											<Palette :size="14" class="text-[var(--text-secondary)]" />
 											<span class="text-[12px] font-medium text-[var(--text-primary)]">
-												{{ uploadedMediaFiles.length > 0 ? `${uploadedMediaFiles.length} ${isVideoModel ? 'frame' : 'prompt image'}${uploadedMediaFiles.length > 1 ? 's' : ''}` : isVideoModel ? (modelInputFields.end_image ? 'Start / End frame' : 'Start frame') : 'Image prompt' }}
+												{{ currentConversation?.params?.[field.key] === 'No Style' ||
+													!currentConversation?.params?.[field.key] ? 'Style' :
+													currentConversation?.params?.[field.key] }}
 											</span>
 										</button>
-
-										<!-- Media Prompt Popover -->
-										<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1 opacity-0 scale-95" enter-to-class="translate-y-0 opacity-100 scale-100" leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1 opacity-0">
-											<div v-if="activeDropdownField === 'media_prompt'" class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[280px]">
-												<div class="rounded-2xl bg-[var(--bg-main)] border border-[var(--border-light)] p-4 shadow-xl flex flex-col gap-4" style="background-color: var(--bg-main)">
-													<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
-														{{ isVideoModel ? (modelInputFields.end_image ? 'Upload a start frame and/or end frame to anchor your video.' : 'Start frame anchors the opening of your video.') : 'Image prompts apply style and content to your generation.' }}
-														Upload or select from assets.
-													</p>
-													<div class="flex flex-col gap-2">
-														<button @click="triggerFileUploadAndClose" class="w-full flex items-center justify-center gap-2 bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 rounded-full py-2.5 text-[13px] font-bold transition-colors">
-															<Plus :size="14" stroke-width="3" />
-															Upload
-														</button>
-														<button @click="selectAssetAndClose" class="w-full flex items-center justify-center gap-2 bg-[var(--bg-main)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full py-2.5 text-[13px] font-bold transition-colors border border-[var(--border-main)] shadow-sm" style="background-color: var(--bg-main)">
-															<ImagePlus :size="14" />
-															Select asset
-														</button>
-													</div>
-												</div>
+										<Transition enter-active-class="transition duration-150 ease-out"
+											enter-from-class="translate-y-1 opacity-0"
+											enter-to-class="translate-y-0 opacity-100"
+											leave-active-class="transition duration-100 ease-in"
+											leave-from-class="translate-y-0 opacity-100"
+											leave-to-class="translate-y-1 opacity-0">
+											<div v-if="activeDropdownField === field.key"
+												class="absolute bottom-full left-0 mb-2 w-44 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-xl p-1.5 z-[60] max-h-56 overflow-y-auto custom-scrollbar"
+												style="background-color: var(--bg-main)">
+												<button v-for="s in field.options" :key="s"
+													@click="setParamAndClose(field.key, s)"
+													class="w-full flex items-center justify-between p-2 rounded-xl hover:bg-[var(--bg-hover)] transition-colors text-left">
+													<span class="text-[12px] font-medium"
+														:class="currentConversation?.params?.[field.key] === s ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'">{{
+															s }}</span>
+												</button>
 											</div>
 										</Transition>
-									</div>
+									</template>
 
-									<!-- Dynamic Select Fields -->
-									<div v-for="field in dynamicSelectFields" :key="field.key" class="relative group/chip">
-										<template v-if="field.key === 'aspect_ratio'">
-											<button @click="toggleDropdown(field.key)" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="activeDropdownField === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
-												<span class="flex items-center justify-center">
-													<div v-if="String(currentConversation?.params?.[field.key] || field.default).startsWith('16:') || String(currentConversation?.params?.[field.key] || field.default).startsWith('21:') || String(currentConversation?.params?.[field.key] || field.default).startsWith('3:2')" class="w-3.5 h-2 border-[1.5px] border-current rounded-[1px]"></div>
-													<div v-else-if="String(currentConversation?.params?.[field.key] || field.default).startsWith('1:')" class="w-3 h-3 border-[1.5px] border-current rounded-[1px]"></div>
-													<div v-else class="w-2 h-3.5 border-[1.5px] border-current rounded-[1px]"></div>
-												</span>
-												<span class="text-[12px] font-medium text-[var(--text-primary)]">{{ currentConversation?.params?.[field.key] || field.default }}</span>
-											</button>
-											<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1 opacity-0 scale-95" enter-to-class="translate-y-0 opacity-100 scale-100" leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1 opacity-0">
-												<div v-if="activeDropdownField === field.key" class="absolute bottom-full left-0 mb-2 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-xl p-4 z-[60] flex gap-5 items-center min-w-[max-content]" style="background-color: var(--bg-main)">
-													<div class="flex flex-col gap-2.5">
-														<span class="text-[var(--text-tertiary)] px-1 font-bold text-[10px] uppercase tracking-widest text-center">Aspect Ratio</span>
-														<div class="flex gap-1.5 min-w-[max-content]">
-															<button v-for="opt in field.options" :key="opt" @click="setParamAndClose(field.key, opt)" class="flex flex-col items-center justify-center gap-2 w-16 h-16 rounded-xl transition-all border" :class="(currentConversation?.params?.[field.key] || field.default) === opt ? 'bg-[var(--fill-tsp-gray-main)] border-[var(--text-primary)]/20 shadow-sm' : 'bg-transparent border-transparent hover:bg-[var(--bg-hover)] hover:border-[var(--border-main)]'">
-																<div v-if="String(opt).startsWith('16:') || String(opt).startsWith('21:') || String(opt).startsWith('3:2')" class="w-6 h-3.5 border-[1.8px] border-[var(--text-primary)] rounded-[2px] opacity-80"></div>
-																<div v-else-if="String(opt).startsWith('9:16') || String(opt).startsWith('3:4') || String(opt).startsWith('4:5')" class="w-3.5 h-6 border-[1.8px] border-[var(--text-primary)] rounded-[2px] opacity-80"></div>
-																<div v-else class="w-5 h-5 border-[1.8px] border-[var(--text-primary)] rounded-[2px] opacity-80"></div>
-																<span class="text-[10px] font-bold text-[var(--text-primary)]">{{ opt }}</span>
-															</button>
-														</div>
-													</div>
-													<div class="relative flex items-center justify-center w-[120px] h-[120px] bg-transparent shrink-0">
-														<div class="relative bg-[var(--fill-tsp-gray-main)] rounded-lg border border-[var(--border-main)] transition-all duration-300 flex items-center justify-center overflow-hidden shadow-inner" :style="getPreviewStyle(currentConversation?.params?.[field.key] || field.default)">
-															<div class="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none opacity-20">
-																<div v-for="i in 9" :key="i" class="border-[0.5px] border-[var(--text-primary)]"></div>
-															</div>
-														</div>
-													</div>
-												</div>
-											</Transition>
-										</template>
-
-										<!-- Style Transfer -->
-										<template v-else-if="field.key === 'style'">
-											<button @click="toggleDropdown(field.key)" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="activeDropdownField === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
-												<Palette :size="14" class="text-[var(--text-secondary)]" />
-												<span class="text-[12px] font-medium text-[var(--text-primary)]">
-													{{ currentConversation?.params?.[field.key] === 'No Style' || !currentConversation?.params?.[field.key] ? 'Style' : currentConversation?.params?.[field.key] }}
-												</span>
-											</button>
-											<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1 opacity-0" enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1 opacity-0">
-												<div v-if="activeDropdownField === field.key" class="absolute bottom-full left-0 mb-2 w-44 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-xl p-1.5 z-[60] max-h-56 overflow-y-auto custom-scrollbar" style="background-color: var(--bg-main)">
-													<button v-for="s in field.options" :key="s" @click="setParamAndClose(field.key, s)" class="w-full flex items-center justify-between p-2 rounded-xl hover:bg-[var(--bg-hover)] transition-colors text-left">
-														<span class="text-[12px] font-medium" :class="currentConversation?.params?.[field.key] === s ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'">{{ s }}</span>
-													</button>
-												</div>
-											</Transition>
-										</template>
-
-										<!-- Generic Tools (Quality, Duration, etc.) -->
-										<template v-else>
-											<button @click="toggleDropdown(field.key)" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="activeDropdownField === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
-												<Gem v-if="field.key === 'resolution'" :size="14" class="text-[var(--text-secondary)]" />
-												<Clock v-else-if="field.key === 'duration'" :size="14" class="text-[var(--text-secondary)]" />
-												<LayoutGrid v-else :size="14" class="text-[var(--text-secondary)]" />
-												<span class="text-[12px] font-medium text-[var(--text-primary)] mb-[-2px]">
-													<span v-if="field.key !== 'resolution' && field.key !== 'duration'" class="uppercase font-bold text-[9px] tracking-wider opacity-60 mr-1">{{ field.key.substring(0, 3) }}:</span>
-													{{ currentConversation?.params?.[field.key] || field.default }}{{ field.key === 'duration' ? 's' : '' }}
-												</span>
-											</button>
-											<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1 opacity-0 scale-95" enter-to-class="translate-y-0 opacity-100 scale-100" leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1 opacity-0">
-												<div v-if="activeDropdownField === field.key" class="absolute bottom-full left-0 mb-2 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-xl p-3.5 z-[60] min-w-[170px]" style="background-color: var(--bg-main)">
-													<p class="text-[10px] font-bold text-[var(--text-tertiary)] mb-2.5 px-1 uppercase tracking-widest text-center">{{ field.label || field.key.replace(/_/g, ' ') }}</p>
-													<div class="flex flex-col gap-1 max-h-[220px] overflow-y-auto custom-scrollbar">
-														<button v-for="opt in field.options" :key="opt" @click="setParamAndClose(field.key, opt)" class="w-full flex items-center justify-between gap-4 py-2.5 px-3 rounded-xl group transition-all" :class="(currentConversation?.params?.[field.key] || field.default) === opt ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-sm' : 'hover:bg-[var(--bg-hover)] text-[var(--text-primary)]'">
-															<span class="text-[13px] font-bold">{{ opt }}{{ field.key === 'duration' ? 's' : '' }}</span>
-															<div class="flex items-center justify-center">
-																<div v-if="(currentConversation?.params?.[field.key] || field.default) === opt" class="w-4 h-4 rounded-full bg-black dark:bg-white flex items-center justify-center" style="background-color: var(--text-primary)">
-																	<Check :size="10" class="text-[var(--bg-main)]" stroke-width="4" />
-																</div>
-																<div v-else class="w-4 h-4 rounded-full border-[2px] border-black/20 dark:border-white/20"></div>
-															</div>
-														</button>
-													</div>
-												</div>
-											</Transition>
-										</template>
-									</div>
-
-									<!-- Dynamic Number Fields (Outputs) -->
-									<div v-for="field in dynamicNumberFields" :key="field.key" class="relative group/chip">
-										<button @click="toggleDropdown(field.key)" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="activeDropdownField === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
-											<Monitor :size="14" class="text-[var(--text-secondary)]" />
-											<span class="text-[12px] font-medium text-[var(--text-primary)]">{{ currentConversation?.params?.[field.key] || field.default }} Outputs</span>
+									<!-- Generic Tools (Quality, Duration, etc.) -->
+									<template v-else>
+										<button @click="toggleDropdown(field.key)"
+											class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+											:class="activeDropdownField === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+											<Gem v-if="field.key === 'resolution'" :size="14"
+												class="text-[var(--text-secondary)]" />
+											<Clock v-else-if="field.key === 'duration'" :size="14"
+												class="text-[var(--text-secondary)]" />
+											<LayoutGrid v-else :size="14" class="text-[var(--text-secondary)]" />
+											<span class="text-[12px] font-medium text-[var(--text-primary)] mb-[-2px]">
+												<span v-if="field.key !== 'resolution' && field.key !== 'duration'"
+													class="uppercase font-bold text-[9px] tracking-wider opacity-60 mr-1">{{
+														field.key.substring(0, 3) }}:</span>
+												{{ currentConversation?.params?.[field.key] || field.default }}{{
+													field.key === 'duration' ? 's' : '' }}
+											</span>
 										</button>
-										<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1 opacity-0" enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1 opacity-0">
-											<div v-if="activeDropdownField === field.key" class="absolute bottom-full left-0 mb-2 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-xl p-3 z-[60] min-w-[180px]" style="background-color: var(--bg-main)">
-												<p class="text-[11px] font-bold text-[var(--text-tertiary)] mb-2 px-1 uppercase tracking-widest text-center">{{ field.label || 'Outputs' }}</p>
-												<div class="flex flex-wrap gap-1.5 justify-center">
-													<button
-														v-for="n in field.max - field.min + 1"
-														:key="n"
-														@click="setParamAndClose(field.key, n + field.min - 1)"
-														class="size-9 rounded-xl font-bold flex items-center justify-center transition-all border text-[13px]"
-														:class="(currentConversation?.params?.[field.key] || field.default) === n + field.min - 1 ? 'bg-[var(--text-primary)] text-[var(--bg-main)] border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-primary)]'">
-														{{ n + field.min - 1 }}
+										<Transition enter-active-class="transition duration-150 ease-out"
+											enter-from-class="translate-y-1 opacity-0 scale-95"
+											enter-to-class="translate-y-0 opacity-100 scale-100"
+											leave-active-class="transition duration-100 ease-in"
+											leave-from-class="translate-y-0 opacity-100"
+											leave-to-class="translate-y-1 opacity-0">
+											<div v-if="activeDropdownField === field.key"
+												class="absolute bottom-full left-0 mb-2 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-xl p-3.5 z-[60] min-w-[170px]"
+												style="background-color: var(--bg-main)">
+												<p
+													class="text-[10px] font-bold text-[var(--text-tertiary)] mb-2.5 px-1 uppercase tracking-widest text-center">
+													{{ field.label || field.key.replace(/_/g, ' ') }}</p>
+												<div
+													class="flex flex-col gap-1 max-h-[220px] overflow-y-auto custom-scrollbar">
+													<button v-for="opt in field.options" :key="opt"
+														@click="setParamAndClose(field.key, opt)"
+														class="w-full flex items-center justify-between gap-4 py-2.5 px-3 rounded-xl group transition-all"
+														:class="(currentConversation?.params?.[field.key] || field.default) === opt ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-sm' : 'hover:bg-[var(--bg-hover)] text-[var(--text-primary)]'">
+														<span class="text-[13px] font-bold">{{ opt }}{{ field.key ===
+															'duration' ? 's' : '' }}</span>
+														<div class="flex items-center justify-center">
+															<div v-if="(currentConversation?.params?.[field.key] || field.default) === opt"
+																class="w-4 h-4 rounded-full bg-black dark:bg-white flex items-center justify-center"
+																style="background-color: var(--text-primary)">
+																<Check :size="10" class="text-[var(--bg-main)]"
+																	stroke-width="4" />
+															</div>
+															<div v-else
+																class="w-4 h-4 rounded-full border-[2px] border-black/20 dark:border-white/20">
+															</div>
+														</div>
 													</button>
 												</div>
 											</div>
 										</Transition>
-									</div>
-								</template>
+									</template>
+								</div>
 
-								<div class="h-4 w-px bg-[var(--border-light)]/50 mx-1 self-center" v-if="supportsFileUpload || supportsWebSearch"></div>
-
-								<!-- Bottom Left Tools -->
-								<!-- Attach Button -->
-								<Tooltip v-if="supportsFileUpload" text="Add Attachment">
-									<button @click="triggerFileUpload" :disabled="isUploading" class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] disabled:opacity-50 disabled:cursor-not-allowed rounded-full transition-colors">
-										<Plus :size="20" />
+								<!-- Dynamic Number Fields (Outputs) -->
+								<div v-for="field in dynamicNumberFields" :key="field.key" class="relative group/chip">
+									<button @click="toggleDropdown(field.key)"
+										class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+										:class="activeDropdownField === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+										<Monitor :size="14" class="text-[var(--text-secondary)]" />
+										<span class="text-[12px] font-medium text-[var(--text-primary)]">{{
+											currentConversation?.params?.[field.key] || field.default }} Outputs</span>
 									</button>
-								</Tooltip>
-
-								<!-- Web Search -->
-								<Popover v-if="supportsWebSearch" class="relative" v-slot="{ open }">
-									<Tooltip text="Web Search">
-										<PopoverButton class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors relative" :class="{ 'text-[var(--text-primary)] bg-[var(--bg-hover)]': open || isWebSearchEnabled }">
-											<Globe :size="18" />
-											<div v-if="isWebSearchEnabled" class="absolute top-1.5 right-1.5 w-2 h-2 bg-[var(--text-primary)] rounded-full border border-[var(--bg-main)]"></div>
-										</PopoverButton>
-									</Tooltip>
-									<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1.5 opacity-0 scale-[0.98]" enter-to-class="translate-y-0 opacity-100 scale-100" leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1.5 opacity-0">
-										<PopoverPanel class="absolute bottom-full left-0 mb-3 z-50 w-[300px] max-w-[calc(100vw-2rem)] bg-[var(--bg-main)] rounded-2xl shadow-lg border border-[var(--border-light)] p-4 cursor-default">
-											<div class="text-[14px] font-semibold text-[var(--text-primary)] mb-3">Web Search</div>
-											<div class="h-[1px] bg-[var(--border-light)] -mx-4 mb-3"></div>
-											<div class="flex items-start justify-between">
-												<div class="pr-4">
-													<div class="text-[13px] font-medium text-[var(--text-primary)]">Enable Web Search</div>
-													<div class="text-[12px] text-[var(--text-tertiary)] leading-relaxed mt-0.5">Enable web search and real-time information access.</div>
-												</div>
-												<Switch v-model="isWebSearchEnabled" :class="isWebSearchEnabled ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'" class="relative inline-flex h-5 w-[36px] shrink-0 items-center rounded-full transition-colors focus:outline-none mt-1">
-													<span :class="isWebSearchEnabled ? 'translate-x-[18px]' : 'translate-x-0.5'" class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm" />
-												</Switch>
+									<Transition enter-active-class="transition duration-150 ease-out"
+										enter-from-class="translate-y-1 opacity-0"
+										enter-to-class="translate-y-0 opacity-100"
+										leave-active-class="transition duration-100 ease-in"
+										leave-from-class="translate-y-0 opacity-100"
+										leave-to-class="translate-y-1 opacity-0">
+										<div v-if="activeDropdownField === field.key"
+											class="absolute bottom-full left-0 mb-2 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-xl p-3 z-[60] min-w-[180px]"
+											style="background-color: var(--bg-main)">
+											<p
+												class="text-[11px] font-bold text-[var(--text-tertiary)] mb-2 px-1 uppercase tracking-widest text-center">
+												{{ field.label || 'Outputs' }}</p>
+											<div class="flex flex-wrap gap-1.5 justify-center">
+												<button v-for="n in field.max - field.min + 1" :key="n"
+													@click="setParamAndClose(field.key, n + field.min - 1)"
+													class="size-9 rounded-xl font-bold flex items-center justify-center transition-all border text-[13px]"
+													:class="(currentConversation?.params?.[field.key] || field.default) === n + field.min - 1 ? 'bg-[var(--text-primary)] text-[var(--bg-main)] border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-primary)]'">
+													{{ n + field.min - 1 }}
+												</button>
 											</div>
-										</PopoverPanel>
+										</div>
 									</Transition>
-								</Popover>
+								</div>
+							</template>
 
-								<!-- Parameters Settings (Hidden for Media Models) -->
-								<Popover v-if="!isImageModel && !isVideoModel" class="relative" v-slot="{ open }">
-									<Tooltip text="Model Parameters">
-										<PopoverButton class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors" :class="{ 'text-[var(--text-primary)] bg-[var(--bg-hover)]': open }">
-											<Settings :size="18" />
-										</PopoverButton>
-									</Tooltip>
-									<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1.5 opacity-0 scale-[0.98]" enter-to-class="translate-y-0 opacity-100 scale-100" leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1.5 opacity-0">
-										<PopoverPanel class="absolute bottom-full left-0 mb-3 z-50 w-[300px] max-w-[calc(100vw-2rem)] bg-[var(--bg-main)] rounded-2xl shadow-lg border border-[var(--border-light)]">
-											<!-- Header -->
-											<div class="px-4 pt-3.5 pb-3 border-b border-[var(--border-light)] flex items-center justify-between">
-												<div class="flex items-center gap-2">
-													<SlidersHorizontal :size="14" class="text-[var(--text-tertiary)]" />
-													<span class="text-[13px] font-semibold text-[var(--text-primary)]">Parameters</span>
-												</div>
-												<button @click="resetParams" class="text-[12px] font-medium text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors">Reset</button>
-											</div>
-											<ModelParameters :model-input="modelStore.selectedModel?.model_input" :values="currentConversation?.params || {}" @update:values="updateParams" />
-										</PopoverPanel>
-									</Transition>
-								</Popover>
-							</div>
+							<div class="h-4 w-px bg-[var(--border-light)]/50 mx-1 self-center"
+								v-if="supportsFileUpload || supportsWebSearch"></div>
 
-							<!-- Stop / Send Button -->
-							<Tooltip :text="chatStore.isLoading ? 'Stop generating' : hasContent ? 'Send Message' : 'Type something...'">
-								<button v-if="chatStore.isLoading" @click="stopGeneration" class="flex items-center justify-center w-8 h-8 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full transition-transform active:scale-90 dark:bg-[var(--text-white)] dark:text-[var(--bg-main)] shrink-0 self-end mb-1">
-									<Square :size="12" fill="currentColor" />
-								</button>
-								<button v-else @click="() => sendMessage()" :disabled="(!hasContent && uploadedFiles.length === 0) || isUploading" class="flex items-center justify-center w-8 h-8 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full transition-transform active:scale-90 disabled:opacity-20 disabled:scale-100 dark:bg-[var(--text-white)] dark:text-[var(--bg-main)] shrink-0 self-end mb-1">
-									<ArrowUp :size="16" :stroke-width="2.5" />
+							<!-- Bottom Left Tools -->
+							<!-- Attach Button -->
+							<Tooltip v-if="supportsFileUpload" text="Add Attachment">
+								<button @click="triggerFileUpload" :disabled="isUploading"
+									class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] disabled:opacity-50 disabled:cursor-not-allowed rounded-full transition-colors">
+									<Plus :size="20" />
 								</button>
 							</Tooltip>
+
+							<!-- Web Search -->
+							<Popover v-if="supportsWebSearch" class="relative" v-slot="{ open }">
+								<Tooltip text="Web Search">
+									<PopoverButton
+										class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors relative"
+										:class="{ 'text-[var(--text-primary)] bg-[var(--bg-hover)]': open || isWebSearchEnabled }">
+										<Globe :size="18" />
+										<div v-if="isWebSearchEnabled"
+											class="absolute top-1.5 right-1.5 w-2 h-2 bg-[var(--text-primary)] rounded-full border border-[var(--bg-main)]">
+										</div>
+									</PopoverButton>
+								</Tooltip>
+								<Transition enter-active-class="transition duration-150 ease-out"
+									enter-from-class="translate-y-1.5 opacity-0 scale-[0.98]"
+									enter-to-class="translate-y-0 opacity-100 scale-100"
+									leave-active-class="transition duration-100 ease-in"
+									leave-from-class="translate-y-0 opacity-100"
+									leave-to-class="translate-y-1.5 opacity-0">
+									<PopoverPanel
+										class="absolute bottom-full left-0 mb-3 z-50 w-[300px] max-w-[calc(100vw-2rem)] bg-[var(--bg-main)] rounded-2xl shadow-lg border border-[var(--border-light)] p-4 cursor-default">
+										<div class="text-[14px] font-semibold text-[var(--text-primary)] mb-3">Web
+											Search</div>
+										<div class="h-[1px] bg-[var(--border-light)] -mx-4 mb-3"></div>
+										<div class="flex items-start justify-between">
+											<div class="pr-4">
+												<div class="text-[13px] font-medium text-[var(--text-primary)]">Enable
+													Web Search
+												</div>
+												<div
+													class="text-[12px] text-[var(--text-tertiary)] leading-relaxed mt-0.5">
+													Enable
+													web search and real-time information access.</div>
+											</div>
+											<Switch v-model="isWebSearchEnabled"
+												:class="isWebSearchEnabled ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'"
+												class="relative inline-flex h-5 w-[36px] shrink-0 items-center rounded-full transition-colors focus:outline-none mt-1">
+												<span
+													:class="isWebSearchEnabled ? 'translate-x-[18px]' : 'translate-x-0.5'"
+													class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm" />
+											</Switch>
+										</div>
+									</PopoverPanel>
+								</Transition>
+							</Popover>
+
+							<!-- Parameters Settings (Hidden for Media Models) -->
+							<Popover v-if="!isImageModel && !isVideoModel" class="relative" v-slot="{ open }">
+								<Tooltip text="Model Parameters">
+									<PopoverButton
+										class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors"
+										:class="{ 'text-[var(--text-primary)] bg-[var(--bg-hover)]': open }">
+										<Settings :size="18" />
+									</PopoverButton>
+								</Tooltip>
+								<Transition enter-active-class="transition duration-150 ease-out"
+									enter-from-class="translate-y-1.5 opacity-0 scale-[0.98]"
+									enter-to-class="translate-y-0 opacity-100 scale-100"
+									leave-active-class="transition duration-100 ease-in"
+									leave-from-class="translate-y-0 opacity-100"
+									leave-to-class="translate-y-1.5 opacity-0">
+									<PopoverPanel
+										class="absolute bottom-full left-0 mb-3 z-50 w-[300px] max-w-[calc(100vw-2rem)] bg-[var(--bg-main)] rounded-2xl shadow-lg border border-[var(--border-light)]">
+										<!-- Header -->
+										<div
+											class="px-4 pt-3.5 pb-3 border-b border-[var(--border-light)] flex items-center justify-between">
+											<div class="flex items-center gap-2">
+												<SlidersHorizontal :size="14" class="text-[var(--text-tertiary)]" />
+												<span
+													class="text-[13px] font-semibold text-[var(--text-primary)]">Parameters</span>
+											</div>
+											<button @click="resetParams"
+												class="text-[12px] font-medium text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors">Reset</button>
+										</div>
+										<ModelParameters :model-input="modelStore.selectedModel?.model_input"
+											:values="currentConversation?.params || {}" @update:values="updateParams" />
+									</PopoverPanel>
+								</Transition>
+							</Popover>
 						</div>
+
+						<!-- Stop / Send Button -->
+						<Tooltip
+							:text="chatStore.isLoading ? 'Stop generating' : hasContent ? 'Send Message' : 'Type something...'">
+							<button v-if="chatStore.isLoading" @click="stopGeneration"
+								class="flex items-center justify-center w-8 h-8 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full transition-transform active:scale-90 dark:bg-[var(--text-white)] dark:text-[var(--bg-main)] shrink-0 self-end mb-1">
+								<Square :size="12" fill="currentColor" />
+							</button>
+							<button v-else @click="() => sendMessage()"
+								:disabled="(!hasContent && uploadedFiles.length === 0) || isUploading"
+								class="flex items-center justify-center w-8 h-8 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full transition-transform active:scale-90 disabled:opacity-20 disabled:scale-100 dark:bg-[var(--text-white)] dark:text-[var(--bg-main)] shrink-0 self-end mb-1">
+								<ArrowUp :size="16" :stroke-width="2.5" />
+							</button>
+						</Tooltip>
+					</div>
 				</div>
 
 				<!-- Suggestions -->
 				<div v-if="currentConversation?.messages.length === 0" class="mt-6 flex flex-wrap justify-center gap-2">
-					<button v-for="suggestion in PROMPT_SUGGESTIONS.slice(0, 3)" :key="suggestion.id" @click="handleApplyPrompt(suggestion)" class="flex items-center gap-2 px-4 py-2 bg-[var(--bg-main)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] rounded-full border border-[var(--border-light)] transition-all text-sm font-medium shadow-sm active:scale-95">
+					<button v-for="suggestion in PROMPT_SUGGESTIONS.slice(0, 3)" :key="suggestion.id"
+						@click="handleApplyPrompt(suggestion)"
+						class="flex items-center gap-2 px-4 py-2 bg-[var(--bg-main)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] rounded-full border border-[var(--border-light)] transition-all text-sm font-medium shadow-sm active:scale-95">
 						<span class="opacity-70 text-xs">{{ suggestion.icon }}</span>
 						<span>{{ suggestion.label }}</span>
 					</button>
@@ -573,16 +798,23 @@
 
 		<!-- Image Preview Lightbox -->
 		<Teleport to="body">
-			<Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0">
-				<div v-if="previewImage" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm" @click="previewImage = null" @keydown.esc.window="previewImage = null">
+			<Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0"
+				enter-to-class="opacity-100" leave-active-class="transition duration-150 ease-in"
+				leave-from-class="opacity-100" leave-to-class="opacity-0">
+				<div v-if="previewImage"
+					class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+					@click="previewImage = null" @keydown.esc.window="previewImage = null">
 					<div class="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center" @click.stop>
-						<img :src="previewImage" class="max-w-full max-h-[90vh] rounded-2xl shadow-2xl object-contain" />
+						<img :src="previewImage"
+							class="max-w-full max-h-[90vh] rounded-2xl shadow-2xl object-contain" />
 						<!-- Close -->
-						<button @click="previewImage = null" class="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white flex items-center justify-center transition-colors border border-white/20">
+						<button @click="previewImage = null"
+							class="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white flex items-center justify-center transition-colors border border-white/20">
 							<X :size="14" />
 						</button>
 						<!-- Download -->
-						<a :href="previewImage" download="image.jpg" target="_blank" @click.stop class="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white text-[12px] font-medium transition-colors border border-white/10">
+						<a :href="previewImage" download="image.jpg" target="_blank" @click.stop
+							class="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white text-[12px] font-medium transition-colors border border-white/10">
 							<Download :size="13" />
 							Download
 						</a>
@@ -903,10 +1135,10 @@ const currentCharacter = computed(() => {
 	const bot = discoveryStore.allItems.find((b) => Number(b.related_id || b.id) === Number(currentConversation.value?.characterId))
 	return bot
 		? {
-				name: bot.title,
-				icon: bot.cover,
-				avatar: bot.cover,
-			}
+			name: bot.title,
+			icon: bot.cover,
+			avatar: bot.cover,
+		}
 		: null
 })
 
@@ -949,7 +1181,7 @@ const editor = useEditor({
 	],
 	editorProps: {
 		attributes: {
-			class: 'prose dark:prose-invert focus:outline-none min-h-[44px] px-4 py-3 text-[15px] font-medium leading-relaxed text-[var(--text-primary)]',
+			class: 'prose dark:prose-invert focus:outline-none min-h-[44px]  py-3 text-[15px] font-medium leading-relaxed text-[var(--text-primary)]',
 		},
 	},
 	onUpdate: ({ editor }) => {
@@ -1065,7 +1297,7 @@ const extractImageUrls = (content: string): string[] => {
 		if (json.data && Array.isArray(json.data)) {
 			return json.data.filter((item: any) => item.type === 'image' && item.url).map((item: any) => item.url)
 		}
-	} catch {}
+	} catch { }
 	// Fallback: markdown image format
 	const matches = [...content.matchAll(/!\[.*?\]\((https?:\/\/[^)]+)\)/g)]
 	return matches.map((m) => m[1]).filter((u): u is string => !!u)
@@ -1079,7 +1311,7 @@ const extractVideoUrl = (content: string): string | null => {
 			const item = json.data.find((i: any) => i.type === 'video' && i.url)
 			if (item) return item.url
 		}
-	} catch {}
+	} catch { }
 	// Fallback: markdown video link format
 	const match = content.match(/\[Generated Video\]\((https?:\/\/[^)]+)\)/)
 	if (match) return match[1]

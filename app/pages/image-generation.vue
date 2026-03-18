@@ -1,16 +1,24 @@
 <template>
-	<div class="flex-1 flex flex-col h-full bg-[var(--background-gray-main)] transition-colors relative overflow-hidden">
+	<div
+		class="flex-1 flex flex-col h-full bg-[var(--background-gray-main)] transition-colors relative overflow-hidden">
 		<!-- Tab Switcher (Fixed at Top, Outside Scroll Area) -->
 		<div class="flex justify-center py-4 bg-[var(--background-gray-main)] border-b border-transparent">
-			<div class="bg-[var(--fill-tsp-gray-main)] p-1 rounded-full border border-[var(--border-main)] flex items-center">
-				<button @click="activeTab = 'inspiration'" class="px-6 py-1.5 text-[13px] font-medium rounded-full transition-all duration-200" :class="activeTab === 'inspiration' ? 'bg-white text-[var(--text-primary)] shadow-sm dark:bg-[var(--bg-hover)]' : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'">Inspiration</button>
-				<button @click="activeTab = 'creations'" class="px-6 py-1.5 text-[13px] font-medium rounded-full transition-all duration-200" :class="activeTab === 'creations' ? 'bg-white text-[var(--text-primary)] shadow-sm dark:bg-[var(--bg-hover)]' : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'">My Gallery</button>
+			<div
+				class="bg-[var(--fill-tsp-gray-main)] p-1 rounded-full border border-[var(--border-main)] flex items-center">
+				<button @click="activeTab = 'inspiration'"
+					class="px-6 py-1.5 text-[13px] font-medium rounded-full transition-all duration-200"
+					:class="activeTab === 'inspiration' ? 'bg-white text-[var(--text-primary)] shadow-sm dark:bg-[var(--bg-hover)]' : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'">Inspiration</button>
+				<button @click="activeTab = 'creations'"
+					class="px-6 py-1.5 text-[13px] font-medium rounded-full transition-all duration-200"
+					:class="activeTab === 'creations' ? 'bg-white text-[var(--text-primary)] shadow-sm dark:bg-[var(--bg-hover)]' : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'">My
+					Gallery</button>
 			</div>
 		</div>
 
 		<!-- Category Filter Chips (Fixed, Outside Scroll Area) -->
 		<div v-if="activeTab === 'inspiration'" class="flex items-center gap-2 px-4 pb-4 overflow-x-auto no-scrollbar">
-			<button v-for="cat in categories" :key="cat" @click="selectedCategory = cat" :class="['px-4 py-1.5 text-[13px] font-medium rounded-full border transition-all whitespace-nowrap', selectedCategory === cat ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]']">
+			<button v-for="cat in categories" :key="cat" @click="selectedCategory = cat"
+				:class="['px-4 py-1.5 text-[13px] font-medium rounded-full border transition-all whitespace-nowrap', selectedCategory === cat ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]']">
 				{{ cat }}
 			</button>
 		</div>
@@ -22,12 +30,20 @@
 				<div v-if="activeTab === 'inspiration'">
 					<!-- Masonry Grid Layout for Inspiration -->
 					<div class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
-						<div v-for="(example, index) in exampleImages" :key="index" class="break-inside-avoid group relative rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--text-tertiary)] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md" @click="useExample(example.prompt)">
-							<img :src="example.url" class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105" :alt="example.prompt" />
-							<div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6">
-								<p class="text-white text-[13px] font-medium line-clamp-2 italic mb-3 leading-snug">"{{ example.prompt }}"</p>
+						<div v-for="(example, index) in exampleImages" :key="index"
+							class="break-inside-avoid group relative rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--text-tertiary)] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md"
+							@click="useExample(example.prompt)">
+							<img :src="example.url"
+								class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
+								:alt="example.prompt" />
+							<div
+								class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6">
+								<p class="text-white text-[13px] font-medium line-clamp-2 italic mb-3 leading-snug">"{{
+									example.prompt }}"</p>
 								<div class="flex items-center">
-									<span class="px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider backdrop-blur-md shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">Use Prompt</span>
+									<span
+										class="px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider backdrop-blur-md shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">Use
+										Prompt</span>
 								</div>
 							</div>
 						</div>
@@ -36,17 +52,17 @@
 
 				<div v-else>
 					<!-- Noir Excellence Empty State (V2 Integrated) -->
-					<div v-if="generatedImages.length === 0 && activeTasks.length === 0" class="py-32 flex flex-col items-center justify-center relative overflow-hidden">
+					<div v-if="generatedImages.length === 0 && activeTasks.length === 0"
+						class="py-32 flex flex-col items-center justify-center relative overflow-hidden">
 						<!-- Architectural Shadow/Light (Theme Aware) -->
-						<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[var(--text-primary)]/[0.015] blur-[150px] rounded-full pointer-events-none transition-opacity duration-1000 group-hover:opacity-40"></div>
+						<div
+							class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[var(--text-primary)]/[0.015] blur-[150px] rounded-full pointer-events-none transition-opacity duration-1000 group-hover:opacity-40">
+						</div>
 
 						<!-- Precision Particles -->
 						<div class="absolute inset-0 pointer-events-none">
-							<div
-								v-for="i in 8"
-								:key="i"
-								class="absolute size-[1px] bg-[var(--text-primary)]/10 animate-float"
-								:style="{
+							<div v-for="i in 8" :key="i"
+								class="absolute size-[1px] bg-[var(--text-primary)]/10 animate-float" :style="{
 									top: `${Math.random() * 60 + 20}%`,
 									left: `${Math.random() * 60 + 20}%`,
 									animationDelay: `${Math.random() * 10}s`,
@@ -56,58 +72,92 @@
 
 						<div class="relative group cursor-default">
 							<!-- Architectural Sphere -->
-							<div class="absolute inset-0 bg-gradient-to-tr from-[var(--text-primary)]/5 to-[var(--text-primary)]/0 blur-3xl rounded-full scale-110 group-hover:scale-125 transition-transform duration-1000"></div>
-							<div class="relative size-32 rounded-3xl bg-[var(--bg-main)] backdrop-blur-[40px] border border-[var(--border-main)] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] flex items-center justify-center transition-all duration-700 group-hover:border-[var(--text-tertiary)]/30 group-hover:shadow-[var(--shadow-L)]">
+							<div
+								class="absolute inset-0 bg-gradient-to-tr from-[var(--text-primary)]/5 to-[var(--text-primary)]/0 blur-3xl rounded-full scale-110 group-hover:scale-125 transition-transform duration-1000">
+							</div>
+							<div
+								class="relative size-32 rounded-3xl bg-[var(--bg-main)] backdrop-blur-[40px] border border-[var(--border-main)] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] flex items-center justify-center transition-all duration-700 group-hover:border-[var(--text-tertiary)]/30 group-hover:shadow-[var(--shadow-L)]">
 								<!-- Architectural Lens Icon -->
-								<svg viewBox="0 0 40 40" class="size-12 text-[var(--text-tertiary)] group-hover:text-[var(--text-secondary)] transition-colors duration-500" fill="none" stroke="currentColor">
+								<svg viewBox="0 0 40 40"
+									class="size-12 text-[var(--text-tertiary)] group-hover:text-[var(--text-secondary)] transition-colors duration-500"
+									fill="none" stroke="currentColor">
 									<rect x="10" y="10" width="20" height="20" rx="3" stroke-width="1.5" />
-									<circle cx="20" cy="20" r="4" stroke-width="1.2" stroke-dasharray="2 2" class="animate-rotate-progress" />
-									<path d="M10 15H30M10 25H30M15 10V30M25 10V30" stroke-width="0.5" stroke-opacity="0.1" />
+									<circle cx="20" cy="20" r="4" stroke-width="1.2" stroke-dasharray="2 2"
+										class="animate-rotate-progress" />
+									<path d="M10 15H30M10 25H30M15 10V30M25 10V30" stroke-width="0.5"
+										stroke-opacity="0.1" />
 								</svg>
 							</div>
 						</div>
 
 						<div class="text-center mt-14 relative z-10 space-y-3">
-							<h3 class="text-[15px] font-black text-[var(--text-primary)] tracking-[0.25em] uppercase">The Archive of Vision</h3>
-							<p class="text-[var(--text-tertiary)] text-[13.5px] max-w-[320px] px-4 leading-relaxed font-normal tracking-wide italic opacity-80">Every rendered reality finds its place in the Aura collection. Start your first orchestration.</p>
+							<h3 class="text-[15px] font-black text-[var(--text-primary)] tracking-[0.25em] uppercase">
+								The Archive of Vision</h3>
+							<p
+								class="text-[var(--text-tertiary)] text-[13.5px] max-w-[320px] px-4 leading-relaxed font-normal tracking-wide italic opacity-80">
+								Every rendered reality finds its place in the Aura collection. Start your first
+								orchestration.</p>
 						</div>
 
-						<button @click="triggerFocus" class="mt-14 px-12 py-3 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-xl font-black text-[11px] uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all shadow-xl hover:shadow-[var(--shadow-M)] flex items-center gap-4 group/btn">
+						<button @click="triggerFocus"
+							class="mt-14 px-12 py-3 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-xl font-black text-[11px] uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all shadow-xl hover:shadow-[var(--shadow-M)] flex items-center gap-4 group/btn">
 							<span>Start Rendering</span>
-							<div class="size-1 bg-[var(--bg-main)] rounded-full group-hover:scale-150 transition-transform"></div>
+							<div
+								class="size-1 bg-[var(--bg-main)] rounded-full group-hover:scale-150 transition-transform">
+							</div>
 						</button>
 					</div>
 
 					<!-- Premium Gallery Grid -->
-					<div v-if="generatedImages.length > 0 || activeTasks.length > 0" class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
+					<div v-if="generatedImages.length > 0 || activeTasks.length > 0"
+						class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
 						<!-- Noir Generation Task Cards (Integrated) -->
-						<div v-for="task in activeTasks" :key="task.id" class="break-inside-avoid relative rounded-2xl overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] transition-all duration-700 shadow-2xl group/gen">
+						<div v-for="task in activeTasks" :key="task.id"
+							class="break-inside-avoid relative rounded-2xl overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] transition-all duration-700 shadow-2xl group/gen">
 							<!-- Technical Preview Area -->
-							<div class="relative aspect-square flex items-center justify-center overflow-hidden bg-black">
+							<div
+								class="relative aspect-square flex items-center justify-center overflow-hidden bg-black">
 								<!-- Premium Placeholder Background -->
-								<img v-if="!task.imageUrl" src="/noir_placeholder.png" class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-luminosity" />
+								<img v-if="!task.imageUrl" src="/noir_placeholder.png"
+									class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-luminosity" />
 
 								<!-- Precision Scanner (Theme Aware) -->
-								<div v-if="!task.imageUrl" class="absolute inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/30 to-transparent animate-scan-y z-10 pointer-events-none"></div>
+								<div v-if="!task.imageUrl"
+									class="absolute inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/30 to-transparent animate-scan-y z-10 pointer-events-none">
+								</div>
 
 								<!-- Negative-to-Positive Reveal -->
-								<img v-if="task.imageUrl" :src="task.imageUrl" class="w-full h-full object-cover animate-noir-reveal relative z-20" />
+								<img v-if="task.imageUrl" :src="task.imageUrl"
+									class="w-full h-full object-cover animate-noir-reveal relative z-20" />
 
 								<!-- Industrial Loader (Integrated) -->
 								<div v-else class="flex flex-col items-center gap-8 z-20">
 									<div class="relative size-24 flex items-center justify-center">
-										<div class="absolute inset-0 bg-[var(--text-primary)]/[0.03] rounded-full animate-ping-slow"></div>
+										<div
+											class="absolute inset-0 bg-[var(--text-primary)]/[0.03] rounded-full animate-ping-slow">
+										</div>
 										<!-- Precision Ring -->
 										<svg class="absolute inset-0 size-full -rotate-90" viewBox="0 0 100 100">
-											<circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" class="text-[var(--text-primary)]" stroke-opacity="0.05" stroke-width="1" />
-											<circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" class="text-[var(--text-primary)] transition-all duration-1000 ease-linear" stroke-width="2" stroke-linecap="round" stroke-dasharray="290" :stroke-dashoffset="290 - (290 * task.progress) / 100" />
+											<circle cx="50" cy="50" r="46" fill="none" stroke="currentColor"
+												class="text-[var(--text-primary)]" stroke-opacity="0.05"
+												stroke-width="1" />
+											<circle cx="50" cy="50" r="46" fill="none" stroke="currentColor"
+												class="text-[var(--text-primary)] transition-all duration-1000 ease-linear"
+												stroke-width="2" stroke-linecap="round" stroke-dasharray="290"
+												:stroke-dashoffset="290 - (290 * task.progress) / 100" />
 										</svg>
-										<span class="text-[16px] font-mono font-bold text-[var(--text-primary)] tracking-tighter">{{ task.progress }}%</span>
+										<span
+											class="text-[16px] font-mono font-bold text-[var(--text-primary)] tracking-tighter">{{
+												task.progress }}%</span>
 									</div>
 									<div class="flex flex-col items-center gap-2">
-										<p class="text-[10px] font-black text-[var(--text-primary)] tracking-[0.3em] uppercase opacity-60">{{ task.status }}</p>
+										<p
+											class="text-[10px] font-black text-[var(--text-primary)] tracking-[0.3em] uppercase opacity-60">
+											{{ task.status }}</p>
 										<div class="flex gap-2">
-											<div v-for="i in 3" :key="i" class="size-[2px] bg-[var(--text-primary)] animate-pulse" :style="{ animationDelay: `${i * 0.3}s` }"></div>
+											<div v-for="i in 3" :key="i"
+												class="size-[2px] bg-[var(--text-primary)] animate-pulse"
+												:style="{ animationDelay: `${i * 0.3}s` }"></div>
 										</div>
 									</div>
 								</div>
@@ -118,35 +168,51 @@
 								<div class="flex items-center justify-between mb-4">
 									<div class="flex items-center gap-3">
 										<div class="size-1.5 bg-[var(--text-primary)] animate-pulse rounded-full"></div>
-										<span class="text-[10px] font-black text-[var(--text-primary)] tracking-[0.2em] uppercase">SYSTEM_ACTIVE</span>
+										<span
+											class="text-[10px] font-black text-[var(--text-primary)] tracking-[0.2em] uppercase">SYSTEM_ACTIVE</span>
 									</div>
-									<span v-if="task.usage" class="text-[10px] font-mono text-[var(--text-tertiary)] bg-[var(--fill-tsp-gray-main)] px-2.5 py-1 rounded-[6px] border border-[var(--border-main)]"> {{ task.usage.credits }} UNITS </span>
+									<span v-if="task.usage"
+										class="text-[10px] font-mono text-[var(--text-tertiary)] bg-[var(--fill-tsp-gray-main)] px-2.5 py-1 rounded-[6px] border border-[var(--border-main)]">
+										{{ task.usage.credits }} UNITS </span>
 								</div>
-								<p class="text-[var(--text-secondary)] text-[12.5px] font-normal line-clamp-2 leading-relaxed tracking-wide italic leading-snug">"{{ task.prompt }}"</p>
+								<p
+									class="text-[var(--text-secondary)] text-[12.5px] font-normal line-clamp-2 leading-relaxed tracking-wide italic leading-snug">
+									"{{ task.prompt }}"</p>
 
-								<div v-if="task.taskId" class="mt-5 pt-5 border-t border-dashed border-[var(--border-main)] flex items-center justify-between opacity-50">
+								<div v-if="task.taskId"
+									class="mt-5 pt-5 border-t border-dashed border-[var(--border-main)] flex items-center justify-between opacity-50">
 									<div class="flex flex-col">
-										<span class="text-[8px] text-[var(--text-tertiary)] uppercase font-black tracking-widest">RECORD_ID</span>
-										<span class="text-[10px] text-[var(--text-secondary)] font-mono tracking-tighter">{{ task.taskId.substring(0, 16) }}</span>
+										<span
+											class="text-[8px] text-[var(--text-tertiary)] uppercase font-black tracking-widest">RECORD_ID</span>
+										<span
+											class="text-[10px] text-[var(--text-secondary)] font-mono tracking-tighter">{{
+												task.taskId.substring(0, 16) }}</span>
 									</div>
 								</div>
 							</div>
 						</div>
 
-						<div v-for="(image, index) in filteredGeneratedImages" :key="image.id" class="break-inside-avoid group relative rounded-[24px] overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] hover:border-indigo-500/50 transition-all duration-500 shadow-sm hover:shadow-2xl hover:-translate-y-1">
+						<div v-for="(image, index) in filteredGeneratedImages" :key="image.id"
+							class="break-inside-avoid group relative rounded-[24px] overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] hover:border-indigo-500/50 transition-all duration-500 shadow-sm hover:shadow-2xl hover:-translate-y-1">
 							<!-- Image Container with Inner Shadow -->
 							<div class="relative overflow-hidden aspect-auto min-h-[100px] bg-[var(--bg-hover)]">
 								<!-- Image Grid Cell -->
 								<template v-if="image.status === 1">
-									<img :src="image.thumbnail || getRecordPrimaryUrl(image)" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110" />
+									<img :src="image.thumbnail || getRecordPrimaryUrl(image)"
+										class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110" />
 								</template>
 
 								<!-- Processing State in History -->
-								<div v-else class="h-full min-h-[240px] relative flex flex-col items-center justify-center overflow-hidden bg-black/40">
-									<img src="/noir_placeholder.png" class="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay" />
+								<div v-else
+									class="h-full min-h-[240px] relative flex flex-col items-center justify-center overflow-hidden bg-black/40">
+									<img src="/noir_placeholder.png"
+										class="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay" />
 									<div class="relative z-10 flex flex-col items-center gap-4">
-										<div class="size-10 rounded-full border border-white/10 border-t-white/40 animate-spin"></div>
-										<span class="text-[9px] font-black text-white/40 tracking-[0.3em] uppercase">Synchronizing</span>
+										<div
+											class="size-10 rounded-full border border-white/10 border-t-white/40 animate-spin">
+										</div>
+										<span
+											class="text-[9px] font-black text-white/40 tracking-[0.3em] uppercase">Synchronizing</span>
 									</div>
 								</div>
 
@@ -154,18 +220,23 @@
 							</div>
 
 							<!-- Content Overlay (Sophisticated Gradient) -->
-							<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-between p-5">
+							<div
+								class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-between p-5">
 								<!-- Top Actions (Glassmorphism) -->
-								<div class="flex justify-end transform -translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75">
-									<button @click.stop="handleDownload(getRecordPrimaryUrl(image))" class="size-10 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white hover:bg-white/25 transition-all shadow-2xl group/btn">
+								<div
+									class="flex justify-end transform -translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75">
+									<button @click.stop="handleDownload(getRecordPrimaryUrl(image))"
+										class="size-10 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white hover:bg-white/25 transition-all shadow-2xl group/btn">
 										<Download :size="18" class="group-hover/btn:scale-110 transition-transform" />
 									</button>
 								</div>
 
 								<!-- Bottom Info -->
-								<div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-100">
+								<div
+									class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-100">
 									<div class="flex items-center gap-2 mb-2">
-										<span class="px-2 py-0.5 rounded-md bg-white/10 backdrop-blur-md border border-white/10 text-[10px] font-bold text-white/80 uppercase tracking-wider">
+										<span
+											class="px-2 py-0.5 rounded-md bg-white/10 backdrop-blur-md border border-white/10 text-[10px] font-bold text-white/80 uppercase tracking-wider">
 											{{ formatModel(getRecordModel(image)) }}
 										</span>
 										<span class="text-[10px] font-medium text-white/60">
@@ -175,26 +246,38 @@
 
 									<!-- Technical Metadata (Noir Style) -->
 									<div v-if="getRecordParams(image)" class="flex flex-wrap gap-2 mb-4 opacity-70">
-										<div v-if="getRecordParams(image).aspect_ratio" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
+										<div v-if="getRecordParams(image).aspect_ratio"
+											class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
 											{{ getRecordParams(image).aspect_ratio }}
 										</div>
-										<div v-if="getRecordParams(image).resolution" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
+										<div v-if="getRecordParams(image).resolution"
+											class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
 											{{ getRecordParams(image).resolution }}
 										</div>
-										<div v-if="getRecordParams(image).num_inference_steps" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">{{ getRecordParams(image).num_inference_steps }} STEPS</div>
-										<div v-if="getRecordParams(image).seed" class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">SEED: {{ getRecordParams(image).seed }}</div>
+										<div v-if="getRecordParams(image).num_inference_steps"
+											class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
+											{{ getRecordParams(image).num_inference_steps }} STEPS</div>
+										<div v-if="getRecordParams(image).seed"
+											class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/80 uppercase">
+											SEED: {{ getRecordParams(image).seed }}</div>
 									</div>
 
-									<p class="text-white text-[13px] font-medium mb-4 line-clamp-3 leading-relaxed italic">"{{ getRecordPrompt(image) || 'No description' }}"</p>
-									<button @click.stop="useExample(getRecordPrompt(image))" class="w-full py-2.5 bg-white text-black rounded-xl font-bold text-[12px] hover:bg-indigo-50 transition-colors shadow-xl flex items-center justify-center gap-2 group/reuse">
-										<Zap :size="14" fill="currentColor" class="text-indigo-600 group-hover/reuse:animate-pulse" />
+									<p
+										class="text-white text-[13px] font-medium mb-4 line-clamp-3 leading-relaxed italic">
+										"{{
+											getRecordPrompt(image) || 'No description' }}"</p>
+									<button @click.stop="useExample(getRecordPrompt(image))"
+										class="w-full py-2.5 bg-white text-black rounded-xl font-bold text-[12px] hover:bg-indigo-50 transition-colors shadow-xl flex items-center justify-center gap-2 group/reuse">
+										<Zap :size="14" fill="currentColor"
+											class="text-indigo-600 group-hover/reuse:animate-pulse" />
 										Reuse Prompt
 									</button>
 								</div>
 							</div>
 
 							<!-- Static Reveal Info -->
-							<div class="absolute bottom-3 left-3 px-2 py-1 rounded-lg bg-black/20 backdrop-blur-md opacity-100 group-hover:opacity-0 transition-opacity duration-300">
+							<div
+								class="absolute bottom-3 left-3 px-2 py-1 rounded-lg bg-black/20 backdrop-blur-md opacity-100 group-hover:opacity-0 transition-opacity duration-300">
 								<p class="text-white/80 text-[10px] font-medium truncate max-w-[120px]">
 									{{ formatDate(image.created_at) }}
 								</p>
@@ -208,9 +291,12 @@
 		<!-- Floating Pill Control Bar (Bottom - Aligned with Manus Design) -->
 		<div class="absolute bottom-12 inset-x-0 flex justify-center px-4 z-50 pointer-events-none">
 			<div class="w-full max-w-[840px] relative pointer-events-auto">
-				<transition enter-active-class="duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]" enter-from-class="opacity-0 translate-y-8 scale-90" enter-to-class="opacity-100 translate-y-0 scale-100">
+				<transition enter-active-class="duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]"
+					enter-from-class="opacity-0 translate-y-8 scale-90"
+					enter-to-class="opacity-100 translate-y-0 scale-100">
 					<!-- Active Task Monitor (Manus Integrated Glass) -->
-					<div v-if="isGenerating" class="absolute -top-16 left-1/2 -translate-x-1/2 flex items-center gap-5 px-6 py-3 bg-[var(--bg-main)]/90 backdrop-blur-2xl border border-[var(--border-main)] rounded-2xl shadow-[var(--shadow-L)] z-[60]">
+					<div v-if="isGenerating"
+						class="absolute -top-16 left-1/2 -translate-x-1/2 flex items-center gap-5 px-6 py-3 bg-[var(--bg-main)]/90 backdrop-blur-2xl border border-[var(--border-main)] rounded-2xl shadow-[var(--shadow-L)] z-[60]">
 						<!-- Precision Progress Indicator (System Wide) -->
 						<div class="relative size-10 flex items-center justify-center">
 							<div class="absolute inset-0 bg-indigo-500/10 rounded-full animate-ping"></div>
@@ -218,34 +304,47 @@
 						</div>
 
 						<div class="flex flex-col pr-4">
-							<span class="text-[10px] font-black text-[var(--text-primary)] tracking-[0.2em] uppercase opacity-40">System Monitor</span>
-							<span class="text-[11px] font-bold text-[var(--text-primary)]">{{ activeTasks.length }} Active Processing</span>
+							<span
+								class="text-[10px] font-black text-[var(--text-primary)] tracking-[0.2em] uppercase opacity-40">System
+								Monitor</span>
+							<span class="text-[11px] font-bold text-[var(--text-primary)]">{{ activeTasks.length }}
+								Active
+								Processing</span>
 						</div>
 					</div>
 				</transition>
 
-				<div ref="controlBarRef" class="bg-[var(--fill-input-chat)] rounded-[22px] border border-black/5 dark:border-[var(--border-main)] py-3 shadow-[0px_12px_32px_0px_rgba(0,0,0,0.02)] flex flex-col gap-3 transition-all duration-300 focus-within:border-black/10">
+				<div ref="controlBarRef"
+					class="bg-[var(--fill-input-chat)] rounded-[22px] border border-black/5 dark:border-[var(--border-main)] py-3 shadow-[0px_12px_32px_0px_rgba(0,0,0,0.02)] flex flex-col gap-6 transition-all duration-300 focus-within:border-black/10">
 					<!-- Uploaded Image Previews (above input) -->
 					<div v-if="uploadedImages.length > 0" class="px-2 flex items-center gap-6 flex-wrap">
-						<div v-for="(img, index) in uploadedImages" :key="img.url" class="relative shrink-0 group/preview">
-							<img :src="img.url" class="w-14 h-14 object-cover rounded-2xl border border-[var(--border-main)] shadow-sm" />
+						<div v-for="(img, index) in uploadedImages" :key="img.url"
+							class="relative shrink-0 group/preview">
+							<img :src="img.url"
+								class="w-14 h-14 object-cover rounded-2xl border border-[var(--border-main)] shadow-sm" />
 							<!-- Upload loading overlay -->
-							<div v-if="img.uploading" class="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center">
+							<div v-if="img.uploading"
+								class="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center">
 								<Loader2 :size="18" class="animate-spin text-white" />
 							</div>
-							<button v-else @click="removeImage(index)" class="absolute -top-1.5 -right-1.5 size-[18px] bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full flex items-center justify-center shadow-md opacity-0 group-hover/preview:opacity-100 transition-all scale-75 group-hover/preview:scale-100">
+							<button v-else @click="removeImage(index)"
+								class="absolute -top-1.5 -right-1.5 size-[18px] bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full flex items-center justify-center shadow-md opacity-0 group-hover/preview:opacity-100 transition-all scale-75 group-hover/preview:scale-100">
 								<X :size="9" stroke-width="3.5" />
 							</button>
 						</div>
 						<!-- Quick add button (multiple only) -->
-						<button v-if="supportsMultipleImages" @click="triggerFileUpload" class="w-14 h-14 shrink-0 rounded-2xl border-2 border-dashed border-[var(--border-main)] flex items-center justify-center hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)] transition-all">
+						<button v-if="supportsMultipleImages" @click="triggerFileUpload"
+							class="w-14 h-14 shrink-0 rounded-2xl border-2 border-dashed border-[var(--border-main)] flex items-center justify-center hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)] transition-all">
 							<Plus :size="16" class="text-[var(--text-tertiary)]" />
 						</button>
 					</div>
 
 					<!-- Input Area -->
-					<div class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 w-full text-[var(--text-primary)] placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[50px] max-h-[216px]">
-						<div ref="inputRef" contenteditable="true" class="w-full outline-none font-normal" :data-placeholder="displayedPlaceholder" @input="handleInput" @keydown.enter="handleEnterKey" @paste="handlePaste"></div>
+					<div
+						class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 w-full text-[var(--text-primary)] placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[50px] max-h-[216px]">
+						<div ref="inputRef" contenteditable="true" class="w-full outline-none font-normal"
+							:data-placeholder="displayedPlaceholder" @input="handleInput"
+							@keydown.enter="handleEnterKey" @paste="handlePaste"></div>
 					</div>
 
 					<!-- Bottom Row: Tools + Generate -->
@@ -257,34 +356,51 @@
 
 							<!-- Image Upload -->
 							<div class="group/button relative" v-if="supportsImageUpload">
-								<button @click="toggleImageUploadDropdown" class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="openImageUploadDropdown ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : uploadedImages.length > 0 ? 'border-[var(--border-main)]' : ''" :disabled="isUploading">
-									<Loader2 v-if="isUploading" :size="16" class="animate-spin text-[var(--text-secondary)]" />
+								<button @click="toggleImageUploadDropdown"
+									class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+									:class="openImageUploadDropdown ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : uploadedImages.length > 0 ? 'border-[var(--border-main)]' : ''"
+									:disabled="isUploading">
+									<Loader2 v-if="isUploading" :size="16"
+										class="animate-spin text-[var(--text-secondary)]" />
 									<template v-else-if="uploadedImages.length > 0">
 										<div class="relative shrink-0">
 											<img :src="uploadedImages[0]?.url" class="w-4 h-4 rounded object-cover" />
-											<div v-if="uploadedImages.length > 1" class="absolute -top-1.5 -right-1.5 min-w-[14px] h-[14px] bg-[var(--text-primary)] rounded-full text-[8px] text-[var(--bg-main)] flex items-center justify-center font-bold px-0.5 leading-none">
+											<div v-if="uploadedImages.length > 1"
+												class="absolute -top-1.5 -right-1.5 min-w-[14px] h-[14px] bg-[var(--text-primary)] rounded-full text-[8px] text-[var(--bg-main)] flex items-center justify-center font-bold px-0.5 leading-none">
 												{{ uploadedImages.length }}
 											</div>
 										</div>
 									</template>
 									<ImagePlus v-else :size="16" class="text-[var(--text-secondary)]" />
 									<span class="text-[13px] font-medium text-[var(--text-primary)]">
-										{{ uploadedImages.length > 0 ? `${uploadedImages.length} image${uploadedImages.length > 1 ? 's' : ''}` : 'Image prompt' }}
+										{{ uploadedImages.length > 0 ? `${uploadedImages.length}
+										image${uploadedImages.length >
+												1 ? 's' : ''}` : 'Image prompt' }}
 									</span>
 								</button>
 
 								<!-- Popover -->
-								<div v-if="openImageUploadDropdown" class="absolute bottom-[calc(100%+10px)] left-0 pb-2 z-[60] min-w-[300px]">
-									<div class="rounded-2xl bg-[var(--bg-main)] border border-[var(--border-light)] p-4 shadow-lg flex flex-col gap-4" style="background-color: var(--bg-main)">
-										<p class="text-[14px] font-medium text-[var(--text-primary)] text-center leading-snug px-2">Image prompts apply the style and content of any picture to your generation. Upload images or select from your asset library.</p>
+								<div v-if="openImageUploadDropdown"
+									class="absolute bottom-[calc(100%+10px)] left-0 pb-2 z-[60] min-w-[300px]">
+									<div class="rounded-2xl bg-[var(--bg-main)] border border-[var(--border-light)] p-4 shadow-lg flex flex-col gap-4"
+										style="background-color: var(--bg-main)">
+										<p
+											class="text-[14px] font-medium text-[var(--text-primary)] text-center leading-snug px-2">
+											Image prompts apply the style and content of any picture to your generation.
+											Upload
+											images or select from your asset library.</p>
 										<div class="flex flex-col gap-2">
-											<button @click="triggerUploadAndClose" class="w-full flex items-center justify-center gap-2 bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 rounded-full py-3 text-[14px] font-medium transition-colors">
-												<div class="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center">
+											<button @click="triggerUploadAndClose"
+												class="w-full flex items-center justify-center gap-2 bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 rounded-full py-3 text-[14px] font-medium transition-colors">
+												<div
+													class="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center">
 													<Plus :size="10" stroke-width="3" />
 												</div>
 												Upload
 											</button>
-											<button @click="selectAssetAndClose" class="w-full flex items-center justify-center gap-2 bg-[var(--bg-main)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full py-3 text-[14px] font-medium transition-colors border border-[var(--border-main)] shadow-sm" style="background-color: var(--bg-main)">
+											<button @click="selectAssetAndClose"
+												class="w-full flex items-center justify-center gap-2 bg-[var(--bg-main)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full py-3 text-[14px] font-medium transition-colors border border-[var(--border-main)] shadow-sm"
+												style="background-color: var(--bg-main)">
 												<ImagePlus :size="16" />
 												Select asset
 											</button>
@@ -297,16 +413,19 @@
 							<div v-for="field in dynamicSelectFields" :key="field.key" class="relative">
 								<!-- Aspect Ratio -->
 								<template v-if="field.key === 'aspect_ratio'">
-									<button @click="openDropdown = openDropdown === field.key ? null : field.key" class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="openDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+									<button @click="openDropdown = openDropdown === field.key ? null : field.key"
+										class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+										:class="openDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
 										<Square :size="16" class="text-[var(--text-secondary)]" />
-										<span class="text-[13px] font-medium text-[var(--text-primary)]">{{ dynamicParams[field.key] }}</span>
+										<span class="text-[13px] font-medium text-[var(--text-primary)]">{{
+											dynamicParams[field.key] }}</span>
 									</button>
-									<div v-if="openDropdown === field.key" class="absolute bottom-full left-0 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-6 z-[60] flex gap-8 items-center min-w-max" style="background-color: var(--bg-main)">
+									<div v-if="openDropdown === field.key"
+										class="absolute bottom-full left-0 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-6 z-[60] flex gap-8 items-center min-w-max"
+										style="background-color: var(--bg-main)">
 										<!-- Left: Ratio Buttons Grid -->
 										<div class="flex flex-wrap gap-2 w-[280px]">
-											<button
-												v-for="r in field.options"
-												:key="r"
+											<button v-for="r in field.options" :key="r"
 												@click="dynamicParams[field.key] = r"
 												class="px-3 py-2 rounded-xl text-[13px] font-bold border transition-all min-w-[64px] flex-1 text-center"
 												:class="dynamicParams[field.key] === r ? 'bg-[var(--text-primary)] border-[var(--text-primary)] text-[var(--bg-main)] shadow-sm scale-[1.02]' : 'bg-transparent text-[var(--text-primary)] border-[var(--border-main)] hover:border-[var(--text-primary)]/20 hover:bg-[var(--bg-hover)]'">
@@ -315,54 +434,91 @@
 										</div>
 
 										<!-- Right: Visual Preview -->
-										<div class="relative flex items-center justify-center w-[160px] h-[160px] bg-transparent shrink-0">
+										<div
+											class="relative flex items-center justify-center w-[160px] h-[160px] bg-transparent shrink-0">
 											<!-- Dynamic Box -->
-											<div class="relative bg-[var(--fill-tsp-gray-main)] rounded-xl border border-[var(--border-main)] transition-all duration-300 flex items-center justify-center overflow-hidden shadow-inner" :style="getPreviewStyle(dynamicParams[field.key])">
+											<div class="relative bg-[var(--fill-tsp-gray-main)] rounded-xl border border-[var(--border-main)] transition-all duration-300 flex items-center justify-center overflow-hidden shadow-inner"
+												:style="getPreviewStyle(dynamicParams[field.key])">
 												<!-- 3x3 Grid -->
-												<div class="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none">
-													<div v-for="i in 9" :key="i" class="border-[0.5px] border-[var(--border-main)] opacity-50"></div>
+												<div
+													class="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none">
+													<div v-for="i in 9" :key="i"
+														class="border-[0.5px] border-[var(--border-main)] opacity-50">
+													</div>
 												</div>
 											</div>
 											<!-- Adjustment Handles -->
-											<div class="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-[var(--text-tertiary)] rounded-full"></div>
-											<div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-[var(--text-tertiary)] rounded-full"></div>
-											<div class="absolute top-1/2 -left-1 -translate-y-1/2 w-1 h-3 bg-[var(--text-tertiary)] rounded-full"></div>
-											<div class="absolute top-1/2 -right-1 -translate-y-1/2 w-1 h-3 bg-[var(--text-tertiary)] rounded-full"></div>
+											<div
+												class="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-[var(--text-tertiary)] rounded-full">
+											</div>
+											<div
+												class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-[var(--text-tertiary)] rounded-full">
+											</div>
+											<div
+												class="absolute top-1/2 -left-1 -translate-y-1/2 w-1 h-3 bg-[var(--text-tertiary)] rounded-full">
+											</div>
+											<div
+												class="absolute top-1/2 -right-1 -translate-y-1/2 w-1 h-3 bg-[var(--text-tertiary)] rounded-full">
+											</div>
 										</div>
 									</div>
 								</template>
 
 								<!-- Style Transfer -->
 								<template v-else-if="field.key === 'style'">
-									<button @click="openDropdown = openDropdown === field.key ? null : field.key" class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="openDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+									<button @click="openDropdown = openDropdown === field.key ? null : field.key"
+										class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+										:class="openDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
 										<Palette :size="16" class="text-[var(--text-secondary)]" />
 										<span class="text-[13px] font-medium text-[var(--text-primary)]">
-											{{ dynamicParams[field.key] === 'No Style' || !dynamicParams[field.key] ? 'Style transfer' : dynamicParams[field.key] }}
+											{{ dynamicParams[field.key] === 'No Style' || !dynamicParams[field.key] ?
+												'Style transfer' : dynamicParams[field.key] }}
 										</span>
 									</button>
-									<div v-if="openDropdown === field.key" class="absolute bottom-full left-0 mb-3 w-48 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-1.5 z-[60] max-h-60 overflow-y-auto custom-scrollbar" style="background-color: var(--bg-main)">
-										<button v-for="s in field.options" :key="s" @click="setParamAndClose(field.key, s)" class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-[var(--bg-hover)] transition-colors text-left">
-											<span class="text-[13px] font-medium" :class="dynamicParams[field.key] === s ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'">{{ s }}</span>
+									<div v-if="openDropdown === field.key"
+										class="absolute bottom-full left-0 mb-3 w-48 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-1.5 z-[60] max-h-60 overflow-y-auto custom-scrollbar"
+										style="background-color: var(--bg-main)">
+										<button v-for="s in field.options" :key="s"
+											@click="setParamAndClose(field.key, s)"
+											class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-[var(--bg-hover)] transition-colors text-left">
+											<span class="text-[13px] font-medium"
+												:class="dynamicParams[field.key] === s ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'">{{
+												s }}</span>
 										</button>
 									</div>
 								</template>
 
 								<!-- Generalized Tool (like Resolution) -->
 								<template v-else>
-									<button @click="openDropdown = openDropdown === field.key ? null : field.key" class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="openDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
-										<Gem v-if="field.key === 'resolution'" :size="16" class="text-[var(--text-secondary)]" />
+									<button @click="openDropdown = openDropdown === field.key ? null : field.key"
+										class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+										:class="openDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+										<Gem v-if="field.key === 'resolution'" :size="16"
+											class="text-[var(--text-secondary)]" />
 										<LayoutGrid v-else :size="16" class="text-[var(--text-secondary)]" />
 										<span class="text-[13px] font-medium text-[var(--text-primary)]">
-											<span v-if="field.key !== 'resolution'" class="uppercase font-bold text-[10px] tracking-wider opacity-60 mr-1">{{ field.key }}:</span>{{ dynamicParams[field.key] }}
+											<span v-if="field.key !== 'resolution'"
+												class="uppercase font-bold text-[10px] tracking-wider opacity-60 mr-1">{{
+												field.key }}:</span>{{ dynamicParams[field.key] }}
 										</span>
 									</button>
-									<div v-if="openDropdown === field.key" class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-4 z-[60] min-w-[200px]" style="background-color: var(--bg-main)">
-										<p class="text-[12px] font-medium text-[var(--text-tertiary)] mb-3 px-2 uppercase tracking-wide">{{ field.key.replace(/_/g, ' ') }}</p>
-										<div class="flex flex-col gap-0.5 max-h-[180px] overflow-y-auto custom-scrollbar px-1 relative z-10">
-											<button v-for="opt in field.options" :key="opt" @click="setParamAndClose(field.key, opt)" class="w-full flex items-center justify-between gap-3 py-2 px-3 rounded-[12px] group transition-all duration-200" :class="dynamicParams[field.key] === opt ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-md' : 'hover:bg-[var(--bg-hover)] text-[var(--text-primary)]'">
+									<div v-if="openDropdown === field.key"
+										class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-4 z-[60] min-w-[200px]"
+										style="background-color: var(--bg-main)">
+										<p
+											class="text-[12px] font-medium text-[var(--text-tertiary)] mb-3 px-2 uppercase tracking-wide">
+											{{ field.key.replace(/_/g, ' ') }}</p>
+										<div
+											class="flex flex-col gap-0.5 max-h-[180px] overflow-y-auto custom-scrollbar px-1 relative z-10">
+											<button v-for="opt in field.options" :key="opt"
+												@click="setParamAndClose(field.key, opt)"
+												class="w-full flex items-center justify-between gap-3 py-2 px-3 rounded-[12px] group transition-all duration-200"
+												:class="dynamicParams[field.key] === opt ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-md' : 'hover:bg-[var(--bg-hover)] text-[var(--text-primary)]'">
 												<span class="text-[13px] font-semibold tracking-tight">{{ opt }}</span>
-												<div class="flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" :class="dynamicParams[field.key] === opt ? 'opacity-100' : ''">
-													<Check :size="14" :stroke-width="3" :class="dynamicParams[field.key] === opt ? 'text-[var(--bg-main)]' : 'text-[var(--text-tertiary)]'" />
+												<div class="flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+													:class="dynamicParams[field.key] === opt ? 'opacity-100' : ''">
+													<Check :size="14" :stroke-width="3"
+														:class="dynamicParams[field.key] === opt ? 'text-[var(--bg-main)]' : 'text-[var(--text-tertiary)]'" />
 												</div>
 											</button>
 										</div>
@@ -372,16 +528,22 @@
 
 							<!-- Dynamic Number Fields (like Num Outputs) -->
 							<div v-for="field in dynamicNumberFields" :key="field.key" class="relative">
-								<button @click="openDropdown = openDropdown === field.key ? null : field.key" class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="openDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
+								<button @click="openDropdown = openDropdown === field.key ? null : field.key"
+									class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
+									:class="openDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
 									<Monitor :size="16" class="text-[var(--text-secondary)]" />
-									<span class="text-[13px] font-medium text-[var(--text-primary)]">{{ dynamicParams[field.key] }} Outputs</span>
+									<span class="text-[13px] font-medium text-[var(--text-primary)]">{{
+										dynamicParams[field.key]
+										}} Outputs</span>
 								</button>
-								<div v-if="openDropdown === field.key" class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-4 z-[60] min-w-[200px]" style="background-color: var(--bg-main)">
-									<p class="text-[12px] font-medium text-[var(--text-tertiary)] mb-3 px-2 uppercase tracking-wide">Outputs Quantity</p>
+								<div v-if="openDropdown === field.key"
+									class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-4 z-[60] min-w-[200px]"
+									style="background-color: var(--bg-main)">
+									<p
+										class="text-[12px] font-medium text-[var(--text-tertiary)] mb-3 px-2 uppercase tracking-wide">
+										Outputs Quantity</p>
 									<div class="flex flex-wrap gap-2 justify-center max-w-[240px]">
-										<button
-											v-for="n in field.max - field.min + 1"
-											:key="n"
+										<button v-for="n in field.max - field.min + 1" :key="n"
 											@click="setParamAndClose(field.key, n + field.min - 1)"
 											class="size-10 rounded-xl font-bold flex items-center justify-center transition-colors border"
 											:class="dynamicParams[field.key] === n + field.min - 1 ? 'bg-[var(--text-primary)] text-[var(--bg-main)] border-[var(--text-primary)] shadow-md' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-primary)]'">
@@ -393,21 +555,24 @@
 						</div>
 
 						<!-- Generate Button -->
-						<button @click="generateImage" :disabled="!prompt.trim()" class="flex items-center justify-center shrink-0 size-8 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] hover:opacity-90 transition-all disabled:opacity-50 disabled:pointer-events-none self-end relative">
+						<button @click="generateImage" :disabled="!prompt.trim()"
+							class="flex items-center justify-center shrink-0 size-8 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] hover:opacity-90 transition-all disabled:opacity-50 disabled:pointer-events-none self-end relative">
 							<Sparkles v-if="!isGenerating" :size="18" fill="currentColor" />
 							<Loader2 v-else :size="18" class="animate-spin" />
 						</button>
 					</div>
 
 					<!-- Hidden File Input -->
-					<input type="file" ref="fileInput" class="hidden" accept="image/*" :multiple="supportsMultipleImages" @change="handleFileUpload" />
+					<input type="file" ref="fileInput" class="hidden" accept="image/*"
+						:multiple="supportsMultipleImages" @change="handleFileUpload" />
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<!-- Asset Picker Modal -->
-	<AssetPickerModal :show="showAssetPicker" :multiple="supportsMultipleImages" file-type="image" @close="showAssetPicker = false" @select="onAssetsSelected" />
+	<AssetPickerModal :show="showAssetPicker" :multiple="supportsMultipleImages" file-type="image"
+		@close="showAssetPicker = false" @select="onAssetsSelected" />
 </template>
 
 <script setup lang="ts">
@@ -889,6 +1054,7 @@ textarea::placeholder {
 
 /* Custom Shimmer/Pulse for empty state */
 @keyframes pulse-slow {
+
 	0%,
 	100% {
 		opacity: 0.1;
@@ -908,15 +1074,19 @@ textarea::placeholder {
 		transform: translateX(-100%);
 		opacity: 0;
 	}
+
 	10% {
 		opacity: 0.5;
 	}
+
 	50% {
 		opacity: 1;
 	}
+
 	90% {
 		opacity: 0.5;
 	}
+
 	100% {
 		transform: translateX(100%);
 		opacity: 0;
@@ -932,17 +1102,21 @@ textarea::placeholder {
 		top: 0;
 		opacity: 0;
 	}
+
 	10% {
 		opacity: 1;
 	}
+
 	90% {
 		opacity: 1;
 	}
+
 	100% {
 		top: 100%;
 		opacity: 0;
 	}
 }
+
 .animate-scan-y {
 	animation: scan-y 3s linear infinite;
 }
@@ -953,16 +1127,19 @@ textarea::placeholder {
 		opacity: 0;
 		transform: scale(1.05);
 	}
+
 	50% {
 		filter: brightness(1.5) contrast(150%) blur(5px);
 		opacity: 0.8;
 	}
+
 	100% {
 		filter: brightness(1) contrast(100%) blur(0);
 		opacity: 1;
 		transform: scale(1);
 	}
 }
+
 .animate-noir-reveal {
 	animation: noir-reveal 1.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
 }
@@ -972,11 +1149,13 @@ textarea::placeholder {
 		transform: scale(1);
 		opacity: 0.3;
 	}
+
 	100% {
 		transform: scale(1.5);
 		opacity: 0;
 	}
 }
+
 .animate-ping-slow {
 	animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
@@ -989,6 +1168,7 @@ textarea::placeholder {
 	from {
 		transform: rotate(0deg);
 	}
+
 	to {
 		transform: rotate(360deg);
 	}
@@ -999,13 +1179,16 @@ textarea::placeholder {
 }
 
 @keyframes float {
+
 	0%,
 	100% {
 		transform: translateY(0) translateX(0);
 	}
+
 	33% {
 		transform: translateY(-15px) translateX(10px);
 	}
+
 	66% {
 		transform: translateY(-5px) translateX(-10px);
 	}

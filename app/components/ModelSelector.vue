@@ -306,13 +306,11 @@ const selectModel = (id: string) => {
 	isOpen.value = false
 
 	const model = modelStore.models.find((m) => `${m.provider}:${m.model}` === id)
-	console.log('model', model)
 
-	// Resolve capability
+	// Check all capability sources (model_input.capability + capabilities array)
 	const cap = getEffectiveCap(model)
-
-	const isImageCap = isImageMatch(cap)
-	const isVideoCap = isVideoMatch(cap)
+	const isImageCap = isImageMatch(cap) || model?.capabilities?.some(isImageMatch)
+	const isVideoCap = isVideoMatch(cap) || model?.capabilities?.some(isVideoMatch)
 	const currentRoute = route.name as string
 	const onImagePage = currentRoute === 'image-generation'
 	const onVideoPage = currentRoute === 'video-generation'
