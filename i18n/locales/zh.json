@@ -70,7 +70,7 @@
 		"projects": "项目",
 		"all_sessions": "所有会话",
 		"recent_chat": "最近对话",
-		"ai-bots": "AI 助手",
+		"ai-bots": "AI 智能体",
 		"ai-reading": "AI 阅读",
 		"ai-image": "AI 绘图",
 		"ai-video": "AI 视频",
@@ -323,5 +323,28 @@
 		"creating": "创建中...",
 		"save": "保存",
 		"create": "创建"
+	},
+	"explore": {
+		"title": "发现 AI 智能体",
+		"my_created": "我创建的",
+		"create_bot": "创建 AI 智能体",
+		"search_placeholder": "搜索智能体",
+		"tags": {
+			"all": "全部",
+			"work": "工作",
+			"study": "学习",
+			"creative": "创作",
+			"tech": "技术",
+			"life": "生活",
+			"emotion": "情感",
+			"business": "商业",
+			"tools": "工具"
+		},
+		"official_badge": "官方",
+		"by_author": "作者",
+		"no_description": "暂无详情",
+		"empty_state": "未找到相关的机器人",
+		"loading_more": "正在加载...",
+		"no_more": "已经到底了"
 	}
 }

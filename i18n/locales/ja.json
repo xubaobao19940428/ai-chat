@@ -318,10 +318,33 @@
 		"enter_name": "名前を入力",
 		"color": "色",
 		"icon": "アイコン",
-		"instructions": "指示（任意）",
+		"instructions": "指示（オプション）",
 		"saving": "保存中...",
 		"creating": "作成中...",
 		"save": "保存",
 		"create": "作成"
+	},
+	"explore": {
+		"title": "AIボットを探索",
+		"my_created": "作成済み",
+		"create_bot": "AIボットを作成",
+		"search_placeholder": "ボットを検索",
+		"tags": {
+			"all": "すべて",
+			"work": "仕事",
+			"study": "学習",
+			"creative": "創作",
+			"tech": "技術",
+			"life": "生活",
+			"emotion": "感情",
+			"business": "ビジネス",
+			"tools": "ツール"
+		},
+		"official_badge": "公式",
+		"by_author": "作成者",
+		"no_description": "説明はありません。",
+		"empty_state": "ボットが見つかりませんでした",
+		"loading_more": "読み込み中...",
+		"no_more": "これ以上はありません"
 	}
 }

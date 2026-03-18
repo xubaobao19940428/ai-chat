@@ -323,5 +323,28 @@
 		"creating": "Creating...",
 		"save": "Save",
 		"create": "Create"
+	},
+	"explore": {
+		"title": "Discover AI Bots",
+		"my_created": "My Created",
+		"create_bot": "Create AI Bot",
+		"search_placeholder": "Search bots",
+		"tags": {
+			"all": "All",
+			"work": "Work",
+			"study": "Study",
+			"creative": "Creative",
+			"tech": "Tech",
+			"life": "Life",
+			"emotion": "Emotion",
+			"business": "Business",
+			"tools": "Tools"
+		},
+		"official_badge": "Official",
+		"by_author": "By",
+		"no_description": "No description available.",
+		"empty_state": "No bots found",
+		"loading_more": "Loading...",
+		"no_more": "No more items"
 	}
 }

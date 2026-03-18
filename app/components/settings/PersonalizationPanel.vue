@@ -94,8 +94,8 @@
 						<div class="text-[15px] text-[var(--text-primary)]">{{ $t('settings.personalization_tab.ref_saved_mem') }}</div>
 						<div class="text-[14px] text-[var(--text-tertiary)] mt-1">{{ $t('settings.personalization_tab.ref_saved_mem_desc') }}</div>
 					</div>
-					<Switch v-model="personalization.ref_saved_mem" :class="personalization.ref_saved_mem ? 'bg-[#0f6fff]' : 'bg-[var(--border-dark)]'" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none shrink-0 mt-1">
-						<span :class="personalization.ref_saved_mem ? 'translate-x-6' : 'translate-x-1'" class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform" />
+					<Switch v-model="personalization.ref_saved_mem" :class="personalization.ref_saved_mem ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'" class="relative inline-flex h-4 w-7 items-center rounded-full transition-colors focus:outline-none shrink-0 mt-1">
+						<span :class="personalization.ref_saved_mem ? 'translate-x-3.5' : 'translate-x-0.5'" class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" />
 					</Switch>
 				</div>
 				<div class="flex items-start justify-between">
@@ -103,8 +103,8 @@
 						<div class="text-[15px] text-[var(--text-primary)]">{{ $t('settings.personalization_tab.ref_chat_history') }}</div>
 						<div class="text-[14px] text-[var(--text-tertiary)] mt-1">{{ $t('settings.personalization_tab.ref_chat_history_desc') }}</div>
 					</div>
-					<Switch v-model="personalization.ref_chat_history" :class="personalization.ref_chat_history ? 'bg-[#0f6fff]' : 'bg-[var(--border-dark)]'" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none shrink-0 mt-1">
-						<span :class="personalization.ref_chat_history ? 'translate-x-6' : 'translate-x-1'" class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform" />
+					<Switch v-model="personalization.ref_chat_history" :class="personalization.ref_chat_history ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'" class="relative inline-flex h-4 w-7 items-center rounded-full transition-colors focus:outline-none shrink-0 mt-1">
+						<span :class="personalization.ref_chat_history ? 'translate-x-3.5' : 'translate-x-0.5'" class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" />
 					</Switch>
 				</div>
 			</div>
@@ -128,8 +128,8 @@
 						<div class="text-[15px] text-[var(--text-primary)]">{{ $t(adv.labelKey) }}</div>
 						<div class="text-[14px] text-[var(--text-tertiary)] mt-1">{{ $t(adv.descKey) }}</div>
 					</div>
-					<Switch v-model="personalization[adv.key]" :class="personalization[adv.key] ? 'bg-[#0f6fff]' : 'bg-[var(--border-dark)]'" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none shrink-0 mt-1">
-						<span :class="personalization[adv.key] ? 'translate-x-6' : 'translate-x-1'" class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform" />
+					<Switch v-model="personalization[adv.key]" :class="personalization[adv.key] ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'" class="relative inline-flex h-4 w-7 items-center rounded-full transition-colors focus:outline-none shrink-0 mt-1">
+						<span :class="personalization[adv.key] ? 'translate-x-3.5' : 'translate-x-0.5'" class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" />
 					</Switch>
 				</div>
 			</div>

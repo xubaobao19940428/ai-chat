@@ -31,9 +31,7 @@
 					</div>
 				</Tooltip>
 				<div v-if="!uiStore.sidebarCollapsed" class="absolute right-0 top-0 bottom-0 flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-					<div class="text-[var(--text-tertiary)] text-sm inline-flex items-center gap-1 pe-[8px]">
-						⌘ K
-					</div>
+					<div class="text-[var(--text-tertiary)] text-sm inline-flex items-center gap-1 pe-[8px]">⌘ K</div>
 				</div>
 			</div>
 
@@ -329,7 +327,7 @@
 				<HandHeart :size="18" class="shrink-0" />
 			</button> -->
 
-				<div :class="['flex w-full p-[2px] transition-all', uiStore.sidebarCollapsed ? 'flex-col items-center justify-center gap-2' : 'items-center justify-between px-1']">
+			<div :class="['flex w-full p-[2px] transition-all', uiStore.sidebarCollapsed ? 'flex-col items-center justify-center gap-2' : 'items-center justify-between px-1']">
 				<!-- Expanded: User Profile -->
 				<div v-if="!uiStore.sidebarCollapsed" class="flex items-center gap-2.5 min-w-0 flex-1">
 					<div class="size-8 rounded-full bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[13px] font-bold text-[var(--text-primary)] uppercase shrink-0 border border-[var(--border-main)]">
@@ -774,7 +772,7 @@ const sidebarNavItems = ref([
 
 const moreItems = ref([
 	{ id: 'ai-bots', name: 'AI bots', icon: markRaw(Compass) },
-	{ id: 'ai-reading', name: 'AI Reading', icon: markRaw(BookOpen) },
+	// { id: 'ai-reading', name: 'AI Reading', icon: markRaw(BookOpen) },
 	{ id: 'ai-image', name: 'AI Image Generator', icon: markRaw(Image) },
 	{ id: 'ai-video', name: 'AI Video Generator', icon: markRaw(Video) },
 ])
@@ -802,15 +800,15 @@ const NAV_DEFS: Record<string, any> = {
 		},
 		iconClass: 'text-[var(--text-secondary)]',
 	},
-	'ai-reading': {
-		id: 'ai-reading',
-		label: 'AI Reading',
-		icon: markRaw(BookOpen),
-		handler: () => {
-			router.push('/ai-search')
-		},
-		iconClass: 'text-[var(--text-secondary)]',
-	},
+	// 'ai-reading': {
+	// 	id: 'ai-reading',
+	// 	label: 'AI Reading',
+	// 	icon: markRaw(BookOpen),
+	// 	handler: () => {
+	// 		router.push('/ai-search')
+	// 	},
+	// 	iconClass: 'text-[var(--text-secondary)]',
+	// },
 	'ai-image': {
 		id: 'ai-image',
 		label: 'AI Image Generator',
@@ -832,10 +830,9 @@ const NAV_DEFS: Record<string, any> = {
 }
 const MORE_DEFS: Record<string, any> = {
 	'ai-bots': { id: 'ai-bots', name: 'AI bots', icon: markRaw(Compass) },
-	'ai-reading': { id: 'ai-reading', name: 'AI Reading', icon: markRaw(BookOpen) },
+	// 'ai-reading': { id: 'ai-reading', name: 'AI Reading', icon: markRaw(BookOpen) },
 	'ai-image': { id: 'ai-image', name: 'AI Image Generator', icon: markRaw(Image) },
 	'ai-video': { id: 'ai-video', name: 'AI Video Generator', icon: markRaw(Video) },
-
 
 	library: { id: 'library', name: 'Library', icon: markRaw(Library) },
 }

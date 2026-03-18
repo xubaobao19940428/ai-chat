@@ -32,8 +32,8 @@
 						<div class="text-[15px] text-[var(--text-primary)]">{{ $t('settings.security_tab.authenticator_app') }}</div>
 						<div class="text-[14px] text-[var(--text-tertiary)] mt-1">{{ $t('settings.security_tab.authenticator_app_desc') }}</div>
 					</div>
-					<Switch v-model="security.authenticator" :class="security.authenticator ? 'bg-[#0f6fff]' : 'bg-[var(--border-dark)]'" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none shrink-0 mt-1">
-						<span :class="security.authenticator ? 'translate-x-6' : 'translate-x-1'" class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform" />
+					<Switch v-model="security.authenticator" :class="security.authenticator ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'" class="relative inline-flex h-4 w-7 items-center rounded-full transition-colors focus:outline-none shrink-0 mt-1">
+						<span :class="security.authenticator ? 'translate-x-3.5' : 'translate-x-0.5'" class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" />
 					</Switch>
 				</div>
 
@@ -43,8 +43,8 @@
 						<div class="text-[15px] text-[var(--text-primary)]">{{ $t('settings.security_tab.text_message') }}</div>
 						<div class="text-[14px] text-[var(--text-tertiary)] mt-1">{{ $t('settings.security_tab.text_message_desc') }}</div>
 					</div>
-					<Switch v-model="security.textMessage" :class="security.textMessage ? 'bg-[#0f6fff]' : 'bg-[var(--border-dark)]'" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none shrink-0 mt-1">
-						<span :class="security.textMessage ? 'translate-x-6' : 'translate-x-1'" class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform" />
+					<Switch v-model="security.textMessage" :class="security.textMessage ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'" class="relative inline-flex h-4 w-7 items-center rounded-full transition-colors focus:outline-none shrink-0 mt-1">
+						<span :class="security.textMessage ? 'translate-x-3.5' : 'translate-x-0.5'" class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" />
 					</Switch>
 				</div>
 			</div>

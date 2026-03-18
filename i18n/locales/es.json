@@ -315,7 +315,7 @@
 		"edit_project": "Editar proyecto",
 		"create_project": "Crear proyecto",
 		"project_name": "Nombre del proyecto",
-		"enter_name": "Introduce el nombre",
+		"enter_name": "Ingresa el nombre",
 		"color": "Color",
 		"icon": "Icono",
 		"instructions": "Instrucciones (opcional)",
@@ -323,5 +323,28 @@
 		"creating": "Creando...",
 		"save": "Guardar",
 		"create": "Crear"
+	},
+	"explore": {
+		"title": "Descubrir Bots de IA",
+		"my_created": "Mis creados",
+		"create_bot": "Crear Bot de IA",
+		"search_placeholder": "Buscar bots",
+		"tags": {
+			"all": "Todo",
+			"work": "Trabajo",
+			"study": "Estudio",
+			"creative": "Creativo",
+			"tech": "Tecnología",
+			"life": "Vida",
+			"emotion": "Emoción",
+			"business": "Negocios",
+			"tools": "Herramientas"
+		},
+		"official_badge": "Oficial",
+		"by_author": "Por",
+		"no_description": "No hay descripción disponible.",
+		"empty_state": "No se encontraron bots",
+		"loading_more": "Cargando...",
+		"no_more": "No hay más elementos"
 	}
 }

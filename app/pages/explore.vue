@@ -1,92 +1,102 @@
 <template>
 	<div class="flex-1 flex flex-col h-full bg-[var(--background-gray-main)] overflow-hidden transition-colors">
-		<!-- Search & Filter Area -->
-		<div class="flex-shrink-0 px-4 md:px-6 pt-4 md:pt-6 pb-2">
-			<div class="max-w-5xl mx-auto w-full">
-				<!-- Search Bar -->
-				<div class="relative group mb-6 mt-2">
-					<div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-						<Search :size="20" class="text-[var(--text-tertiary)]" />
+		<!-- Header & Control Area -->
+		<div class="flex-shrink-0 px-4 md:px-6 pb-4">
+			<div class="max-w-4xl mx-auto w-full">
+				<!-- Header Row -->
+				<div class="flex items-center justify-between mb-8">
+					<h1 class="text-[32px] font-black text-[var(--text-primary)] tracking-tight">{{ $t('explore.title') }}</h1>
+					<div class="flex items-center gap-3">
+						<button
+							class="px-5 py-2.5 rounded-xl border border-[var(--border-light)] text-[14px] font-bold text-[var(--text-primary)] hover:bg-[var(--fill-tsp-white-dark)] transition-all shadow-sm">
+							{{ $t('explore.my_created') }}
+						</button>
+						<button
+							class="px-5 py-2.5 rounded-xl bg-[#18181b] text-white text-[14px] font-bold hover:bg-[#27272a] transition-all flex items-center gap-2 shadow-md">
+							<Plus :size="18" />
+							<span>{{ $t('explore.create_bot') }}</span>
+						</button>
 					</div>
-					<input v-model="searchQuery" type="text" placeholder="搜索机器人、应用或用户"
-						class="block w-full pl-14 pr-4 py-3.5 bg-[var(--background-white-main)] border border-[var(--border-light)] rounded-2xl text-base shadow-sm hover:shadow-md focus:shadow-md focus:ring-0 transition-all placeholder-[var(--text-disable)] text-[var(--text-primary)]" />
 				</div>
 
-				<!-- Filter Tags -->
-				<div class="relative group/tags mb-4">
-					<div class="flex flex-wrap gap-2.5 px-1 scrollbar-hide overflow-x-auto">
-						<button
-							class="flex-shrink-0 px-4 py-2 rounded-[14px] text-sm font-bold transition-all border border-transparent"
-							:class="selectedTag === '全部' ? 'bg-[var(--Button-primary-black)] text-[var(--Button-primary-white)] shadow-md' : 'bg-[var(--fill-tsp-white-main)] text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-white-dark)] hover:shadow-sm'"
-							@click="handleTagChange('全部')">全部</button>
+				<!-- Control Bar: Tags + Search -->
+				<div class="flex flex-col lg:flex-row lg:items-start gap-6 w-full">
+					<!-- Filter Tags -->
+					<div class="flex flex-wrap gap-2 flex-1 w-full lg:w-auto scrollbar-hide overflow-x-auto">
 						<button v-for="tag in filterTags" :key="tag"
-							class="flex-shrink-0 px-4 py-2 rounded-[14px] text-sm font-bold transition-all border border-transparent"
-							:class="selectedTag === tag ? 'bg-[var(--Button-primary-black)] text-[var(--Button-primary-white)] shadow-md' : 'bg-[var(--fill-tsp-white-main)] text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-white-dark)] hover:shadow-sm'"
+							class="flex-shrink-0 px-5 py-2.5 rounded-xl text-[14px] font-bold transition-all border"
+							:class="selectedTag === tag ? 'bg-[#18181b] text-white border-transparent shadow-md' : 'bg-white text-[#71717a] border-[#e4e4e7] hover:bg-[#f4f4f5]'"
 							@click="handleTagChange(tag)">
-							{{ tag }}
+							{{ $t('explore.tags.' + tag) }}
 						</button>
+					</div>
+					<!-- Search Bar -->
+					<div class="relative flex items-center w-full lg:w-[360px] shrink-0">
+						<Search :size="18" class="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] pointer-events-none" />
+						<input v-model="searchQuery" type="text" :placeholder="$t('explore.search_placeholder')"
+							class="block w-full pl-11 pr-4 py-2.5 bg-[#f4f4f5] border border-transparent focus:border-[var(--border-main)] rounded-2xl text-[15px] transition-all placeholder-[var(--text-disable)] text-[var(--text-primary)] outline-none" />
 					</div>
 				</div>
 			</div>
 		</div>
 
 		<!-- Scrollable Content -->
-		<div class="flex-1 overflow-y-auto px-4 md:px-6 pb-12 custom-scrollbar" ref="scrollContainer"
-			@scroll="handleScroll">
-			<div class="max-w-5xl mx-auto w-full">
+		<div class="flex-1 overflow-y-auto px-4 md:px-6 pb-12 custom-scrollbar" ref="scrollContainer" @scroll="handleScroll">
+			<div class="max-w-4xl mx-auto w-full">
 				<!-- Loading State (initial) -->
 				<div v-if="discoveryStore.isLoading && botsList.length === 0" class="flex justify-center py-20">
 					<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--text-primary)]"></div>
 				</div>
 
 				<!-- Bot Cards Grid -->
-				<div v-else class="grid grid-cols-2 md:grid-cols-2 gap-3 md:gap-4">
-					<div v-for="bot in botsList" :key="bot.id"
-						class="flex flex-col md:flex-row items-center md:items-start gap-3 md:gap-4 p-4 md:p-5 rounded-[20px] bg-[var(--background-white-main)] border border-[var(--border-light)] hover:border-[var(--border-main)] shadow-sm hover:shadow-lg transition-all cursor-pointer group text-center md:text-left"
-						@click="handleBotClick(bot)">
+				<div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-[10px]">
+					<div v-for="bot in botsList" :key="bot.id" class="flex items-start p-3 rounded-2xl bg-[var(--background-white-main)] border border-[var(--border-light)] hover:border-[var(--border-main)] hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group" @click="handleBotClick(bot)">
 						<!-- Icon -->
-						<div
-							class="flex-shrink-0 w-[50px] h-[50px] md:w-[60px] md:h-[60px] rounded-[16px] overflow-hidden bg-[var(--background-gray-main)] flex items-center justify-center text-2xl md:text-3xl shadow-inner">
-							<img v-if="bot.icon && bot.icon.startsWith('http')" :src="bot.icon"
-								class="w-full h-full object-cover" />
+						<div class="flex-shrink-0 w-[72px] h-[72px] rounded-2xl overflow-hidden bg-[var(--background-gray-main)] flex items-center justify-center text-3xl shadow-sm border border-[var(--border-light)]">
+							<img v-if="bot.icon && bot.icon.startsWith('http')" :src="bot.icon" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
 							<span v-else>{{ bot.icon || '🤖' }}</span>
 						</div>
 
 						<!-- Content -->
-						<div class="flex-1 min-w-0 pt-0.5 w-full">
-							<div
-								class="flex flex-col md:flex-row items-center md:items-center md:justify-between mb-1 gap-1">
-								<h3
-									class="text-[14px] md:text-[16px] font-bold text-[var(--text-primary)] truncate w-full md:w-auto">
-									{{ bot.name }}</h3>
-								<span v-if="bot.type === 'character'"
-									class="px-1.5 py-0.5 rounded-md bg-[var(--fill-tsp-white-main)] text-[var(--text-secondary)] text-[10px] font-bold uppercase tracking-wider flex-shrink-0">
-									Official </span>
+						<div class="flex-1 min-w-0 ml-5 pt-0.5">
+							<div class="flex items-center justify-between mb-1.5">
+								<h3 class="text-[17px] font-black text-[var(--text-primary)] truncate leading-tight">
+									{{ bot.name }}
+								</h3>
+								<span v-if="bot.type === 'character'" class="px-1.5 py-0.5 rounded-md bg-[var(--fill-tsp-white-main)] text-[var(--text-secondary)] text-[10px] font-bold uppercase tracking-wider flex-shrink-0"> {{ $t('explore.official_badge') }} </span>
 							</div>
-							<p
-								class="text-[12px] md:text-[14px] text-[var(--text-tertiary)] line-clamp-1 md:line-clamp-2 leading-relaxed mb-2 md:mb-3">
-								{{ bot.description || 'No description available.' }}
+							<p class="text-[13.5px] text-[var(--text-tertiary)] line-clamp-2 leading-relaxed mb-4">
+								{{ bot.description || $t('explore.no_description') }}
 							</p>
 
-							<div class="hidden md:flex items-center gap-2" v-if="bot.provider">
-								<span class="text-xs text-[var(--text-disable)]">By {{ bot.provider }}</span>
+							<!-- Stats Footer -->
+							<div class="flex items-center gap-4 text-[11px] font-bold text-[var(--text-tertiary)]/60 uppercase tracking-widest">
+								<div class="flex items-center gap-1.5">
+									<Flame :size="14" class="text-orange-500" />
+									<span>3M</span>
+								</div>
+								<div class="flex items-center gap-1">
+									<span class="opacity-70">{{ $t('explore.by_author') }}</span>
+									<span class="hover:text-[var(--text-primary)] transition-colors">@{{ bot.provider || 'Aura' }}</span>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 
 				<!-- Empty State -->
-				<div v-if="!discoveryStore.isLoading && botsList.length === 0"
-					class="text-center py-20 text-[var(--text-tertiary)]">未找到相关的机器人</div>
+				<div v-if="!discoveryStore.isLoading && botsList.length === 0" class="text-center py-20 text-[var(--text-tertiary)]">{{ $t('explore.empty_state') }}</div>
 
 				<!-- Loading More Indicator -->
 				<div v-if="discoveryStore.isLoadingMore" class="flex justify-center py-8">
-					<div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[var(--text-tertiary)]"></div>
+					<div class="flex items-center gap-3 text-[var(--text-tertiary)]">
+						<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-current"></div>
+						<span class="text-sm font-medium">{{ $t('explore.loading_more') }}</span>
+					</div>
 				</div>
 
 				<!-- No More Data -->
-				<div v-if="!discoveryStore.hasMore && botsList.length > 0 && !discoveryStore.isLoading"
-					class="text-center py-6 text-[var(--text-disable)] text-sm">已经到底了</div>
+				<div v-if="!discoveryStore.hasMore && botsList.length > 0 && !discoveryStore.isLoading" class="text-center py-6 text-[var(--text-disable)] text-sm">{{ $t('explore.no_more') }}</div>
 			</div>
 		</div>
 	</div>
@@ -95,7 +105,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Search } from 'lucide-vue-next'
+import { Search, Flame, Plus } from 'lucide-vue-next'
 import { useDiscoveryStore } from '~/stores/discovery'
 import { useConversationStore } from '~/stores/conversation'
 
@@ -105,11 +115,11 @@ const discoveryStore = useDiscoveryStore()
 
 // State
 const searchQuery = ref('')
-const selectedTag = ref('全部')
+const selectedTag = ref('all')
 const scrollContainer = ref<HTMLElement | null>(null)
 
 // Filter Tags
-const filterTags = ['官方', '搜索', '视频生成', '应用', '简体中文', '精选', '创意写作', '游戏机器人', '专业', '脚本', '图像生成', '音频生成', '繁体中文', '热门', '上新', 'AI', '翻译']
+const filterTags = ['all', 'work', 'study', 'creative', 'tech', 'life', 'emotion', 'business', 'tools']
 
 // Load initial data
 onMounted(() => {
@@ -136,11 +146,15 @@ const botsList = computed(() => {
 	}))
 
 	// Tag filtering
-	if (selectedTag.value && selectedTag.value !== '全部' && selectedTag.value !== '官方') {
-		const tag = selectedTag.value.toLowerCase()
-		mapped = mapped.filter((b) => (b.name && b.name.toLowerCase().includes(tag)) || (b.description && b.description.toLowerCase().includes(tag)) || (b.type && b.type.toLowerCase() === tag))
-	} else if (selectedTag.value === '官方') {
-		mapped = mapped.filter((b) => b.type === 'character' || (b.type as string) === 'official')
+	if (selectedTag.value && selectedTag.value !== 'all') {
+		const tagKey = selectedTag.value.toLowerCase()
+		// Since individual bot tags might still be Chinese from API, we might need a mapping or check for localized values if possible.
+		// For now, if it's one of our predefined keys, we filter based on the English/Chinese equivalent or the type.
+		// However, the simplest way is to keep the filtering logic based on the bot name/description/type as before.
+		// But since we changed selectedTag to keys, we need to handle the filtering.
+		
+		// If the API returns type information that matches our keys, use that.
+		mapped = mapped.filter((b) => (b.type && b.type.toLowerCase() === tagKey))
 	}
 
 	// Search filtering

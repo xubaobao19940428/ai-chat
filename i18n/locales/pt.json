@@ -323,5 +323,28 @@
 		"creating": "Criando...",
 		"save": "Salvar",
 		"create": "Criar"
+	},
+	"explore": {
+		"title": "Descobrir Bots de IA",
+		"my_created": "Meus criados",
+		"create_bot": "Criar Bot de IA",
+		"search_placeholder": "Pesquisar bots",
+		"tags": {
+			"all": "Tudo",
+			"work": "Trabalho",
+			"study": "Estudo",
+			"creative": "Criativo",
+			"tech": "Tecnologia",
+			"life": "Vida",
+			"emotion": "Emoção",
+			"business": "Negócios",
+			"tools": "Ferramentas"
+		},
+		"official_badge": "Oficial",
+		"by_author": "Por",
+		"no_description": "Nenhuma descrição disponível.",
+		"empty_state": "Nenhum bot encontrado",
+		"loading_more": "Carregando...",
+		"no_more": "Sem mais itens"
 	}
 }

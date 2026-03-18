@@ -323,5 +323,28 @@
 		"creating": "Wird erstellt...",
 		"save": "Speichern",
 		"create": "Erstellen"
+	},
+	"explore": {
+		"title": "KI-Bots entdecken",
+		"my_created": "Meine erstellten",
+		"create_bot": "KI-Bot erstellen",
+		"search_placeholder": "Bots suchen",
+		"tags": {
+			"all": "Alle",
+			"work": "Arbeit",
+			"study": "Studium",
+			"creative": "Kreativ",
+			"tech": "Tech",
+			"life": "Leben",
+			"emotion": "Emotion",
+			"business": "Business",
+			"tools": "Werkzeuge"
+		},
+		"official_badge": "Offiziell",
+		"by_author": "Von",
+		"no_description": "Keine Beschreibung verfügbar.",
+		"empty_state": "Keine Bots gefunden",
+		"loading_more": "Wird geladen...",
+		"no_more": "Keine weiteren Elemente"
 	}
 }

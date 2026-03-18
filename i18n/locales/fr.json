@@ -323,5 +323,28 @@
 		"creating": "Création...",
 		"save": "Enregistrer",
 		"create": "Créer"
+	},
+	"explore": {
+		"title": "Découvrir les Bots IA",
+		"my_created": "Mes créations",
+		"create_bot": "Créer un Bot IA",
+		"search_placeholder": "Rechercher des bots",
+		"tags": {
+			"all": "Tout",
+			"work": "Travail",
+			"study": "Études",
+			"creative": "Créativité",
+			"tech": "Tech",
+			"life": "Vie",
+			"emotion": "Émotion",
+			"business": "Affaires",
+			"tools": "Outils"
+		},
+		"official_badge": "Officiel",
+		"by_author": "Par",
+		"no_description": "Aucune description disponible.",
+		"empty_state": "Aucun bot trouvé",
+		"loading_more": "Chargement...",
+		"no_more": "Plus d'éléments"
 	}
 }
