@@ -6,24 +6,33 @@
 			</TransitionChild>
 
 			<div class="fixed inset-0 overflow-y-auto">
-				<div class="flex min-h-full items-center justify-center p-4 text-center">
+				<div class="flex min-h-full items-center justify-center p-0 md:p-4 text-center">
 					<TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95" enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
-						<DialogPanel class="w-full max-w-[920px] transform overflow-hidden rounded-[20px] bg-[var(--background-gray-main)] border border-[var(--border-main)] text-left align-middle shadow-[var(--shadow-XL)] transition-all flex flex-col md:flex-row h-[min(672px,calc(100vh-82px))]">
+						<DialogPanel class="w-full max-w-[920px] transform overflow-hidden rounded-none md:rounded-[20px] bg-[var(--background-gray-main)] border-none md:border border-[var(--border-main)] text-left align-middle shadow-[var(--shadow-XL)] transition-all flex flex-col md:flex-row h-screen md:h-[min(672px,calc(100vh-82px))]">
 							<!-- Sidebar -->
-							<SettingsSidebar :model-value="activeItem" :menu-items="menuItems" @select="activeItem = $event" />
+							<SettingsSidebar v-if="!activeItem || !isMobile" :model-value="activeItem" :menu-items="menuItems" @select="activeItem = $event" />
 
 							<!-- Content -->
-							<div class="flex-1 flex flex-col bg-[var(--background-white-main)] relative overflow-hidden">
-								<!-- Close Button -->
-								<div class="absolute top-[20px] right-[12px] z-20">
+							<div v-if="activeItem || !isMobile" class="flex-1 flex flex-col bg-[var(--background-white-main)] relative overflow-hidden">
+								<!-- Close Button (Desktop) -->
+								<div class="absolute top-[20px] right-[12px] z-20 hidden md:block">
 									<button @click="uiStore.closeSettingsModal" class="flex h-7 w-7 items-center justify-center rounded-md hover:bg-[var(--fill-tsp-gray-main)] text-[var(--icon-tertiary)] hover:text-[var(--text-primary)]">
 										<X :size="20" />
 									</button>
 								</div>
 
 								<!-- Header -->
-								<div class="gap-1 items-center px-6 py-5 hidden md:flex self-stretch border-b border-[var(--border-main)]">
-									<h3 class="text-[18px] font-semibold leading-7 text-[var(--text-primary)]">{{ menuItems.find((i) => i.value === activeItem)?.name || activeItem }}</h3>
+								<div class="gap-1 items-center px-4 md:px-6 py-4 md:py-5 flex self-stretch border-b border-[var(--border-main)]">
+									<!-- Back Button (Mobile) -->
+									<button v-if="isMobile" @click="activeItem = ''" class="mr-2 p-1 rounded-md hover:bg-[var(--fill-tsp-gray-main)] text-[var(--icon-tertiary)]">
+										<ChevronLeft :size="24" />
+									</button>
+									<h3 class="text-[17px] md:text-[18px] font-semibold leading-7 text-[var(--text-primary)] flex-1">{{ menuItems.find((i) => i.value === activeItem)?.name || activeItem }}</h3>
+									
+									<!-- Close Button (Mobile) -->
+									<button v-if="isMobile" @click="uiStore.closeSettingsModal" class="p-1 rounded-md hover:bg-[var(--fill-tsp-gray-main)] text-[var(--icon-tertiary)]">
+										<X :size="24" />
+									</button>
 								</div>
 
 								<!-- Scrollable Content -->
@@ -49,9 +58,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Dialog, DialogPanel, TransitionRoot, TransitionChild } from '@headlessui/vue'
-import { User, SlidersHorizontal, BarChart3, CreditCard, Database, LayoutGrid, Shield, X } from 'lucide-vue-next'
+import { User, SlidersHorizontal, BarChart3, CreditCard, Database, LayoutGrid, Shield, X, ChevronLeft } from 'lucide-vue-next'
 import { useUIStore } from '../stores/ui'
 import BuyVipDialog from './BuyVipDialog.vue'
 import SettingsSidebar from './settings/SettingsSidebar.vue'
@@ -67,6 +76,26 @@ const uiStore = useUIStore()
 const { t } = useI18n()
 const activeItem = ref('Account')
 const showVipModal = ref(false)
+
+// Mobile Detection
+const windowWidth = ref(0)
+const isMobile = computed(() => windowWidth.value < 768)
+
+const updateWidth = () => {
+	windowWidth.value = window.innerWidth
+}
+
+onMounted(() => {
+	updateWidth()
+	window.addEventListener('resize', updateWidth)
+	if (isMobile.value) {
+		activeItem.value = ''
+	}
+})
+
+onUnmounted(() => {
+	window.removeEventListener('resize', updateWidth)
+})
 
 const menuItems = computed(() => [
 	{ name: t('common.account'), icon: User, value: 'Account' },

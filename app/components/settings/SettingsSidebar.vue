@@ -1,7 +1,7 @@
 <template>
-	<div class="md:w-[221px] flex-shrink-0 border-r border-[var(--border-main)] relative flex flex-col bg-[var(--background-gray-main)]">
-		<!-- Logo -->
-		<div class="items-center px-5 pt-5 pb-3 flex">
+	<div class="w-full md:w-[221px] flex-shrink-0 md:border-r border-[var(--border-main)] relative flex flex-col bg-[var(--background-gray-main)]">
+		<!-- Logo (Desktop only) -->
+		<div class="items-center px-5 pt-5 pb-3 hidden md:flex">
 			<div class="flex gap-0.5 text-black dark:text-white">
 				<div class="flex items-center size-8 justify-center shrink-0">
 					<img src="/favicon.svg" class="size-6 pointer-events-none" alt="Aura Logo" />
