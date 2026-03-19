@@ -26,3 +26,7 @@ export interface DiscoveryGroup {
 export const getDiscovery = (params: { placement?: string, tag?: string, country_code?: string, page?: number, page_size?: number, item_limit?: number } = {}) => {
   return request.get('/v1/discovery', { params })
 }
+
+export const getDiscoveryItems = (id: number, params: { page?: number, page_size?: number } = {}) => {
+  return request.get(`/v1/discovery/${id}/items`, { params })
+}

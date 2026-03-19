@@ -336,7 +336,8 @@
 			"film": "Film & Storyboard",
 			"lifestyle": "Lifestyle / Nature",
 			"scifi": "Sci-Fi / Future",
-			"ui": "UI / Interface"
+			"ui": "UI / Interface",
+			"uncategorized": "Uncategorized"
 		}
 	},
 	"video_generation": {
@@ -348,7 +349,8 @@
 			"chinese_fantasy": "Chinese Fantasy",
 			"scifi_action": "Sci-Fi Action",
 			"anime_game": "Anime & Gaming",
-			"healing": "Lifestyle & Healing"
+			"healing": "Lifestyle & Healing",
+			"uncategorized": "Uncategorized"
 		}
 	},
 	"explore": {
@@ -365,7 +367,8 @@
 			"life": "Life",
 			"emotion": "Emotion",
 			"business": "Business",
-			"tools": "Tools"
+			"tools": "Tools",
+			"uncategorized": "Uncategorized"
 		},
 		"official_badge": "Official",
 		"by_author": "By",

@@ -336,7 +336,8 @@
 			"film": "影片与分镜",
 			"lifestyle": "生活方式/自然",
 			"scifi": "科技/未来",
-			"ui": "UI/界面"
+			"ui": "UI/界面",
+			"uncategorized": "未分类"
 		}
 	},
 	"video_generation": {
@@ -348,7 +349,8 @@
 			"chinese_fantasy": "国风玄幻",
 			"scifi_action": "科幻动作",
 			"anime_game": "动漫游戏",
-			"healing": "生活治愈"
+			"healing": "生活治愈",
+			"uncategorized": "未分类"
 		}
 	},
 	"explore": {
@@ -365,7 +367,8 @@
 			"life": "生活",
 			"emotion": "情感",
 			"business": "商业",
-			"tools": "工具"
+			"tools": "工具",
+			"uncategorized": "未分类"
 		},
 		"official_badge": "官方",
 		"by_author": "作者",

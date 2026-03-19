@@ -1,10 +1,7 @@
 <template>
 	<div class="flex-1 flex flex-col h-full bg-[var(--bg-main)] overflow-hidden relative transition-colors">
 		<!-- Top Header Bar -->
-		<header class="flex-shrink-0 flex items-center justify-between px-4 h-[52px] border-b border-[var(--border-light)] bg-[var(--bg-main)]/80 backdrop-blur-md z-20">
-			<button @click="router.back()" class="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-lg transition-colors">
-				<ArrowLeft :size="18" />
-			</button>
+		<header class="flex-shrink-0 flex items-center justify-end px-4 h-[52px] border-b border-[var(--border-light)] bg-[var(--bg-main)]/80 backdrop-blur-md z-20">
 			<button @click="handleShare" class="p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors">
 				<Share2 :size="16" />
 			</button>
@@ -18,98 +15,16 @@
 		<!-- Error -->
 		<div v-else-if="!character" class="flex-1 flex flex-col items-center justify-center gap-4">
 			<p class="text-[var(--text-tertiary)] text-sm">Character not found.</p>
-			<button @click="router.back()" class="px-5 py-2 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-lg text-sm font-semibold">
-				Go back
-			</button>
+			<button @click="handleGoBack" class="px-5 py-2 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-lg text-sm font-semibold">Go back</button>
 		</div>
 
 		<!-- Content -->
-		<div v-else class="flex-1 overflow-hidden flex flex-col md:flex-row">
-			<!-- Sidebar: Character Info -->
-			<aside class="w-full md:w-[300px] lg:w-[336px] md:h-full border-r border-[var(--border-light)] bg-[var(--bg-main)] flex-shrink-0 flex flex-col">
-				<!-- Profile Header (non-scrolling) -->
-				<div class="px-5 pt-5 pb-4 flex-shrink-0">
-					<div class="flex items-center gap-3.5 mb-4">
-						<!-- Avatar -->
-						<div class="w-[52px] h-[52px] rounded-xl overflow-hidden bg-[var(--fill-tsp-white-main)] flex-shrink-0 border border-[var(--border-light)]">
-							<img v-if="character.avatar" :src="character.avatar" class="w-full h-full object-cover" />
-							<div v-else class="w-full h-full flex items-center justify-center text-[var(--text-tertiary)]">
-								<Bot :size="22" />
-							</div>
-						</div>
-						<!-- Name & Meta -->
-						<div class="min-w-0 flex-1">
-							<h1 class="text-[15px] font-bold text-[var(--text-primary)] leading-tight truncate">{{ character.name }}</h1>
-							<div class="flex items-center gap-1.5 mt-1">
-								<span class="text-[11px] text-[var(--text-tertiary)] truncate">{{ character.related_data?.provider || 'AI' }}</span>
-								<span class="w-[3px] h-[3px] rounded-full bg-[var(--text-disable)] flex-shrink-0"></span>
-								<Cpu :size="10" class="text-[var(--text-disable)] flex-shrink-0" />
-								<span class="text-[11px] text-[var(--text-tertiary)] truncate">{{ character.model_id || 'GPT-4o mini' }}</span>
-							</div>
-						</div>
-					</div>
-
-					<!-- Start Chat Button -->
-					<button @click="handleStartChat" class="w-full flex items-center justify-center gap-2 py-2.5 rounded-[10px] bg-[var(--text-primary)] text-[var(--bg-main)] text-[13px] font-semibold hover:opacity-90 transition-opacity">
-						<MessagesSquare :size="14" />
-						Start Chat
-					</button>
-				</div>
-
-				<!-- Tabs (sticky, outside scroll) -->
-				<div class="flex-shrink-0 flex items-center gap-1 border-b border-[var(--border-light)] px-3">
-					<button v-for="tab in tabs" :key="tab.key" @click="activeTab = tab.key"
-						class="relative flex items-center gap-1.5 px-2.5 py-2.5 text-[12px] font-medium transition-colors"
-						:class="activeTab === tab.key ? 'text-[var(--text-primary)]' : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]'">
-						<component :is="tab.icon" :size="13" />
-						{{ tab.label }}
-						<div v-if="activeTab === tab.key" class="absolute bottom-0 left-1 right-1 h-[2px] bg-[var(--text-primary)] rounded-full"></div>
-					</button>
-				</div>
-
-				<!-- Tab Content (scrollable) -->
-				<div class="flex-1 overflow-y-auto custom-scrollbar px-5 py-4">
-					<!-- Info Tab -->
-					<div v-if="activeTab === 'info'" class="animate-in fade-in duration-200">
-						<p class="text-[var(--text-secondary)] text-[13px] leading-relaxed" :class="{ 'line-clamp-6': !descExpanded }">
-							{{ character.description || 'No description available.' }}
-						</p>
-						<button v-if="character.description && character.description.length > 200"
-							@click="descExpanded = !descExpanded"
-							class="text-[var(--text-blue)] text-xs mt-2 font-medium hover:underline">
-							{{ descExpanded ? 'Show less' : 'Show more' }}
-						</button>
-					</div>
-
-					<!-- Welcome Tab -->
-					<div v-if="activeTab === 'welcome'" class="animate-in fade-in duration-200">
-						<div v-if="character.welcome" class="p-4 rounded-xl bg-[var(--bg-hover)] text-[var(--text-secondary)] text-[13px] leading-relaxed italic border border-[var(--border-light)]">
-							"{{ character.welcome }}"
-						</div>
-						<div v-else class="text-[var(--text-disable)] text-xs py-10 text-center">No welcome message set.</div>
-					</div>
-
-					<!-- API Tab -->
-					<div v-if="activeTab === 'api'" class="animate-in fade-in duration-200">
-						<div class="p-3.5 rounded-xl bg-[var(--bg-hover)] border border-[var(--border-light)] font-mono text-[11px] text-[var(--text-secondary)] space-y-3">
-							<div>
-								<div class="text-[var(--text-tertiary)] font-semibold mb-1">ID</div>
-								<div class="break-all">{{ character.id }}</div>
-							</div>
-							<div>
-								<div class="text-[var(--text-tertiary)] font-semibold mb-1">Endpoint</div>
-								<div class="text-[var(--text-blue)]">POST /v1/chat</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</aside>
-
+		<div v-else class="flex-1 overflow-hidden flex flex-col">
 			<!-- Main: Chat -->
 			<main class="flex-1 flex flex-col h-full bg-[var(--bg-main)] relative overflow-hidden">
 				<!-- Messages -->
 				<div class="flex-1 overflow-y-auto custom-scrollbar px-5 pb-36 pt-6" ref="scrollContainer">
-					<div class="max-w-[720px] mx-auto w-full">
+					<div class="max-w-[1100px] mx-auto w-full">
 						<!-- Date Separator -->
 						<div class="flex items-center gap-3 mb-8">
 							<div class="flex-1 h-px bg-[var(--border-light)] opacity-40"></div>
@@ -117,40 +32,60 @@
 							<div class="flex-1 h-px bg-[var(--border-light)] opacity-40"></div>
 						</div>
 
-						<!-- Welcome message (pre-conversation) -->
-						<div v-if="welcomeMessage && !conversationId" class="flex gap-3 mb-6">
-							<div class="flex-shrink-0 mt-0.5">
-								<div class="w-7 h-7 rounded-full flex items-center justify-center overflow-hidden bg-[var(--fill-tsp-white-main)] border border-[var(--border-light)]">
+						<div v-if="!conversationId" class="flex flex-col items-start pt-12 pb-16 animate-in fade-in slide-in-from-bottom-6 duration-700">
+							<!-- Character Header: Avatar + Info -->
+							<div class="flex items-center gap-7 mb-6 w-full">
+								<div class="w-[100px] h-[100px] rounded-[32px] overflow-hidden bg-[var(--fill-tsp-white-main)] shadow-xl border-4 border-white flex-shrink-0">
 									<img v-if="character.avatar" :src="character.avatar" class="w-full h-full object-cover" />
-									<Bot v-else :size="14" class="text-[var(--text-secondary)]" />
+									<div v-else class="w-full h-full flex items-center justify-center text-4xl">🤖</div>
+								</div>
+								<div class="flex flex-col gap-1.5 text-left">
+									<h1 class="text-[32px] font-black text-[var(--text-primary)] leading-none tracking-tight">{{ character.name }}</h1>
 								</div>
 							</div>
-							<div class="text-[var(--text-primary)] text-[14px] leading-relaxed">
-								<div class="prose dark:prose-invert prose-neutral max-w-none break-words" v-html="renderMarkdown(welcomeMessage)"></div>
+
+							<!-- Description -->
+							<div class="mb-8 w-full">
+								<p class="text-[17px] text-[var(--text-secondary)] leading-relaxed font-medium opacity-90 text-left">
+									{{ character.description }}
+								</p>
+							</div>
+
+							<!-- Suggested Questions (Follow-up Style) -->
+							<div class="flex flex-col gap-2 w-full max-w-[600px]">
+								<button v-for="(q, idx) in ['你能帮我分析一下最近的数据吗？', '多种条件怎么求和？', '写一个关于职场成长的建议列表', '帮我写一个工作总结模板']" :key="idx" @click="handleSuggestedQuestionClick(q)" class="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.07] dark:hover:bg-white/[0.1] text-[14px] text-[var(--text-primary)] text-left transition-colors group/fq">
+									<span>{{ q }}</span>
+									<span class="text-[var(--text-tertiary)] group-hover/fq:text-[var(--text-secondary)] shrink-0 transition-colors">→</span>
+								</button>
 							</div>
 						</div>
 
+						<!-- First Welcome Bubble (Logic Preservation) -->
+						<div v-if="welcomeMessage && !conversationId" class="hidden">
+							<!-- Kept hidden to preserve logic while allowing splash screen to take center stage -->
+						</div>
+
 						<!-- Store messages -->
-						<div class="space-y-6">
-							<div v-for="message in storeMessages" :key="message.id" class="flex gap-3 group"
-								:class="message.role === 'user' ? 'flex-row-reverse' : ''">
-								<!-- Avatar -->
-								<div class="flex-shrink-0 mt-0.5">
-									<div class="w-7 h-7 rounded-full flex items-center justify-center overflow-hidden"
-										:class="message.role === 'user' ? 'bg-[var(--text-primary)]' : 'bg-[var(--fill-tsp-white-main)] border border-[var(--border-light)]'">
-										<img v-if="message.role === 'assistant' && character.avatar" :src="character.avatar" class="w-full h-full object-cover" />
-										<Bot v-else-if="message.role === 'assistant'" :size="14" class="text-[var(--text-secondary)]" />
-										<UserIcon v-else :size="13" class="text-[var(--bg-main)]" />
+						<div class="space-y-10">
+							<div v-for="message in storeMessages" :key="message.id" class="flex gap-4 group" :class="message.role === 'user' ? 'flex-row-reverse' : ''">
+								<div class="flex-shrink-0 mt-1">
+									<div class="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden bg-[var(--bg-main)] border border-[var(--border-light)] shadow-sm">
+										<template v-if="message.role === 'assistant'">
+											<img v-if="character.avatar" :src="character.avatar" class="w-full h-full object-cover" />
+											<Bot v-else :size="14" class="text-[var(--text-secondary)]" />
+										</template>
+										<template v-else>
+											<img :src="userStore.userInfo?.avatar || '/logo.png'" class="w-full h-full object-cover p-0.5" />
+										</template>
 									</div>
 								</div>
 								<!-- Bubble -->
 								<div class="flex flex-col max-w-[85%] sm:max-w-[78%]" :class="message.role === 'user' ? 'items-end' : 'items-start'">
-									<div v-if="message.role === 'user'"
-										class="bg-[var(--bg-chat-bubble-user)] text-[var(--text-primary)] px-4 py-2.5 rounded-[18px] text-[14px] leading-relaxed border border-[var(--border-light)]">
+									<div v-if="message.role === 'user'" class="bg-[var(--bg-chat-bubble-user)] text-[var(--text-primary)] px-5 py-2.5 rounded-[24px] text-[15px] font-medium leading-relaxed border border-[var(--border-light)] shadow-sm">
 										<div class="whitespace-pre-wrap break-words">{{ message.content }}</div>
 									</div>
-									<div v-else class="text-[var(--text-primary)] text-[14px] leading-relaxed break-words">
-										<div v-if="!message.content && isStreaming" class="flex space-x-1 py-2">
+									<div v-else class="text-[var(--text-primary)] text-[15px] leading-relaxed break-words">
+										<div v-if="!message.content && isStreaming" class="flex space-x-1.5 py-2">
 											<div class="w-1.5 h-1.5 bg-[var(--text-disable)] rounded-full animate-bounce" style="animation-delay: 0s"></div>
 											<div class="w-1.5 h-1.5 bg-[var(--text-disable)] rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
 											<div class="w-1.5 h-1.5 bg-[var(--text-disable)] rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
@@ -167,21 +102,17 @@
 					</div>
 				</div>
 
-				<!-- Floating Input -->
-				<div class="absolute bottom-5 left-0 right-0 z-50 px-4 pointer-events-none">
-					<div class="max-w-[720px] mx-auto pointer-events-auto">
-						<div class="bg-[var(--bg-main)]/95 backdrop-blur-md rounded-[20px] shadow-xl border border-[var(--border-light)] focus-within:border-[var(--border-main)] transition-colors p-1.5">
-							<div class="flex items-end gap-2">
-								<textarea v-model="inputMessage" placeholder="Message the character..."
-									class="flex-1 bg-transparent border-none outline-none text-[14px] leading-relaxed px-3 py-2 text-[var(--text-primary)] placeholder-[var(--text-tertiary)] resize-none max-h-[120px] min-h-[36px]"
-									rows="1" @keydown="handleKeydown" @input="autoResize" ref="inputArea"></textarea>
-								<button v-if="isStreaming" @click="stopStreaming"
-									class="flex-shrink-0 mb-1.5 flex items-center justify-center w-7 h-7 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full transition-transform active:scale-90">
-									<Square :size="10" fill="currentColor" />
-								</button>
-								<button v-else @click="sendMessage" :disabled="!inputMessage.trim()"
-									class="flex-shrink-0 mb-1.5 flex items-center justify-center w-7 h-7 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full transition-transform active:scale-90 disabled:opacity-25">
-									<ArrowUp :size="14" :stroke-width="2.5" />
+				<!-- Floating Input Area -->
+				<div class="flex-shrink-0 px-4 pb-8 pt-2 absolute bottom-0 left-0 right-0 z-50 pointer-events-none">
+					<div class="max-w-[840px] mx-auto relative pointer-events-auto">
+						<div class="bg-[var(--bg-main)] rounded-[24px] border border-[var(--border-light)] py-3 px-2 shadow-[0_12px_44px_rgba(0,0,0,0.08)] flex flex-col gap-3 transition-all duration-300 focus-within:border-[var(--border-main)]">
+							<div class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 w-full text-[var(--text-primary)] placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[56px] max-h-[216px] custom-scrollbar">
+								<div ref="inputRef" contenteditable="true" class="w-full outline-none font-normal" :data-placeholder="character?.welcome || '发消息...'" @input="handleInput" @keydown.enter="handleEnterKey" @paste="handlePaste"></div>
+							</div>
+							<div class="flex items-center justify-end px-2">
+								<button @click="sendMessage" :disabled="!inputMessage.trim() || isStreaming" class="flex items-center justify-center size-8 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] hover:opacity-90 transition-all disabled:opacity-30 disabled:pointer-events-none">
+									<ArrowUp v-if="!isStreaming" :size="18" stroke-width="2.5" />
+									<Square v-else :size="14" fill="currentColor" />
 								</button>
 							</div>
 						</div>
@@ -195,15 +126,13 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick, markRaw, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import {
-	ArrowLeft, ArrowUp, MessagesSquare, Share2, Square,
-	User as UserIcon, Info, Code, ThumbsUp, Cpu, Bot,
-} from 'lucide-vue-next'
+import { ArrowUp, Share2, Square, User as UserIcon, Info, Code, ThumbsUp, Bot } from 'lucide-vue-next'
 import { getCharacterDetail, type Character } from '~/api/character'
 import { fetchChatStream } from '~/utils/api'
 import { renderMarkdown } from '~/utils/markdown'
 import { useConversationStore } from '~/stores/conversation'
 import { useUIStore } from '~/stores/ui'
+import { useUserStore } from '~/stores/user'
 
 definePageMeta({ hideTopBar: true })
 
@@ -211,6 +140,7 @@ const route = useRoute()
 const router = useRouter()
 const conversationStore = useConversationStore()
 const uiStore = useUIStore()
+const userStore = useUserStore()
 
 // State
 const character = ref<Character | null>(null)
@@ -218,7 +148,7 @@ const isLoadingCharacter = ref(true)
 const inputMessage = ref('')
 const isStreaming = ref(false)
 const scrollContainer = ref<HTMLElement | null>(null)
-const inputArea = ref<HTMLTextAreaElement | null>(null)
+const inputRef = ref<HTMLDivElement | null>(null) // Changed from inputArea to inputRef and type to HTMLDivElement
 const conversationId = ref<number | string | null>(null)
 const welcomeMessage = ref<string>('')
 const activeTab = ref('info')
@@ -234,7 +164,7 @@ const tabs = [
 // Derive messages from the store for the current conversation
 const storeMessages = computed(() => {
 	if (!conversationId.value) return []
-	const conv = conversationStore.conversations.find(c => String(c.id) === String(conversationId.value))
+	const conv = conversationStore.conversations.find((c) => String(c.id) === String(conversationId.value))
 	return conv?.messages || []
 })
 
@@ -245,18 +175,30 @@ const formatTime = (timestamp?: number) => {
 	return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-const autoResize = () => {
-	if (inputArea.value) {
-		inputArea.value.style.height = 'auto'
-		inputArea.value.style.height = inputArea.value.scrollHeight + 'px'
-	}
+const handleInput = (e: Event) => {
+	const target = e.target as HTMLDivElement
+	inputMessage.value = target.innerText
 }
 
-const handleKeydown = (e: KeyboardEvent) => {
-	if (e.key === 'Enter' && !e.shiftKey) {
-		e.preventDefault()
-		sendMessage()
-	}
+const handlePaste = (e: ClipboardEvent) => {
+	e.preventDefault()
+	const text = e.clipboardData?.getData('text/plain') || ''
+	document.execCommand('insertText', false, text)
+}
+
+const handleEnterKey = (e: KeyboardEvent) => {
+	if (e.shiftKey) return
+	e.preventDefault()
+	sendMessage()
+}
+
+const handleGoBack = () => {
+	router.back()
+}
+
+const handleSuggestedQuestionClick = (q: string) => {
+	inputMessage.value = q
+	sendMessage()
 }
 
 const scrollToBottom = () => {
@@ -278,18 +220,24 @@ const loadExistingConversation = async (convId: string) => {
 	}
 }
 
-watch(() => route.query.conv, (newConvId) => {
-	if (newConvId) {
-		loadExistingConversation(String(newConvId))
-	} else {
-		conversationId.value = null
-		welcomeMessage.value = character.value?.welcome || ''
-	}
-})
+watch(
+	() => route.query.conv,
+	(newConvId) => {
+		if (newConvId) {
+			loadExistingConversation(String(newConvId))
+		} else {
+			conversationId.value = null
+			welcomeMessage.value = character.value?.welcome || ''
+		}
+	},
+)
 
 onMounted(async () => {
 	const id = Number(route.params.id)
-	if (!id) { isLoadingCharacter.value = false; return }
+	if (!id) {
+		isLoadingCharacter.value = false
+		return
+	}
 	try {
 		const res: any = await getCharacterDetail(id)
 		character.value = res.data
@@ -325,7 +273,7 @@ const sendMessage = async () => {
 	if (!inputMessage.value.trim() || isStreaming.value || !character.value) return
 	const userMsg = inputMessage.value.trim()
 	inputMessage.value = ''
-	if (inputArea.value) inputArea.value.style.height = 'auto'
+	if (inputRef.value) inputRef.value.innerText = ''
 
 	const convId = await ensureConversation()
 	if (!convId) return
@@ -389,12 +337,6 @@ const sendMessage = async () => {
 	}
 }
 
-const handleStartChat = async () => {
-	if (!character.value) return
-	const id = await conversationStore.createConversation({ character_id: character.value.id, capability: 'chat' })
-	router.push(`/character/${character.value.id}?conv=${id}`)
-}
-
 const handleShare = () => {
 	if (navigator.share) {
 		navigator.share({ title: character.value?.name, url: window.location.href })
@@ -406,6 +348,18 @@ const handleShare = () => {
 </script>
 
 <style scoped>
+[contenteditable]:empty:before {
+	content: attr(data-placeholder);
+	color: var(--text-disable);
+	pointer-events: none;
+	display: block;
+}
+
+[contenteditable] {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
 .custom-scrollbar::-webkit-scrollbar {
 	width: 4px;
 }
@@ -420,7 +374,7 @@ const handleShare = () => {
 .prose {
 	color: var(--text-primary);
 	line-height: 1.65;
-	font-size: 14px;
+	font-size: 15px;
 }
 :deep(.prose) {
 	@apply leading-relaxed;

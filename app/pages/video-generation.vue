@@ -16,8 +16,8 @@
 
 		<!-- Category Filter Chips (Fixed, Outside Scroll Area) -->
 		<div v-if="activeTab === 'inspiration'" class="flex items-center gap-2 px-4 pb-4 overflow-x-auto no-scrollbar">
-			<button v-for="cat in categories" :key="cat" @click="selectedCategory = cat" :class="['px-4 py-1.5 text-[13px] font-medium rounded-full border transition-all whitespace-nowrap', selectedCategory === cat ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]']">
-				{{ $t('video_generation.categories.' + cat) }}
+			<button v-for="cat in categories" :key="cat.id" @click="handleCategoryChange(cat.id)" :class="['px-4 py-1.5 text-[13px] font-medium rounded-full border transition-all whitespace-nowrap', selectedCategory === cat.id ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]']">
+				{{ $t('video_generation.categories.' + cat.name) }}
 			</button>
 		</div>
 
@@ -26,22 +26,58 @@
 			<div class="max-w-full mx-auto">
 				<!-- Tab Content -->
 				<div v-if="activeTab === 'inspiration'">
-					<!-- Masonry Grid Layout for Inspiration -->
-					<div class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
-						<div v-for="(example, index) in exampleVideos" :key="index" class="break-inside-avoid group relative rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--text-tertiary)] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md" @click="useExample(example.prompt)">
-							<img :src="example.thumbnail" class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105" :alt="example.prompt" />
-							<!-- Play Icon Overlay -->
-							<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-								<div class="size-16 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform">
-									<Play :size="28" class="text-white ml-1" fill="currentColor" />
+					<!-- Masonry Skeleton Grid -->
+					<div v-if="discoveryStore.isLoading && exampleVideos.length === 0" class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
+						<div v-for="i in 8" :key="i" class="break-inside-avoid relative rounded-2xl overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] animate-pulse shadow-sm">
+							<div class="aspect-[9/16] bg-[var(--fill-tsp-gray-main)]"></div>
+							<div class="absolute inset-x-0 bottom-0 p-6 space-y-3">
+								<div class="h-3 bg-[var(--text-primary)]/10 rounded w-full"></div>
+								<div class="h-3 bg-[var(--text-primary)]/10 rounded w-2/3"></div>
+								<div class="h-8 bg-[var(--text-primary)]/10 rounded-full w-24 mt-4"></div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Masonry Grid Layout for Inspiration (Stable Multi-Column) -->
+					<div v-else class="flex gap-6">
+						<div v-for="(column, colIndex) in masonryColumns" :key="colIndex" class="flex-1 flex flex-col gap-6">
+							<div v-for="example in column" :key="example.id" class="group relative rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--text-tertiary)] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md h-fit" style="content-visibility: auto; contain-intrinsic-size: 300px 400px" @click="useExample(example.prompt)" @mouseenter="hoveredIndex = example.id" @mouseleave="hoveredIndex = null">
+								<img :src="example.thumbnail" loading="lazy" class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105" :alt="example.prompt" />
+
+								<!-- Hover Video (PC Only) -->
+								<video v-if="hoveredIndex === example.id && example.videoUrl" :src="example.videoUrl" autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover hidden md:block z-0" />
+
+								<!-- Hover Prompt Overlay -->
+								<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6 z-10 pointer-events-none">
+									<p class="text-white text-[13px] font-medium line-clamp-2 italic mb-3 leading-snug">"{{ example.prompt }}"</p>
+									<div class="flex items-center">
+										<span class="px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider backdrop-blur-md shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 pointer-events-auto" @click.stop="useExample(example.prompt)">Use Prompt</span>
+									</div>
+								</div>
+
+								<!-- Play Icon Overlay (Mobile priority, PC hover hidden) -->
+								<div class="absolute inset-0 flex items-center justify-center pointer-events-none z-20 md:opacity-0 md:group-hover:hidden transition-opacity duration-300">
+									<div class="size-16 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 pointer-events-auto transition-transform cursor-pointer" @click.stop="selectedVideo = example">
+										<Play :size="28" class="text-white ml-1" fill="currentColor" />
+									</div>
 								</div>
 							</div>
-							<div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6">
-								<p class="text-white text-[13px] font-medium line-clamp-2 italic mb-3 leading-snug">"{{ example.prompt }}"</p>
-								<div class="flex items-center">
-									<span class="px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider backdrop-blur-md shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">Use Prompt</span>
-								</div>
+						</div>
+					</div>
+
+					<!-- Load More Trigger & Loading State -->
+					<div ref="loadMoreTrigger" class="h-40 flex flex-col items-center justify-center mt-12 mb-20">
+						<div v-if="discoveryStore.isLoadingMore" class="flex flex-col items-center gap-4">
+							<div class="relative size-12 flex items-center justify-center">
+								<div class="absolute inset-0 bg-[var(--text-primary)]/5 rounded-full animate-ping-slow"></div>
+								<Loader2 class="animate-spin text-[var(--text-primary)]" :size="24" />
 							</div>
+							<span class="text-[11px] font-black text-[var(--text-primary)] tracking-[0.3em] uppercase opacity-60">Expanding Vision</span>
+						</div>
+						<div v-else-if="!discoveryStore.hasMore && exampleVideos.length > 0" class="flex flex-col items-center gap-3 opacity-30">
+							<div class="w-12 h-[1px] bg-gradient-to-r from-transparent via-[var(--text-primary)] to-transparent"></div>
+							<span class="text-[10px] font-black text-[var(--text-primary)] tracking-[0.4em] uppercase">End of Orchestration</span>
+							<div class="w-12 h-[1px] bg-gradient-to-r from-transparent via-[var(--text-primary)] to-transparent"></div>
 						</div>
 					</div>
 				</div>
@@ -389,6 +425,40 @@
 		</div>
 	</div>
 
+	<!-- Video Preview Modal -->
+	<Transition enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100" leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
+		<div v-if="selectedVideo" class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8 backdrop-blur-2xl bg-black/90" @click="selectedVideo = null">
+			<!-- Close Button -->
+			<button class="absolute top-6 right-6 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-[110]" @click="selectedVideo = null">
+				<X :size="24" />
+			</button>
+
+			<div class="relative w-full max-w-5xl flex flex-col items-center gap-6" @click.stop>
+				<!-- Video Player -->
+				<div class="relative w-full aspect-video rounded-3xl overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.5)] border border-white/10 bg-black">
+					<video :key="selectedVideo.videoUrl" :src="selectedVideo.videoUrl" controls autoplay loop playsinline class="w-full h-full object-contain" />
+				</div>
+
+				<!-- Info & Prompt -->
+				<div class="w-full max-w-3xl flex flex-col gap-4 text-center">
+					<p class="text-white/90 text-[15px] sm:text-lg font-medium italic leading-relaxed line-clamp-4 px-4">"{{ selectedVideo.prompt }}"</p>
+					<div class="flex justify-center mt-2">
+						<button
+							@click="
+								() => {
+									useExample(selectedVideo!.prompt)
+									selectedVideo = null
+								}
+							"
+							class="px-8 py-3 rounded-full bg-white text-black font-bold text-sm tracking-wide hover:bg-white/90 transition-all transform hover:scale-105 shadow-xl">
+							USE THIS PROMPT
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</Transition>
+
 	<!-- Asset Picker Modal -->
 	<AssetPickerModal :show="showAssetPicker" :multiple="false" file-type="image" @close="showAssetPicker = false" @select="onAssetSelected" />
 </template>
@@ -402,11 +472,13 @@ import ModelSelector from '@/components/ModelSelector.vue'
 import { useRouter } from 'vue-router'
 import { useConversationStore } from '@/stores/conversation'
 import { useChatStore } from '@/stores/chat'
+import { useVideoDiscoveryStore } from '~/stores/discovery'
 
 const router = useRouter()
 const conversationStore = useConversationStore()
 const chatStore = useChatStore()
 const modelStore = useModelStore()
+const discoveryStore = useVideoDiscoveryStore()
 const selectedModel = computed(() => modelStore.selectedModel)
 const isVideoModel = computed(() => {
 	const model = selectedModel.value
@@ -414,6 +486,10 @@ const isVideoModel = computed(() => {
 })
 
 // --- Typewriter Placeholder Effect ---
+const hoveredIndex = ref<number | null>(null)
+const selectedVideo = ref<{ prompt: string; videoUrl: string } | null>(null)
+const loadMoreTrigger = ref<HTMLElement | null>(null)
+let observer: IntersectionObserver | null = null
 const displayedPlaceholder = ref('')
 let typewriterInterval: ReturnType<typeof setInterval> | null = null
 
@@ -493,7 +569,7 @@ interface ActiveTask {
 
 const activeTasks = ref<ActiveTask[]>([])
 const isGenerating = computed(() => activeTasks.value.length > 0)
-const selectedCategory = ref('all')
+const selectedCategory = ref(46)
 const openDropdown = ref<string | null>(null)
 const playingVideoId = ref<number | null>(null)
 
@@ -513,7 +589,44 @@ const onAssetSelected = (assets: Array<{ key: string; url: string }>) => {
 	}
 }
 
-const categories = ['all', 'drama', 'dance', 'advertising', 'chinese_fantasy', 'scifi_action', 'anime_game', 'healing']
+const categories = [
+	{
+		id: 46,
+		name: 'all',
+	},
+	{
+		id: 38,
+		name: 'drama',
+	},
+	{
+		id: 39,
+		name: 'dance',
+	},
+	{
+		id: 42,
+		name: 'advertising',
+	},
+	{
+		id: 43,
+		name: 'chinese_fantasy',
+	},
+	{
+		id: 40,
+		name: 'scifi_action',
+	},
+	{
+		id: 41,
+		name: 'anime_game',
+	},
+	{
+		id: 47,
+		name: 'healing',
+	},
+	{
+		id: 45,
+		name: 'uncategorized',
+	},
+]
 
 const generatedVideos = ref<AsyncTaskRecord[]>([])
 const filteredGeneratedVideos = computed(() => {
@@ -546,12 +659,27 @@ const handleClickOutside = (event: MouseEvent) => {
 
 onMounted(() => {
 	runTypewriter()
-	fetchHistory()
+	if (discoveryStore.allItems.length === 0) {
+		discoveryStore.fetchDiscovery(selectedCategory.value)
+	}
 	window.addEventListener('mousedown', handleClickOutside)
+
+	// Initialize Infinite Scroll
+	observer = new IntersectionObserver(
+		(entries) => {
+			if (entries[0]?.isIntersecting && discoveryStore.hasMore && !discoveryStore.isLoadingMore && !discoveryStore.isLoading) {
+				discoveryStore.fetchMore()
+			}
+		},
+		{ threshold: 0.1 },
+	)
+	if (loadMoreTrigger.value) observer.observe(loadMoreTrigger.value)
 })
 
 onUnmounted(() => {
+	if (typewriterInterval) clearInterval(typewriterInterval)
 	window.removeEventListener('mousedown', handleClickOutside)
+	if (observer) observer.disconnect()
 })
 
 const triggerFocus = () => {
@@ -584,14 +712,23 @@ const formatDuration = (seconds: number) => {
 	return `${mins}:${secs.toString().padStart(2, '0')}`
 }
 
-const exampleVideos = [
-	{ prompt: 'A mystical whale swimming through a glowing underwater city at night.', thumbnail: 'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?q=80&w=600' },
-	{ prompt: 'Timelapse of cherry blossoms blooming in a Japanese garden.', thumbnail: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?q=80&w=600' },
-	{ prompt: 'Cinematic drone shot over a foggy mountain range at sunrise.', thumbnail: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=600' },
-	{ prompt: 'Abstract flowing liquid metal transforming into geometric shapes.', thumbnail: 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?q=80&w=600' },
-	{ prompt: 'A futuristic city with flying cars and neon lights at night.', thumbnail: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?q=80&w=600' },
-	{ prompt: 'Slow motion of a hummingbird drinking nectar from a flower.', thumbnail: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?q=80&w=600' },
-]
+const exampleVideos = computed(() => {
+	return discoveryStore.allItems.map((item) => ({
+		id: item.id,
+		prompt: item.related_data?.prompt || item.subtitle || '',
+		thumbnail: item.related_data?.thumbnail || item.cover || '',
+		videoUrl: item.related_data?.assets?.[0] || '',
+	}))
+})
+
+const masonryColumns = computed(() => {
+	const cols: any[][] = [[], [], [], []]
+	exampleVideos.value.forEach((video, idx) => {
+		const targetCol = cols[idx % 4]
+		if (targetCol) targetCol.push(video)
+	})
+	return cols
+})
 
 const useExample = (examplePrompt: string) => {
 	prompt.value = examplePrompt
@@ -726,6 +863,12 @@ const handleSelectAsset = () => {
 const setParamAndClose = (key: string, val: any) => {
 	dynamicParams.value[key] = val
 	toggleDropdown(key)
+}
+
+const handleCategoryChange = (id: number) => {
+	if (selectedCategory.value === id) return
+	selectedCategory.value = id
+	discoveryStore.fetchDiscovery(id)
 }
 </script>
 

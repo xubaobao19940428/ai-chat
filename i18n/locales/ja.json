@@ -336,7 +336,8 @@
 			"film": "映像・絵コンテ",
 			"lifestyle": "ライフスタイル/自然",
 			"scifi": "SF/未来",
-			"ui": "UI/インターフェース"
+			"ui": "UI/インターフェース",
+			"uncategorized": "未分類"
 		}
 	},
 	"video_generation": {
@@ -348,7 +349,8 @@
 			"chinese_fantasy": "中華ファンタジー",
 			"scifi_action": "SFアクション",
 			"anime_game": "アニメ・ゲーム",
-			"healing": "癒し・日常"
+			"healing": "癒し・日常",
+			"uncategorized": "未分類"
 		}
 	},
 	"explore": {
@@ -365,7 +367,8 @@
 			"life": "生活",
 			"emotion": "感情",
 			"business": "ビジネス",
-			"tools": "ツール"
+			"tools": "ツール",
+			"uncategorized": "未分類"
 		},
 		"official_badge": "公式",
 		"by_author": "作成者",

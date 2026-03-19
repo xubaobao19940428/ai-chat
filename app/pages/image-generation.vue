@@ -16,8 +16,8 @@
 
 		<!-- Category Filter Chips (Fixed, Outside Scroll Area) -->
 		<div v-if="activeTab === 'inspiration'" class="flex items-center gap-2 px-4 pb-4 overflow-x-auto no-scrollbar">
-			<button v-for="cat in categories" :key="cat" @click="selectedCategory = cat" :class="['px-4 py-1.5 text-[13px] font-medium rounded-full border transition-all whitespace-nowrap', selectedCategory === cat ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]']">
-				{{ $t('image_generation.categories.' + cat) }}
+			<button v-for="cat in categories" :key="cat.id" @click="handleCategoryChange(cat.id)" :class="['px-4 py-1.5 text-[13px] font-medium rounded-full border transition-all whitespace-nowrap', selectedCategory === cat.id ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]']">
+				{{ $t('image_generation.categories.' + cat.name) }}
 			</button>
 		</div>
 
@@ -26,16 +26,52 @@
 			<div class="max-w-full mx-auto">
 				<!-- Tab Content -->
 				<div v-if="activeTab === 'inspiration'">
-					<!-- Masonry Grid Layout for Inspiration -->
-					<div class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
-						<div v-for="(example, index) in exampleImages" :key="index" class="break-inside-avoid group relative rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--text-tertiary)] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md" @click="useExample(example.prompt)">
-							<img :src="example.url" class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105" :alt="example.prompt" />
-							<div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6">
-								<p class="text-white text-[13px] font-medium line-clamp-2 italic mb-3 leading-snug">"{{ example.prompt }}"</p>
-								<div class="flex items-center">
-									<span class="px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider backdrop-blur-md shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">Use Prompt</span>
+					<!-- Masonry Skeleton Grid -->
+					<div v-if="discoveryStore.isLoading && exampleImages.length === 0" class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
+						<div v-for="i in 8" :key="i" class="break-inside-avoid relative rounded-2xl overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] animate-pulse shadow-sm">
+							<div class="aspect-square bg-[var(--fill-tsp-gray-main)]"></div>
+							<div class="absolute inset-x-0 bottom-0 p-6 space-y-3">
+								<div class="h-3 bg-[var(--text-primary)]/10 rounded w-full"></div>
+								<div class="h-3 bg-[var(--text-primary)]/10 rounded w-2/3"></div>
+								<div class="h-8 bg-[var(--text-primary)]/10 rounded-full w-24 mt-4"></div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Masonry Grid Layout for Inspiration (Stable Multi-Column) -->
+					<div v-else class="flex gap-6">
+						<div v-for="(column, colIndex) in masonryColumns" :key="colIndex" class="flex-1 flex flex-col gap-6">
+							<div
+								v-for="example in column"
+								:key="example.id"
+								class="group relative rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--text-tertiary)] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md h-fit"
+								style="content-visibility: auto; contain-intrinsic-size: 300px 400px;"
+								@click="useExample(example.prompt)"
+							>
+								<img :src="example.url" loading="lazy" class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105" :alt="example.prompt" />
+								<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6 z-10 pointer-events-none">
+									<p class="text-white text-[13px] font-medium line-clamp-2 italic mb-3 leading-snug">"{{ example.prompt }}"</p>
+									<div class="flex items-center">
+										<span class="px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider backdrop-blur-md shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 pointer-events-auto" @click.stop="useExample(example.prompt)">Use Prompt</span>
+									</div>
 								</div>
 							</div>
+						</div>
+					</div>
+
+					<!-- Load More Trigger & Loading State -->
+					<div ref="loadMoreTrigger" class="h-40 flex flex-col items-center justify-center mt-12 mb-20">
+						<div v-if="discoveryStore.isLoadingMore" class="flex flex-col items-center gap-4">
+							<div class="relative size-12 flex items-center justify-center">
+								<div class="absolute inset-0 bg-[var(--text-primary)]/5 rounded-full animate-ping-slow"></div>
+								<Loader2 class="animate-spin text-[var(--text-primary)]" :size="24" />
+							</div>
+							<span class="text-[11px] font-black text-[var(--text-primary)] tracking-[0.3em] uppercase opacity-60">Expanding Vision</span>
+						</div>
+						<div v-else-if="!discoveryStore.hasMore && exampleImages.length > 0" class="flex flex-col items-center gap-3 opacity-30">
+							<div class="w-12 h-[1px] bg-gradient-to-r from-transparent via-[var(--text-primary)] to-transparent"></div>
+							<span class="text-[10px] font-black text-[var(--text-primary)] tracking-[0.4em] uppercase">End of Orchestration</span>
+							<div class="w-12 h-[1px] bg-gradient-to-r from-transparent via-[var(--text-primary)] to-transparent"></div>
 						</div>
 					</div>
 				</div>
@@ -432,10 +468,12 @@ import { getModels, getAsyncTaskOutputs, uploadFile, getRecordPrompt, getRecordP
 import { useRouter } from 'vue-router'
 import { useConversationStore } from '@/stores/conversation'
 import { useChatStore } from '@/stores/chat'
+import { useImageDiscoveryStore } from '~/stores/discovery'
 
 const router = useRouter()
 const conversationStore = useConversationStore()
 const chatStore = useChatStore()
+const discoveryStore = useImageDiscoveryStore()
 
 const activeTab = ref<'inspiration' | 'creations'>('inspiration')
 const prompt = ref('')
@@ -451,10 +489,12 @@ interface ActiveTask {
 
 const activeTasks = ref<ActiveTask[]>([])
 const isGenerating = computed(() => activeTasks.value.length > 0)
-const selectedCategory = ref('all')
+const selectedCategory = ref(35)
 const openDropdown = ref<string | null>(null)
 
 // --- Typewriter Placeholder Effect ---
+const loadMoreTrigger = ref<HTMLElement | null>(null)
+let observer: IntersectionObserver | null = null
 const displayedPlaceholder = ref('')
 let typewriterInterval: ReturnType<typeof setInterval> | null = null
 
@@ -556,7 +596,20 @@ const onAssetsSelected = (assets: Array<{ key: string; url: string }>) => {
 	}
 }
 
-const categories = ['all', 'portrait', 'brand', 'poster', 'illustration', 'product', 'architecture', 'film', 'lifestyle', 'scifi', 'ui']
+const categories = [
+	{ id: 35, name: 'all' },
+	{ id: 24, name: 'portrait' },
+	{ id: 30, name: 'brand' },
+	{ id: 32, name: 'poster' },
+	{ id: 28, name: 'illustration' },
+	{ id: 31, name: 'product' },
+	{ id: 25, name: 'architecture' },
+	{ id: 27, name: 'film' },
+	{ id: 26, name: 'lifestyle' },
+	{ id: 33, name: 'scifi' },
+	{ id: 29, name: 'ui' },
+	{ id: 34, name: 'uncategorized' },
+]
 
 const generatedImages = ref<AsyncTaskRecord[]>([])
 const filteredGeneratedImages = computed(() => {
@@ -608,11 +661,26 @@ const setParamAndClose = (key: string, val: any) => {
 onMounted(() => {
 	runTypewriter()
 	fetchHistory()
+	if (discoveryStore.allItems.length === 0) {
+		discoveryStore.fetchDiscovery(selectedCategory.value)
+	}
 	window.addEventListener('mousedown', handleClickOutside)
+
+	// Initialize Infinite Scroll
+	observer = new IntersectionObserver(
+		(entries) => {
+			if (entries[0]?.isIntersecting && discoveryStore.hasMore && !discoveryStore.isLoadingMore && !discoveryStore.isLoading) {
+				discoveryStore.fetchMore()
+			}
+		},
+		{ threshold: 0.1 }
+	)
+	if (loadMoreTrigger.value) observer.observe(loadMoreTrigger.value)
 })
 
 onUnmounted(() => {
 	window.removeEventListener('mousedown', handleClickOutside)
+	if (observer) observer.disconnect()
 })
 
 const triggerFocus = () => {
@@ -640,14 +708,22 @@ const formatModel = (modelStr?: string) => {
 	return (name || '').replace(/-/g, ' ').toUpperCase()
 }
 
-const exampleImages = [
-	{ prompt: 'A mystical cyberpunk cat sitting on a neon rooftop, 8k cinematic.', url: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600' },
-	{ prompt: 'Ethereal forest with floating islands and crystal waterfalls.', url: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=600' },
-	{ prompt: 'Hyper-realistic portrait of an iron knight with glowing blue eyes.', url: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600' },
-	{ prompt: 'Vibrant futuristic sneaker design with energy circuits.', url: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=600' },
-	{ prompt: 'Retro-futuristic vaporwave city during sunset, pink and teal.', url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=600' },
-	{ prompt: 'Ancient dragon made of black smoke and lightning clouds.', url: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=600' },
-]
+const exampleImages = computed(() => {
+	return discoveryStore.allItems.map((item) => ({
+		id: item.id,
+		prompt: item.related_data?.prompt || '',
+		url: item.related_data?.thumbnail || item.related_data?.assets?.[0] || '',
+	}))
+})
+
+const masonryColumns = computed(() => {
+	const cols: any[][] = [[], [], [], []]
+	exampleImages.value.forEach((img, idx) => {
+		const col = cols[idx % 4]
+		if (col) col.push(img)
+	})
+	return cols
+})
 
 const useExample = (examplePrompt: string) => {
 	prompt.value = examplePrompt
@@ -835,6 +911,13 @@ const getPreviewStyle = (ratio: string) => {
 		height: `${height}px`,
 	}
 }
+
+const handleCategoryChange = (id: number) => {
+	if (selectedCategory.value === id) return
+	selectedCategory.value = id
+	discoveryStore.fetchDiscovery(id)
+}
+
 
 const handleDownload = (imageUrl: string) => {
 	window.open(imageUrl, '_blank')

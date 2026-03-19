@@ -336,7 +336,8 @@
 			"film": "영상 & 스토리보드",
 			"lifestyle": "라이프스타일/자연",
 			"scifi": "SF/미래",
-			"ui": "UI/인터페이스"
+			"ui": "UI/인터페이스",
+			"uncategorized": "미분류"
 		}
 	},
 	"video_generation": {
@@ -348,7 +349,8 @@
 			"chinese_fantasy": "중국풍 판타지",
 			"scifi_action": "SF 액션",
 			"anime_game": "애니메이션 & 게임",
-			"healing": "힐링 & 일상"
+			"healing": "힐링 & 일상",
+			"uncategorized": "미분류"
 		}
 	},
 	"explore": {
@@ -365,7 +367,8 @@
 			"life": "생활",
 			"emotion": "감정",
 			"business": "비즈니스",
-			"tools": "도구"
+			"tools": "도구",
+			"uncategorized": "미분류"
 		},
 		"official_badge": "공식",
 		"by_author": "작성자",
