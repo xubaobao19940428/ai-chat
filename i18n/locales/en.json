@@ -324,6 +324,33 @@
 		"save": "Save",
 		"create": "Create"
 	},
+	"image_generation": {
+		"categories": {
+			"all": "All",
+			"portrait": "Portrait / Avatar",
+			"brand": "Brand / Commercial",
+			"poster": "Poster & Ads",
+			"illustration": "Illustration & Cartoon",
+			"product": "Product / Craft",
+			"architecture": "Architecture / Space",
+			"film": "Film & Storyboard",
+			"lifestyle": "Lifestyle / Nature",
+			"scifi": "Sci-Fi / Future",
+			"ui": "UI / Interface"
+		}
+	},
+	"video_generation": {
+		"categories": {
+			"all": "All",
+			"drama": "Short Drama",
+			"dance": "Dance & Cosplay",
+			"advertising": "Advertising",
+			"chinese_fantasy": "Chinese Fantasy",
+			"scifi_action": "Sci-Fi Action",
+			"anime_game": "Anime & Gaming",
+			"healing": "Lifestyle & Healing"
+		}
+	},
 	"explore": {
 		"title": "Discover AI Bots",
 		"my_created": "My Created",

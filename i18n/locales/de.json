@@ -324,6 +324,33 @@
 		"save": "Speichern",
 		"create": "Erstellen"
 	},
+	"image_generation": {
+		"categories": {
+			"all": "Alle",
+			"portrait": "Porträt / Avatar",
+			"brand": "Marke / Kommerziell",
+			"poster": "Poster & Werbung",
+			"illustration": "Illustration & Cartoon",
+			"product": "Produkt / Handwerk",
+			"architecture": "Architektur / Raum",
+			"film": "Film & Storyboard",
+			"lifestyle": "Lifestyle / Natur",
+			"scifi": "Sci-Fi / Zukunft",
+			"ui": "UI / Oberfläche"
+		}
+	},
+	"video_generation": {
+		"categories": {
+			"all": "Alle",
+			"drama": "Kurzfilm",
+			"dance": "Tanz & Cosplay",
+			"advertising": "Werbung",
+			"chinese_fantasy": "Chinesische Fantasy",
+			"scifi_action": "Sci-Fi Action",
+			"anime_game": "Anime & Gaming",
+			"healing": "Wellness & Alltag"
+		}
+	},
 	"explore": {
 		"title": "KI-Bots entdecken",
 		"my_created": "Meine erstellten",

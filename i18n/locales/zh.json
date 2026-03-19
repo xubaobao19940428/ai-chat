@@ -324,6 +324,33 @@
 		"save": "保存",
 		"create": "创建"
 	},
+	"image_generation": {
+		"categories": {
+			"all": "全部",
+			"portrait": "人物/头像",
+			"brand": "品牌/商业",
+			"poster": "海报与广告",
+			"illustration": "插画与卡通",
+			"product": "产品/工艺",
+			"architecture": "建筑/空间",
+			"film": "影片与分镜",
+			"lifestyle": "生活方式/自然",
+			"scifi": "科技/未来",
+			"ui": "UI/界面"
+		}
+	},
+	"video_generation": {
+		"categories": {
+			"all": "全部",
+			"drama": "剧情短片",
+			"dance": "舞蹈变装",
+			"advertising": "广告营销",
+			"chinese_fantasy": "国风玄幻",
+			"scifi_action": "科幻动作",
+			"anime_game": "动漫游戏",
+			"healing": "生活治愈"
+		}
+	},
 	"explore": {
 		"title": "发现 AI 智能体",
 		"my_created": "我创建的",

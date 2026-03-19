@@ -17,7 +17,7 @@
 		<!-- Category Filter Chips (Fixed, Outside Scroll Area) -->
 		<div v-if="activeTab === 'inspiration'" class="flex items-center gap-2 px-4 pb-4 overflow-x-auto no-scrollbar">
 			<button v-for="cat in categories" :key="cat" @click="selectedCategory = cat" :class="['px-4 py-1.5 text-[13px] font-medium rounded-full border transition-all whitespace-nowrap', selectedCategory === cat ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]']">
-				{{ cat }}
+				{{ $t('image_generation.categories.' + cat) }}
 			</button>
 		</div>
 
@@ -451,7 +451,7 @@ interface ActiveTask {
 
 const activeTasks = ref<ActiveTask[]>([])
 const isGenerating = computed(() => activeTasks.value.length > 0)
-const selectedCategory = ref('All')
+const selectedCategory = ref('all')
 const openDropdown = ref<string | null>(null)
 
 // --- Typewriter Placeholder Effect ---
@@ -556,7 +556,7 @@ const onAssetsSelected = (assets: Array<{ key: string; url: string }>) => {
 	}
 }
 
-const categories = ['All', 'Trending', 'Sci-Fi', 'Nature', 'Portrait', 'Abstract']
+const categories = ['all', 'portrait', 'brand', 'poster', 'illustration', 'product', 'architecture', 'film', 'lifestyle', 'scifi', 'ui']
 
 const generatedImages = ref<AsyncTaskRecord[]>([])
 const filteredGeneratedImages = computed(() => {

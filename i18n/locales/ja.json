@@ -324,6 +324,33 @@
 		"save": "保存",
 		"create": "作成"
 	},
+	"image_generation": {
+		"categories": {
+			"all": "すべて",
+			"portrait": "人物/アバター",
+			"brand": "ブランド/商業",
+			"poster": "ポスター・広告",
+			"illustration": "イラスト・漫画",
+			"product": "プロダクト/工芸",
+			"architecture": "建築/空間",
+			"film": "映像・絵コンテ",
+			"lifestyle": "ライフスタイル/自然",
+			"scifi": "SF/未来",
+			"ui": "UI/インターフェース"
+		}
+	},
+	"video_generation": {
+		"categories": {
+			"all": "すべて",
+			"drama": "ショートドラマ",
+			"dance": "ダンス・コスプレ",
+			"advertising": "広告マーケティング",
+			"chinese_fantasy": "中華ファンタジー",
+			"scifi_action": "SFアクション",
+			"anime_game": "アニメ・ゲーム",
+			"healing": "癒し・日常"
+		}
+	},
 	"explore": {
 		"title": "AIボットを探索",
 		"my_created": "作成済み",

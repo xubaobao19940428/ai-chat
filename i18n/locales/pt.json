@@ -324,6 +324,33 @@
 		"save": "Salvar",
 		"create": "Criar"
 	},
+	"image_generation": {
+		"categories": {
+			"all": "Tudo",
+			"portrait": "Retrato / Avatar",
+			"brand": "Marca / Comercial",
+			"poster": "Pôster & Publicidade",
+			"illustration": "Ilustração & Cartoon",
+			"product": "Produto / Artesanato",
+			"architecture": "Arquitetura / Espaço",
+			"film": "Filme & Storyboard",
+			"lifestyle": "Estilo de vida / Natureza",
+			"scifi": "Sci-Fi / Futuro",
+			"ui": "UI / Interface"
+		}
+	},
+	"video_generation": {
+		"categories": {
+			"all": "Tudo",
+			"drama": "Curta-metragem",
+			"dance": "Dança & Cosplay",
+			"advertising": "Publicidade",
+			"chinese_fantasy": "Fantasia chinesa",
+			"scifi_action": "Sci-Fi Ação",
+			"anime_game": "Anime & Games",
+			"healing": "Bem-estar & Cotidiano"
+		}
+	},
 	"explore": {
 		"title": "Descobrir Bots de IA",
 		"my_created": "Meus criados",

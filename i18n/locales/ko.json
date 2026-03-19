@@ -324,6 +324,33 @@
 		"save": "저장",
 		"create": "만들기"
 	},
+	"image_generation": {
+		"categories": {
+			"all": "전체",
+			"portrait": "인물/아바타",
+			"brand": "브랜드/상업",
+			"poster": "포스터 & 광고",
+			"illustration": "일러스트 & 만화",
+			"product": "제품/공예",
+			"architecture": "건축/공간",
+			"film": "영상 & 스토리보드",
+			"lifestyle": "라이프스타일/자연",
+			"scifi": "SF/미래",
+			"ui": "UI/인터페이스"
+		}
+	},
+	"video_generation": {
+		"categories": {
+			"all": "전체",
+			"drama": "단편 드라마",
+			"dance": "댄스 & 코스프레",
+			"advertising": "광고 마케팅",
+			"chinese_fantasy": "중국풍 판타지",
+			"scifi_action": "SF 액션",
+			"anime_game": "애니메이션 & 게임",
+			"healing": "힐링 & 일상"
+		}
+	},
 	"explore": {
 		"title": "AI 봇 탐색",
 		"my_created": "내가 만든",

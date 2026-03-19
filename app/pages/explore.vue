@@ -1,8 +1,8 @@
 <template>
 	<div class="flex-1 flex flex-col h-full bg-[var(--background-gray-main)] overflow-hidden transition-colors">
 		<!-- Header & Control Area -->
-		<div class="flex-shrink-0 px-4 md:px-6 pb-4">
-			<div class="max-w-4xl mx-auto w-full">
+		<div class="flex-shrink-0 px-5 pb-4">
+			<div class="w-full">
 				<!-- Header Row -->
 				<div class="flex items-center justify-between mb-8">
 					<h1 class="text-[32px] font-black text-[var(--text-primary)] tracking-tight">{{ $t('explore.title') }}</h1>
@@ -41,15 +41,15 @@
 		</div>
 
 		<!-- Scrollable Content -->
-		<div class="flex-1 overflow-y-auto px-4 md:px-6 pb-12 custom-scrollbar" ref="scrollContainer" @scroll="handleScroll">
-			<div class="max-w-4xl mx-auto w-full">
+		<div class="flex-1 overflow-y-auto px-5 pb-12 custom-scrollbar" ref="scrollContainer" @scroll="handleScroll">
+			<div class="w-full">
 				<!-- Loading State (initial) -->
 				<div v-if="discoveryStore.isLoading && botsList.length === 0" class="flex justify-center py-20">
 					<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--text-primary)]"></div>
 				</div>
 
 				<!-- Bot Cards Grid -->
-				<div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-[10px]">
+				<div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[10px]">
 					<div v-for="bot in botsList" :key="bot.id" class="flex items-start p-3 rounded-2xl bg-[var(--background-white-main)] border border-[var(--border-light)] hover:border-[var(--border-main)] hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group" @click="handleBotClick(bot)">
 						<!-- Icon -->
 						<div class="flex-shrink-0 w-[72px] h-[72px] rounded-2xl overflow-hidden bg-[var(--background-gray-main)] flex items-center justify-center text-3xl shadow-sm border border-[var(--border-light)]">
