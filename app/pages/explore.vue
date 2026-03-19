@@ -222,14 +222,15 @@ const handleScroll = () => {
 }
 
 const handleBotClick = (bot: any) => {
-	if (bot.type === 'character') {
-		router.push(`/character/${bot.id}`)
-	} else if (bot.action_url) {
+	if (bot.action_url) {
 		if (bot.action_url.startsWith('app://')) {
 			router.push(bot.action_url.replace('app://', '/'))
 		} else {
 			window.open(bot.action_url, '_blank')
 		}
+	} else {
+		// Default: navigate to character detail page
+		router.push(`/character/${bot.id}`)
 	}
 }
 </script>
