@@ -38,26 +38,22 @@
 						</div>
 					</div>
 
-					<!-- Masonry Grid Layout for Inspiration (Stable Multi-Column) -->
-					<div v-else class="flex gap-6">
-						<div v-for="(column, colIndex) in masonryColumns" :key="colIndex" class="flex-1 flex flex-col gap-6">
-							<div
-								v-for="example in column"
-								:key="example.id"
-								class="group relative rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--text-tertiary)] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md h-fit"
-								style="content-visibility: auto; contain-intrinsic-size: 300px 400px;"
-								@click="useExample(example.prompt)"
-							>
-								<img :src="example.url" loading="lazy" class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105" :alt="example.prompt" />
-								<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6 z-10 pointer-events-none">
-									<p class="text-white text-[13px] font-medium line-clamp-2 italic mb-3 leading-snug">"{{ example.prompt }}"</p>
-									<div class="flex items-center">
-										<span class="px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider backdrop-blur-md shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 pointer-events-auto" @click.stop="useExample(example.prompt)">Use Prompt</span>
-									</div>
+					<!-- Masonry Grid Layout for Inspiration -->
+					<MasonryGrid v-else :items="exampleImages" v-slot="{ item: example }">
+						<div
+							class="group relative rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--text-tertiary)] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md h-fit"
+							style="content-visibility: auto; contain-intrinsic-size: 300px 400px;"
+							@click="useExample(example.prompt)"
+						>
+							<img :src="example.url" loading="lazy" class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105" :alt="example.prompt" />
+							<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6 z-10 pointer-events-none">
+								<p class="text-white text-[13px] font-medium line-clamp-2 italic mb-3 leading-snug">"{{ example.prompt }}"</p>
+								<div class="flex items-center">
+									<span class="px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider backdrop-blur-md shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 pointer-events-auto" @click.stop="useExample(example.prompt)">Use Prompt</span>
 								</div>
 							</div>
 						</div>
-					</div>
+					</MasonryGrid>
 
 					<!-- Load More Trigger & Loading State -->
 					<div ref="loadMoreTrigger" class="h-40 flex flex-col items-center justify-center mt-12 mb-20">
@@ -462,7 +458,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue'
 import { Link2, ImagePlus, Palette, Square, Gem, Sparkle, Paperclip, Zap, Loader2, Monitor, X, Image as ImageIcon, Download, ChevronDown, LayoutGrid, Sparkles, Plus } from 'lucide-vue-next'
 import { getModels, getAsyncTaskOutputs, uploadFile, getRecordPrompt, getRecordPrimaryUrl, getRecordModel, getRecordParams, type AIModel, type AsyncTaskRecord } from '@/utils/api'
 import { useRouter } from 'vue-router'
@@ -630,6 +626,11 @@ const fetchHistory = async () => {
 
 const controlBarRef = ref<HTMLDivElement | null>(null)
 
+const isElementInViewport = (el: HTMLElement) => {
+	const rect = el.getBoundingClientRect()
+	return rect.top < window.innerHeight && rect.bottom > 0
+}
+
 const handleClickOutside = (event: MouseEvent) => {
 	if (openDropdown.value && controlBarRef.value && !controlBarRef.value.contains(event.target as Node)) {
 		openDropdown.value = null
@@ -666,11 +667,24 @@ onMounted(() => {
 	}
 	window.addEventListener('mousedown', handleClickOutside)
 
-	// Initialize Infinite Scroll
+	// Initialize Infinite Scroll — auto-fill if viewport not full
+	const tryLoadMore = async () => {
+		while (
+			loadMoreTrigger.value &&
+			discoveryStore.hasMore &&
+			!discoveryStore.isLoadingMore &&
+			!discoveryStore.isLoading &&
+			isElementInViewport(loadMoreTrigger.value)
+		) {
+			await discoveryStore.fetchMore()
+			await nextTick()
+		}
+	}
+
 	observer = new IntersectionObserver(
 		(entries) => {
-			if (entries[0]?.isIntersecting && discoveryStore.hasMore && !discoveryStore.isLoadingMore && !discoveryStore.isLoading) {
-				discoveryStore.fetchMore()
+			if (entries[0]?.isIntersecting) {
+				tryLoadMore()
 			}
 		},
 		{ threshold: 0.1 }
@@ -714,15 +728,6 @@ const exampleImages = computed(() => {
 		prompt: item.related_data?.prompt || '',
 		url: item.related_data?.thumbnail || item.related_data?.assets?.[0] || '',
 	}))
-})
-
-const masonryColumns = computed(() => {
-	const cols: any[][] = [[], [], [], []]
-	exampleImages.value.forEach((img, idx) => {
-		const col = cols[idx % 4]
-		if (col) col.push(img)
-	})
-	return cols
 })
 
 const useExample = (examplePrompt: string) => {

@@ -112,7 +112,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search, Flame, Plus } from 'lucide-vue-next'
 import { useExploreDiscoveryStore } from '~/stores/discovery'
@@ -172,9 +172,19 @@ const filterTags = [
 ]
 
 // Load initial data
-onMounted(() => {
+onMounted(async () => {
 	if (discoveryStore.allItems.length === 0) {
-		discoveryStore.fetchDiscovery(selectedTag.value)
+		await discoveryStore.fetchDiscovery(selectedTag.value)
+	}
+	await nextTick()
+	tryAutoFill()
+})
+
+// After tag change, also try auto-fill
+watch(() => discoveryStore.isLoading, async (loading) => {
+	if (!loading) {
+		await nextTick()
+		tryAutoFill()
 	}
 })
 
@@ -210,6 +220,21 @@ const botsList = computed(() => {
 
 	return mapped
 })
+
+// Auto-fill: if content doesn't fill the viewport, keep loading
+const tryAutoFill = async () => {
+	const el = scrollContainer.value
+	if (!el) return
+	while (
+		discoveryStore.hasMore &&
+		!discoveryStore.isLoadingMore &&
+		!discoveryStore.isLoading &&
+		el.scrollHeight <= el.clientHeight + 200
+	) {
+		await discoveryStore.fetchMore()
+		await nextTick()
+	}
+}
 
 // Scroll-based pagination
 const handleScroll = () => {

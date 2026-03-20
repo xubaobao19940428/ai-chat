@@ -11,7 +11,7 @@ const createDiscoveryStore = (id: string, placement: string) => {
     const currentPage = ref(1)
     const hasMore = ref(true)
     const currentTagId = ref<number | string>(placement)
-    const pageSize = 20
+    const pageSize = 40
 
     // Cache state: stores results per tagId to avoid redundant fetches
     const cache = ref<Record<number | string, {

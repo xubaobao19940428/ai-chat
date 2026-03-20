@@ -38,32 +38,30 @@
 						</div>
 					</div>
 
-					<!-- Masonry Grid Layout for Inspiration (Stable Multi-Column) -->
-					<div v-else class="flex gap-6">
-						<div v-for="(column, colIndex) in masonryColumns" :key="colIndex" class="flex-1 flex flex-col gap-6">
-							<div v-for="example in column" :key="example.id" class="group relative rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--text-tertiary)] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md h-fit" style="content-visibility: auto; contain-intrinsic-size: 300px 400px" @click="useExample(example.prompt)" @mouseenter="hoveredIndex = example.id" @mouseleave="hoveredIndex = null">
-								<img :src="example.thumbnail" loading="lazy" class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105" :alt="example.prompt" />
+					<!-- Masonry Grid Layout for Inspiration -->
+					<MasonryGrid v-else :items="exampleVideos" v-slot="{ item: example }">
+						<div class="group relative rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--text-tertiary)] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md h-fit" style="content-visibility: auto; contain-intrinsic-size: 300px 400px" @click="useExample(example.prompt)" @mouseenter="hoveredIndex = example.id" @mouseleave="hoveredIndex = null">
+							<img :src="example.thumbnail" loading="lazy" class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105" :alt="example.prompt" />
 
-								<!-- Hover Video (PC Only) -->
-								<video v-if="hoveredIndex === example.id && example.videoUrl" :src="example.videoUrl" autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover hidden md:block z-0" />
+							<!-- Hover Video (PC Only) -->
+							<video v-if="hoveredIndex === example.id && example.videoUrl" :src="example.videoUrl" autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover hidden md:block z-0" />
 
-								<!-- Hover Prompt Overlay -->
-								<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6 z-10 pointer-events-none">
-									<p class="text-white text-[13px] font-medium line-clamp-2 italic mb-3 leading-snug">"{{ example.prompt }}"</p>
-									<div class="flex items-center">
-										<span class="px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider backdrop-blur-md shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 pointer-events-auto" @click.stop="useExample(example.prompt)">Use Prompt</span>
-									</div>
+							<!-- Hover Prompt Overlay -->
+							<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6 z-10 pointer-events-none">
+								<p class="text-white text-[13px] font-medium line-clamp-2 italic mb-3 leading-snug">"{{ example.prompt }}"</p>
+								<div class="flex items-center">
+									<span class="px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider backdrop-blur-md shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 pointer-events-auto" @click.stop="useExample(example.prompt)">Use Prompt</span>
 								</div>
+							</div>
 
-								<!-- Play Icon Overlay (Mobile priority, PC hover hidden) -->
-								<div class="absolute inset-0 flex items-center justify-center pointer-events-none z-20 md:opacity-0 md:group-hover:hidden transition-opacity duration-300">
-									<div class="size-16 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 pointer-events-auto transition-transform cursor-pointer" @click.stop="selectedVideo = example">
-										<Play :size="28" class="text-white ml-1" fill="currentColor" />
-									</div>
+							<!-- Play Icon Overlay (Mobile priority, PC hover hidden) -->
+							<div class="absolute inset-0 flex items-center justify-center pointer-events-none z-20 md:opacity-0 md:group-hover:hidden transition-opacity duration-300">
+								<div class="size-16 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 pointer-events-auto transition-transform cursor-pointer" @click.stop="selectedVideo = example">
+									<Play :size="28" class="text-white ml-1" fill="currentColor" />
 								</div>
 							</div>
 						</div>
-					</div>
+					</MasonryGrid>
 
 					<!-- Load More Trigger & Loading State -->
 					<div ref="loadMoreTrigger" class="h-40 flex flex-col items-center justify-center mt-12 mb-20">
@@ -464,7 +462,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue'
 import { ImagePlus, Plus, Check, Zap, Loader2, X, Film, Download, ChevronDown, Sparkles, Play, Clock } from 'lucide-vue-next'
 import { getModels, getAsyncTaskOutputs, uploadFile, getRecordPrompt, getRecordPrimaryUrl, getRecordModel, getRecordParams, type AIModel, type AsyncTaskRecord } from '@/utils/api'
 import { useModelStore } from '@/stores/models'
@@ -647,6 +645,11 @@ const fetchHistory = async () => {
 
 const controlBarRef = ref<HTMLDivElement | null>(null)
 
+const isElementInViewport = (el: HTMLElement) => {
+	const rect = el.getBoundingClientRect()
+	return rect.top < window.innerHeight && rect.bottom > 0
+}
+
 const handleClickOutside = (event: MouseEvent) => {
 	if (activeDropdownField.value && controlBarRef.value && !controlBarRef.value.contains(event.target as Node)) {
 		activeDropdownField.value = null
@@ -664,11 +667,24 @@ onMounted(() => {
 	}
 	window.addEventListener('mousedown', handleClickOutside)
 
-	// Initialize Infinite Scroll
+	// Initialize Infinite Scroll — auto-fill if viewport not full
+	const tryLoadMore = async () => {
+		while (
+			loadMoreTrigger.value &&
+			discoveryStore.hasMore &&
+			!discoveryStore.isLoadingMore &&
+			!discoveryStore.isLoading &&
+			isElementInViewport(loadMoreTrigger.value)
+		) {
+			await discoveryStore.fetchMore()
+			await nextTick()
+		}
+	}
+
 	observer = new IntersectionObserver(
 		(entries) => {
-			if (entries[0]?.isIntersecting && discoveryStore.hasMore && !discoveryStore.isLoadingMore && !discoveryStore.isLoading) {
-				discoveryStore.fetchMore()
+			if (entries[0]?.isIntersecting) {
+				tryLoadMore()
 			}
 		},
 		{ threshold: 0.1 },
@@ -719,15 +735,6 @@ const exampleVideos = computed(() => {
 		thumbnail: item.related_data?.thumbnail || item.cover || '',
 		videoUrl: item.related_data?.assets?.[0] || '',
 	}))
-})
-
-const masonryColumns = computed(() => {
-	const cols: any[][] = [[], [], [], []]
-	exampleVideos.value.forEach((video, idx) => {
-		const targetCol = cols[idx % 4]
-		if (targetCol) targetCol.push(video)
-	})
-	return cols
 })
 
 const useExample = (examplePrompt: string) => {
