@@ -56,7 +56,7 @@
 						<!-- Left: Prompt Card -->
 						<div class="w-[260px] shrink-0">
 							<div
-								class="bg-[var(--background-gray-subtle,#f4f4f5)] dark:bg-[var(--background-gray-subtle)] rounded-2xl px-4 py-4 text-[13.5px] text-[var(--text-primary)] leading-relaxed tracking-tight whitespace-pre-wrap break-words flex flex-col gap-3 min-h-[90px]">
+								class="bg-[var(--background-gray-subtle,#f4f4f5)] dark:bg-[var(--background-gray-subtle)] rounded-2xl px-4 py-4 text-[13.5px] text-[var(--text-primary)] leading-relaxed tracking-tight whitespace-pre-wrap break-words flex flex-col gap-3 min-h-[90px] max-h-[300px] overflow-y-auto custom-scrollbar">
 								<span>{{ group.userMsg.content }}</span>
 								<div class="flex justify-end mt-auto">
 									<span class="text-[12px] text-[var(--text-tertiary)] flex items-center gap-1">
@@ -74,19 +74,24 @@
 
 						<!-- Right: Images or Loading -->
 						<div class="flex-1 min-w-0 flex flex-col gap-2">
-							<!-- Loading state -->
-							<div v-if="group.isLoading">
-								<div class="grid gap-1"
-									:class="Number(currentConversation?.params?.num_outputs || 1) === 4 ? 'grid-cols-2' : Number(currentConversation?.params?.num_outputs || 1) >= 3 ? 'grid-cols-3' : Number(currentConversation?.params?.num_outputs || 1) === 2 ? 'grid-cols-2' : 'grid-cols-1'">
-									<div v-for="n in Number(currentConversation?.params?.num_outputs || 1)" :key="n"
-										class="rounded-xl bg-[var(--background-gray-subtle,#f4f4f5)] overflow-hidden flex items-center justify-center"
-										style="aspect-ratio: 1 / 1">
-										<div class="flex flex-col items-center gap-2">
-											<div
-												class="w-5 h-5 border-2 border-[var(--border-light)] border-t-[var(--text-secondary)] rounded-full animate-spin">
-											</div>
-											<p class="text-[11px] text-[var(--text-tertiary)]">Generating...</p>
+							<!-- Loading state with progress -->
+							<div v-if="group.isLoading" class="max-w-[420px]">
+								<div class="relative rounded-xl bg-black/[0.03] dark:bg-white/[0.03] overflow-hidden flex items-center justify-center py-12 px-6">
+									<!-- Scan line animation -->
+									<div class="absolute inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[var(--text-tertiary)]/30 to-transparent z-10 pointer-events-none" style="animation: img-scan-y 3s linear infinite"></div>
+
+									<div class="flex flex-col items-center gap-3 z-20">
+										<!-- Progress ring -->
+										<div class="relative size-12 flex items-center justify-center">
+											<svg class="absolute inset-0 size-full -rotate-90" viewBox="0 0 100 100">
+												<circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" class="text-[var(--border-light)]" stroke-width="3" />
+												<circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" class="text-[var(--text-secondary)] transition-all duration-500 ease-out" stroke-width="4" stroke-linecap="round" stroke-dasharray="264" :stroke-dashoffset="264 - (264 * (chatStore.generationProgress || 0)) / 100" />
+											</svg>
+											<span class="text-[12px] font-bold text-[var(--text-primary)] tabular-nums">{{ chatStore.generationProgress || 0 }}%</span>
 										</div>
+										<p class="text-[11px] text-[var(--text-tertiary)] font-medium tracking-wide text-center">
+											{{ chatStore.generationStatus || 'Initializing...' }}
+										</p>
 									</div>
 								</div>
 							</div>
@@ -101,7 +106,6 @@
 										style="aspect-ratio: 1 / 1">
 										<img :src="url" class="w-full h-full object-cover block cursor-zoom-in"
 											@click="previewImage = url" />
-
 
 										<!-- Hover overlay: zoom + download -->
 										<div
@@ -139,6 +143,22 @@
 									</button>
 								</div>
 							</div>
+
+							<!-- Generation failed / empty state -->
+							<div v-else class="max-w-[420px]">
+								<div class="rounded-xl bg-[var(--background-gray-subtle,#f4f4f5)] dark:bg-white/[0.03] flex flex-col items-center justify-center gap-3 py-10 px-6" style="aspect-ratio: 4 / 3">
+									<div class="size-10 rounded-full bg-red-500/10 flex items-center justify-center">
+										<TriangleAlert :size="20" class="text-red-500" />
+									</div>
+									<p class="text-[13px] font-medium text-[var(--text-primary)]">{{ $t('chat.image_generation_failed_title') }}</p>
+									<p class="text-[12px] text-[var(--text-tertiary)] text-center leading-relaxed max-w-[240px]">{{ $t('chat.image_generation_failed_desc') }}</p>
+									<button @click="regenerateFromGroup(group)" :disabled="chatStore.isLoading"
+										class="mt-1 flex items-center gap-1.5 px-4 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[12px] font-semibold hover:opacity-90 transition-opacity disabled:opacity-40">
+										<RefreshCw :size="12" />
+										{{ $t('chat.retry') }}
+									</button>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -150,7 +170,7 @@
 						<!-- Card Header -->
 						<div
 							class="flex items-start justify-between px-4 pt-4 pb-3 border-b border-[var(--border-light)]">
-							<div class="flex-1 min-w-0 pr-4">
+							<div class="flex-1 min-w-0 pr-4 max-h-[200px] overflow-y-auto custom-scrollbar">
 								<p
 									class="text-[13.5px] text-[var(--text-primary)] leading-relaxed whitespace-pre-wrap break-words">
 									{{ group.userMsg.content }}</p>
@@ -244,7 +264,7 @@
 								<!-- View Mode -->
 								<div v-else class="relative group/bubble">
 									<div
-										class="bg-[var(--bg-chat-bubble-user)] text-[var(--text-primary)] px-5 py-3 rounded-[24px] text-[15px] font-medium leading-relaxed tracking-tight shadow-sm border border-[var(--border-light)]">
+										class="bg-[var(--bg-chat-bubble-user)] text-[var(--text-primary)] px-5 py-3 rounded-[24px] text-[15px] font-medium leading-relaxed tracking-tight shadow-sm border border-[var(--border-light)] max-h-[300px] overflow-y-auto custom-scrollbar">
 										<div class="whitespace-pre-wrap break-words">{{ message.content }}</div>
 									</div>
 
@@ -268,7 +288,7 @@
 							<!-- Bot Message -->
 							<div v-else
 								class="text-[var(--text-primary)] px-1 py-1 text-[15px] leading-relaxed tracking-tight break-words font-normal">
-								<div v-if="!message.content && chatStore.isLoading && chatStore.loadingConversationId === currentConversationId && currentConversation?.messages[currentConversation.messages.length - 1]?.id === message.id"
+								<div v-if="!message.content && chatStore.isLoading && String(chatStore.loadingConversationId) === String(currentConversationId) && currentConversation?.messages[currentConversation.messages.length - 1]?.id === message.id"
 									class="py-2">
 									<div class="flex space-x-1.5">
 										<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce"
@@ -282,7 +302,7 @@
 								<div v-else class="relative inline-block w-full">
 									<MarkdownContent :content="message.content" />
 									<span
-										v-if="chatStore.isLoading && chatStore.loadingConversationId === currentConversationId && currentConversation?.messages[currentConversation.messages.length - 1]?.id === message.id"
+										v-if="chatStore.isLoading && String(chatStore.loadingConversationId) === String(currentConversationId) && currentConversation?.messages[currentConversation.messages.length - 1]?.id === message.id"
 										class="inline-block w-1.5 h-4 bg-[var(--text-primary)] dark:bg-white ml-1 animate-pulse align-middle"></span>
 								</div>
 
@@ -826,6 +846,7 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ ssr: false })
 import { ref, computed, onMounted, watch, nextTick, h, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MarkdownContent from '../../components/MarkdownContent.vue'
@@ -842,7 +863,7 @@ import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import Tooltip from '../../components/Tooltip.vue'
 import AssetPickerModal from '../../components/AssetPickerModal.vue'
-import { Copy, Pencil, Plus, Globe, Settings, ArrowUp, Square, SlidersHorizontal, Loader2, X, FileText, Share2, RefreshCw, Palette, Gem, LayoutGrid, Check, ImagePlus, Monitor, Clock, Download, Expand } from 'lucide-vue-next'
+import { Copy, Pencil, Plus, Globe, Settings, ArrowUp, Square, SlidersHorizontal, Loader2, X, FileText, Share2, RefreshCw, Palette, Gem, LayoutGrid, Check, ImagePlus, Monitor, Clock, Download, Expand, TriangleAlert } from 'lucide-vue-next'
 import { fetchChatStream, generateImageStream, generateVideoStream, uploadFile, type ModelInputField } from '../../utils/api'
 import { generateConversationTitle, generateFollowUpQuestions } from '../../api/conversation'
 const { t } = useI18n()
@@ -1336,7 +1357,7 @@ const imageGenerationGroups = computed(() => {
 		}
 	}
 
-	const isCurrentlyLoading = chatStore.isLoading && chatStore.loadingConversationId === currentConversationId.value
+	const isCurrentlyLoading = chatStore.isLoading && String(chatStore.loadingConversationId) === String(currentConversationId.value)
 	const lastMsg = messages[messages.length - 1]
 
 	for (let i = 0; i < messages.length; i++) {
@@ -1384,7 +1405,7 @@ const videoGenerationGroups = computed(() => {
 		}
 	}
 
-	const isCurrentlyLoading = chatStore.isLoading && chatStore.loadingConversationId === currentConversationId.value
+	const isCurrentlyLoading = chatStore.isLoading && String(chatStore.loadingConversationId) === String(currentConversationId.value)
 	const lastMsg = messages[messages.length - 1]
 
 	for (let i = 0; i < messages.length; i++) {
@@ -1724,6 +1745,9 @@ const sendMessage = async (isInitial = false) => {
 
 	// 3. Set loading and add assistant placeholder
 	chatStore.setLoading(true, conversationId)
+	if (isImageModel.value || isVideoModel.value) {
+		chatStore.startFakeProgress()
+	}
 	abortController.value = new AbortController()
 
 	try {
@@ -1774,7 +1798,11 @@ const sendMessage = async (isInitial = false) => {
 					onTask: (data) => {
 						console.log('Task started:', data)
 					},
+					onProgress: (percent, message) => {
+						chatStore.setGenerationProgress(percent, message)
+					},
 					onImage: (data) => {
+						chatStore.completeGeneration()
 						if (isVideoModel.value) {
 							conversationStore.updateLastMessageContent(conversationId, JSON.stringify({ capability: 'video', data: [{ type: 'video', url: data.url }] }))
 						} else {
@@ -1782,6 +1810,7 @@ const sendMessage = async (isInitial = false) => {
 						}
 					},
 					onDone: () => {
+						chatStore.completeGeneration()
 						abortController.value = null
 						triggerTitleGeneration(conversationId, [{ role: 'user', content: userMessage }])
 					},
@@ -1974,6 +2003,13 @@ const handleMessageClick = (e: MouseEvent) => {
 </script>
 
 <style scoped lang="scss">
+@keyframes img-scan-y {
+	0% { top: 0; opacity: 0; }
+	10% { opacity: 1; }
+	90% { opacity: 1; }
+	100% { top: 100%; opacity: 0; }
+}
+
 .custom-scrollbar {
 	scrollbar-width: thin;
 	scrollbar-color: rgba(156, 163, 175, 0.1) transparent;

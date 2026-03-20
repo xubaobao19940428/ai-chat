@@ -604,7 +604,7 @@ const categories = [
 	{ id: 26, name: 'lifestyle' },
 	{ id: 33, name: 'scifi' },
 	{ id: 29, name: 'ui' },
-	{ id: 34, name: 'uncategorized' },
+	// { id: 34, name: 'uncategorized' },
 ]
 
 const generatedImages = ref<AsyncTaskRecord[]>([])

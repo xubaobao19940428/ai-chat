@@ -620,10 +620,10 @@ const categories = [
 		id: 47,
 		name: 'healing',
 	},
-	{
-		id: 45,
-		name: 'uncategorized',
-	},
+	// {
+	// 	id: 45,
+	// 	name: 'uncategorized',
+	// },
 ]
 
 const generatedVideos = ref<AsyncTaskRecord[]>([])

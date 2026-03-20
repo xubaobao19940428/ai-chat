@@ -1,8 +1,10 @@
-import { ref, watch, onMounted, onUnmounted, nextTick, type Ref } from 'vue'
+import { ref, watch, onMounted, onUnmounted, type Ref } from 'vue'
 
-export function useMasonry<T extends { id: number | string }>(getItems: () => T[]) {
+type MasonryItem = { id: number | string; [key: string]: any }
+
+export function useMasonry(getItems: () => MasonryItem[]) {
 	const columnCount = ref(4)
-	const columns = ref<T[][]>([]) as Ref<T[][]>
+	const columns = ref<MasonryItem[][]>([]) as Ref<MasonryItem[][]>
 	const columnElRefs = ref<HTMLElement[]>([])
 	let processedCount = 0
 
@@ -17,7 +19,7 @@ export function useMasonry<T extends { id: number | string }>(getItems: () => T[
 	// Full reset: round-robin (no DOM heights available yet)
 	const resetColumns = () => {
 		const count = columnCount.value
-		const cols: T[][] = Array.from({ length: count }, () => [])
+		const cols: MasonryItem[][] = Array.from({ length: count }, () => [])
 		const allItems = getItems()
 		allItems.forEach((item, idx) => {
 			cols[idx % count]!.push(item)
@@ -41,8 +43,7 @@ export function useMasonry<T extends { id: number | string }>(getItems: () => T[
 		for (const item of newItems) {
 			const minIdx = heights.indexOf(Math.min(...heights))
 			cols[minIdx]!.push(item)
-			// Estimate height for new item so subsequent items distribute evenly
-			heights[minIdx] += 300
+			heights[minIdx] = (heights[minIdx] || 0) + 300
 		}
 
 		columns.value = cols
@@ -57,10 +58,8 @@ export function useMasonry<T extends { id: number | string }>(getItems: () => T[
 			!oldItems ||
 			newItems.length < processedCount
 		) {
-			// Column count mismatch, first load, or items reset (category change)
 			resetColumns()
 		} else if (newItems.length > processedCount) {
-			// New items appended (pagination)
 			appendItems()
 		}
 	}, { immediate: true })

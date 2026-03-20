@@ -11,11 +11,9 @@
 	</div>
 </template>
 
-<script setup lang="ts" generic="T extends { id: number | string }">
-import { useMasonry } from '~/composables/useMasonry'
-
+<script setup lang="ts">
 const props = defineProps<{
-	items: T[]
+	items: Array<{ id: number | string; [key: string]: any }>
 }>()
 
 const { columns, columnCount, columnElRefs } = useMasonry(() => props.items)

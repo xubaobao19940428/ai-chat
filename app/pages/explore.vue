@@ -165,10 +165,10 @@ const filterTags = [
 		id: 4,
 		name: 'tools',
 	},
-	{
-		id: 9,
-		name: 'uncategorized',
-	},
+	// {
+	// 	id: 9,
+	// 	name: 'uncategorized',
+	// },
 ]
 
 // Load initial data

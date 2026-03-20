@@ -39,6 +39,8 @@
 		"send_failed": "Failed to send. Please check your connection and retry.",
 		"retry": "Retry",
 		"connection_failed": "Connection failed. Please try again.",
+		"image_generation_failed_title": "Generation failed",
+		"image_generation_failed_desc": "Unable to generate image. This may be due to content restrictions or a temporary issue. Please try again.",
 		"drag_drop_title": "Drop files here to upload",
 		"drag_drop_subtitle": "Supports images and files"
 	},
