@@ -329,6 +329,17 @@
 										<RefreshCw :size="15" :class="chatStore.isLoading ? 'animate-spin' : ''" />
 									</button>
 								</div>
+
+								<!-- Derivative follow-up questions from history -->
+								<div v-if="derivativeQuestionsMap.get(String(message.id))?.length"
+									class="mt-3 flex flex-col gap-2 max-w-[600px]">
+									<button v-for="(q, i) in derivativeQuestionsMap.get(String(message.id))" :key="i"
+										@click="fillFollowUpQuestion(q)"
+										class="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.07] dark:hover:bg-white/[0.1] text-[14px] text-[var(--text-primary)] text-left transition-colors group/fq">
+										<span>{{ q }}</span>
+										<span class="text-[var(--text-tertiary)] group-hover/fq:text-[var(--text-secondary)] shrink-0 transition-colors">→</span>
+									</button>
+								</div>
 							</div>
 
 							<!-- Time/Meta (Hidden by default, shown on hover) -->
@@ -1139,16 +1150,31 @@ const stopGeneration = () => {
 const currentConversationId = computed(() => route.params.id as string)
 const currentConversation = computed(() => conversationStore.currentConversation)
 
-// Only show derivative messages whose parent_id is the last non-derivative message
+// Filter out derivative messages from the main list — they are shown inline below their parent assistant message
 const visibleMessages = computed(() => {
 	const msgs = currentConversation.value?.messages
 	if (!msgs) return []
-	const nonDerivative = msgs.filter((m: any) => m.role !== 'derivative')
-	const lastNonDerivative = nonDerivative[nonDerivative.length - 1]
-	return msgs.filter((m: any) => {
-		if (m.role !== 'derivative') return true
-		return lastNonDerivative && String(m.parent_id) === String(lastNonDerivative.id)
-	})
+	return msgs.filter((m: any) => m.role !== 'derivative')
+})
+
+// Build a map: assistant message id -> derivative questions (by message order, derivative follows its assistant)
+const derivativeQuestionsMap = computed(() => {
+	const msgs = currentConversation.value?.messages
+	if (!msgs) return new Map<string, string[]>()
+	const map = new Map<string, string[]>()
+	let lastAssistantId: string | null = null
+	for (const m of msgs) {
+		if (m.role === 'assistant') {
+			lastAssistantId = String(m.id)
+		} else if (m.role === 'derivative' && lastAssistantId) {
+			const questions = m.content.split('\n').map((q: string) => q.replace(/^\d+\.\s*/, '').trim()).filter((q: string) => q.length > 0)
+			if (questions.length > 0) {
+				const existing = map.get(lastAssistantId) || []
+				map.set(lastAssistantId, [...existing, ...questions])
+			}
+		}
+	}
+	return map
 })
 
 const currentCharacter = computed(() => {
