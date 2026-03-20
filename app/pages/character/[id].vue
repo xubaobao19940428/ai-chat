@@ -32,29 +32,25 @@
 							<div class="flex-1 h-px bg-[var(--border-light)] opacity-40"></div>
 						</div>
 
-						<div v-if="!conversationId" class="flex flex-col items-start pt-12 pb-16 animate-in fade-in slide-in-from-bottom-6 duration-700">
-							<!-- Character Header: Avatar + Info -->
-							<div class="flex items-center gap-7 mb-6 w-full">
-								<div class="w-[100px] h-[100px] rounded-[32px] overflow-hidden bg-[var(--fill-tsp-white-main)] shadow-xl border-4 border-white flex-shrink-0">
-									<img v-if="character.avatar" :src="character.avatar" class="w-full h-full object-cover" />
-									<div v-else class="w-full h-full flex items-center justify-center text-4xl">🤖</div>
-								</div>
-								<div class="flex flex-col gap-1.5 text-left">
-									<h1 class="text-[32px] font-black text-[var(--text-primary)] leading-none tracking-tight">{{ character.name }}</h1>
-								</div>
+						<div v-if="!conversationId" class="flex flex-col items-center pt-12 pb-16 animate-in fade-in slide-in-from-bottom-6 duration-700">
+							<!-- Avatar -->
+							<div class="w-[88px] h-[88px] rounded-full overflow-hidden border-2 border-[var(--border-light)] bg-[var(--bg-main)] flex-shrink-0 mb-6">
+								<img v-if="character.avatar" :src="character.avatar" class="w-full h-full object-cover" />
+								<div v-else class="w-full h-full flex items-center justify-center text-4xl">🤖</div>
 							</div>
+
+							<!-- Name -->
+							<h1 class="text-[28px] font-black text-[var(--text-primary)] leading-none tracking-tight mb-4 text-center">{{ character.name }}</h1>
 
 							<!-- Description -->
-							<div class="mb-8 w-full">
-								<p class="text-[17px] text-[var(--text-secondary)] leading-relaxed font-medium opacity-90 text-left">
-									{{ character.description }}
-								</p>
-							</div>
+							<p class="text-[15px] text-[var(--text-secondary)] leading-relaxed font-normal max-w-[480px] text-center mb-10">
+								{{ character.description }}
+							</p>
 
-							<!-- Suggested Questions (Follow-up Style) -->
-							<div class="flex flex-col gap-2 w-full max-w-[600px]">
-								<button v-for="(q, idx) in ['你能帮我分析一下最近的数据吗？', '多种条件怎么求和？', '写一个关于职场成长的建议列表', '帮我写一个工作总结模板']" :key="idx" @click="handleSuggestedQuestionClick(q)" class="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.07] dark:hover:bg-white/[0.1] text-[14px] text-[var(--text-primary)] text-left transition-colors group/fq">
-									<span>{{ q }}</span>
+							<!-- Suggested Questions (2-column grid, bordered) -->
+							<div v-if="suggestedQuestions.length" class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-[700px]">
+								<button v-for="(q, idx) in suggestedQuestions" :key="idx" @click="handleSuggestedQuestionClick(q)" class="flex items-center justify-between gap-3 h-[52px] px-5 rounded-2xl border border-[var(--border-light)] hover:border-[var(--border-main)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04] text-[14px] text-[var(--text-primary)] text-left transition-colors group/fq">
+									<span class="truncate">{{ q }}</span>
 									<span class="text-[var(--text-tertiary)] group-hover/fq:text-[var(--text-secondary)] shrink-0 transition-colors">→</span>
 								</button>
 							</div>
@@ -160,6 +156,13 @@ const tabs = [
 	{ key: 'welcome', label: 'Welcome', icon: markRaw(ThumbsUp) },
 	{ key: 'api', label: 'API', icon: markRaw(Code) },
 ]
+
+// Suggested questions: prefer character's related_data, fallback to defaults
+const suggestedQuestions = computed(() => {
+	const custom = character.value?.related_data?.suggested_questions
+	if (Array.isArray(custom) && custom.length > 0) return custom
+	return ['你能帮我分析一下最近的数据吗？', '多种条件怎么求和？', '写一个关于职场成长的建议列表', '帮我写一个工作总结模板']
+})
 
 // Derive messages from the store for the current conversation
 const storeMessages = computed(() => {

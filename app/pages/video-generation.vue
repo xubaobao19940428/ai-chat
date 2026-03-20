@@ -29,7 +29,7 @@
 					<!-- Masonry Skeleton Grid -->
 					<div v-if="discoveryStore.isLoading && exampleVideos.length === 0" class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
 						<div v-for="i in 8" :key="i" class="break-inside-avoid relative rounded-2xl overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] animate-pulse shadow-sm">
-							<div class="aspect-[9/16] bg-[var(--fill-tsp-gray-main)]"></div>
+							<div :style="{ aspectRatio: skeletonRatios[i - 1] }" class="bg-[var(--fill-tsp-gray-main)]"></div>
 							<div class="absolute inset-x-0 bottom-0 p-6 space-y-3">
 								<div class="h-3 bg-[var(--text-primary)]/10 rounded w-full"></div>
 								<div class="h-3 bg-[var(--text-primary)]/10 rounded w-2/3"></div>
@@ -40,8 +40,8 @@
 
 					<!-- Masonry Grid Layout for Inspiration -->
 					<MasonryGrid v-else :items="exampleVideos" v-slot="{ item: example }">
-						<div class="group relative rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--text-tertiary)] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md h-fit" style="content-visibility: auto; contain-intrinsic-size: 300px 400px" @click="useExample(example.prompt)" @mouseenter="hoveredIndex = example.id" @mouseleave="hoveredIndex = null">
-							<img :src="example.thumbnail" loading="lazy" class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105" :alt="example.prompt" />
+						<div class="group relative rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--text-tertiary)] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md h-fit" @click="useExample(example.prompt)" @mouseenter="hoveredIndex = example.id" @mouseleave="hoveredIndex = null">
+							<img :src="example.thumbnail" loading="lazy" class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105 bg-[#f0eeeb] dark:bg-[#2c2c2c]" :alt="example.prompt" :style="{ minHeight: '200px' }" @load="($event.target as HTMLImageElement).style.minHeight = 'auto'" />
 
 							<!-- Hover Video (PC Only) -->
 							<video v-if="hoveredIndex === example.id && example.videoUrl" :src="example.videoUrl" autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover hidden md:block z-0" />
@@ -555,6 +555,7 @@ const toggleDropdown = (key: string) => {
 
 const activeTab = ref<'inspiration' | 'creations'>('inspiration')
 const prompt = ref('')
+const skeletonRatios = Array.from({ length: 8 }, () => `9/${Math.floor(12 + Math.random() * 8)}`)
 interface ActiveTask {
 	id: string
 	taskId?: string

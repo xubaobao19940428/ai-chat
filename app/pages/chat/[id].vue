@@ -332,10 +332,10 @@
 
 								<!-- Derivative follow-up questions from history -->
 								<div v-if="derivativeQuestionsMap.get(String(message.id))?.length"
-									class="mt-3 flex flex-col gap-2 max-w-[600px]">
+									class="mt-3 flex flex-col gap-2 items-start">
 									<button v-for="(q, i) in derivativeQuestionsMap.get(String(message.id))" :key="i"
 										@click="fillFollowUpQuestion(q)"
-										class="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.07] dark:hover:bg-white/[0.1] text-[14px] text-[var(--text-primary)] text-left transition-colors group/fq">
+										class="h-[38px] flex items-center gap-2 px-4 rounded-full bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.07] dark:hover:bg-white/[0.1] text-[13px] text-[var(--text-primary)] transition-colors group/fq">
 										<span>{{ q }}</span>
 										<span class="text-[var(--text-tertiary)] group-hover/fq:text-[var(--text-secondary)] shrink-0 transition-colors">→</span>
 									</button>
@@ -371,13 +371,13 @@
 				</div>
 				<!-- Follow-up Questions -->
 				<div v-if="followUpLoading || followUpQuestions.length > 0"
-					class="mt-4 ml-12 flex flex-col gap-2 max-w-[600px]">
+					class="mt-4 ml-12 flex flex-col gap-2 items-start">
 					<template v-if="followUpLoading">
 						<div v-for="i in 3" :key="i"
-							class="h-[46px] rounded-2xl bg-[var(--background-gray-subtle)] animate-pulse" />
+							class="h-[38px] w-[180px] rounded-full bg-[var(--background-gray-subtle)] animate-pulse" />
 					</template>
 					<button v-else v-for="(q, i) in followUpQuestions" :key="i" @click="fillFollowUpQuestion(q)"
-						class="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.07] dark:hover:bg-white/[0.1] text-[14px] text-[var(--text-primary)] text-left transition-colors group/fq">
+						class="h-[38px] flex items-center gap-2 px-4 rounded-full bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.07] dark:hover:bg-white/[0.1] text-[13px] text-[var(--text-primary)] transition-colors group/fq">
 						<span>{{ q }}</span>
 						<span
 							class="text-[var(--text-tertiary)] group-hover/fq:text-[var(--text-secondary)] shrink-0 transition-colors">→</span>
