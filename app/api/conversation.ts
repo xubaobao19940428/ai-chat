@@ -2,7 +2,7 @@ import request from '../utils/request'
 
 // Conversation Types
 export interface CreateConversationParams {
-  character_id: number
+  character_id?: number
   title?: string
   model_id?: number
   group_id?: number
@@ -124,13 +124,14 @@ export const generateConversationTitle = async (
 }
 
 export const generateFollowUpQuestions = async (
+  conversationId: number | string,
   messages: { role: string; content: string }[],
   onDone: (questions: string[]) => void,
 ): Promise<void> => {
   const { randomString, generateSign } = await import('../utils/sign')
   const runtimeConfig = useRuntimeConfig().public
 
-  const requestBody = { messages }
+  const requestBody = { conversation_id: Number(conversationId), messages }
   const timestamp = Math.floor(Date.now() / 1000)
   const nonce = randomString(16)
   const allParams: Record<string, any> = { ...requestBody, timestamp, nonce }

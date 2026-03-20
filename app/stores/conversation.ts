@@ -193,7 +193,7 @@ export const useConversationStore = defineStore('conversation', () => {
 
 
   // 创建新会话 — 乐观更新，不再阻塞等 fetchConversations
-  const createConversation = async (params: { character_id: number, group_id?: number, model?: string, model_id?: number, params?: Record<string, any>, capability?: string }) => {
+  const createConversation = async (params: { character_id?: number, group_id?: number, model?: string, model_id?: number, params?: Record<string, any>, capability?: string }) => {
     try {
       const res: any = await apiCreateConversation({
         character_id: params.character_id,

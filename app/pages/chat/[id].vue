@@ -1871,6 +1871,7 @@ const sendMessage = async (isInitial = false) => {
 					// 生成衍生问题
 					followUpLoading.value = true
 					generateFollowUpQuestions(
+						conversationId,
 						[{ role: 'user', content: userMessage }, { role: 'assistant', content: assistantContent }],
 						(questions) => {
 							followUpQuestions.value = questions

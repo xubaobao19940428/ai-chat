@@ -25,7 +25,6 @@ const handleWelcomeSendMessage = async (content: string, model: string, options?
 
 	// 1. Create new conversation
 	const conversationId = await conversationStore.createConversation({
-		character_id: 1,
 		model: model,
 		model_id: modelStore.selectedModel?.id,
 		group_id: conversationStore.selectedGroupId || 0,
