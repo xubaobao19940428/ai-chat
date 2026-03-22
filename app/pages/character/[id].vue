@@ -26,34 +26,44 @@
 				<div class="flex-1 overflow-y-auto custom-scrollbar px-5 pb-36 pt-6" ref="scrollContainer">
 					<div class="max-w-[1100px] mx-auto w-full">
 						<!-- Date Separator -->
-						<div class="flex items-center gap-3 mb-8">
-							<div class="flex-1 h-px bg-[var(--border-light)] opacity-40"></div>
-							<span class="text-[10px] text-[var(--text-disable)] font-medium tracking-widest uppercase flex-shrink-0">{{ todayStr }}</span>
-							<div class="flex-1 h-px bg-[var(--border-light)] opacity-40"></div>
+						<div class="flex justify-center mb-12">
+							<span class="text-[10px] text-[var(--text-disable)] font-bold tracking-widest uppercase">{{ todayStr }}</span>
 						</div>
 
 						<div v-if="!conversationId" class="flex flex-col items-center pt-12 pb-16 animate-in fade-in slide-in-from-bottom-6 duration-700">
-							<!-- Avatar -->
-							<div class="w-[88px] h-[88px] rounded-full overflow-hidden border-2 border-[var(--border-light)] bg-[var(--bg-main)] flex-shrink-0 mb-6">
-								<img v-if="character.avatar" :src="character.avatar" class="w-full h-full object-cover" />
-								<div v-else class="w-full h-full flex items-center justify-center text-4xl">🤖</div>
+							<!-- Character Profile Section (Centered) -->
+							<div class="flex flex-col items-center mb-12">
+								<!-- Avatar -->
+								<div class="w-[88px] h-[88px] rounded-2xl overflow-hidden border-2 border-[var(--border-light)] bg-[var(--bg-main)] flex-shrink-0 mb-6 shadow-sm">
+									<img v-if="character.avatar" :src="character.avatar" class="w-full h-full object-cover" />
+									<div v-else class="w-full h-full flex items-center justify-center text-4xl">🤖</div>
+								</div>
+
+								<!-- Name -->
+								<h1 class="text-[28px] font-black text-[var(--text-primary)] leading-tight tracking-tight mb-4 text-center">{{ character.name }}</h1>
+
+								<!-- Description -->
+								<p class="text-[15px] text-[var(--text-secondary)] leading-relaxed font-normal max-w-[480px] text-center">
+									{{ character.description }}
+								</p>
 							</div>
 
-							<!-- Name -->
-							<h1 class="text-[28px] font-black text-[var(--text-primary)] leading-none tracking-tight mb-4 text-center">{{ character.name }}</h1>
-
-							<!-- Description -->
-							<p class="text-[15px] text-[var(--text-secondary)] leading-relaxed font-normal max-w-[480px] text-center mb-10">
-								{{ character.description }}
-							</p>
-
-							<!-- Suggested Questions (2-column grid, bordered) -->
-							<div v-if="suggestedQuestions.length" class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-[700px]">
-								<button v-for="(q, idx) in suggestedQuestions" :key="idx" @click="handleSuggestedQuestionClick(q)" class="flex items-center justify-between gap-3 h-[52px] px-5 rounded-2xl border border-[var(--border-light)] hover:border-[var(--border-main)] hover:bg-black/[0.02] dark:hover:bg-white/[0.04] text-[14px] text-[var(--text-primary)] text-left transition-colors group/fq">
-									<span class="truncate">{{ q }}</span>
-									<span class="text-[var(--text-tertiary)] group-hover/fq:text-[var(--text-secondary)] shrink-0 transition-colors">→</span>
-								</button>
+							<!-- Character Welcome Block (Visible) -->
+							<div v-if="welcomeMessage" class="w-full max-w-[700px] mb-12 px-4 sm:px-0">
+								<div class="flex gap-3">
+									<div class="flex-shrink-0 mt-0.5">
+										<div class="size-6 rounded-md overflow-hidden border border-[var(--border-light)] bg-[var(--bg-main)] flex items-center justify-center shadow-sm">
+											<img v-if="character.avatar" :src="character.avatar" class="w-full h-full object-cover" />
+											<Bot v-else :size="12" class="text-[var(--text-secondary)]" />
+										</div>
+									</div>
+									<div class="flex flex-col">
+										<span class="text-[14px] font-bold text-[var(--text-primary)] mb-1">{{ character.name }}</span>
+										<div class="text-[15px] text-[var(--text-primary)] leading-relaxed whitespace-pre-wrap opacity-90">{{ welcomeMessage }}</div>
+									</div>
+								</div>
 							</div>
+
 						</div>
 
 						<!-- First Welcome Bubble (Logic Preservation) -->
@@ -100,10 +110,18 @@
 
 				<!-- Floating Input Area -->
 				<div class="flex-shrink-0 px-4 pb-8 pt-2 absolute bottom-0 left-0 right-0 z-50 pointer-events-none">
-					<div class="max-w-[840px] mx-auto relative pointer-events-auto">
+					<div class="max-w-[840px] mx-auto relative pointer-events-auto flex flex-col gap-4">
+						<!-- Suggested Questions (2x2 grid) - Moved here -->
+						<div v-if="!conversationId && suggestedQuestions.length" class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full px-1">
+							<button v-for="(q, idx) in suggestedQuestions" :key="idx" @click="handleSuggestedQuestionClick(q)" class="flex items-center justify-between gap-3 h-[48px] px-4 rounded-xl border border-[var(--border-light)] bg-[var(--bg-main)]/50 backdrop-blur-sm hover:border-[var(--border-main)] hover:bg-[var(--bg-main)] text-[13px] text-[var(--text-primary)] text-left transition-all group/fq shadow-sm">
+								<span class="truncate">{{ q }}</span>
+								<span class="text-[var(--text-tertiary)] group-hover/fq:text-[var(--text-secondary)] shrink-0 transition-colors">→</span>
+							</button>
+						</div>
+
 						<div class="bg-[var(--bg-main)] rounded-[24px] border border-[var(--border-light)] py-3 px-2 shadow-[0_12px_44px_rgba(0,0,0,0.08)] flex flex-col gap-3 transition-all duration-300 focus-within:border-[var(--border-main)]">
 							<div class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 w-full text-[var(--text-primary)] placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[56px] max-h-[216px] custom-scrollbar">
-								<div ref="inputRef" contenteditable="true" class="w-full outline-none font-normal" :data-placeholder="character?.welcome || '发消息...'" @input="handleInput" @keydown.enter="handleEnterKey" @paste="handlePaste"></div>
+								<div ref="inputRef" contenteditable="true" class="w-full outline-none font-normal" :data-placeholder="`给 ${character?.name || ''} 发消息...`" @input="handleInput" @keydown.enter="handleEnterKey" @paste="handlePaste"></div>
 							</div>
 							<div class="flex items-center justify-end px-2">
 								<button @click="sendMessage" :disabled="!inputMessage.trim() || isStreaming" class="flex items-center justify-center size-8 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] hover:opacity-90 transition-all disabled:opacity-30 disabled:pointer-events-none">
