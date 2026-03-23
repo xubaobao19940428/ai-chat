@@ -1111,9 +1111,7 @@ const regenerateFromGroup = (group: { userMsg: any }) => {
 
 const fillFollowUpQuestion = (q: string) => {
 	inputMessage.value = q
-	if (editor.value) {
-		editor.value.commands.setContent(q)
-	}
+	unifiedInputRef.value?.setContent(q)
 }
 
 const reuseGroupPrompt = (group: { userMsg: any }) => {
