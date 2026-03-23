@@ -40,7 +40,14 @@
 		"retry": "再試行",
 		"connection_failed": "接続に失敗しました。再試行してください。",
 		"drag_drop_title": "ファイルをここにドロップしてアップロード",
-		"drag_drop_subtitle": "画像とファイルに対応"
+		"drag_drop_subtitle": "画像とファイルに対応",
+		"loading_messages": "メッセージを読み込み中...",
+		"reuse_params": "パラメータを再利用",
+		"download_all": "すべてダウンロード",
+		"generating_video": "動画を生成中...",
+		"video_generation_failed": "動画生成に失敗しました",
+		"copy_prompt": "プロンプトをコピー",
+		"download": "ダウンロード"
 	},
 	"common": {
 		"confirm": "確認",
@@ -75,7 +82,15 @@
 		"ai-image": "AI画像生成",
 		"ai-video": "AI動画生成",
 		"no_models_found": "モデルが見つかりません",
-		"edit": "編集"
+		"edit": "編集",
+		"free_plan_label": "無料",
+		"sign_in": "サインイン",
+		"use_prompt": "プロンプトを使用",
+		"expanding_vision": "ビジョンを拡張",
+		"end_of_list": "リストの末尾",
+		"aspect_ratio": "アスペクト比",
+		"duration_label": "時間",
+		"outputs_quantity": "出力数"
 	},
 	"settings": {
 		"usage": "使用状況",

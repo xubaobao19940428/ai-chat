@@ -40,7 +40,14 @@
 		"retry": "다시 시도",
 		"connection_failed": "연결에 실패했습니다. 다시 시도해 주세요.",
 		"drag_drop_title": "파일을 여기에 드래그하여 업로드",
-		"drag_drop_subtitle": "이미지 및 파일 지원"
+		"drag_drop_subtitle": "이미지 및 파일 지원",
+		"loading_messages": "메시지 로딩 중...",
+		"reuse_params": "매개변수 재사용",
+		"download_all": "모두 다운로드",
+		"generating_video": "동영상 생성 중...",
+		"video_generation_failed": "동영상 생성 실패",
+		"copy_prompt": "프롬프트 복사",
+		"download": "다운로드"
 	},
 	"common": {
 		"confirm": "확인",
@@ -75,7 +82,15 @@
 		"ai-image": "AI 이미지 생성",
 		"ai-video": "AI 동영상 생성",
 		"no_models_found": "모델을 찾을 수 없습니다",
-		"edit": "편집"
+		"edit": "편집",
+		"free_plan_label": "무료",
+		"sign_in": "로그인",
+		"use_prompt": "프롬프트 사용",
+		"expanding_vision": "비전 확장",
+		"end_of_list": "목록 끝",
+		"aspect_ratio": "화면 비율",
+		"duration_label": "길이",
+		"outputs_quantity": "출력 수"
 	},
 	"settings": {
 		"usage": "사용량",

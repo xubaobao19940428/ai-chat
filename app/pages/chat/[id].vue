@@ -47,7 +47,7 @@
 					<div
 						class="w-10 h-10 border-4 border-[var(--border-light)] border-t-[var(--text-primary)] rounded-full animate-spin">
 					</div>
-					<p class="text-[var(--text-tertiary)] text-sm font-medium animate-pulse">Loading messages...</p>
+					<p class="text-[var(--text-tertiary)] text-sm font-medium animate-pulse">{{ $t('chat.loading_messages') }}</p>
 				</div>
 
 				<!-- Image Generation Mode: Prompt left, Images right -->
@@ -138,17 +138,17 @@
 									<button @click="regenerateFromGroup(group)" :disabled="chatStore.isLoading"
 										class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-40">
 										<RefreshCw :size="12" />
-										Retry
+										{{ $t('chat.retry') }}
 									</button>
 									<button @click="reuseGroupPrompt(group)"
 										class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors">
 										<ArrowUp :size="12" />
-										Reuse parameters
+										{{ $t('chat.reuse_params') }}
 									</button>
 									<button @click="downloadAllImages(group.images)"
 										class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors">
 										<Download :size="12" />
-										Download all
+										{{ $t('chat.download_all') }}
 									</button>
 								</div>
 							</div>
@@ -198,18 +198,26 @@
 
 						<!-- Card Body: Video or Loading -->
 						<div class="bg-black">
-							<!-- Loading state -->
-							<div v-if="group.isLoading" class="flex flex-col items-center justify-center gap-3 py-14">
-								<div class="w-7 h-7 border-2 border-white/20 border-t-white rounded-full animate-spin">
+							<!-- Loading state (polished) -->
+							<div v-if="group.isLoading" class="relative flex flex-col items-center justify-center gap-4 py-16 overflow-hidden">
+								<div class="absolute inset-0 bg-gradient-to-b from-white/[0.02] via-white/[0.06] to-white/[0.02] animate-pulse"></div>
+								<div class="relative">
+									<div class="w-10 h-10 border-2 border-white/10 border-t-white/80 rounded-full animate-spin"></div>
+									<div class="absolute inset-0 w-10 h-10 border-2 border-white/5 border-b-white/30 rounded-full animate-spin" style="animation-direction: reverse; animation-duration: 1.5s;"></div>
 								</div>
-								<p class="text-[12px] text-white/60">Generating video...</p>
+								<p class="text-[12px] text-white/50 font-medium tracking-wider">{{ $t('chat.generating_video') }}</p>
 							</div>
 							<!-- Video player -->
 							<video v-else-if="group.videoUrl" :src="group.videoUrl" controls playsinline
 								class="w-full max-h-[480px] object-contain"></video>
-							<!-- Error / empty state -->
-							<div v-else class="flex items-center justify-center py-16 text-white/40 text-[13px]">
-								Video generation failed
+							<!-- Error state (with inline retry) -->
+							<div v-else class="flex flex-col items-center justify-center gap-3 py-14">
+								<div class="text-white/30 text-[13px]">{{ $t('chat.video_generation_failed') }}</div>
+								<button @click="regenerateFromGroup(group)" :disabled="chatStore.isLoading"
+									class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/60 hover:text-white text-[12px] transition-colors disabled:opacity-40">
+									<RefreshCw :size="12" />
+									{{ $t('chat.retry') }}
+								</button>
 							</div>
 						</div>
 
@@ -219,22 +227,22 @@
 							<button @click="regenerateFromGroup(group)" :disabled="chatStore.isLoading"
 								class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-40 text-[12px] whitespace-nowrap">
 								<RefreshCw :size="12" />
-								Retry
+								{{ $t('chat.retry') }}
 							</button>
 							<button @click="reuseGroupPrompt(group)"
 								class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors text-[12px] whitespace-nowrap">
 								<ArrowUp :size="12" />
-								Reuse parameters
+								{{ $t('chat.reuse_params') }}
 							</button>
 							<button v-if="group.videoUrl" @click="copyMessage(group.userMsg.content)"
 								class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors text-[12px] whitespace-nowrap">
 								<Copy :size="12" />
-								Copy prompt
+								{{ $t('chat.copy_prompt') }}
 							</button>
 							<a v-if="group.videoUrl" :href="group.videoUrl" download="video.mp4" target="_blank"
 								class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors text-[12px] whitespace-nowrap">
 								<Download :size="12" />
-								Download
+								{{ $t('chat.download') }}
 							</a>
 						</div>
 					</div>
@@ -358,7 +366,7 @@
 
 							<!-- Time/Meta (Hidden by default, shown on hover) -->
 							<div
-								class="mt-1 px-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2 text-[11px] text-[var(--text-tertiary)] font-medium">
+							class="mt-1 px-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex gap-2 text-[11px] text-[var(--text-tertiary)] font-medium">
 								<span>{{ message.role === 'user' ? 'You' : getModelDisplayName(message.model ||
 									currentConversation?.model, currentConversation?.modelId) }}</span>
 								<ClientOnly>

@@ -91,7 +91,7 @@
 					</div>
 
 					<!-- Voice Input -->
-					<button class="flex items-center justify-center cursor-pointer hover:bg-[var(--fill-tsp-gray-main)] size-10 flex-shrink-0 rounded-full transition-colors self-end">
+					<button disabled :title="$t('chat.voice_input')" class="flex items-center justify-center size-10 flex-shrink-0 rounded-full transition-colors self-end opacity-30 cursor-not-allowed">
 						<Mic :size="18" class="text-[var(--text-secondary)]" />
 					</button>
 

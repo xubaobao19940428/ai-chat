@@ -40,7 +40,14 @@
 		"retry": "Réessayer",
 		"connection_failed": "Connexion échouée. Veuillez réessayer.",
 		"drag_drop_title": "Déposez les fichiers ici pour les télécharger",
-		"drag_drop_subtitle": "Supporte les images et les fichiers"
+		"drag_drop_subtitle": "Supporte les images et les fichiers",
+		"loading_messages": "Chargement des messages...",
+		"reuse_params": "Réutiliser les paramètres",
+		"download_all": "Tout télécharger",
+		"generating_video": "Génération de la vidéo...",
+		"video_generation_failed": "Échec de la génération vidéo",
+		"copy_prompt": "Copier le prompt",
+		"download": "Télécharger"
 	},
 	"common": {
 		"confirm": "Confirmer",
@@ -75,7 +82,15 @@
 		"ai-image": "Générateur d'images IA",
 		"ai-video": "Générateur de vidéos IA",
 		"no_models_found": "Aucun modèle trouvé",
-		"edit": "Modifier"
+		"edit": "Modifier",
+		"free_plan_label": "Gratuit",
+		"sign_in": "Se connecter",
+		"use_prompt": "Utiliser le prompt",
+		"expanding_vision": "Élargir la vision",
+		"end_of_list": "Fin de la liste",
+		"aspect_ratio": "Rapport d'aspect",
+		"duration_label": "Durée",
+		"outputs_quantity": "Nombre de sorties"
 	},
 	"settings": {
 		"usage": "Utilisation",

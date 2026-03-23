@@ -23,7 +23,7 @@
 								</div>
 							</div>
 							<div class="bg-[var(--fill-tsp-white-main)] px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 gap-3">
-								<button type="button" class="inline-flex w-full justify-center rounded-[10px] bg-[var(--function-error)] px-4 py-2 text-sm font-bold text-white shadow-[var(--shadow-S)] hover:opacity-90 sm:w-auto transition-all" @click="onConfirm">{{ $t('confirm.delete') }}</button>
+								<button type="button" class="inline-flex w-full justify-center rounded-[10px] bg-[var(--function-error)] px-4 py-2 text-sm font-bold text-white shadow-[var(--shadow-S)] hover:opacity-90 sm:w-auto transition-all" @click="onConfirm">{{ confirmText || $t('confirm.delete') }}</button>
 								<button type="button" class="mt-3 inline-flex w-full justify-center rounded-[10px] bg-[var(--background-white-main)] px-4 py-2 text-sm font-bold text-[var(--text-primary)] shadow-[var(--shadow-S)] ring-1 ring-inset ring-[var(--border-main)] hover:bg-[var(--fill-tsp-white-main)] sm:mt-0 sm:w-auto transition-all" @click="onCancel">{{ $t('common.cancel') }}</button>
 							</div>
 						</DialogPanel>
@@ -42,6 +42,7 @@ defineProps<{
 	show: boolean
 	title: string
 	message: string
+	confirmText?: string
 }>()
 
 const emit = defineEmits<{

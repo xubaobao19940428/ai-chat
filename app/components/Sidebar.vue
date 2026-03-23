@@ -252,7 +252,7 @@
 
 										<transition enter-active-class="transition duration-100 ease-out" enter-from-class="transform scale-95 opacity-0" enter-to-class="transform scale-100 opacity-100" leave-active-class="transition duration-75 ease-in" leave-from-class="transform scale-100 opacity-100" leave-to-class="transform scale-95 opacity-0">
 											<Teleport to="body">
-												<MenuItems v-if="activeMenuId === conversation.id" :style="menuPosition" data-menu-dropdown class="fixed z-[9999] w-48 origin-top-right rounded-[12px] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] focus:outline-none py-1.5 overflow-hidden">
+												<MenuItems v-if="activeMenuId === conversation.id" :style="menuPosition" data-menu-dropdown class="fixed z-[9999] w-48 origin-top-right rounded-[12px] bg-[var(--bg-main)] shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] focus:outline-none py-1.5 overflow-hidden">
 													<div class="px-1 py-1">
 														<MenuItem v-slot="{ active }">
 															<button @click="handleShare(conversation)" :class="[active ? 'bg-[var(--fill-tsp-white-main)]' : '', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm text-[var(--text-primary)] transition-colors']">
@@ -335,7 +335,7 @@
 					</div>
 					<div class="min-w-0 flex-1">
 						<div class="text-[13px] font-medium text-[var(--text-primary)] truncate leading-tight">{{ userStore.userInfo?.email?.split('@')[0] || 'User' }}</div>
-						<div class="text-[11px] text-[var(--text-tertiary)] leading-tight mt-0.5">Free</div>
+						<div class="text-[11px] text-[var(--text-tertiary)] leading-tight mt-0.5">{{ $t('common.free_plan_label') }}</div>
 					</div>
 				</div>
 				<!-- Collapsed: avatar only -->

@@ -40,7 +40,14 @@
 		"retry": "Erneut versuchen",
 		"connection_failed": "Verbindung fehlgeschlagen. Bitte erneut versuchen.",
 		"drag_drop_title": "Dateien hier ablegen zum Hochladen",
-		"drag_drop_subtitle": "Unterstützt Bilder und Dateien"
+		"drag_drop_subtitle": "Unterstützt Bilder und Dateien",
+		"loading_messages": "Nachrichten werden geladen...",
+		"reuse_params": "Parameter wiederverwenden",
+		"download_all": "Alle herunterladen",
+		"generating_video": "Video wird generiert...",
+		"video_generation_failed": "Videogenerierung fehlgeschlagen",
+		"copy_prompt": "Prompt kopieren",
+		"download": "Herunterladen"
 	},
 	"common": {
 		"confirm": "Bestätigen",
@@ -75,7 +82,15 @@
 		"ai-image": "KI-Bildgenerator",
 		"ai-video": "KI-Videogenerator",
 		"no_models_found": "Keine Modelle gefunden",
-		"edit": "Bearbeiten"
+		"edit": "Bearbeiten",
+		"free_plan_label": "Kostenlos",
+		"sign_in": "Anmelden",
+		"use_prompt": "Prompt verwenden",
+		"expanding_vision": "Vision erweitern",
+		"end_of_list": "Ende der Liste",
+		"aspect_ratio": "Seitenverhältnis",
+		"duration_label": "Dauer",
+		"outputs_quantity": "Anzahl der Ausgaben"
 	},
 	"settings": {
 		"usage": "Nutzung",

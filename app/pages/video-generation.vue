@@ -50,7 +50,7 @@
 							<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6 z-10 pointer-events-none">
 								<p class="text-white text-[13px] font-medium line-clamp-2 italic mb-3 leading-snug">"{{ example.prompt }}"</p>
 								<div class="flex items-center">
-									<span class="px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider backdrop-blur-md shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 pointer-events-auto" @click.stop="useExample(example.prompt)">Use Prompt</span>
+									<span class="px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider backdrop-blur-md shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 pointer-events-auto" @click.stop="useExample(example.prompt)">{{ $t('common.use_prompt') }}</span>
 								</div>
 							</div>
 
@@ -70,11 +70,11 @@
 								<div class="absolute inset-0 bg-[var(--text-primary)]/5 rounded-full animate-ping-slow"></div>
 								<Loader2 class="animate-spin text-[var(--text-primary)]" :size="24" />
 							</div>
-							<span class="text-[11px] font-black text-[var(--text-primary)] tracking-[0.3em] uppercase opacity-60">Expanding Vision</span>
+							<span class="text-[11px] font-black text-[var(--text-primary)] tracking-[0.3em] uppercase opacity-60">{{ $t('common.expanding_vision') }}</span>
 						</div>
 						<div v-else-if="!discoveryStore.hasMore && exampleVideos.length > 0" class="flex flex-col items-center gap-3 opacity-30">
 							<div class="w-12 h-[1px] bg-gradient-to-r from-transparent via-[var(--text-primary)] to-transparent"></div>
-							<span class="text-[10px] font-black text-[var(--text-primary)] tracking-[0.4em] uppercase">End of Orchestration</span>
+							<span class="text-[10px] font-black text-[var(--text-primary)] tracking-[0.4em] uppercase">{{ $t('common.end_of_list') }}</span>
 							<div class="w-12 h-[1px] bg-gradient-to-r from-transparent via-[var(--text-primary)] to-transparent"></div>
 						</div>
 					</div>

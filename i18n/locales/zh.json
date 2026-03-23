@@ -42,7 +42,14 @@
 		"image_generation_failed_title": "生成失败",
 		"image_generation_failed_desc": "无法生成图片，可能因内容限制或临时问题，请重试。",
 		"drag_drop_title": "拖拽文件到这里上传",
-		"drag_drop_subtitle": "支持图片和文件"
+		"drag_drop_subtitle": "支持图片和文件",
+		"loading_messages": "加载消息中...",
+		"reuse_params": "复用参数",
+		"download_all": "全部下载",
+		"generating_video": "正在生成视频...",
+		"video_generation_failed": "视频生成失败",
+		"copy_prompt": "复制提示词",
+		"download": "下载"
 	},
 	"common": {
 		"confirm": "确认",
@@ -77,7 +84,15 @@
 		"ai-image": "AI 绘图",
 		"ai-video": "AI 视频",
 		"no_models_found": "未找到模型",
-		"edit": "编辑"
+		"edit": "编辑",
+		"free_plan_label": "免费版",
+		"sign_in": "登录",
+		"use_prompt": "使用提示词",
+		"expanding_vision": "加载更多",
+		"end_of_list": "已经到底了",
+		"aspect_ratio": "宽高比",
+		"duration_label": "时长",
+		"outputs_quantity": "输出数量"
 	},
 	"settings": {
 		"usage": "用量",

@@ -42,7 +42,14 @@
 		"image_generation_failed_title": "Generation failed",
 		"image_generation_failed_desc": "Unable to generate image. This may be due to content restrictions or a temporary issue. Please try again.",
 		"drag_drop_title": "Drop files here to upload",
-		"drag_drop_subtitle": "Supports images and files"
+		"drag_drop_subtitle": "Supports images and files",
+		"loading_messages": "Loading messages...",
+		"reuse_params": "Reuse parameters",
+		"download_all": "Download all",
+		"generating_video": "Generating video...",
+		"video_generation_failed": "Video generation failed",
+		"copy_prompt": "Copy prompt",
+		"download": "Download"
 	},
 	"common": {
 		"confirm": "Confirm",
@@ -77,7 +84,15 @@
 		"ai-image": "AI Image Generator",
 		"ai-video": "AI Video Generator",
 		"no_models_found": "No models found",
-		"edit": "Edit"
+		"edit": "Edit",
+		"free_plan_label": "Free",
+		"sign_in": "Sign in",
+		"use_prompt": "Use Prompt",
+		"expanding_vision": "Expanding Vision",
+		"end_of_list": "End of Orchestration",
+		"aspect_ratio": "Aspect Ratio",
+		"duration_label": "Duration",
+		"outputs_quantity": "Outputs Quantity"
 	},
 	"settings": {
 		"usage": "Usage",

@@ -47,7 +47,7 @@
 									<!-- More Tools -->
 									<div class="flex flex-col px-[8px] pb-0 gap-px mt-1">
 										<div @click="toggleMoreTools" class="group flex items-center justify-between rounded-[10px] h-[36px] cursor-pointer hover:bg-[var(--bg-hover)] transition-colors ps-[10px] pe-[2px]">
-											<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium uppercase tracking-tight">More Tools</span>
+											<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium uppercase tracking-tight">{{ $t('common.more_tools') }}</span>
 											<ChevronUp :size="14" :class="['transition-all shrink-0 text-[var(--text-tertiary)] me-1', moreCollapsed ? 'rotate-180' : '']" />
 										</div>
 										<div v-show="!moreCollapsed" class="flex flex-col gap-px">
@@ -68,7 +68,7 @@
 										<!-- Projects -->
 										<div class="group flex items-center justify-between rounded-[10px] mb-1 h-[36px] hover:bg-[var(--bg-hover)] transition-colors ps-[10px] pe-[2px] py-[2px]">
 											<div @click="toggleProjects" class="flex-1 flex items-center gap-1 cursor-pointer h-full">
-												<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium uppercase tracking-tight">Projects</span>
+												<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium uppercase tracking-tight">{{ $t('common.projects') }}</span>
 												<ChevronUp :size="14" :class="['transition-all shrink-0 text-[var(--text-tertiary)]', projectsCollapsed ? 'rotate-180' : '']" />
 											</div>
 											<div @click.stop="openCreateProjectModal" class="flex items-center justify-center size-[32px] rounded-[8px] hover:bg-[var(--bg-hover)] cursor-pointer transition-colors">
@@ -81,7 +81,7 @@
 												<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)] opacity-80">
 													<AlignJustify :size="16" />
 												</div>
-												<span class="text-[14px] text-[var(--text-primary)] font-medium truncate">All Sessions</span>
+												<span class="text-[14px] text-[var(--text-primary)] font-medium truncate">{{ $t('common.all_sessions') }}</span>
 											</div>
 											<div v-for="group in projectStore.projects" :key="group.id" @click="selectProject(group.id)" :class="['w-full flex items-center rounded-[10px] h-[40px] transition-colors cursor-pointer ps-[10px] pe-[8px] gap-[8px]', conversationStore.selectedGroupId == group.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]']">
 												<div class="shrink-0 size-[18px] flex items-center justify-center opacity-80" :style="{ color: getProjectColor(group.color) }">
@@ -93,7 +93,7 @@
 
 										<!-- Recent Chat -->
 										<div class="flex items-center h-[36px] ps-[10px] mb-1">
-											<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium uppercase tracking-tight">Recent Chat</span>
+											<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium uppercase tracking-tight">{{ $t('common.recent_chat') }}</span>
 										</div>
 										<div class="flex flex-col gap-px">
 											<!-- Loading skeleton -->
@@ -103,7 +103,7 @@
 											<template v-else-if="sortedConversations.length === 0">
 												<div class="flex flex-col items-center justify-center py-6 gap-2">
 													<MessageSquare :size="20" class="text-[var(--text-tertiary)] opacity-40" />
-													<p class="text-[12px] text-[var(--text-tertiary)] text-center leading-relaxed">No conversations yet.<br />Start a new task above.</p>
+													<p class="text-[12px] text-[var(--text-tertiary)] text-center leading-relaxed">{{ $t('chat.no_history') }}<br />{{ $t('chat.start_new_chat') }}</p>
 												</div>
 											</template>
 											<template v-else>
@@ -117,7 +117,7 @@
 														<MessageSquare v-else :size="16" class="text-[var(--text-secondary)] opacity-40" />
 													</template>
 												</div>
-												<span class="flex-1 text-[14px] text-[var(--text-primary)] font-medium truncate">{{ conversation.title || 'New conversation' }}</span>
+												<span class="flex-1 text-[14px] text-[var(--text-primary)] font-medium truncate">{{ conversation.title || $t('chat.new_conversation_default') }}</span>
 											</div>
 											</template>
 										</div>
@@ -148,7 +148,7 @@
 											</div>
 										</div>
 										<button v-else @click="uiStore.openLoginModal()" class="px-3 py-1.5 bg-[var(--Button-primary-black)] hover:opacity-90 text-[var(--text-onblack)] rounded-[8px] text-sm font-medium transition-opacity">
-											Sign in
+											{{ $t('common.sign_in') }}
 										</button>
 									</div>
 								</div>
