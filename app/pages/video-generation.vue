@@ -580,9 +580,7 @@ const exampleVideos = computed(() => {
 
 const useExample = (examplePrompt: string) => {
 	prompt.value = examplePrompt
-	if (inputRef.value) {
-		inputRef.value.innerText = examplePrompt
-	}
+	unifiedInputRef.value?.setContent(examplePrompt)
 	const mainEl = document.querySelector('main')
 	if (mainEl) mainEl.scrollTo({ top: mainEl.scrollHeight, behavior: 'smooth' })
 }
@@ -643,14 +641,34 @@ const handleUnifiedSend = async (payload: { content: string; params: Record<stri
 	const modelFields = selectedModel.value?.model_input?.fields || {}
 
 	if (payload.mediaFiles.length > 0) {
-		const imageField = modelFields['image_urls'] ? 'image_urls' : 'image'
-		if (imageField === 'image_urls') {
-			params['image_urls'] = [payload.mediaFiles[0]?.url]
-		} else {
-			params['image'] = payload.mediaFiles[0]?.url
+		// Map files by their paramKey to the correct API parameter
+		for (const mf of payload.mediaFiles) {
+			if (!mf?.url) continue
+			const pk = mf.paramKey || ''
+
+			if (pk === 'image' && 'image' in modelFields) {
+				params['image'] = mf.url
+			} else if (pk === 'init_image' && ('init_image' in modelFields || 'start_image' in modelFields)) {
+				params['init_image' in modelFields ? 'init_image' : 'start_image'] = mf.url
+			} else if (pk === 'end_image' && 'end_image' in modelFields) {
+				params['end_image'] = mf.url
+			} else if (pk === 'video' && 'video' in modelFields) {
+				params['video'] = mf.url
+			} else if (pk === 'input_images') {
+				if (!params['input_images']) params['input_images'] = []
+				params['input_images'].push(mf.url)
+			} else if (pk === 'input_videos') {
+				if (!params['input_videos']) params['input_videos'] = []
+				params['input_videos'].push(mf.url)
+			} else if (!pk) {
+				// Legacy fallback: no paramKey, try to map by model fields
+				if ('init_image' in modelFields) params['init_image'] = mf.url
+				else if ('image' in modelFields) params['image'] = mf.url
+			}
+
+			if (mf.key) image_urls.push(mf.key)
+			files.push(mf)
 		}
-		image_urls.push(payload.mediaFiles[0]?.key || '')
-		files.push(payload.mediaFiles[0])
 	}
 
 	const model = `${selectedModel.value.provider}:${selectedModel.value.model}`

@@ -50,6 +50,8 @@ export const useModelStore = defineStore('model', () => {
   const selectModel = (modelId: string, capability?: string) => {
     const cap = capability || activeCapability.value
     selectedModelIds.value = { ...selectedModelIds.value, [cap]: modelId }
+    const model = models.value.find((m: any) => `${m.provider}:${m.model}` === modelId)
+    console.log('[selectModel]', { modelId, capability: cap, model })
   }
 
   const setActiveCapability = (cap: string) => {

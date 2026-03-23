@@ -77,10 +77,11 @@
 							</div>
 						</div>
 						<!-- List -->
-						<div class="max-h-[320px] overflow-y-auto no-scrollbar p-1.5 space-y-0.5">
+						<div ref="modelListRef" class="max-h-[320px] overflow-y-auto no-scrollbar p-1.5 space-y-0.5">
 							<template v-if="filteredModels.length">
 								<button v-for="model in filteredModels" :key="model.model"
 									@click="selectModel(`${model.provider}:${model.model}`)"
+									:data-model-id="`${model.provider}:${model.model}`"
 									class="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-[8px] transition-colors text-left group"
 									:class="isSelected(model) ? 'bg-[var(--fill-blue)]' : 'hover:bg-[var(--fill-tsp-white-main)]'">
 									<!-- Icon -->
@@ -146,6 +147,7 @@ const containerRef = ref<HTMLElement | null>(null)
 const dropdownStyle = ref<Record<string, string>>({})
 const searchQuery = ref('')
 const searchInputRef = ref<HTMLInputElement | null>(null)
+const modelListRef = ref<HTMLElement | null>(null)
 
 const IMAGE_CAPS = ['image', 'image_generation']
 const VIDEO_CAPS = ['video', 'video_generation']
@@ -221,6 +223,14 @@ watch(isOpen, async (val) => {
 		searchInputRef.value?.focus()
 		window.addEventListener('scroll', updateDropdownPosition, true)
 		window.addEventListener('resize', updateDropdownPosition)
+		// Auto-scroll to selected model
+		await nextTick()
+		if (modelListRef.value && modelStore.selectedModelId) {
+			const selectedEl = modelListRef.value.querySelector(`[data-model-id="${CSS.escape(modelStore.selectedModelId)}"]`) as HTMLElement | null
+			if (selectedEl) {
+				selectedEl.scrollIntoView({ block: 'center', behavior: 'instant' })
+			}
+		}
 	} else {
 		searchQuery.value = ''
 		window.removeEventListener('scroll', updateDropdownPosition, true)

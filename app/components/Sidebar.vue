@@ -252,7 +252,7 @@
 
 										<transition enter-active-class="transition duration-100 ease-out" enter-from-class="transform scale-95 opacity-0" enter-to-class="transform scale-100 opacity-100" leave-active-class="transition duration-75 ease-in" leave-from-class="transform scale-100 opacity-100" leave-to-class="transform scale-95 opacity-0">
 											<Teleport to="body">
-												<MenuItems v-if="activeMenuId === conversation.id" :style="menuPosition" class="fixed z-[9999] w-48 origin-top-right rounded-[12px] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] focus:outline-none py-1.5 overflow-hidden">
+												<MenuItems v-if="activeMenuId === conversation.id" :style="menuPosition" data-menu-dropdown class="fixed z-[9999] w-48 origin-top-right rounded-[12px] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] focus:outline-none py-1.5 overflow-hidden">
 													<div class="px-1 py-1">
 														<MenuItem v-slot="{ active }">
 															<button @click="handleShare(conversation)" :class="[active ? 'bg-[var(--fill-tsp-white-main)]' : '', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm text-[var(--text-primary)] transition-colors']">
@@ -917,11 +917,32 @@ const handleShare = (conversation: any) => {
 const handleMenuClick = (event: MouseEvent, id: string | number) => {
 	const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
 	activeMenuId.value = id
-	// Adjust position to be below the button, aligned to its left
+
+	const menuWidth = 192 // w-48
+	const margin = 4
+
+	// Always start below the button (closest to the click point)
 	menuPosition.value = {
-		top: `${rect.bottom + 8}px`,
-		left: `${rect.right - 224}px`, // 224 is w-56
+		top: `${rect.bottom + margin}px`,
+		left: `${rect.right - menuWidth}px`,
 	}
+
+	// After render, check overflow with real menu height and flip above if needed
+	nextTick(() => {
+		const menuEl = document.querySelector('[data-menu-dropdown]') as HTMLElement
+		if (!menuEl) return
+		const menuRect = menuEl.getBoundingClientRect()
+		const viewportHeight = window.innerHeight
+
+		if (menuRect.bottom > viewportHeight - margin) {
+			// Overflows bottom → flip: menu bottom aligns just above the button top
+			const newTop = rect.top - menuRect.height - margin
+			menuPosition.value = {
+				top: `${Math.max(margin, newTop)}px`,
+				left: `${rect.right - menuWidth}px`,
+			}
+		}
+	})
 }
 
 const openCreateProjectModal = () => {

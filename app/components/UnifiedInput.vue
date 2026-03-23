@@ -50,7 +50,7 @@
 				<div class="flex items-center justify-between px-3 gap-2">
 					<div class="flex items-center gap-1.5 flex-wrap flex-1">
 						<!-- Model Selector -->
-						<ModelSelector v-if="showModelSelector" variant="pill" :capability="capability" class="mr-0.5" />
+						<ModelSelector v-if="showModelSelector" variant="pill" :capability="allowModelSwitch ? undefined : capability" class="mr-0.5" />
 
 						<!-- === Capability-specific Parameters === -->
 						<ImageGenerationParams
@@ -66,11 +66,13 @@
 						<VideoGenerationParams
 							v-else-if="capability === 'video_generation' || (showModelSelector && fields.isVideoModel.value)"
 							:fields="fields"
-							:media-files="mediaFiles"
+							:all-files="fileUpload.uploadedFiles.value"
 							:is-uploading="fileUpload.isUploading.value"
 							:external-params="externalParams"
-							@trigger-upload="triggerMediaUploadAndClose"
-							@select-asset="selectAssetAndClose"
+							:uploading-param="mediaTargetParam"
+							@trigger-upload="triggerParamUpload"
+							@select-asset="selectAssetForParam"
+							@remove-media="removeMediaByParam"
 						/>
 
 						<ChatParams
@@ -79,7 +81,9 @@
 							:is-web-search-enabled="isWebSearchEnabled"
 							:is-uploading="fileUpload.isUploading.value"
 							:external-params="externalParams"
+							:media-files="mediaFiles"
 							@trigger-upload="fileUpload.triggerFileUpload('*', true)"
+							@select-asset="selectAssetAndClose"
 							@reset-params="$emit('update:params', {})"
 							@update:params="(v: any) => $emit('update:params', v)"
 							@update:web-search="(v: boolean) => isWebSearchEnabled = v"
@@ -107,7 +111,7 @@
 			</div>
 
 			<!-- Hidden File Input -->
-			<input type="file" ref="fileInputElement" class="hidden" @change="fileUpload.handleFileChange" />
+			<input type="file" ref="fileInputElement" class="hidden" @change="handleFileInputChange" />
 
 			<!-- Asset Picker Modal -->
 			<AssetPickerModal :show="isAssetPickerOpen"
@@ -144,10 +148,12 @@ const props = withDefaults(defineProps<{
 	showModelSelector?: boolean
 	externalParams?: Record<string, any>
 	placeholderText?: string
+	allowModelSwitch?: boolean
 }>(), {
 	isLoading: false,
 	floating: false,
 	showModelSelector: true,
+	allowModelSwitch: false,
 })
 
 const emit = defineEmits<{
@@ -209,7 +215,7 @@ const editor = useEditor({
 	],
 	editorProps: {
 		attributes: {
-			class: 'prose dark:prose-invert focus:outline-none min-h-[44px] py-3 text-[15px] font-medium leading-relaxed text-[var(--text-primary)]',
+			class: 'prose dark:prose-invert max-w-none focus:outline-none min-h-[44px] py-3 text-[15px] font-medium leading-relaxed text-[var(--text-primary)]',
 		},
 		handleKeyDown: (_view, event) => {
 			if (event.key === 'Enter' && !event.shiftKey) {
@@ -247,6 +253,11 @@ watch(displayedPlaceholder, () => {
 // --- Computed ---
 const mediaFiles = computed(() => fileUpload.uploadedFiles.value.filter((f) => f.type?.startsWith('image/')))
 
+// --- Slot-based upload for video start/end frame ---
+const mediaTargetSlot = ref<number | null>(null)
+/** Which param key is currently being uploaded for (video media) */
+const mediaTargetParam = ref<string | null>(null)
+
 // --- Methods ---
 function triggerMediaUpload() {
 	const accept = fields.isVideoModel.value ? 'image/png,image/jpeg,video/mp4' : 'image/*'
@@ -259,13 +270,94 @@ function triggerMediaUploadAndClose() {
 	triggerMediaUpload()
 }
 
+function triggerSlotUpload(slot: number) {
+	fields.closeDropdown()
+	mediaTargetSlot.value = slot
+	fileUpload.triggerFileUpload('image/png,image/jpeg', false)
+}
+
+/** Param-keyed upload trigger for video generation */
+function triggerParamUpload(paramKey: string) {
+	fields.closeDropdown()
+	mediaTargetParam.value = paramKey
+	const isVideo = paramKey === 'video' || paramKey === 'input_videos'
+	const isMulti = paramKey === 'input_images' || paramKey === 'input_videos'
+	const accept = isVideo ? 'video/mp4,video/*' : 'image/png,image/jpeg,image/*'
+	fileUpload.triggerFileUpload(accept, isMulti)
+}
+
 function selectAssetAndClose() {
 	fields.closeDropdown()
+	mediaTargetSlot.value = null
+	mediaTargetParam.value = null
 	isAssetPickerOpen.value = true
 }
 
+function selectAssetForSlot(slot: number) {
+	fields.closeDropdown()
+	mediaTargetSlot.value = slot
+	isAssetPickerOpen.value = true
+}
+
+/** Param-keyed asset picker for video generation */
+function selectAssetForParam(paramKey: string) {
+	fields.closeDropdown()
+	mediaTargetParam.value = paramKey
+	isAssetPickerOpen.value = true
+}
+
+function removeMediaAtSlot(slot: number) {
+	fileUpload.removeFileByIndex(slot)
+}
+
+/** Param-keyed remove for video generation */
+function removeMediaByParam(paramKey: string) {
+	fileUpload.removeFileByParam(paramKey)
+}
+
+async function handleFileInputChange(event: Event) {
+	const target = event.target as HTMLInputElement
+	const files = target.files
+	if (!files || files.length === 0) return
+
+	if (mediaTargetParam.value !== null) {
+		// Param-keyed upload for video generation
+		const paramKey = mediaTargetParam.value
+		const isMulti = paramKey === 'input_images' || paramKey === 'input_videos'
+		if (isMulti) {
+			await fileUpload.uploadFilesForParam(Array.from(files), paramKey)
+		} else {
+			await fileUpload.uploadFileForParam(files[0]!, paramKey)
+		}
+		mediaTargetParam.value = null
+	} else if (mediaTargetSlot.value !== null) {
+		// Slot-based upload for video start/end frame
+		await fileUpload.uploadFileToSlot(files[0]!, mediaTargetSlot.value)
+		mediaTargetSlot.value = null
+	} else {
+		// Default: append files
+		await fileUpload.handleFileChange(event)
+	}
+	if (target) target.value = ''
+}
+
 function onAssetsSelected(assets: { key: string; url: string }[]) {
-	fileUpload.addFromAssets(assets)
+	if (mediaTargetParam.value !== null) {
+		// Param-keyed asset for video generation
+		const paramKey = mediaTargetParam.value
+		const isMulti = paramKey === 'input_images' || paramKey === 'input_videos'
+		for (const asset of assets) {
+			fileUpload.addAssetForParam(asset, paramKey, !isMulti)
+		}
+		mediaTargetParam.value = null
+	} else if (mediaTargetSlot.value !== null) {
+		if (assets.length > 0) {
+			fileUpload.addAssetAtSlot(assets[0]!, mediaTargetSlot.value)
+		}
+		mediaTargetSlot.value = null
+	} else {
+		fileUpload.addFromAssets(assets)
+	}
 	isAssetPickerOpen.value = false
 }
 

@@ -1258,7 +1258,19 @@ watch(
 
 // Sync model selection when switching conversations:
 // prefer modelId (numeric), fall back to model string, ignore if neither set
-const syncConversationModel = (conv: { modelId?: number; model?: string }) => {
+const syncConversationModel = (conv: { modelId?: number; model?: string; capability?: string }) => {
+	// Set active capability from conversation FIRST, so selectModel stores under the right key
+	if (conv.capability) {
+		const cap = conv.capability
+		if (cap === 'image' || cap === 'image_generation') {
+			modelStore.setActiveCapability('image_generation')
+		} else if (cap === 'video' || cap === 'video_generation') {
+			modelStore.setActiveCapability('video_generation')
+		} else {
+			modelStore.setActiveCapability('chat')
+		}
+	}
+
 	if (conv.modelId) {
 		const found = modelStore.models.find((m: any) => m.id === conv.modelId)
 		if (found) {

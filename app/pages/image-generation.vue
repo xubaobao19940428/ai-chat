@@ -534,9 +534,7 @@ const exampleImages = computed(() => {
 
 const useExample = (examplePrompt: string) => {
 	prompt.value = examplePrompt
-	if (inputRef.value) {
-		inputRef.value.innerText = examplePrompt
-	}
+	unifiedInputRef.value?.setContent(examplePrompt)
 	const mainEl = document.querySelector('main')
 	if (mainEl) mainEl.scrollTo({ top: mainEl.scrollHeight, behavior: 'smooth' })
 }

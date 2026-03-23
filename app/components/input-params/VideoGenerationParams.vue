@@ -1,44 +1,252 @@
 <template>
-	<!-- Start / End Frame Upload -->
-	<div v-if="fields.supportsMediaPrompt.value" class="relative group/chip">
-		<button @click="fields.toggleDropdown('media_prompt')" :disabled="isUploading" class="unified-pill"
-			:class="fields.activeDropdown.value === 'media_prompt' ? 'unified-pill-active' : mediaFiles.length > 0 ? 'border-[var(--border-main)]' : ''">
-			<Loader2 v-if="isUploading" :size="14" class="animate-spin text-[var(--text-secondary)]" />
-			<template v-else-if="mediaFiles.length > 0">
-				<div class="relative shrink-0">
-					<img :src="mediaFiles[0]?.url" class="w-4 h-4 rounded-sm object-cover" />
-					<div v-if="mediaFiles.length > 1"
-						class="absolute -top-1.5 -right-1.5 min-w-[12px] h-[12px] bg-[var(--text-primary)] rounded-full text-[7px] text-[var(--bg-main)] flex items-center justify-center font-bold px-0.5 leading-none">
-						{{ mediaFiles.length }}
-					</div>
-				</div>
+	<!-- Reference Image (single: image field) -->
+	<div v-if="showRefImage" class="relative group/chip">
+		<button @click="fields.toggleDropdown('ref_image')" :disabled="isUploading" class="unified-pill"
+			:class="fields.activeDropdown.value === 'ref_image' ? 'unified-pill-active' : refImageFile ? 'border-[var(--border-main)]' : ''">
+			<Loader2 v-if="isUploading && uploadingParam === 'image'" :size="14" class="animate-spin text-[var(--text-secondary)]" />
+			<template v-else-if="refImageFile">
+				<img :src="refImageFile.url" class="w-4 h-4 rounded-sm object-cover shrink-0" />
 			</template>
 			<ImagePlus v-else :size="14" class="text-[var(--text-secondary)]" />
-			<span class="unified-pill-text">
-				{{ mediaFiles.length > 0 ? `${mediaFiles.length} frame${mediaFiles.length > 1 ? 's' : ''}` : (fields.modelInputFields.value.end_image ? 'Start / End frame' : 'Start frame') }}
-			</span>
+			<span class="unified-pill-text">Reference</span>
+			<button v-if="refImageFile" @click.stop="$emit('remove-media', 'image')"
+				class="ml-0.5 -mr-1 w-4 h-4 rounded-full flex items-center justify-center hover:bg-[var(--bg-hover)] transition-colors">
+				<X :size="10" class="text-[var(--text-tertiary)]" />
+			</button>
 		</button>
 
 		<Transition enter-active-class="transition duration-150 ease-out"
 			enter-from-class="translate-y-1 opacity-0 scale-95" enter-to-class="translate-y-0 opacity-100 scale-100"
 			leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
 			leave-to-class="translate-y-1 opacity-0">
-			<div v-if="fields.activeDropdown.value === 'media_prompt'"
-				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[280px]">
+			<div v-if="fields.activeDropdown.value === 'ref_image'"
+				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[250px]">
 				<div class="unified-popover flex flex-col gap-4">
 					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
-						{{ fields.modelInputFields.value.end_image
-							? 'Upload a start frame and / or end frame to anchor your video.'
-							: 'Start frame anchors the opening of your video.' }}
-						Upload or select from assets.
+						Upload a reference image to guide generation.
 					</p>
 					<div class="flex flex-col gap-2">
-						<button @click="$emit('trigger-upload')" class="unified-upload-btn-primary">
+						<button @click="$emit('trigger-upload', 'image')" class="unified-upload-btn-primary">
 							<Plus :size="14" stroke-width="3" />
 							Upload
 						</button>
-						<button @click="$emit('select-asset')" class="unified-upload-btn-secondary">
+						<button @click="$emit('select-asset', 'image')" class="unified-upload-btn-secondary">
 							<ImagePlus :size="14" />
+							Select asset
+						</button>
+					</div>
+				</div>
+			</div>
+		</Transition>
+	</div>
+
+	<!-- Reference Images (multiple: input_images field) -->
+	<div v-if="showRefImages" class="relative group/chip">
+		<button @click="fields.toggleDropdown('ref_images')" :disabled="isUploading" class="unified-pill"
+			:class="fields.activeDropdown.value === 'ref_images' ? 'unified-pill-active' : refImagesFiles.length > 0 ? 'border-[var(--border-main)]' : ''">
+			<Loader2 v-if="isUploading && uploadingParam === 'input_images'" :size="14" class="animate-spin text-[var(--text-secondary)]" />
+			<template v-else-if="refImagesFiles.length > 0">
+				<div class="relative shrink-0">
+					<img :src="refImagesFiles[0]?.url" class="w-4 h-4 rounded-sm object-cover" />
+					<div v-if="refImagesFiles.length > 1"
+						class="absolute -top-1.5 -right-1.5 min-w-[12px] h-[12px] bg-[var(--text-primary)] rounded-full text-[7px] text-[var(--bg-main)] flex items-center justify-center font-bold px-0.5 leading-none">
+						{{ refImagesFiles.length }}
+					</div>
+				</div>
+			</template>
+			<Images v-else :size="14" class="text-[var(--text-secondary)]" />
+			<span class="unified-pill-text">
+				{{ refImagesFiles.length > 0 ? `${refImagesFiles.length} images` : 'Images' }}
+			</span>
+			<button v-if="refImagesFiles.length > 0" @click.stop="$emit('remove-media', 'input_images')"
+				class="ml-0.5 -mr-1 w-4 h-4 rounded-full flex items-center justify-center hover:bg-[var(--bg-hover)] transition-colors">
+				<X :size="10" class="text-[var(--text-tertiary)]" />
+			</button>
+		</button>
+
+		<Transition enter-active-class="transition duration-150 ease-out"
+			enter-from-class="translate-y-1 opacity-0 scale-95" enter-to-class="translate-y-0 opacity-100 scale-100"
+			leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
+			leave-to-class="translate-y-1 opacity-0">
+			<div v-if="fields.activeDropdown.value === 'ref_images'"
+				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[250px]">
+				<div class="unified-popover flex flex-col gap-4">
+					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
+						Upload multiple reference images.
+					</p>
+					<div class="flex flex-col gap-2">
+						<button @click="$emit('trigger-upload', 'input_images')" class="unified-upload-btn-primary">
+							<Plus :size="14" stroke-width="3" />
+							Upload
+						</button>
+						<button @click="$emit('select-asset', 'input_images')" class="unified-upload-btn-secondary">
+							<ImagePlus :size="14" />
+							Select asset
+						</button>
+					</div>
+				</div>
+			</div>
+		</Transition>
+	</div>
+
+	<!-- Start Frame (init_image) -->
+	<div v-if="showStartFrame" class="relative group/chip">
+		<button @click="fields.toggleDropdown('start_frame')" :disabled="isUploading" class="unified-pill"
+			:class="fields.activeDropdown.value === 'start_frame' ? 'unified-pill-active' : startFrameFile ? 'border-[var(--border-main)]' : ''">
+			<Loader2 v-if="isUploading && uploadingParam === 'init_image'" :size="14" class="animate-spin text-[var(--text-secondary)]" />
+			<template v-else-if="startFrameFile">
+				<img :src="startFrameFile.url" class="w-4 h-4 rounded-sm object-cover shrink-0" />
+			</template>
+			<ImagePlus v-else :size="14" class="text-[var(--text-secondary)]" />
+			<span class="unified-pill-text">Start frame</span>
+			<button v-if="startFrameFile" @click.stop="$emit('remove-media', 'init_image')"
+				class="ml-0.5 -mr-1 w-4 h-4 rounded-full flex items-center justify-center hover:bg-[var(--bg-hover)] transition-colors">
+				<X :size="10" class="text-[var(--text-tertiary)]" />
+			</button>
+		</button>
+
+		<Transition enter-active-class="transition duration-150 ease-out"
+			enter-from-class="translate-y-1 opacity-0 scale-95" enter-to-class="translate-y-0 opacity-100 scale-100"
+			leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
+			leave-to-class="translate-y-1 opacity-0">
+			<div v-if="fields.activeDropdown.value === 'start_frame'"
+				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[250px]">
+				<div class="unified-popover flex flex-col gap-4">
+					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
+						Start frame anchors the opening of your video.
+					</p>
+					<div class="flex flex-col gap-2">
+						<button @click="$emit('trigger-upload', 'init_image')" class="unified-upload-btn-primary">
+							<Plus :size="14" stroke-width="3" />
+							Upload
+						</button>
+						<button @click="$emit('select-asset', 'init_image')" class="unified-upload-btn-secondary">
+							<ImagePlus :size="14" />
+							Select asset
+						</button>
+					</div>
+				</div>
+			</div>
+		</Transition>
+	</div>
+
+	<!-- End Frame (end_image) -->
+	<div v-if="showEndFrame" class="relative group/chip">
+		<button @click="fields.toggleDropdown('end_frame')" :disabled="isUploading" class="unified-pill"
+			:class="fields.activeDropdown.value === 'end_frame' ? 'unified-pill-active' : endFrameFile ? 'border-[var(--border-main)]' : ''">
+			<Loader2 v-if="isUploading && uploadingParam === 'end_image'" :size="14" class="animate-spin text-[var(--text-secondary)]" />
+			<template v-else-if="endFrameFile">
+				<img :src="endFrameFile.url" class="w-4 h-4 rounded-sm object-cover shrink-0" />
+			</template>
+			<ImagePlus v-else :size="14" class="text-[var(--text-secondary)]" />
+			<span class="unified-pill-text">End frame</span>
+			<button v-if="endFrameFile" @click.stop="$emit('remove-media', 'end_image')"
+				class="ml-0.5 -mr-1 w-4 h-4 rounded-full flex items-center justify-center hover:bg-[var(--bg-hover)] transition-colors">
+				<X :size="10" class="text-[var(--text-tertiary)]" />
+			</button>
+		</button>
+
+		<Transition enter-active-class="transition duration-150 ease-out"
+			enter-from-class="translate-y-1 opacity-0 scale-95" enter-to-class="translate-y-0 opacity-100 scale-100"
+			leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
+			leave-to-class="translate-y-1 opacity-0">
+			<div v-if="fields.activeDropdown.value === 'end_frame'"
+				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[250px]">
+				<div class="unified-popover flex flex-col gap-4">
+					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
+						End frame anchors the ending of your video.
+					</p>
+					<div class="flex flex-col gap-2">
+						<button @click="$emit('trigger-upload', 'end_image')" class="unified-upload-btn-primary">
+							<Plus :size="14" stroke-width="3" />
+							Upload
+						</button>
+						<button @click="$emit('select-asset', 'end_image')" class="unified-upload-btn-secondary">
+							<ImagePlus :size="14" />
+							Select asset
+						</button>
+					</div>
+				</div>
+			</div>
+		</Transition>
+	</div>
+
+	<!-- Reference Video (single: video field) -->
+	<div v-if="showRefVideo" class="relative group/chip">
+		<button @click="fields.toggleDropdown('ref_video')" :disabled="isUploading" class="unified-pill"
+			:class="fields.activeDropdown.value === 'ref_video' ? 'unified-pill-active' : refVideoFile ? 'border-[var(--border-main)]' : ''">
+			<Loader2 v-if="isUploading && uploadingParam === 'video'" :size="14" class="animate-spin text-[var(--text-secondary)]" />
+			<template v-else-if="refVideoFile">
+				<Video :size="14" class="text-green-500" />
+			</template>
+			<Video v-else :size="14" class="text-[var(--text-secondary)]" />
+			<span class="unified-pill-text">{{ refVideoFile ? 'Video ✓' : 'Video' }}</span>
+			<button v-if="refVideoFile" @click.stop="$emit('remove-media', 'video')"
+				class="ml-0.5 -mr-1 w-4 h-4 rounded-full flex items-center justify-center hover:bg-[var(--bg-hover)] transition-colors">
+				<X :size="10" class="text-[var(--text-tertiary)]" />
+			</button>
+		</button>
+
+		<Transition enter-active-class="transition duration-150 ease-out"
+			enter-from-class="translate-y-1 opacity-0 scale-95" enter-to-class="translate-y-0 opacity-100 scale-100"
+			leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
+			leave-to-class="translate-y-1 opacity-0">
+			<div v-if="fields.activeDropdown.value === 'ref_video'"
+				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[250px]">
+				<div class="unified-popover flex flex-col gap-4">
+					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
+						Upload a reference video.
+					</p>
+					<div class="flex flex-col gap-2">
+						<button @click="$emit('trigger-upload', 'video')" class="unified-upload-btn-primary">
+							<Plus :size="14" stroke-width="3" />
+							Upload
+						</button>
+						<button @click="$emit('select-asset', 'video')" class="unified-upload-btn-secondary">
+							<Video :size="14" />
+							Select asset
+						</button>
+					</div>
+				</div>
+			</div>
+		</Transition>
+	</div>
+
+	<!-- Reference Videos (multiple: input_videos field) -->
+	<div v-if="showRefVideos" class="relative group/chip">
+		<button @click="fields.toggleDropdown('ref_videos')" :disabled="isUploading" class="unified-pill"
+			:class="fields.activeDropdown.value === 'ref_videos' ? 'unified-pill-active' : refVideosFiles.length > 0 ? 'border-[var(--border-main)]' : ''">
+			<Loader2 v-if="isUploading && uploadingParam === 'input_videos'" :size="14" class="animate-spin text-[var(--text-secondary)]" />
+			<template v-else-if="refVideosFiles.length > 0">
+				<Video :size="14" class="text-green-500" />
+			</template>
+			<Video v-else :size="14" class="text-[var(--text-secondary)]" />
+			<span class="unified-pill-text">
+				{{ refVideosFiles.length > 0 ? `${refVideosFiles.length} videos` : 'Videos' }}
+			</span>
+			<button v-if="refVideosFiles.length > 0" @click.stop="$emit('remove-media', 'input_videos')"
+				class="ml-0.5 -mr-1 w-4 h-4 rounded-full flex items-center justify-center hover:bg-[var(--bg-hover)] transition-colors">
+				<X :size="10" class="text-[var(--text-tertiary)]" />
+			</button>
+		</button>
+
+		<Transition enter-active-class="transition duration-150 ease-out"
+			enter-from-class="translate-y-1 opacity-0 scale-95" enter-to-class="translate-y-0 opacity-100 scale-100"
+			leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
+			leave-to-class="translate-y-1 opacity-0">
+			<div v-if="fields.activeDropdown.value === 'ref_videos'"
+				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[250px]">
+				<div class="unified-popover flex flex-col gap-4">
+					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
+						Upload multiple reference videos.
+					</p>
+					<div class="flex flex-col gap-2">
+						<button @click="$emit('trigger-upload', 'input_videos')" class="unified-upload-btn-primary">
+							<Plus :size="14" stroke-width="3" />
+							Upload
+						</button>
+						<button @click="$emit('select-asset', 'input_videos')" class="unified-upload-btn-secondary">
+							<Video :size="14" />
 							Select asset
 						</button>
 					</div>
@@ -197,27 +405,66 @@
 		</template>
 	</div>
 
-	<!-- Dynamic Number Fields (num_outputs) -->
+	<!-- Dynamic Number Fields (duration, num_outputs, etc.) -->
 	<div v-for="field in fields.dynamicNumberFields.value" :key="field.key" class="relative group/chip">
 		<button @click="fields.toggleDropdown(field.key)" class="unified-pill"
 			:class="fields.activeDropdown.value === field.key ? 'unified-pill-active' : ''">
-			<Monitor :size="14" class="text-[var(--text-secondary)]" />
-			<span class="unified-pill-text">{{ getParamValue(field.key, field.default) }} Outputs</span>
+			<Clock v-if="field.key === 'duration'" :size="14" class="text-[var(--text-secondary)]" />
+			<Monitor v-else :size="14" class="text-[var(--text-secondary)]" />
+			<span class="unified-pill-text">
+				{{ getParamValue(field.key, field.default) }}{{ field.key === 'duration' ? 's' : ` ${field.label || field.key.replace(/_/g, ' ')}` }}
+			</span>
 		</button>
-		<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1 opacity-0"
-			enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-100 ease-in"
-			leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1 opacity-0">
+		<Transition enter-active-class="transition duration-150 ease-out"
+			enter-from-class="translate-y-1 opacity-0 scale-95" enter-to-class="translate-y-0 opacity-100 scale-100"
+			leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
+			leave-to-class="translate-y-1 opacity-0">
 			<div v-if="fields.activeDropdown.value === field.key"
-				class="absolute bottom-full left-0 mb-2 z-[60] min-w-[180px]">
-				<div class="unified-popover p-3">
-					<p class="text-[11px] font-bold text-[var(--text-tertiary)] mb-2 px-1 uppercase tracking-widest text-center">
-						{{ field.label || 'Outputs' }}</p>
-					<div class="flex flex-wrap gap-1.5 justify-center">
+				class="absolute bottom-full left-0 mb-2 z-[60]"
+				:class="field.max - field.min > 10 ? 'min-w-[220px]' : 'min-w-[170px]'">
+				<div class="unified-popover p-3.5">
+					<p class="text-[10px] font-bold text-[var(--text-tertiary)] mb-2.5 px-1 uppercase tracking-widest text-center">
+						{{ field.key === 'duration' ? 'Duration' : (field.label || field.key.replace(/_/g, ' ')) }}
+					</p>
+
+					<!-- Slider UI for large ranges (>10) -->
+					<template v-if="field.max - field.min > 10">
+						<div class="flex items-center gap-2.5 mb-2">
+							<button @click="adjustNumber(field.key, field.min, field.max, field.default, -1)"
+								class="size-7 rounded-lg flex items-center justify-center border border-[var(--border-main)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors text-sm font-bold shrink-0">
+								−
+							</button>
+							<div class="flex-1 text-center">
+								<span class="text-[18px] font-black text-[var(--text-primary)] tabular-nums">
+									{{ getParamValue(field.key, field.default) }}
+								</span>
+								<span v-if="field.key === 'duration'" class="text-[11px] text-[var(--text-tertiary)] font-medium ml-0.5">s</span>
+							</div>
+							<button @click="adjustNumber(field.key, field.min, field.max, field.default, 1)"
+								class="size-7 rounded-lg flex items-center justify-center border border-[var(--border-main)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors text-sm font-bold shrink-0">
+								+
+							</button>
+						</div>
+						<div class="relative px-0.5">
+							<input type="range"
+								:min="field.min" :max="field.max" :step="1"
+								:value="getParamValue(field.key, field.default)"
+								@input="(e: Event) => fields.setParam(field.key, Number((e.target as HTMLInputElement).value))"
+								class="number-slider w-full" />
+							<div class="flex justify-between mt-1">
+								<span class="text-[9px] text-[var(--text-tertiary)] font-medium">{{ field.min }}{{ field.key === 'duration' ? 's' : '' }}</span>
+								<span class="text-[9px] text-[var(--text-tertiary)] font-medium">{{ field.max }}{{ field.key === 'duration' ? 's' : '' }}</span>
+							</div>
+						</div>
+					</template>
+
+					<!-- Button grid for small ranges (≤10) -->
+					<div v-else class="flex flex-wrap gap-1.5 justify-center">
 						<button v-for="n in field.max - field.min + 1" :key="n"
 							@click="fields.setParamAndClose(field.key, n + field.min - 1)"
 							class="size-9 rounded-xl font-bold flex items-center justify-center transition-all border text-[13px]"
 							:class="getParamValue(field.key, field.default) === n + field.min - 1 ? 'bg-[var(--text-primary)] text-[var(--bg-main)] border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-primary)]'">
-							{{ n + field.min - 1 }}
+							{{ n + field.min - 1 }}{{ field.key === 'duration' ? 's' : '' }}
 						</button>
 					</div>
 				</div>
@@ -227,24 +474,54 @@
 </template>
 
 <script setup lang="ts">
-import { ImagePlus, Loader2, Plus, Palette, Gem, Clock, LayoutGrid, Monitor, Check } from 'lucide-vue-next'
+import { computed } from 'vue'
+import { ImagePlus, Images, Loader2, Plus, Palette, Gem, Clock, LayoutGrid, Monitor, Check, X, Video } from 'lucide-vue-next'
 import type { useInputFields } from '~/composables/useInputFields'
+import type { UploadedFile } from '~/composables/useFileUpload'
 
 const props = defineProps<{
 	fields: ReturnType<typeof useInputFields>
-	mediaFiles: Array<{ url: string; id: string }>
+	/** All uploaded files (with paramKey tags) */
+	allFiles: UploadedFile[]
 	isUploading: boolean
 	externalParams?: Record<string, any>
+	/** Which paramKey is currently being uploaded */
+	uploadingParam?: string | null
 }>()
 
 defineEmits<{
-	'trigger-upload': []
-	'select-asset': []
+	'trigger-upload': [paramKey: string]
+	'select-asset': [paramKey: string]
+	'remove-media': [paramKey: string]
 }>()
+
+// --- Visibility based on model fields ---
+const modelFields = computed(() => props.fields.modelInputFields.value)
+
+const showRefImage = computed(() => !!modelFields.value.image)
+const showRefImages = computed(() => !!modelFields.value.input_images)
+const showStartFrame = computed(() => !!(modelFields.value.init_image || modelFields.value.start_image))
+const showEndFrame = computed(() => !!modelFields.value.end_image)
+const showRefVideo = computed(() => !!modelFields.value.video)
+const showRefVideos = computed(() => !!modelFields.value.input_videos)
+
+// --- File getters by paramKey ---
+const refImageFile = computed(() => props.allFiles.find(f => f.paramKey === 'image') || null)
+const refImagesFiles = computed(() => props.allFiles.filter(f => f.paramKey === 'input_images'))
+const startFrameFile = computed(() => props.allFiles.find(f => f.paramKey === 'init_image') || null)
+const endFrameFile = computed(() => props.allFiles.find(f => f.paramKey === 'end_image') || null)
+const refVideoFile = computed(() => props.allFiles.find(f => f.paramKey === 'video') || null)
+const refVideosFiles = computed(() => props.allFiles.filter(f => f.paramKey === 'input_videos'))
 
 function getParamValue(key: string, defaultVal: any) {
 	if (props.externalParams) return props.externalParams[key] ?? defaultVal
 	return props.fields.dynamicParams.value[key] ?? defaultVal
+}
+
+function adjustNumber(key: string, min: number, max: number, defaultVal: any, delta: number) {
+	const current = Number(getParamValue(key, defaultVal))
+	const next = Math.min(max, Math.max(min, current + delta))
+	props.fields.setParam(key, next)
 }
 
 function isLandscapeRatio(ratio: string) {
@@ -286,4 +563,44 @@ function isPortraitRatio(ratio: string) {
 .custom-scrollbar::-webkit-scrollbar { width: 4px; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--border-dark); border-radius: 4px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+
+/* Number slider */
+.number-slider {
+	-webkit-appearance: none;
+	appearance: none;
+	height: 4px;
+	border-radius: 2px;
+	background: var(--border-main);
+	outline: none;
+	cursor: pointer;
+}
+.number-slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: var(--text-primary);
+	border: 2px solid var(--bg-main);
+	box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+	cursor: pointer;
+	transition: transform 0.1s;
+}
+.number-slider::-webkit-slider-thumb:hover {
+	transform: scale(1.15);
+}
+.number-slider::-moz-range-thumb {
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: var(--text-primary);
+	border: 2px solid var(--bg-main);
+	box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+	cursor: pointer;
+}
+.number-slider::-moz-range-track {
+	height: 4px;
+	border-radius: 2px;
+	background: var(--border-main);
+}
 </style>

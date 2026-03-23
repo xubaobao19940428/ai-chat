@@ -17,6 +17,7 @@
 						ref="unifiedInputRef"
 						:capability="currentCapability"
 						:is-loading="props.isLoading"
+						:allow-model-switch="true"
 						@send="handleUnifiedSend"
 					/>
 				</div>
