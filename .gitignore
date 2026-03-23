@@ -5,6 +5,7 @@
 .nitro
 .cache
 dist
+.claude
 
 # Node dependencies
 node_modules
@@ -12,6 +13,7 @@ node_modules
 # Logs
 logs
 *.log
+CLAUDE.md
 
 # Misc
 .DS_Store

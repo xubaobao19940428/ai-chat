@@ -3,7 +3,7 @@ import { ref } from 'vue'
 
 export interface Message {
   id: string
-  role: 'user' | 'assistant' | 'system'
+  role: 'user' | 'assistant' | 'system' | 'derivative'
   content: string
   timestamp: number
   model?: string

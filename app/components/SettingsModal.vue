@@ -36,7 +36,7 @@
 								</div>
 
 								<!-- Scrollable Content -->
-								<div class="flex-1 overflow-y-auto px-6 pt-4 pb-4 custom-scrollbar">
+								<div :class="['flex-1 min-h-0 px-6 pt-4 pb-4 custom-scrollbar flex flex-col', activeItem === 'Usage' ? 'overflow-hidden' : 'overflow-y-auto']">
 									<AccountPanel v-if="activeItem === 'Account'" @upgrade="showVipModal = true" />
 									<UsagePanel v-else-if="activeItem === 'Usage'" @upgrade="showVipModal = true" />
 									<GeneralSettingsPanel v-else-if="activeItem === 'Settings'" />

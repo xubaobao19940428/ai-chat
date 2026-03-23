@@ -13,9 +13,19 @@
 
 				<!-- Input Card Area -->
 				<div class="flex flex-col gap-1 w-full animate-fade-in-up" style="animation-delay: 0.3s; animation-fill-mode: forwards">
+					<UnifiedInput
+						ref="unifiedInputRef"
+						:capability="currentCapability"
+						:is-loading="props.isLoading"
+						@send="handleUnifiedSend"
+					/>
+				</div>
+
+				<!-- OLD INPUT - replaced by UnifiedInput -->
+				<template v-if="false">
+				<div class="flex flex-col gap-1 w-full">
 					<div class="flex flex-col w-full">
 						<div class="relative bg-[var(--fill-tsp-gray-main)] rounded-[22px]">
-							<!-- Main Input Box with dynamic padding if tool is active -->
 							<div class="flex flex-col gap-3 rounded-[22px] relative bg-[var(--fill-input-chat)] py-3 w-full z-[20] shadow-[0px_12px_32px_0px_rgba(0,0,0,0.02)] border border-black/5 dark:border-[var(--border-main)] focus-within:border-black/10 transition-all duration-300">
 								<!-- Text Area -->
 								<div class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[50px] max-h-[216px]">
@@ -293,6 +303,7 @@
 						</div>
 					</div>
 				</div>
+				</template>
 
 				<!-- Suggestions / Home View -->
 				<div v-if="!activeTool" class="mt-8 flex flex-wrap justify-center gap-2 animate-fade-in-up" style="animation-delay: 0.4s; animation-fill-mode: forwards">
@@ -405,6 +416,7 @@ import Placeholder from '@tiptap/extension-placeholder'
 import { Plus, Globe, X, Mic, ArrowUp, Cable, Smartphone, Calendar, Search, Table, BarChart3, Video, Volume2, MessageSquare, ArrowUpRight, Signal, Newspaper, BarChart2, Cake, SlidersHorizontal, Presentation, Puzzle, Mail, MessageCircle, FileText, Briefcase, Building2, Cloud, User, Link, Image, Code, ShoppingBag, Sparkles, Paintbrush, Loader2, Square, Clock, Check, Palette, Gem, Monitor, LayoutGrid } from 'lucide-vue-next'
 import { uploadFile, generateImageStream, generateVideoStream } from '../utils/api'
 import ModelSelector from './ModelSelector.vue'
+import UnifiedInput from './UnifiedInput.vue'
 import SamplePrompts from './SamplePrompts.vue'
 import TemplateSelector from './TemplateSelector.vue'
 import ToolChips from './ToolChips.vue'
@@ -461,6 +473,54 @@ const emit = defineEmits(['send-message'])
 
 const activeTool = ref<ToolType>(null)
 const hasContent = ref(false)
+const unifiedInputRef = ref<InstanceType<typeof UnifiedInput> | null>(null)
+
+const currentCapability = computed(() => {
+	const model = modelStore.selectedModel
+	const cap = model?.model_input?.capability || model?.capabilities?.[0]
+	if (cap === 'image_generation' || cap === 'image') return 'image_generation' as const
+	if (cap === 'video_generation' || cap === 'video') return 'video_generation' as const
+	return 'chat' as const
+})
+
+function handleUnifiedSend(payload: { content: string; params: Record<string, any>; files: any[]; mediaFiles: any[] }) {
+	const content = payload.content
+	if (!content.trim() && payload.files.length === 0) return
+
+	const modelId = modelStore.selectedModelId || 'openai:gpt-4o-mini'
+	const image_urls: string[] = []
+	const file_ids: string[] = []
+
+	payload.files.forEach((f: any) => {
+		if (f.type?.startsWith('image/')) {
+			image_urls.push(f.key)
+		} else {
+			file_ids.push(f.key)
+		}
+	})
+
+	const payloadOptions: any = { ...payload.params, file_ids, image_urls, files: payload.files }
+
+	// Media field mapping
+	const model = modelStore.selectedModel
+	const fields = model?.model_input?.fields || {}
+	if (payload.mediaFiles.length > 0) {
+		if ('input_images' in fields) {
+			payloadOptions.input_images = payload.mediaFiles.map((f) => f.url)
+		} else if ('image' in fields) {
+			payloadOptions.image = payload.mediaFiles[0]?.url
+		} else if ('images' in fields) {
+			payloadOptions.images = payload.mediaFiles.map((f) => f.url)
+		} else if ('ref_image' in fields) {
+			payloadOptions.ref_image = payload.mediaFiles[0]?.url
+		}
+	}
+
+	const capability = currentCapability.value === 'image_generation' ? 'image' : (currentCapability.value === 'video_generation' ? 'video' : 'chat')
+	emit('send-message', content, modelId, payloadOptions, capability)
+
+	activeTool.value = null
+}
 const showConnectBanner = ref(true)
 
 const isMoreMenuOpen = ref(false)
@@ -871,17 +931,9 @@ function handleToolSelect(toolId: string) {
 
 // Handle clicking a sample prompt
 function handlePromptSelect(text: string) {
-	if (!editor.value) return
-	editor.value.commands.setContent(text)
-	// Focus first to ensure the editor is ready for selection
-	editor.value.commands.focus()
-	// Small delay to ensure Tiptap has processed the content update
+	unifiedInputRef.value?.setContent(text)
+	unifiedInputRef.value?.focus()
 	nextTick(() => {
-		if (editor.value) {
-			const { size } = editor.value.state.doc.content
-			editor.value.commands.setTextSelection(size)
-			editor.value.commands.focus('end')
-		}
 	})
 }
 

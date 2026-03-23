@@ -244,216 +244,18 @@
 			</div>
 		</main>
 
-		<!-- Floating Pill Control Bar (Bottom - Aligned with Manus Design) -->
+		<!-- UnifiedInput -->
 		<div class="absolute bottom-12 inset-x-0 flex justify-center px-4 z-50 pointer-events-none">
 			<div class="w-full max-w-[840px] relative pointer-events-auto">
-				<transition enter-active-class="duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]" enter-from-class="opacity-0 translate-y-8 scale-90" enter-to-class="opacity-100 translate-y-0 scale-100">
-					<!-- Active Task Monitor (Manus Integrated Glass) -->
-					<div v-if="isGenerating" class="absolute -top-16 left-1/2 -translate-x-1/2 flex items-center gap-5 px-6 py-3 bg-[var(--bg-main)]/90 backdrop-blur-2xl border border-[var(--border-main)] rounded-2xl shadow-[var(--shadow-L)] z-[60]">
-						<!-- Precision Progress Indicator (System Wide) -->
-						<div class="relative size-10 flex items-center justify-center">
-							<div class="absolute inset-0 bg-indigo-500/10 rounded-full animate-ping"></div>
-							<Loader2 :size="20" class="animate-spin text-[var(--text-primary)]" />
-						</div>
-
-						<div class="flex flex-col pr-4">
-							<span class="text-[10px] font-black text-[var(--text-primary)] tracking-[0.2em] uppercase opacity-40">System Monitor</span>
-							<span class="text-[11px] font-bold text-[var(--text-primary)]">{{ activeTasks.length }} Active Processing</span>
-						</div>
-					</div>
-				</transition>
-
-				<div ref="controlBarRef" class="bg-[var(--fill-input-chat)] rounded-[22px] border border-black/5 dark:border-[var(--border-main)] py-3 shadow-[0px_12px_32px_0px_rgba(0,0,0,0.02)] flex flex-col gap-6 transition-all duration-300 focus-within:border-black/10">
-					<!-- Uploaded Image Previews (above input) -->
-					<div v-if="uploadedImages.length > 0" class="px-2 flex items-center gap-6 flex-wrap">
-						<div v-for="(img, index) in uploadedImages" :key="img.url" class="relative shrink-0 group/preview">
-							<img :src="img.url" class="w-14 h-14 object-cover rounded-2xl border border-[var(--border-main)] shadow-sm" />
-							<!-- Upload loading overlay -->
-							<div v-if="img.uploading" class="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center">
-								<Loader2 :size="18" class="animate-spin text-white" />
-							</div>
-							<button v-else @click="removeImage(index)" class="absolute -top-1.5 -right-1.5 size-[18px] bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full flex items-center justify-center shadow-md opacity-0 group-hover/preview:opacity-100 transition-all scale-75 group-hover/preview:scale-100">
-								<X :size="9" stroke-width="3.5" />
-							</button>
-						</div>
-						<!-- Quick add button (multiple only) -->
-						<button v-if="supportsMultipleImages" @click="triggerFileUpload" class="w-14 h-14 shrink-0 rounded-2xl border-2 border-dashed border-[var(--border-main)] flex items-center justify-center hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)] transition-all">
-							<Plus :size="16" class="text-[var(--text-tertiary)]" />
-						</button>
-					</div>
-
-					<!-- Input Area -->
-					<div class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 w-full text-[var(--text-primary)] placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[50px] max-h-[216px]">
-						<div ref="inputRef" contenteditable="true" class="w-full outline-none font-normal" :data-placeholder="displayedPlaceholder" @input="handleInput" @keydown.enter="handleEnterKey" @paste="handlePaste"></div>
-					</div>
-
-					<!-- Bottom Row: Tools + Generate -->
-					<div class="flex items-center justify-between gap-2 px-3">
-						<!-- Tool Pills -->
-						<div class="flex items-center gap-2 flex-wrap">
-							<!-- Model Selector -->
-							<ModelSelector capability="image_generation" class="mr-1" />
-
-							<!-- Image Upload -->
-							<div class="group/button relative" v-if="supportsImageUpload">
-								<button @click="toggleImageUploadDropdown" class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="openImageUploadDropdown ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : uploadedImages.length > 0 ? 'border-[var(--border-main)]' : ''" :disabled="isUploading">
-									<Loader2 v-if="isUploading" :size="16" class="animate-spin text-[var(--text-secondary)]" />
-									<template v-else-if="uploadedImages.length > 0">
-										<div class="relative shrink-0">
-											<img :src="uploadedImages[0]?.url" class="w-4 h-4 rounded object-cover" />
-											<div v-if="uploadedImages.length > 1" class="absolute -top-1.5 -right-1.5 min-w-[14px] h-[14px] bg-[var(--text-primary)] rounded-full text-[8px] text-[var(--bg-main)] flex items-center justify-center font-bold px-0.5 leading-none">
-												{{ uploadedImages.length }}
-											</div>
-										</div>
-									</template>
-									<ImagePlus v-else :size="16" class="text-[var(--text-secondary)]" />
-									<span class="text-[13px] font-medium text-[var(--text-primary)]">
-										{{
-											uploadedImages.length > 0
-												? `${uploadedImages.length}
-										image${uploadedImages.length > 1 ? 's' : ''}`
-												: 'Image prompt'
-										}}
-									</span>
-								</button>
-
-								<!-- Popover -->
-								<div v-if="openImageUploadDropdown" class="absolute bottom-[calc(100%+10px)] left-0 pb-2 z-[60] min-w-[300px]">
-									<div class="rounded-2xl bg-[var(--bg-main)] border border-[var(--border-light)] p-4 shadow-lg flex flex-col gap-4" style="background-color: var(--bg-main)">
-										<p class="text-[14px] font-medium text-[var(--text-primary)] text-center leading-snug px-2">Image prompts apply the style and content of any picture to your generation. Upload images or select from your asset library.</p>
-										<div class="flex flex-col gap-2">
-											<button @click="triggerUploadAndClose" class="w-full flex items-center justify-center gap-2 bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 rounded-full py-3 text-[14px] font-medium transition-colors">
-												<div class="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center">
-													<Plus :size="10" stroke-width="3" />
-												</div>
-												Upload
-											</button>
-											<button @click="selectAssetAndClose" class="w-full flex items-center justify-center gap-2 bg-[var(--bg-main)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full py-3 text-[14px] font-medium transition-colors border border-[var(--border-main)] shadow-sm" style="background-color: var(--bg-main)">
-												<ImagePlus :size="16" />
-												Select asset
-											</button>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<!-- Dynamic Select Fields -->
-							<div v-for="field in dynamicSelectFields" :key="field.key" class="relative">
-								<!-- Aspect Ratio -->
-								<template v-if="field.key === 'aspect_ratio'">
-									<button @click="openDropdown = openDropdown === field.key ? null : field.key" class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="openDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
-										<Square :size="16" class="text-[var(--text-secondary)]" />
-										<span class="text-[13px] font-medium text-[var(--text-primary)]">{{ dynamicParams[field.key] }}</span>
-									</button>
-									<div v-if="openDropdown === field.key" class="absolute bottom-full left-0 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-6 z-[60] flex gap-8 items-center min-w-max" style="background-color: var(--bg-main)">
-										<!-- Left: Ratio Buttons Grid -->
-										<div class="flex flex-wrap gap-2 w-[280px]">
-											<button
-												v-for="r in field.options"
-												:key="r"
-												@click="dynamicParams[field.key] = r"
-												class="px-3 py-2 rounded-xl text-[13px] font-bold border transition-all min-w-[64px] flex-1 text-center"
-												:class="dynamicParams[field.key] === r ? 'bg-[var(--text-primary)] border-[var(--text-primary)] text-[var(--bg-main)] shadow-sm scale-[1.02]' : 'bg-transparent text-[var(--text-primary)] border-[var(--border-main)] hover:border-[var(--text-primary)]/20 hover:bg-[var(--bg-hover)]'">
-												{{ r }}
-											</button>
-										</div>
-
-										<!-- Right: Visual Preview -->
-										<div class="relative flex items-center justify-center w-[160px] h-[160px] bg-transparent shrink-0">
-											<!-- Dynamic Box -->
-											<div class="relative bg-[var(--fill-tsp-gray-main)] rounded-xl border border-[var(--border-main)] transition-all duration-300 flex items-center justify-center overflow-hidden shadow-inner" :style="getPreviewStyle(dynamicParams[field.key])">
-												<!-- 3x3 Grid -->
-												<div class="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none">
-													<div v-for="i in 9" :key="i" class="border-[0.5px] border-[var(--border-main)] opacity-50"></div>
-												</div>
-											</div>
-											<!-- Adjustment Handles -->
-											<div class="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-[var(--text-tertiary)] rounded-full"></div>
-											<div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-[var(--text-tertiary)] rounded-full"></div>
-											<div class="absolute top-1/2 -left-1 -translate-y-1/2 w-1 h-3 bg-[var(--text-tertiary)] rounded-full"></div>
-											<div class="absolute top-1/2 -right-1 -translate-y-1/2 w-1 h-3 bg-[var(--text-tertiary)] rounded-full"></div>
-										</div>
-									</div>
-								</template>
-
-								<!-- Style Transfer -->
-								<template v-else-if="field.key === 'style'">
-									<button @click="openDropdown = openDropdown === field.key ? null : field.key" class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="openDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
-										<Palette :size="16" class="text-[var(--text-secondary)]" />
-										<span class="text-[13px] font-medium text-[var(--text-primary)]">
-											{{ dynamicParams[field.key] === 'No Style' || !dynamicParams[field.key] ? 'Style transfer' : dynamicParams[field.key] }}
-										</span>
-									</button>
-									<div v-if="openDropdown === field.key" class="absolute bottom-full left-0 mb-3 w-48 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-1.5 z-[60] max-h-60 overflow-y-auto custom-scrollbar" style="background-color: var(--bg-main)">
-										<button v-for="s in field.options" :key="s" @click="setParamAndClose(field.key, s)" class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-[var(--bg-hover)] transition-colors text-left">
-											<span class="text-[13px] font-medium" :class="dynamicParams[field.key] === s ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'">{{ s }}</span>
-										</button>
-									</div>
-								</template>
-
-								<!-- Generalized Tool (like Resolution) -->
-								<template v-else>
-									<button @click="openDropdown = openDropdown === field.key ? null : field.key" class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="openDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
-										<Gem v-if="field.key === 'resolution'" :size="16" class="text-[var(--text-secondary)]" />
-										<LayoutGrid v-else :size="16" class="text-[var(--text-secondary)]" />
-										<span class="text-[13px] font-medium text-[var(--text-primary)]">
-											<span v-if="field.key !== 'resolution'" class="uppercase font-bold text-[10px] tracking-wider opacity-60 mr-1">{{ field.key }}:</span>{{ dynamicParams[field.key] }}
-										</span>
-									</button>
-									<div v-if="openDropdown === field.key" class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-4 z-[60] min-w-[200px]" style="background-color: var(--bg-main)">
-										<p class="text-[12px] font-medium text-[var(--text-tertiary)] mb-3 px-2 uppercase tracking-wide">
-											{{ field.key.replace(/_/g, ' ') }}
-										</p>
-										<div class="flex flex-col gap-0.5 max-h-[180px] overflow-y-auto custom-scrollbar px-1 relative z-10">
-											<button v-for="opt in field.options" :key="opt" @click="setParamAndClose(field.key, opt)" class="w-full flex items-center justify-between gap-3 py-2 px-3 rounded-[12px] group transition-all duration-200" :class="dynamicParams[field.key] === opt ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-md' : 'hover:bg-[var(--bg-hover)] text-[var(--text-primary)]'">
-												<span class="text-[13px] font-semibold tracking-tight">{{ opt }}</span>
-												<div class="flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" :class="dynamicParams[field.key] === opt ? 'opacity-100' : ''">
-													<Check :size="14" :stroke-width="3" :class="dynamicParams[field.key] === opt ? 'text-[var(--bg-main)]' : 'text-[var(--text-tertiary)]'" />
-												</div>
-											</button>
-										</div>
-									</div>
-								</template>
-							</div>
-
-							<!-- Dynamic Number Fields (like Num Outputs) -->
-							<div v-for="field in dynamicNumberFields" :key="field.key" class="relative">
-								<button @click="openDropdown = openDropdown === field.key ? null : field.key" class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all" :class="openDropdown === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : ''">
-									<Monitor :size="16" class="text-[var(--text-secondary)]" />
-									<span class="text-[13px] font-medium text-[var(--text-primary)]">{{ dynamicParams[field.key] }} Outputs</span>
-								</button>
-								<div v-if="openDropdown === field.key" class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[var(--bg-main)] border border-[var(--border-light)] rounded-2xl shadow-lg p-4 z-[60] min-w-[200px]" style="background-color: var(--bg-main)">
-									<p class="text-[12px] font-medium text-[var(--text-tertiary)] mb-3 px-2 uppercase tracking-wide">Outputs Quantity</p>
-									<div class="flex flex-wrap gap-2 justify-center max-w-[240px]">
-										<button
-											v-for="n in field.max - field.min + 1"
-											:key="n"
-											@click="setParamAndClose(field.key, n + field.min - 1)"
-											class="size-10 rounded-xl font-bold flex items-center justify-center transition-colors border"
-											:class="dynamicParams[field.key] === n + field.min - 1 ? 'bg-[var(--text-primary)] text-[var(--bg-main)] border-[var(--text-primary)] shadow-md' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-primary)]'">
-											{{ n + field.min - 1 }}
-										</button>
-									</div>
-								</div>
-							</div>
-						</div>
-
-						<!-- Generate Button -->
-						<button @click="generateImage" :disabled="!prompt.trim()" class="flex items-center justify-center shrink-0 size-8 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] hover:opacity-90 transition-all disabled:opacity-50 disabled:pointer-events-none self-end relative">
-							<Sparkles v-if="!isGenerating" :size="18" fill="currentColor" />
-							<Loader2 v-else :size="18" class="animate-spin" />
-						</button>
-					</div>
-
-					<!-- Hidden File Input -->
-					<input type="file" ref="fileInput" class="hidden" accept="image/*" :multiple="supportsMultipleImages" @change="handleFileUpload" />
-				</div>
+				<UnifiedInput
+					ref="unifiedInputRef"
+					capability="image_generation"
+					:is-loading="isGenerating"
+					@send="handleUnifiedSend"
+				/>
 			</div>
 		</div>
 	</div>
-
-	<!-- Asset Picker Modal -->
-	<AssetPickerModal :show="showAssetPicker" :multiple="supportsMultipleImages" file-type="image" @close="showAssetPicker = false" @select="onAssetsSelected" />
 </template>
 
 <script setup lang="ts">
@@ -464,11 +266,15 @@ import { useRouter } from 'vue-router'
 import { useConversationStore } from '@/stores/conversation'
 import { useChatStore } from '@/stores/chat'
 import { useImageDiscoveryStore } from '~/stores/discovery'
+import { useModelStore } from '@/stores/models'
+import UnifiedInput from '~/components/UnifiedInput.vue'
 
 const router = useRouter()
 const conversationStore = useConversationStore()
 const chatStore = useChatStore()
 const discoveryStore = useImageDiscoveryStore()
+const modelStore = useModelStore()
+const unifiedInputRef = ref<InstanceType<typeof UnifiedInput> | null>(null)
 
 const activeTab = ref<'inspiration' | 'creations'>('inspiration')
 const prompt = ref('')
@@ -510,10 +316,6 @@ const runTypewriter = () => {
 }
 
 // Model & Options State
-import { useModelStore } from '@/stores/models'
-import ModelSelector from '@/components/ModelSelector.vue'
-
-const modelStore = useModelStore()
 const selectedModel = computed(() => modelStore.selectedModel)
 const isImageModel = computed(() => {
 	const model = selectedModel.value
@@ -750,7 +552,7 @@ const handleEnterKey = (e: KeyboardEvent) => {
 		return
 	}
 	e.preventDefault()
-	generateImage()
+	// generateImage() - replaced by UnifiedInput
 }
 
 const handlePaste = (e: ClipboardEvent) => {
@@ -818,6 +620,54 @@ const handleFileUpload = async (event: Event) => {
 
 const removeImage = (index: number) => {
 	uploadedImages.value.splice(index, 1)
+}
+
+const handleUnifiedSend = async (payload: { content: string; params: Record<string, any>; files: any[]; mediaFiles: any[] }) => {
+	if (!payload.content.trim() || !selectedModel.value) return
+
+	const params: Record<string, any> = { ...payload.params }
+	const file_ids: string[] = []
+	const image_urls: string[] = []
+	const files: any[] = []
+	const modelFields = selectedModel.value?.model_input?.fields || {}
+
+	if (payload.mediaFiles.length > 0) {
+		if ('input_images' in modelFields) {
+			params.input_images = payload.mediaFiles.map((i) => i.url)
+			image_urls.push(...payload.mediaFiles.map((i) => i.key))
+			files.push(...payload.mediaFiles)
+		} else if ('image' in modelFields) {
+			params.image = payload.mediaFiles[0]?.url
+			image_urls.push(payload.mediaFiles[0]?.key || '')
+			files.push(payload.mediaFiles[0])
+		}
+	}
+
+	const model = `${selectedModel.value.provider}:${selectedModel.value.model}`
+
+	try {
+		chatStore.setLoading(true)
+
+		const conversationId = await conversationStore.createConversation({
+			model: model,
+			model_id: selectedModel.value.id,
+			group_id: conversationStore.selectedGroupId || 0,
+			params: { ...params, file_ids, image_urls, files },
+			capability: 'image',
+		})
+
+		conversationStore.addMessage(conversationId, {
+			role: 'user',
+			content: payload.content,
+		})
+
+		chatStore.setPendingMessage(payload.content)
+
+		router.push(`/chat/${conversationId}`)
+	} catch (e) {
+		console.error('Failed to start chat:', e)
+		chatStore.setLoading(false)
+	}
 }
 
 const generateImage = async () => {

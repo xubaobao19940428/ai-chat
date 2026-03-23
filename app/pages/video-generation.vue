@@ -250,175 +250,15 @@
 			</div>
 		</main>
 
-		<!-- Floating Pill Control Bar (Bottom) - Krea Style -->
+		<!-- UnifiedInput -->
 		<div class="absolute bottom-12 inset-x-0 flex justify-center px-4 z-50 pointer-events-none">
 			<div class="w-full max-w-[840px] relative pointer-events-auto">
-				<transition enter-active-class="duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]" enter-from-class="opacity-0 translate-y-8 scale-90" enter-to-class="opacity-100 translate-y-0 scale-100">
-					<!-- Active Task Monitor (Manus Integrated Glass) -->
-					<div v-if="isGenerating" class="absolute -top-16 left-1/2 -translate-x-1/2 flex items-center gap-5 px-6 py-3 bg-[var(--bg-main)]/90 backdrop-blur-2xl border border-[var(--border-main)] rounded-2xl shadow-[var(--shadow-L)] z-[60]">
-						<!-- Precision Progress Indicator (System Wide) -->
-						<div class="relative size-10 flex items-center justify-center">
-							<div class="absolute inset-0 bg-indigo-500/10 rounded-full animate-ping"></div>
-							<Loader2 :size="20" class="animate-spin text-[var(--text-primary)]" />
-						</div>
-
-						<div class="flex flex-col">
-							<span class="text-[10px] font-black text-[var(--text-primary)] tracking-[0.2em] uppercase opacity-40">System Monitor</span>
-							<span class="text-[11px] font-bold text-[var(--text-primary)]">{{ activeTasks.length }} Active Processing</span>
-						</div>
-					</div>
-				</transition>
-
-				<div ref="controlBarRef" class="bg-[var(--fill-input-chat)] rounded-[22px] border border-black/5 dark:border-[var(--border-main)] py-3 shadow-[0px_12px_32px_0px_rgba(0,0,0,0.02)] flex flex-col gap-3 transition-all duration-300 focus-within:border-black/10">
-					<div class="flex w-full min-w-0 flex-col gap-5">
-						<!-- Input Area -->
-						<div class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 w-full text-[var(--text-primary)] placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[50px] max-h-[216px]">
-							<textarea v-model="prompt" class="w-full bg-transparent border-none outline-none font-normal resize-none px-0 text-inherit leading-inherit" :placeholder="displayedPlaceholder" autocomplete="off" rows="2" @keydown.enter="handleEnterKey"></textarea>
-						</div>
-
-						<!-- Bottom Row: Tools + Generate -->
-						<div class="flex justify-between gap-2 px-3 mt-auto">
-							<!-- Tool Pills -->
-							<div class="flex items-center gap-1 flex-wrap">
-								<!-- Model Selector -->
-								<ModelSelector capability="video_generation" class="mr-1" />
-
-								<!-- Start Frame Upload with Popover -->
-								<input type="file" ref="fileInput" accept="image/png, image/jpeg, video/mp4" class="hidden" @change="handleFileUpload" />
-								<div class="group/button relative" v-if="supportsImageUpload">
-									<button
-										@click="toggleStartFrameDropdown"
-										class="focus-visible:ring-ring/50 inline-flex shrink-0 items-center justify-center gap-2 font-medium whitespace-nowrap outline-none disabled:pointer-events-none disabled:opacity-50 h-[30px] px-3 py-1.5 rounded-full shadow-none bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
-										:class="openStartFrameDropdown ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'"
-										type="button"
-										:disabled="isUploading">
-										<ImagePlus v-if="!isUploading && !previewImageUrl" :size="14" />
-										<Loader2 v-else-if="isUploading" :size="14" class="animate-spin" />
-										<img v-else-if="previewImageUrl" :src="previewImageUrl" class="w-4 h-4 rounded-sm object-cover" />
-										Start frame
-									</button>
-
-									<!-- Start Frame Popover -->
-									<div v-if="openStartFrameDropdown" class="absolute bottom-[36px] left-0 pb-2 z-[60] min-w-[300px]">
-										<div class="rounded-2xl bg-[var(--bg-main)] border border-[var(--border-light)] p-4 shadow-lg min-w-[300px] flex flex-col gap-4" style="background-color: var(--bg-main)">
-											<p class="text-[14px] font-medium text-[var(--text-primary)] text-center leading-snug px-2">Start frame anchors the opening of your video. Upload an image/video or select one from your assets.</p>
-
-											<div class="flex flex-col gap-2">
-												<!-- Upload Button -->
-												<button @click="handleStartFrameUpload" class="w-full flex items-center justify-center gap-2 bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 rounded-full py-3 text-[14px] font-medium transition-colors">
-													<div class="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center">
-														<Plus :size="10" stroke-width="3" />
-													</div>
-													Upload
-												</button>
-
-												<!-- Select Asset Button -->
-												<button @click="handleSelectAsset" class="w-full flex items-center justify-center gap-2 bg-[var(--bg-main)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full py-3 text-[14px] font-medium transition-colors border border-[var(--border-main)] shadow-sm" style="background-color: var(--bg-main)">
-													<ImagePlus :size="16" />
-													Select asset
-												</button>
-											</div>
-										</div>
-									</div>
-								</div>
-
-								<!-- Dynamic Select Fields -->
-								<div v-for="field in dynamicSelectFields" :key="field.key" class="group/button relative">
-									<!-- 1. Aspect Ratio Custom Style -->
-									<template v-if="field.key === 'aspect_ratio'">
-										<button
-											@click="toggleDropdown(field.key)"
-											class="inline-flex h-[30px] shrink-0 items-center justify-center gap-2 rounded-full px-4 py-1.5 font-medium whitespace-nowrap shadow-none outline-none cursor-pointer bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
-											:class="activeDropdownField === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'">
-											<span>
-												<div v-if="String(dynamicParams[field.key]).startsWith('16:') || String(dynamicParams[field.key]).startsWith('21:') || !dynamicParams[field.key]" class="w-4 h-2.5 border-[2px] border-current rounded-[2px]" :title="dynamicParams[field.key]"></div>
-												<div v-else-if="String(dynamicParams[field.key]).startsWith('1:')" class="w-3.5 h-3.5 border-[2px] border-current rounded-[2px]"></div>
-												<div v-else class="w-2.5 h-4 border-[2px] border-current rounded-[2px]" :title="dynamicParams[field.key]"></div>
-											</span>
-										</button>
-										<div v-if="activeDropdownField === field.key" class="absolute bottom-[38px] left-1/2 -translate-x-1/2 pb-2 z-[60]">
-											<div class="rounded-2xl bg-[var(--bg-main)] border border-[var(--border-light)] p-3 shadow-lg flex flex-col gap-3" style="background-color: var(--bg-main)">
-												<span class="text-[var(--text-primary)] px-2 font-medium text-[13px] text-center pt-2">Aspect Ratio</span>
-												<div class="flex gap-2 min-w-[max-content] pb-1 overflow-x-auto no-scrollbar">
-													<button v-for="opt in field.options" :key="opt" @click="setParamAndClose(field.key, opt)" class="flex flex-col items-center justify-center gap-3 w-[84px] h-[84px] rounded-[16px] transition-colors" :class="dynamicParams[field.key] === opt ? 'bg-[var(--fill-tsp-gray-main)]' : 'bg-transparent hover:bg-[var(--bg-hover)]'">
-														<div v-if="String(opt).startsWith('16:') || String(opt).startsWith('21:') || String(opt).startsWith('3:2')" class="w-[28px] h-[18px] border-[2.5px] border-[var(--text-primary)] rounded-[4px]"></div>
-														<div v-else-if="String(opt).startsWith('9:16') || String(opt).startsWith('3:4') || String(opt).startsWith('4:5')" class="w-[16px] h-[26px] border-[2.5px] border-[var(--text-primary)] rounded-[4px]"></div>
-														<div v-else class="w-[24px] h-[24px] border-[2.5px] border-[var(--text-primary)] rounded-[4px]"></div>
-
-														<span class="text-[12px] font-medium text-[var(--text-primary)] whitespace-nowrap">
-															{{ opt === '16:9' ? 'Landscape' : opt === '9:16' ? 'Portrait' : opt === '1:1' ? 'Square' : opt }}
-														</span>
-													</button>
-												</div>
-											</div>
-										</div>
-									</template>
-
-									<!-- 2. Duration Custom Style -->
-									<template v-else-if="field.key === 'duration'">
-										<button
-											@click="toggleDropdown(field.key)"
-											class="inline-flex h-[30px] shrink-0 items-center justify-center gap-1.5 rounded-full px-4 py-1.5 font-medium whitespace-nowrap shadow-none outline-none cursor-pointer bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
-											:class="activeDropdownField === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'">
-											<Clock :size="14" class="text-[var(--text-secondary)] opacity-80" />
-											{{ dynamicParams[field.key] }}s
-										</button>
-										<div v-if="activeDropdownField === field.key" class="absolute bottom-[38px] left-1/2 -translate-x-1/2 pb-2 z-[60]">
-											<div class="rounded-2xl bg-[var(--bg-main)] border border-[var(--border-light)] p-4 shadow-lg min-w-[170px] flex flex-col gap-3" style="background-color: var(--bg-main)">
-												<span class="text-[var(--text-tertiary)] font-medium text-[12px] text-center pt-1">Duration</span>
-												<div class="flex flex-col gap-1 max-h-[200px] overflow-y-auto no-scrollbar">
-													<button v-for="opt in field.options" :key="opt" @click="setParamAndClose(field.key, opt)" class="w-full flex items-center justify-between gap-4 py-2.5 px-3 rounded-2xl hover:bg-[var(--bg-hover)] transition-colors">
-														<span class="text-[14px] font-bold text-black dark:text-white">{{ opt }}s</span>
-														<div class="flex items-center justify-center">
-															<div v-if="dynamicParams[field.key] === opt" class="w-5 h-5 rounded-full bg-black dark:bg-white flex items-center justify-center">
-																<Check :size="12" class="text-white dark:text-black" stroke-width="4" />
-															</div>
-															<div v-else class="w-5 h-5 rounded-full border-[2.5px] border-black dark:border-white"></div>
-														</div>
-													</button>
-												</div>
-											</div>
-										</div>
-									</template>
-
-									<!-- 3. Generic Style for other properties (like resolution, style) -->
-									<template v-else>
-										<button
-											@click="toggleDropdown(field.key)"
-											class="inline-flex h-[30px] shrink-0 items-center justify-center gap-2 rounded-full px-4 py-1.5 font-medium whitespace-nowrap shadow-none outline-none min-w-[60px] cursor-pointer bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] border border-transparent hover:border-[var(--border-main)] transition-all"
-											:class="activeDropdownField === field.key ? 'border-[var(--border-main)] bg-[var(--bg-hover)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'">
-											<span class="text-[11px] font-bold tracking-wider opacity-60 uppercase mr-0.5">{{ field.key === 'resolution' ? 'Res' : field.key.substring(0, 3) }}:</span>
-											{{ dynamicParams[field.key] }}
-										</button>
-										<div v-if="activeDropdownField === field.key" class="absolute bottom-[38px] left-1/2 -translate-x-1/2 pb-2 z-[60]">
-											<div class="rounded-2xl bg-[var(--bg-main)] border border-[var(--border-light)] py-3 px-2 shadow-lg min-w-[140px] flex flex-col gap-2 relative overflow-hidden" style="background-color: var(--bg-main)">
-												<!-- Decorative background element -->
-												<div class="absolute -top-10 -right-10 w-24 h-24 bg-[var(--text-primary)] opacity-5 rounded-full blur-xl pointer-events-none"></div>
-
-												<span class="text-[var(--text-tertiary)] font-bold text-[11px] text-center pt-1 tracking-widest uppercase">{{ field.key.replace(/_/g, ' ') }}</span>
-
-												<div class="flex flex-col gap-0.5 max-h-[180px] overflow-y-auto custom-scrollbar px-1 relative z-10">
-													<button v-for="opt in field.options" :key="opt" @click="setParamAndClose(field.key, opt)" class="w-full flex items-center justify-between gap-3 py-2 px-3 rounded-[12px] group transition-all duration-200" :class="dynamicParams[field.key] === opt ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-md' : 'hover:bg-[var(--bg-hover)] text-[var(--text-primary)]'">
-														<span class="text-[13px] font-semibold tracking-tight">{{ opt }}</span>
-														<div class="flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" :class="dynamicParams[field.key] === opt ? 'opacity-100' : ''">
-															<Check :size="14" :stroke-width="3" :class="dynamicParams[field.key] === opt ? 'text-[var(--bg-main)]' : 'text-[var(--text-tertiary)]'" />
-														</div>
-													</button>
-												</div>
-											</div>
-										</div>
-									</template>
-								</div>
-							</div>
-
-							<!-- Generate Button -->
-							<button @click="generateVideo" :disabled="!prompt.trim()" class="flex items-center justify-center shrink-0 size-8 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] hover:opacity-90 transition-all disabled:opacity-50 disabled:pointer-events-none self-end relative">
-								<Sparkles v-if="!isGenerating" :size="18" fill="currentColor" />
-								<Loader2 v-else :size="18" class="animate-spin" />
-							</button>
-						</div>
-					</div>
-				</div>
+				<UnifiedInput
+					ref="unifiedInputRef"
+					capability="video_generation"
+					:is-loading="isGenerating"
+					@send="handleUnifiedSend"
+				/>
 			</div>
 		</div>
 	</div>
@@ -457,8 +297,6 @@
 		</div>
 	</Transition>
 
-	<!-- Asset Picker Modal -->
-	<AssetPickerModal :show="showAssetPicker" :multiple="false" file-type="image" @close="showAssetPicker = false" @select="onAssetSelected" />
 </template>
 
 <script setup lang="ts">
@@ -466,6 +304,7 @@ import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue'
 import { ImagePlus, Plus, Check, Zap, Loader2, X, Film, Download, ChevronDown, Sparkles, Play, Clock } from 'lucide-vue-next'
 import { getModels, getAsyncTaskOutputs, uploadFile, getRecordPrompt, getRecordPrimaryUrl, getRecordModel, getRecordParams, type AIModel, type AsyncTaskRecord } from '@/utils/api'
 import { useModelStore } from '@/stores/models'
+import UnifiedInput from '~/components/UnifiedInput.vue'
 import ModelSelector from '@/components/ModelSelector.vue'
 import { useRouter } from 'vue-router'
 import { useConversationStore } from '@/stores/conversation'
@@ -477,6 +316,7 @@ const conversationStore = useConversationStore()
 const chatStore = useChatStore()
 const modelStore = useModelStore()
 const discoveryStore = useVideoDiscoveryStore()
+const unifiedInputRef = ref<InstanceType<typeof UnifiedInput> | null>(null)
 const selectedModel = computed(() => modelStore.selectedModel)
 const isVideoModel = computed(() => {
 	const model = selectedModel.value
@@ -757,7 +597,7 @@ const handleEnterKey = (e: KeyboardEvent) => {
 		return
 	}
 	e.preventDefault()
-	generateVideo()
+	// generateVideo() - replaced by UnifiedInput
 }
 
 const handlePaste = (e: ClipboardEvent) => {
@@ -791,6 +631,53 @@ const handleFileUpload = async (event: Event) => {
 const removeAttachedImage = () => {
 	uploadedImageKey.value = ''
 	previewImageUrl.value = ''
+}
+
+const handleUnifiedSend = async (payload: { content: string; params: Record<string, any>; files: any[]; mediaFiles: any[] }) => {
+	if (!payload.content.trim() || !selectedModel.value) return
+
+	const params: Record<string, any> = { ...payload.params }
+	const file_ids: string[] = []
+	const image_urls: string[] = []
+	const files: any[] = []
+	const modelFields = selectedModel.value?.model_input?.fields || {}
+
+	if (payload.mediaFiles.length > 0) {
+		const imageField = modelFields['image_urls'] ? 'image_urls' : 'image'
+		if (imageField === 'image_urls') {
+			params['image_urls'] = [payload.mediaFiles[0]?.url]
+		} else {
+			params['image'] = payload.mediaFiles[0]?.url
+		}
+		image_urls.push(payload.mediaFiles[0]?.key || '')
+		files.push(payload.mediaFiles[0])
+	}
+
+	const model = `${selectedModel.value.provider}:${selectedModel.value.model}`
+
+	try {
+		chatStore.setLoading(true)
+
+		const conversationId = await conversationStore.createConversation({
+			model: model,
+			model_id: selectedModel.value.id,
+			group_id: conversationStore.selectedGroupId || 0,
+			params: { ...params, file_ids, image_urls, files },
+			capability: 'video',
+		})
+
+		conversationStore.addMessage(conversationId, {
+			role: 'user',
+			content: payload.content,
+		})
+
+		chatStore.setPendingMessage(payload.content)
+
+		router.push(`/chat/${conversationId}`)
+	} catch (e) {
+		console.error('Failed to start chat:', e)
+		chatStore.setLoading(false)
+	}
 }
 
 const generateVideo = async () => {

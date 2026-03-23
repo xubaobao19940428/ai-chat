@@ -243,6 +243,15 @@ const initialValidModels = computed(() => {
 	})
 })
 
+// Sync active capability to model store
+watch(
+	() => props.capability,
+	(cap) => {
+		if (cap) modelStore.setActiveCapability(cap)
+	},
+	{ immediate: true },
+)
+
 // Auto-select first model when filtering changes (e.g. page navigation)
 watch(
 	() => initialValidModels.value,
@@ -254,7 +263,7 @@ watch(
 			if (!isStillValid) {
 				const firstModel = newModels[0]
 				if (firstModel) {
-					modelStore.selectModel(`${firstModel.provider}:${firstModel.model}`)
+					modelStore.selectModel(`${firstModel.provider}:${firstModel.model}`, props.capability)
 				}
 			}
 		}
@@ -302,7 +311,7 @@ const formatProvider = (provider: string) => {
 }
 
 const selectModel = (id: string) => {
-	modelStore.selectModel(id)
+	modelStore.selectModel(id, props.capability)
 	isOpen.value = false
 
 	const model = modelStore.models.find((m) => `${m.provider}:${m.model}` === id)

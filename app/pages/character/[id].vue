@@ -110,26 +110,24 @@
 
 				<!-- Floating Input Area -->
 				<div class="flex-shrink-0 px-4 pb-8 pt-2 absolute bottom-0 left-0 right-0 z-50 pointer-events-none">
-					<div class="max-w-[840px] mx-auto relative pointer-events-auto flex flex-col gap-4">
-						<!-- Suggested Questions (2x2 grid) - Moved here -->
-						<div v-if="!conversationId && suggestedQuestions.length" class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full px-1">
+					<div class="max-w-[840px] mx-auto relative pointer-events-auto">
+						<!-- Suggested Questions (2x2 grid) -->
+						<div v-if="!conversationId && suggestedQuestions.length" class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full px-1 mb-4">
 							<button v-for="(q, idx) in suggestedQuestions" :key="idx" @click="handleSuggestedQuestionClick(q)" class="flex items-center justify-between gap-3 h-[48px] px-4 rounded-xl border border-[var(--border-light)] bg-[var(--bg-main)]/50 backdrop-blur-sm hover:border-[var(--border-main)] hover:bg-[var(--bg-main)] text-[13px] text-[var(--text-primary)] text-left transition-all group/fq shadow-sm">
 								<span class="truncate">{{ q }}</span>
 								<span class="text-[var(--text-tertiary)] group-hover/fq:text-[var(--text-secondary)] shrink-0 transition-colors">→</span>
 							</button>
 						</div>
 
-						<div class="bg-[var(--bg-main)] rounded-[24px] border border-[var(--border-light)] py-3 px-2 shadow-[0_12px_44px_rgba(0,0,0,0.08)] flex flex-col gap-3 transition-all duration-300 focus-within:border-[var(--border-main)]">
-							<div class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 w-full text-[var(--text-primary)] placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[56px] max-h-[216px] custom-scrollbar">
-								<div ref="inputRef" contenteditable="true" class="w-full outline-none font-normal" :data-placeholder="`给 ${character?.name || ''} 发消息...`" @input="handleInput" @keydown.enter="handleEnterKey" @paste="handlePaste"></div>
-							</div>
-							<div class="flex items-center justify-end px-2">
-								<button @click="sendMessage" :disabled="!inputMessage.trim() || isStreaming" class="flex items-center justify-center size-8 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] hover:opacity-90 transition-all disabled:opacity-30 disabled:pointer-events-none">
-									<ArrowUp v-if="!isStreaming" :size="18" stroke-width="2.5" />
-									<Square v-else :size="14" fill="currentColor" />
-								</button>
-							</div>
-						</div>
+						<UnifiedInput
+							ref="unifiedInputRef"
+							capability="chat"
+							:is-loading="isStreaming"
+							:character-name="character?.name"
+							:show-model-selector="true"
+							@send="handleUnifiedSend"
+							@stop="stopStreaming"
+						/>
 					</div>
 				</div>
 			</main>
@@ -140,7 +138,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick, markRaw, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowUp, Share2, Square, User as UserIcon, Info, Code, ThumbsUp, Bot } from 'lucide-vue-next'
+import { Share2, User as UserIcon, Info, Code, ThumbsUp, Bot } from 'lucide-vue-next'
+import UnifiedInput from '~/components/UnifiedInput.vue'
 import { getCharacterDetail, type Character } from '~/api/character'
 import { fetchChatStream } from '~/utils/api'
 import { renderMarkdown } from '~/utils/markdown'
@@ -159,10 +158,9 @@ const userStore = useUserStore()
 // State
 const character = ref<Character | null>(null)
 const isLoadingCharacter = ref(true)
-const inputMessage = ref('')
 const isStreaming = ref(false)
 const scrollContainer = ref<HTMLElement | null>(null)
-const inputRef = ref<HTMLDivElement | null>(null) // Changed from inputArea to inputRef and type to HTMLDivElement
+const unifiedInputRef = ref<InstanceType<typeof UnifiedInput> | null>(null)
 const conversationId = ref<number | string | null>(null)
 const welcomeMessage = ref<string>('')
 const activeTab = ref('info')
@@ -196,30 +194,16 @@ const formatTime = (timestamp?: number) => {
 	return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-const handleInput = (e: Event) => {
-	const target = e.target as HTMLDivElement
-	inputMessage.value = target.innerText
-}
-
-const handlePaste = (e: ClipboardEvent) => {
-	e.preventDefault()
-	const text = e.clipboardData?.getData('text/plain') || ''
-	document.execCommand('insertText', false, text)
-}
-
-const handleEnterKey = (e: KeyboardEvent) => {
-	if (e.shiftKey) return
-	e.preventDefault()
-	sendMessage()
-}
-
 const handleGoBack = () => {
 	router.back()
 }
 
 const handleSuggestedQuestionClick = (q: string) => {
-	inputMessage.value = q
-	sendMessage()
+	handleUnifiedSend({ content: q, params: {}, files: [], mediaFiles: [] })
+}
+
+const handleUnifiedSend = async (payload: { content: string; params: Record<string, any>; files: any[]; mediaFiles: any[] }) => {
+	await sendMessage(payload.content)
 }
 
 const scrollToBottom = () => {
@@ -290,11 +274,9 @@ const stopStreaming = () => {
 	abortController = null
 }
 
-const sendMessage = async () => {
-	if (!inputMessage.value.trim() || isStreaming.value || !character.value) return
-	const userMsg = inputMessage.value.trim()
-	inputMessage.value = ''
-	if (inputRef.value) inputRef.value.innerText = ''
+const sendMessage = async (content?: string) => {
+	const userMsg = content?.trim() || ''
+	if (!userMsg || isStreaming.value || !character.value) return
 
 	const convId = await ensureConversation()
 	if (!convId) return
@@ -369,18 +351,6 @@ const handleShare = () => {
 </script>
 
 <style scoped>
-[contenteditable]:empty:before {
-	content: attr(data-placeholder);
-	color: var(--text-disable);
-	pointer-events: none;
-	display: block;
-}
-
-[contenteditable] {
-	white-space: pre-wrap;
-	word-break: break-word;
-}
-
 .custom-scrollbar::-webkit-scrollbar {
 	width: 4px;
 }

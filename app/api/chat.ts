@@ -2,7 +2,7 @@ import { randomString, generateSign } from '~/utils/sign'
 
 // Chat Types
 export interface ChatMessage {
-  role: 'user' | 'assistant' | 'system'
+  role: 'user' | 'assistant' | 'system' | 'derivative'
   content: string
 }
 

@@ -233,10 +233,10 @@
 									<img v-if="getConversationAvatar(conversation)" :src="getConversationAvatar(conversation)" class="size-full object-cover rounded-[4px] border border-[var(--border-light)]/50" />
 									<template v-else>
 										<div v-if="conversation.characterId && conversation.characterId > 1" class="size-full flex items-center justify-center bg-blue-500/10 rounded-[4px]">
-											<Bot :size="15" class="text-blue-500 opacity-80" />
+											<Sparkles :size="15" class="text-blue-500 opacity-80" />
 										</div>
 										<Image v-else-if="conversation.capability === 'image' || conversation.capability === 'image_generation'" :size="15" class="text-purple-500 opacity-60 group-hover:opacity-100 transition-opacity" />
-										<Video v-else-if="conversation.capability === 'video' || conversation.capability === 'video_generation'" :size="15" class="text-pink-500 opacity-60 group-hover:opacity-100 transition-opacity" />
+										<Play v-else-if="conversation.capability === 'video' || conversation.capability === 'video_generation'" :size="15" fill="currentColor" class="text-pink-500 opacity-60 group-hover:opacity-100 transition-opacity" />
 										<MessageSquare v-else :size="16" class="text-[var(--text-secondary)] opacity-40 group-hover:opacity-100 transition-opacity" />
 									</template>
 								</div>
@@ -397,6 +397,7 @@ import {
 	PanelLeftClose,
 	Shapes,
 	Bot,
+	Play,
 	Compass,
 	DollarSign,
 	Book,
