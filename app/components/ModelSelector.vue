@@ -283,6 +283,7 @@ watch(
 
 const getModelIcon = (model: any) => {
 	if (!model) return '/icons/deepseek.svg'
+	if (model.icon) return model.icon
 	const id = (model.model || '').toLowerCase()
 	const provider = (model.provider || '').toLowerCase()
 

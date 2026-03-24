@@ -24,20 +24,86 @@
 		<div class="flex-1 overflow-y-auto px-4 pb-48 pt-6 custom-scrollbar relative z-10" ref="messagesContainer"
 			@scroll="onMessagesScroll">
 			<div class="max-w-full md:max-w-[900px] mx-auto py-6">
-				<!-- Initial Loading State -->
+				<!-- Initial Loading State: Skeleton -->
 				<div v-if="conversationStore.isLoading && (!currentConversation?.messages || currentConversation.messages.length === 0)"
-					class="flex flex-col items-center justify-center py-20 space-y-4">
-					<div
-						class="w-10 h-10 border-4 border-[var(--border-light)] border-t-[var(--text-primary)] rounded-full animate-spin">
-					</div>
-					<p class="text-[var(--text-tertiary)] text-sm font-medium animate-pulse">{{ $t('chat.loading_messages') }}</p>
+					class="space-y-6 animate-pulse">
+
+					<!-- Image Generation Skeleton -->
+					<template v-if="isImageModel">
+						<div v-for="i in 2" :key="i" class="flex gap-4 items-start">
+							<div class="w-[420px] shrink-0">
+								<div class="rounded-2xl bg-[var(--bg-hover)] p-4 space-y-2.5">
+									<div class="h-3 bg-[var(--border-light)] rounded w-full"></div>
+									<div class="h-3 bg-[var(--border-light)] rounded w-[90%]"></div>
+									<div class="h-3 bg-[var(--border-light)] rounded w-4/5"></div>
+									<div class="h-3 bg-[var(--border-light)] rounded w-2/3"></div>
+									<div class="h-3 bg-[var(--border-light)] rounded w-1/2 mt-3"></div>
+								</div>
+							</div>
+							<div class="flex-1 min-w-0">
+								<div class="w-[200px]">
+									<div class="rounded-xl bg-[var(--bg-hover)] overflow-hidden relative"
+										style="aspect-ratio: 1 / 1">
+										<div
+											class="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--border-light)]/40 to-transparent skeleton-shimmer">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</template>
+
+					<!-- Video Generation Skeleton -->
+					<template v-else-if="isVideoModel">
+						<div v-for="i in 2" :key="i"
+							class="w-full max-w-[640px] mx-auto rounded-2xl border border-[var(--border-light)] overflow-hidden">
+							<div class="px-4 py-3 border-b border-[var(--border-light)] flex justify-between">
+								<div class="space-y-1.5 flex-1">
+									<div class="h-3 bg-[var(--bg-hover)] rounded w-3/4"></div>
+									<div class="h-3 bg-[var(--bg-hover)] rounded w-1/2"></div>
+								</div>
+								<div class="w-20 h-5 bg-[var(--bg-hover)] rounded"></div>
+							</div>
+							<div class="bg-black/[0.03] dark:bg-white/[0.03] relative overflow-hidden"
+								style="aspect-ratio: 16 / 9">
+								<div
+									class="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--border-light)]/30 to-transparent skeleton-shimmer">
+								</div>
+							</div>
+							<div class="px-4 py-2.5 flex gap-2">
+								<div class="h-7 w-16 bg-[var(--bg-hover)] rounded-lg"></div>
+								<div class="h-7 w-20 bg-[var(--bg-hover)] rounded-lg"></div>
+							</div>
+						</div>
+					</template>
+
+					<!-- Chat Skeleton -->
+					<template v-else>
+						<div v-for="i in 5" :key="i" class="flex" :class="i % 3 === 1 ? 'justify-end' : ''">
+							<div v-if="i % 3 === 1" class="max-w-[70%]">
+								<div class="bg-[var(--bg-hover)] rounded-[24px] px-5 py-3 space-y-1.5"
+									:style="{ width: [180, 240, 160][i % 3] + 'px' }">
+									<div class="h-3 bg-[var(--border-light)] rounded w-full"></div>
+									<div v-if="i % 2 === 0" class="h-3 bg-[var(--border-light)] rounded w-2/3"></div>
+								</div>
+							</div>
+							<div v-else class="w-full space-y-1.5">
+								<div class="h-3 bg-[var(--bg-hover)] rounded"
+									:style="{ width: [85, 70, 90, 60, 75][i % 5] + '%' }"></div>
+								<div class="h-3 bg-[var(--bg-hover)] rounded"
+									:style="{ width: [60, 80, 50, 70, 55][i % 5] + '%' }"></div>
+								<div v-if="i % 2 === 0" class="h-3 bg-[var(--bg-hover)] rounded"
+									:style="{ width: [40, 55, 45][i % 3] + '%' }"></div>
+							</div>
+						</div>
+					</template>
 				</div>
 
 				<!-- Image Generation Mode: Prompt left, Images right -->
 				<div v-if="isImageModel" class="space-y-6">
 					<div v-for="group in imageGenerationGroups" :key="group.userMsg.id" class="flex gap-4 items-start">
 						<!-- Left: Prompt Card -->
-						<div class="w-[260px] shrink-0">
+						<div class="w-[420px] shrink-0">
 							<div
 								class="bg-[var(--background-gray-subtle,#f4f4f5)] dark:bg-[var(--background-gray-subtle)] rounded-2xl px-4 py-4 text-[13.5px] text-[var(--text-primary)] leading-relaxed tracking-tight whitespace-pre-wrap break-words flex flex-col gap-3 min-h-[90px] max-h-[300px] overflow-y-auto custom-scrollbar">
 								<span>{{ group.userMsg.content }}</span>
@@ -58,43 +124,45 @@
 						<!-- Right: Images or Loading -->
 						<div class="flex-1 min-w-0 flex flex-col gap-2">
 							<!-- Loading state with progress -->
-							<div v-if="group.isLoading" class="max-w-[420px]">
-								<div
-									class="relative rounded-xl bg-black/[0.03] dark:bg-white/[0.03] overflow-hidden flex items-center justify-center py-12 px-6">
-									<!-- Scan line animation -->
-									<div class="absolute inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[var(--text-tertiary)]/30 to-transparent z-10 pointer-events-none"
-										style="animation: img-scan-y 3s linear infinite"></div>
+							<div v-if="group.isLoading">
+								<div class="w-[200px]">
+									<div
+										class="relative rounded-xl bg-black/[0.03] dark:bg-white/[0.03] overflow-hidden flex items-center justify-center py-12 px-6">
+										<!-- Scan line animation -->
+										<div class="absolute inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[var(--text-tertiary)]/30 to-transparent z-10 pointer-events-none"
+											style="animation: img-scan-y 3s linear infinite"></div>
 
-									<div class="flex flex-col items-center gap-3 z-20">
-										<!-- Progress ring -->
-										<div class="relative size-12 flex items-center justify-center">
-											<svg class="absolute inset-0 size-full -rotate-90" viewBox="0 0 100 100">
-												<circle cx="50" cy="50" r="42" fill="none" stroke="currentColor"
-													class="text-[var(--border-light)]" stroke-width="3" />
-												<circle cx="50" cy="50" r="42" fill="none" stroke="currentColor"
-													class="text-[var(--text-secondary)] transition-all duration-500 ease-out"
-													stroke-width="4" stroke-linecap="round" stroke-dasharray="264"
-													:stroke-dashoffset="264 - (264 * (chatStore.generationProgress || 0)) / 100" />
-											</svg>
-											<span
-												class="text-[12px] font-bold text-[var(--text-primary)] tabular-nums">{{
-													chatStore.generationProgress || 0 }}%</span>
+										<div class="flex flex-col items-center gap-3 z-20">
+											<!-- Progress ring -->
+											<div class="relative size-12 flex items-center justify-center">
+												<svg class="absolute inset-0 size-full -rotate-90"
+													viewBox="0 0 100 100">
+													<circle cx="50" cy="50" r="42" fill="none" stroke="currentColor"
+														class="text-[var(--border-light)]" stroke-width="3" />
+													<circle cx="50" cy="50" r="42" fill="none" stroke="currentColor"
+														class="text-[var(--text-secondary)] transition-all duration-500 ease-out"
+														stroke-width="4" stroke-linecap="round" stroke-dasharray="264"
+														:stroke-dashoffset="264 - (264 * (chatStore.generationProgress || 0)) / 100" />
+												</svg>
+												<span
+													class="text-[12px] font-bold text-[var(--text-primary)] tabular-nums">{{
+														chatStore.generationProgress || 0 }}%</span>
+											</div>
+											<p
+												class="text-[11px] text-[var(--text-tertiary)] font-medium tracking-wide text-center">
+												{{ chatStore.generationStatus || 'Initializing...' }}
+											</p>
 										</div>
-										<p
-											class="text-[11px] text-[var(--text-tertiary)] font-medium tracking-wide text-center">
-											{{ chatStore.generationStatus || 'Initializing...' }}
-										</p>
 									</div>
 								</div>
 							</div>
 
 							<!-- Images grid -->
 							<div v-else-if="group.images.length > 0">
-								<div class="grid gap-1"
+								<div class="grid gap-1 w-[200px]"
 									:class="group.images.length === 4 ? 'grid-cols-2' : group.images.length === 3 ? 'grid-cols-3' : group.images.length === 2 ? 'grid-cols-2' : 'grid-cols-1'">
 									<div v-for="(url, idx) in group.images" :key="idx"
 										class="relative rounded-xl overflow-hidden group/img bg-[var(--background-gray-subtle,#f4f4f5)]"
-										:class="group.images.length === 1 ? 'max-w-[420px]' : ''"
 										style="aspect-ratio: 1 / 1">
 										<img :src="url" class="w-full h-full object-cover block cursor-zoom-in"
 											@click="previewImage = url" />
@@ -115,9 +183,8 @@
 									</div>
 								</div>
 
-								<!-- Action bar — right aligned -->
-								<div
-									class="flex items-center justify-end gap-0.5 mt-1.5 text-[12px] text-[var(--text-tertiary)]">
+								<!-- Action bar -->
+								<div class="flex items-center gap-0.5 mt-1.5 text-[12px] text-[var(--text-tertiary)]">
 									<button @click="regenerateFromGroup(group)" :disabled="chatStore.isLoading"
 										class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-40">
 										<RefreshCw :size="12" />
@@ -137,20 +204,19 @@
 							</div>
 
 							<!-- Generation failed / empty state -->
-							<div v-else class="max-w-[420px]">
-								<div class="rounded-xl bg-[var(--background-gray-subtle,#f4f4f5)] dark:bg-white/[0.03] flex flex-col items-center justify-center gap-3 py-10 px-6"
-									style="aspect-ratio: 4 / 3">
-									<div class="size-10 rounded-full bg-red-500/10 flex items-center justify-center">
-										<TriangleAlert :size="20" class="text-red-500" />
+							<div v-else>
+								<div class="w-[200px] rounded-xl bg-[var(--background-gray-subtle,#f4f4f5)] dark:bg-white/[0.03] flex flex-col items-center justify-center gap-2 py-8 px-4"
+									style="aspect-ratio: 1 / 1">
+									<div class="size-8 rounded-full bg-red-500/10 flex items-center justify-center">
+										<TriangleAlert :size="16" class="text-red-500" />
 									</div>
-									<p class="text-[13px] font-medium text-[var(--text-primary)]">{{
+									<p class="text-[12px] font-medium text-[var(--text-primary)]">{{
 										$t('chat.image_generation_failed_title') }}</p>
-									<p
-										class="text-[12px] text-[var(--text-tertiary)] text-center leading-relaxed max-w-[240px]">
+									<p class="text-[11px] text-[var(--text-tertiary)] text-center leading-relaxed">
 										{{ $t('chat.image_generation_failed_desc') }}</p>
 									<button @click="regenerateFromGroup(group)" :disabled="chatStore.isLoading"
-										class="mt-1 flex items-center gap-1.5 px-4 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[12px] font-semibold hover:opacity-90 transition-opacity disabled:opacity-40">
-										<RefreshCw :size="12" />
+										class="mt-1 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[11px] font-semibold hover:opacity-90 transition-opacity disabled:opacity-40">
+										<RefreshCw :size="11" />
 										{{ $t('chat.retry') }}
 									</button>
 								</div>
@@ -182,13 +248,20 @@
 						<!-- Card Body: Video or Loading -->
 						<div class="bg-black">
 							<!-- Loading state (polished) -->
-							<div v-if="group.isLoading" class="relative flex flex-col items-center justify-center gap-4 py-16 overflow-hidden">
-								<div class="absolute inset-0 bg-gradient-to-b from-white/[0.02] via-white/[0.06] to-white/[0.02] animate-pulse"></div>
-								<div class="relative">
-									<div class="w-10 h-10 border-2 border-white/10 border-t-white/80 rounded-full animate-spin"></div>
-									<div class="absolute inset-0 w-10 h-10 border-2 border-white/5 border-b-white/30 rounded-full animate-spin" style="animation-direction: reverse; animation-duration: 1.5s;"></div>
+							<div v-if="group.isLoading"
+								class="relative flex flex-col items-center justify-center gap-4 py-16 overflow-hidden">
+								<div
+									class="absolute inset-0 bg-gradient-to-b from-white/[0.02] via-white/[0.06] to-white/[0.02] animate-pulse">
 								</div>
-								<p class="text-[12px] text-white/50 font-medium tracking-wider">{{ $t('chat.generating_video') }}</p>
+								<div class="relative">
+									<div
+										class="w-10 h-10 border-2 border-white/10 border-t-white/80 rounded-full animate-spin">
+									</div>
+									<div class="absolute inset-0 w-10 h-10 border-2 border-white/5 border-b-white/30 rounded-full animate-spin"
+										style="animation-direction: reverse; animation-duration: 1.5s;"></div>
+								</div>
+								<p class="text-[12px] text-white/50 font-medium tracking-wider">{{
+									$t('chat.generating_video') }}</p>
 							</div>
 							<!-- Video player -->
 							<video v-else-if="group.videoUrl" :src="group.videoUrl" controls playsinline
@@ -217,12 +290,14 @@
 								<ArrowUp :size="12" />
 								{{ $t('chat.reuse_params') }}
 							</button>
-							<button v-if="group.videoUrl" @click="copyMessage(group.userMsg.content, `video-${group.userMsg.id}`)"
+							<button v-if="group.videoUrl"
+								@click="copyMessage(group.userMsg.content, `video-${group.userMsg.id}`)"
 								class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors text-[12px] whitespace-nowrap"
 								:class="copiedId === `video-${group.userMsg.id}` ? 'text-green-500' : 'hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'">
 								<Check v-if="copiedId === `video-${group.userMsg.id}`" :size="12" />
 								<Copy v-else :size="12" />
-								{{ copiedId === `video-${group.userMsg.id}` ? $t('chat.copied') : $t('chat.copy_prompt') }}
+								{{ copiedId === `video-${group.userMsg.id}` ? $t('chat.copied') : $t('chat.copy_prompt')
+								}}
 							</button>
 							<a v-if="group.videoUrl" :href="group.videoUrl" download="video.mp4" target="_blank"
 								class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors text-[12px] whitespace-nowrap">
@@ -248,11 +323,11 @@
 									class="w-[500px] max-w-full bg-[var(--bg-chat-bubble-user)] rounded-[24px] border border-[var(--border-light)] p-2 shadow-sm animate-in fade-in duration-200">
 									<div ref="editContentRef" contenteditable="true"
 										@input="editingContent = ($event.target as HTMLElement).textContent || ''"
-										@keydown.enter.exact.prevent="submitEdit" @keydown.escape="cancelEditing"
+										@keydown.enter.exact.prevent="submitEdit" @keydown.escape="cancelEditing()"
 										class="w-full bg-transparent outline-none text-[15px] font-medium leading-relaxed px-3 py-1 min-h-[32px] max-h-48 overflow-y-auto custom-scrollbar whitespace-pre-wrap break-words">
 									</div>
 									<div class="flex justify-end gap-2 mt-1">
-										<button @click="cancelEditing"
+										<button @click="cancelEditing()"
 											class="px-3 py-1 text-xs font-semibold rounded-full hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-secondary)]">Cancel</button>
 										<button @click="submitEdit"
 											class="px-4 py-1.5 text-xs font-semibold bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full hover:opacity-90 transition-opacity">Send</button>
@@ -265,21 +340,24 @@
 										<div class="whitespace-pre-wrap break-words">{{ message.content }}</div>
 									</div>
 
-									<!-- Action bar (Hover only) -->
+									<!-- Action bar (Hover only) — flush against bubble top with invisible bridge -->
 									<div
-										class="absolute -top-10 right-0 flex items-center gap-1 opacity-0 group-hover/bubble:opacity-100 transition-opacity bg-[var(--bg-main)]/80 backdrop-blur-sm border border-[var(--border-light)] rounded-lg p-1 shadow-sm">
-										<button @click="copyMessage(message.content, `user-${message.id}`)"
-											class="p-1.5 rounded-md transition-colors"
-											:class="copiedId === `user-${message.id}` ? 'text-green-500' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'"
-											:title="$t('chat.copy')">
-											<Check v-if="copiedId === `user-${message.id}`" :size="14" />
-											<Copy v-else :size="14" />
-										</button>
-										<button @click="startEditing(message)"
-											class="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors"
-											:title="$t('common.edit')">
-											<Pencil :size="14" />
-										</button>
+										class="absolute -top-8 right-0 pt-0 pb-1 opacity-0 group-hover/bubble:opacity-100 transition-opacity">
+										<div
+											class="flex items-center gap-1 bg-[var(--bg-main)]/80 backdrop-blur-sm border border-[var(--border-light)] rounded-lg p-1 shadow-sm">
+											<button @click="copyMessage(message.content, `user-${message.id}`)"
+												class="p-1.5 rounded-md transition-colors"
+												:class="copiedId === `user-${message.id}` ? 'text-green-500' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'"
+												:title="$t('chat.copy')">
+												<Check v-if="copiedId === `user-${message.id}`" :size="14" />
+												<Copy v-else :size="14" />
+											</button>
+											<button @click="startEditing(message)"
+												class="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors"
+												:title="$t('common.edit')">
+												<Pencil :size="14" />
+											</button>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -288,15 +366,17 @@
 							<div v-else
 								class="text-[var(--text-primary)] px-1 py-1 text-[15px] leading-relaxed tracking-tight break-words font-normal">
 								<div v-if="!message.content && chatStore.isLoading && String(chatStore.loadingConversationId) === String(currentConversationId) && currentConversation?.messages[currentConversation.messages.length - 1]?.id === message.id"
-									class="py-2">
-									<div class="flex space-x-1.5">
-										<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce"
+									class="py-2 flex items-center gap-2.5">
+									<div class="flex space-x-1">
+										<div class="w-1.5 h-1.5 bg-[var(--text-tertiary)] rounded-full animate-bounce"
 											style="animation-delay: 0s"></div>
-										<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce"
+										<div class="w-1.5 h-1.5 bg-[var(--text-tertiary)] rounded-full animate-bounce"
 											style="animation-delay: 0.15s"></div>
-										<div class="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full animate-bounce"
+										<div class="w-1.5 h-1.5 bg-[var(--text-tertiary)] rounded-full animate-bounce"
 											style="animation-delay: 0.3s"></div>
 									</div>
+									<span class="text-[13px] text-[var(--text-tertiary)] font-medium thinking-text">{{
+										$t('chat.thinking') }}</span>
 								</div>
 								<div v-else class="relative inline-block w-full">
 									<MarkdownContent :content="message.content" />
@@ -346,7 +426,7 @@
 
 							<!-- Time/Meta (Hidden by default, shown on hover) -->
 							<div
-							class="mt-1 px-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex gap-2 text-[11px] text-[var(--text-tertiary)] font-medium">
+								class="mt-1 px-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex gap-2 text-[11px] text-[var(--text-tertiary)] font-medium">
 								<span>{{ message.role === 'user' ? 'You' : getModelDisplayName(message.model ||
 									currentConversation?.model, currentConversation?.modelId) }}</span>
 								<ClientOnly>
@@ -424,6 +504,11 @@
 		<!-- Asset Picker Modal -->
 		<AssetPickerModal :show="isAssetPickerOpen" @close="isAssetPickerOpen = false" @select="onAssetsSelected" />
 
+		<!-- Discard Edit Confirm -->
+		<ConfirmDialog :show="showDiscardConfirm" :title="$t('chat.discard_changes')"
+			:message="$t('chat.discard_changes_message')" :confirm-text="$t('chat.discard')" @confirm="confirmDiscard"
+			@cancel="showDiscardConfirm = false" />
+
 		<!-- Image Preview Lightbox -->
 		<Teleport to="body">
 			<Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0"
@@ -456,16 +541,16 @@
 <script setup lang="ts">
 definePageMeta({ ssr: false })
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import MarkdownContent from '../../components/MarkdownContent.vue'
 import { PROMPT_SUGGESTIONS, type PromptSuggestion } from '../../utils/prompts'
 import { useConversationStore } from '../../stores/conversation'
 import { useChatStore } from '../../stores/chat'
 import { useModelStore } from '../../stores/models'
-import { useUserStore } from '../../stores/user'
 import { useDiscoveryStore } from '../../stores/discovery'
 import { useUIStore } from '../../stores/ui'
 import AssetPickerModal from '../../components/AssetPickerModal.vue'
+import ConfirmDialog from '../../components/ConfirmDialog.vue'
 import UnifiedInput from '../../components/UnifiedInput.vue'
 import { Copy, Check, Pencil, ArrowUp, X, Share2, RefreshCw, Download, Expand, TriangleAlert } from 'lucide-vue-next'
 import { fetchChatStream, generateImageStream, generateVideoStream } from '../../utils/api'
@@ -473,11 +558,9 @@ import { generateConversationTitle, generateFollowUpQuestions } from '../../api/
 const { t } = useI18n()
 
 const route = useRoute()
-const router = useRouter()
 const conversationStore = useConversationStore()
 const chatStore = useChatStore()
 const modelStore = useModelStore()
-const userStore = useUserStore()
 const discoveryStore = useDiscoveryStore()
 const uiStore = useUIStore()
 
@@ -564,7 +647,9 @@ const isMountedInitial = ref(false)
 // Editing state
 const editingMessageId = ref<string | null>(null)
 const editingContent = ref('')
+const editingOriginalContent = ref('')
 const editContentRef = ref<HTMLElement | null>(null)
+const showDiscardConfirm = ref(false)
 
 // Failed message retry state
 const failedMessageContent = ref<string | null>(null)
@@ -658,10 +743,11 @@ const currentCharacter = computed(() => {
 })
 
 const getModelIcon = (modelId?: string, numericId?: number) => {
-	const id = (modelId || '').toLowerCase()
 	const model = numericId
 		? modelStore.models.find((m) => m.id === numericId) || modelStore.models.find((m) => m.model === modelId)
 		: modelStore.models.find((m) => m.model === modelId)
+	if (model?.icon) return model.icon
+	const id = (modelId || '').toLowerCase()
 	const provider = (model?.provider || '').toLowerCase()
 
 	if (provider.includes('openai') || id.includes('gpt') || id.includes('o1')) return '/icons/openai.svg'
@@ -872,12 +958,6 @@ const formatMessageTime = (timestamp?: number) => {
 const updateParams = (params: Record<string, any>) => {
 	if (currentConversationId.value) {
 		conversationStore.updateModelParams(currentConversationId.value, params)
-	}
-}
-
-const resetParams = () => {
-	if (currentConversationId.value) {
-		conversationStore.updateModelParams(currentConversationId.value, {})
 	}
 }
 
@@ -1313,6 +1393,7 @@ const regenerateMessage = () => {
 const startEditing = (message: any) => {
 	editingMessageId.value = message.id
 	editingContent.value = message.content
+	editingOriginalContent.value = message.content
 	nextTick(() => {
 		const el = Array.isArray(editContentRef.value) ? editContentRef.value[0] : editContentRef.value
 		if (el) {
@@ -1329,9 +1410,22 @@ const startEditing = (message: any) => {
 	})
 }
 
-const cancelEditing = () => {
+const cancelEditing = (force = false) => {
+	if (!force && editingContent.value !== editingOriginalContent.value) {
+		showDiscardConfirm.value = true
+		return
+	}
 	editingMessageId.value = null
 	editingContent.value = ''
+	editingOriginalContent.value = ''
+	showDiscardConfirm.value = false
+}
+
+const confirmDiscard = () => {
+	editingMessageId.value = null
+	editingContent.value = ''
+	editingOriginalContent.value = ''
+	showDiscardConfirm.value = false
 }
 
 const submitEdit = () => {
@@ -1393,6 +1487,36 @@ const handleMessageClick = (e: MouseEvent) => {
 </script>
 
 <style scoped lang="scss">
+@keyframes thinking-pulse {
+
+	0%,
+	100% {
+		opacity: 0.4;
+	}
+
+	50% {
+		opacity: 1;
+	}
+}
+
+.thinking-text {
+	animation: thinking-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+	0% {
+		transform: translateX(-100%);
+	}
+
+	100% {
+		transform: translateX(100%);
+	}
+}
+
+.skeleton-shimmer {
+	animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
 @keyframes img-scan-y {
 	0% {
 		top: 0;

@@ -7,6 +7,8 @@ export interface Toast {
   id: number
   message: string
   type: ToastType
+  duration: number
+  createdAt: number
 }
 
 export type ThemeMode = 'light' | 'dark' | 'system'
@@ -35,10 +37,15 @@ export const useUIStore = defineStore('ui', () => {
   }
 
   // 应用主题
+  let themeTransitionTimer: ReturnType<typeof setTimeout> | null = null
   const applyTheme = (theme: 'light' | 'dark') => {
     if (!import.meta.client) return
     const root = document.documentElement
     const body = document.body
+
+    // Smooth transition for theme switch
+    root.style.transition = 'background-color 0.3s ease, color 0.3s ease'
+    body.style.transition = 'background-color 0.3s ease, color 0.3s ease'
 
     if (theme === 'dark') {
       root.classList.add('dark')
@@ -51,6 +58,13 @@ export const useUIStore = defineStore('ui', () => {
     }
     // 设置 color-scheme 以支持系统级主题
     root.style.colorScheme = theme
+
+    // Remove transition after completion to avoid affecting other interactions
+    if (themeTransitionTimer) clearTimeout(themeTransitionTimer)
+    themeTransitionTimer = setTimeout(() => {
+      root.style.transition = ''
+      body.style.transition = ''
+    }, 350)
   }
 
   // 获取当前应该应用的主题
@@ -197,12 +211,10 @@ export const useUIStore = defineStore('ui', () => {
   const toasts = ref<Toast[]>([])
   let _toastId = 0
 
-  const showToast = (message: string, type: ToastType = 'success', duration = 2500) => {
+  const showToast = (message: string, type: ToastType = 'success', duration?: number) => {
     const id = ++_toastId
-    toasts.value.push({ id, message, type })
-    setTimeout(() => {
-      toasts.value = toasts.value.filter(t => t.id !== id)
-    }, duration)
+    const dur = duration ?? (type === 'error' ? 5000 : 3000)
+    toasts.value.push({ id, message, type, duration: dur, createdAt: Date.now() })
   }
 
   const removeToast = (id: number) => {

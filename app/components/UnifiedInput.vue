@@ -50,7 +50,7 @@
 				<div class="flex items-center justify-between px-3 gap-2">
 					<div class="flex items-center gap-1.5 flex-wrap flex-1">
 						<!-- Model Selector -->
-						<ModelSelector v-if="showModelSelector" variant="pill" :capability="allowModelSwitch ? undefined : capability" class="mr-0.5" />
+						<ModelSelector v-if="showModelSelector" variant="pill" :capability="allowModelSwitch ? undefined : capability" class="mr-0.5 hidden lg:flex" />
 
 						<!-- === Capability-specific Parameters === -->
 						<ImageGenerationParams

@@ -312,7 +312,7 @@
 			</Teleport>
 		</template>
 
-		<!-- Duration -->
+		<!-- Duration (slider style, whether select or number type) -->
 		<template v-else-if="field.key === 'duration'">
 			<button @click="fields.toggleDropdown(field.key)" class="unified-pill"
 				:class="fields.activeDropdown.value === field.key ? 'unified-pill-active' : ''">
@@ -324,23 +324,36 @@
 				leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
 				leave-to-class="translate-y-1 opacity-0">
 				<div v-if="fields.activeDropdown.value === field.key"
-					class="absolute bottom-full left-0 mb-2 z-[60] min-w-[170px]">
+					class="absolute bottom-full left-0 mb-2 z-[60] min-w-[220px]">
 					<div class="unified-popover p-3.5">
 						<p class="text-[10px] font-bold text-[var(--text-tertiary)] mb-2.5 px-1 uppercase tracking-widest text-center">Duration</p>
-						<div class="flex flex-col gap-1 max-h-[220px] overflow-y-auto custom-scrollbar">
-							<button v-for="opt in field.options" :key="opt"
-								@click="fields.setParamAndClose(field.key, opt)"
-								class="w-full flex items-center justify-between gap-4 py-2.5 px-3 rounded-xl group transition-all"
-								:class="getParamValue(field.key, field.default) === opt ? 'bg-[var(--text-primary)] text-[var(--bg-main)] shadow-sm' : 'hover:bg-[var(--bg-hover)] text-[var(--text-primary)]'">
-								<span class="text-[13px] font-bold">{{ opt }}s</span>
-								<div class="flex items-center justify-center">
-									<div v-if="getParamValue(field.key, field.default) === opt"
-										class="w-4 h-4 rounded-full flex items-center justify-center" style="background-color: var(--bg-main)">
-										<Check :size="10" style="color: var(--text-primary)" stroke-width="4" />
-									</div>
-									<div v-else class="w-4 h-4 rounded-full border-[2px] border-black/20 dark:border-white/20"></div>
-								</div>
+						<div class="flex items-center gap-2.5 mb-2">
+							<button @click="adjustDurationSelect(field, -1)"
+								class="size-7 rounded-lg flex items-center justify-center border border-[var(--border-main)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors text-sm font-bold shrink-0">
+								−
 							</button>
+							<div class="flex-1 text-center">
+								<span class="text-[18px] font-black text-[var(--text-primary)] tabular-nums">
+									{{ getParamValue(field.key, field.default) }}
+								</span>
+								<span class="text-[11px] text-[var(--text-tertiary)] font-medium ml-0.5">s</span>
+							</div>
+							<button @click="adjustDurationSelect(field, 1)"
+								class="size-7 rounded-lg flex items-center justify-center border border-[var(--border-main)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors text-sm font-bold shrink-0">
+								+
+							</button>
+						</div>
+						<div class="relative px-0.5">
+							<input type="range"
+								:min="getDurationMin(field)" :max="getDurationMax(field)"
+								:step="getDurationStep(field)"
+								:value="getParamValue(field.key, field.default)"
+								@input="(e: Event) => fields.setParam(field.key, Number((e.target as HTMLInputElement).value))"
+								class="number-slider w-full" />
+							<div class="flex justify-between mt-1">
+								<span class="text-[9px] text-[var(--text-tertiary)] font-medium">{{ getDurationMin(field) }}s</span>
+								<span class="text-[9px] text-[var(--text-tertiary)] font-medium">{{ getDurationMax(field) }}s</span>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -429,14 +442,14 @@
 			leave-to-class="translate-y-1 opacity-0">
 			<div v-if="fields.activeDropdown.value === field.key"
 				class="absolute bottom-full left-0 mb-2 z-[60]"
-				:class="field.max - field.min > 10 ? 'min-w-[220px]' : 'min-w-[170px]'">
+				:class="field.key === 'duration' || field.max - field.min > 10 ? 'min-w-[220px]' : 'min-w-[170px]'">
 				<div class="unified-popover p-3.5">
 					<p class="text-[10px] font-bold text-[var(--text-tertiary)] mb-2.5 px-1 uppercase tracking-widest text-center">
 						{{ field.key === 'duration' ? 'Duration' : (field.label || field.key.replace(/_/g, ' ')) }}
 					</p>
 
-					<!-- Slider UI for large ranges (>10) -->
-					<template v-if="field.max - field.min > 10">
+					<!-- Slider UI for duration or large ranges (>10) -->
+					<template v-if="field.key === 'duration' || field.max - field.min > 10">
 						<div class="flex items-center gap-2.5 mb-2">
 							<button @click="adjustNumber(field.key, field.min, field.max, field.default, -1)"
 								class="size-7 rounded-lg flex items-center justify-center border border-[var(--border-main)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors text-sm font-bold shrink-0">
@@ -524,6 +537,37 @@ const refVideosFiles = computed(() => props.allFiles.filter(f => f.paramKey === 
 function getParamValue(key: string, defaultVal: any) {
 	if (props.externalParams) return props.externalParams[key] ?? defaultVal
 	return props.fields.dynamicParams.value[key] ?? defaultVal
+}
+
+// Duration helpers: works for both select (options array) and number (min/max) types
+function getDurationMin(field: any) {
+	if (field.min !== undefined) return field.min
+	if (field.options?.length) return Math.min(...field.options.map(Number))
+	return 1
+}
+function getDurationMax(field: any) {
+	if (field.max !== undefined) return field.max
+	if (field.options?.length) return Math.max(...field.options.map(Number))
+	return 30
+}
+function getDurationStep(field: any) {
+	if (field.options?.length && field.options.length > 1) {
+		return Number(field.options[1]) - Number(field.options[0])
+	}
+	return 1
+}
+function adjustDurationSelect(field: any, delta: number) {
+	const current = Number(getParamValue(field.key, field.default))
+	if (field.options?.length) {
+		const sorted = [...field.options].map(Number).sort((a: number, b: number) => a - b)
+		const idx = sorted.indexOf(current)
+		const next = sorted[Math.max(0, Math.min(sorted.length - 1, idx + delta))]
+		if (next !== undefined) props.fields.setParam(field.key, next)
+	} else {
+		const min = field.min ?? 1
+		const max = field.max ?? 30
+		props.fields.setParam(field.key, Math.min(max, Math.max(min, current + delta)))
+	}
 }
 
 function adjustNumber(key: string, min: number, max: number, defaultVal: any, delta: number) {

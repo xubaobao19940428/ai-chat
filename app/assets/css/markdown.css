@@ -8,6 +8,13 @@
     content: none !important;
   }
 
+  /* ── 代码块：阻止 prose 覆盖 highlight.js 语法高亮 ──────────── */
+  .code-block-wrapper pre,
+  .code-block-wrapper pre code {
+    color: #abb2bf !important;
+    background: transparent !important;
+  }
+
   /* ── 首尾元素间距修复 ───────────────────────────────────────── */
   > :first-child { margin-top: 0 !important; }
   > :last-child  { margin-bottom: 0 !important; }

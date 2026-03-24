@@ -76,10 +76,13 @@
 										<div class="whitespace-pre-wrap break-words">{{ message.content }}</div>
 									</div>
 									<div v-else class="text-[var(--text-primary)] text-[15px] leading-relaxed break-words">
-										<div v-if="!message.content && isStreaming" class="flex space-x-1.5 py-2">
-											<div class="w-1.5 h-1.5 bg-[var(--text-disable)] rounded-full animate-bounce" style="animation-delay: 0s"></div>
-											<div class="w-1.5 h-1.5 bg-[var(--text-disable)] rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
-											<div class="w-1.5 h-1.5 bg-[var(--text-disable)] rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+										<div v-if="!message.content && isStreaming" class="flex items-center gap-2.5 py-2">
+											<div class="flex space-x-1">
+												<div class="w-1.5 h-1.5 bg-[var(--text-tertiary)] rounded-full animate-bounce" style="animation-delay: 0s"></div>
+												<div class="w-1.5 h-1.5 bg-[var(--text-tertiary)] rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
+												<div class="w-1.5 h-1.5 bg-[var(--text-tertiary)] rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+											</div>
+											<span class="text-[13px] text-[var(--text-tertiary)] font-medium" style="animation: thinking-pulse 1.5s ease-in-out infinite">{{ $t('chat.thinking') }}</span>
 										</div>
 										<div v-else class="prose dark:prose-invert prose-neutral max-w-none break-words" v-html="renderMarkdown(message.content)"></div>
 									</div>
@@ -97,8 +100,8 @@
 				<div class="flex-shrink-0 px-4 pb-8 pt-2 absolute bottom-0 left-0 right-0 z-50 pointer-events-none">
 					<div class="max-w-[840px] mx-auto relative pointer-events-auto">
 						<!-- Suggested Questions (2x2 grid) -->
-						<div v-if="!conversationId && suggestedQuestions.length" class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full px-1 mb-4">
-							<button v-for="(q, idx) in suggestedQuestions" :key="idx" @click="handleSuggestedQuestionClick(q)" class="flex items-center justify-between gap-3 h-[48px] px-4 rounded-xl border border-[var(--border-light)] bg-[var(--bg-main)]/50 backdrop-blur-sm hover:border-[var(--border-main)] hover:bg-[var(--bg-main)] text-[13px] text-[var(--text-primary)] text-left transition-all group/fq shadow-sm">
+						<div v-if="!conversationId && suggestedQuestions.length" class="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full px-1 mb-4">
+							<button v-for="(q, idx) in suggestedQuestions" :key="idx" @click="handleSuggestedQuestionClick(q)" class="flex items-center justify-between gap-3 h-[38px] px-4 rounded-xl border border-[var(--border-light)] bg-[var(--bg-main)]/50 backdrop-blur-sm hover:border-[var(--border-main)] hover:bg-[var(--bg-main)] text-[13px] text-[var(--text-primary)] text-left transition-all group/fq shadow-sm">
 								<span class="truncate">{{ q }}</span>
 								<span class="text-[var(--text-tertiary)] group-hover/fq:text-[var(--text-secondary)] shrink-0 transition-colors">→</span>
 							</button>
@@ -339,6 +342,11 @@ const handleShare = () => {
 </script>
 
 <style scoped>
+@keyframes thinking-pulse {
+	0%, 100% { opacity: 0.4; }
+	50% { opacity: 1; }
+}
+
 .custom-scrollbar::-webkit-scrollbar {
 	width: 4px;
 }

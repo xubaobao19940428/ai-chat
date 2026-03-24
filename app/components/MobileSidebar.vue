@@ -28,7 +28,7 @@
 									<!-- Scrollable Area -->
 									<div class="flex flex-col flex-1 min-h-0 overflow-x-hidden overflow-y-auto p-[8px] pb-0 gap-px">
 										<!-- New Chat -->
-										<div @click="handleNewChat" class="flex items-center rounded-[10px] cursor-pointer transition-colors w-full h-[40px] hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px] gap-[12px]">
+										<div @click="handleNewChat" class="flex items-center rounded-[10px] cursor-pointer transition-colors w-full h-[40px] shrink-0 hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px] gap-[12px]">
 											<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
 												<SquarePen :size="18" />
 											</div>
@@ -36,7 +36,7 @@
 										</div>
 
 										<!-- Nav items (no shortcuts on mobile) -->
-										<div v-for="item in navItems" :key="item.id" @click="item.handler" class="flex items-center rounded-[10px] cursor-pointer transition-colors w-full h-[40px] hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px] gap-[12px]">
+										<div v-for="item in navItems" :key="item.id" @click="item.handler" class="flex items-center rounded-[10px] cursor-pointer transition-colors w-full h-[40px] shrink-0 hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px] gap-[12px]">
 											<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)]">
 												<component :is="item.icon" :size="18" />
 											</div>
@@ -44,7 +44,7 @@
 										</div>
 
 									<!-- More Tools -->
-									<div class="flex flex-col pb-0 gap-px mt-1">
+									<div class="flex flex-col pb-0 gap-px mt-1 shrink-0">
 										<div @click="toggleMoreTools" class="group flex items-center justify-between rounded-[10px] h-[36px] cursor-pointer hover:bg-[var(--bg-hover)] transition-colors ps-[10px] pe-[2px]">
 											<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium uppercase tracking-tight">{{ $t('common.more_tools') }}</span>
 											<ChevronUp :size="14" :class="['transition-all shrink-0 text-[var(--text-tertiary)] me-1', moreCollapsed ? 'rotate-180' : '']" />
@@ -60,10 +60,10 @@
 									</div>
 
 									<!-- Divider -->
-									<div class="border-t border-[var(--border-light)] opacity-50 my-2"></div>
+									<div class="border-t border-[var(--border-light)] opacity-50 my-2 shrink-0"></div>
 
 									<!-- Projects -->
-										<div class="group flex items-center justify-between rounded-[10px] mb-1 h-[36px] hover:bg-[var(--bg-hover)] transition-colors ps-[10px] pe-[2px] py-[2px]">
+										<div class="group flex items-center justify-between rounded-[10px] mb-1 h-[36px] shrink-0 hover:bg-[var(--bg-hover)] transition-colors ps-[10px] pe-[2px] py-[2px]">
 											<div @click="toggleProjects" class="flex-1 flex items-center gap-1 cursor-pointer h-full">
 												<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium uppercase tracking-tight">{{ $t('common.projects') }}</span>
 												<ChevronUp :size="14" :class="['transition-all shrink-0 text-[var(--text-tertiary)]', projectsCollapsed ? 'rotate-180' : '']" />
@@ -73,7 +73,7 @@
 											</div>
 										</div>
 
-										<div v-show="!projectsCollapsed" class="flex flex-col gap-px mb-3">
+										<div v-show="!projectsCollapsed" class="flex flex-col gap-px mb-3 shrink-0">
 											<div @click="selectProject(null)" :class="['w-full flex items-center rounded-[10px] h-[40px] transition-colors cursor-pointer ps-[10px] pe-[8px] gap-[8px]', conversationStore.selectedGroupId === null || conversationStore.selectedGroupId === 0 ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]']">
 												<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)] opacity-80">
 													<AlignJustify :size="16" />
@@ -89,7 +89,7 @@
 										</div>
 
 										<!-- Recent Chat -->
-										<div @click="mobileRecentCollapsed = !mobileRecentCollapsed" class="group flex items-center h-[36px] ps-[10px] mb-1 rounded-[10px] clickable hover:bg-[var(--bg-hover)] transition-colors cursor-pointer">
+										<div @click="mobileRecentCollapsed = !mobileRecentCollapsed" class="group flex items-center h-[36px] shrink-0 ps-[10px] mb-1 rounded-[10px] clickable hover:bg-[var(--bg-hover)] transition-colors cursor-pointer">
 											<div class="flex items-center flex-1 min-w-0 gap-0.5">
 												<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium uppercase tracking-tight">{{ $t('common.recent_chat') }}</span>
 												<ChevronUp :size="14" :class="['transition-all shrink-0 group-hover:opacity-100 text-[var(--text-tertiary)]', mobileRecentCollapsed ? 'rotate-180' : '']" />

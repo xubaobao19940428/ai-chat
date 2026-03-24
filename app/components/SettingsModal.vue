@@ -10,7 +10,7 @@
 					<TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95" enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
 						<DialogPanel class="w-full max-w-[920px] transform overflow-hidden rounded-none md:rounded-[20px] bg-[var(--background-gray-main)] border-none md:border border-[var(--border-main)] text-left align-middle shadow-[var(--shadow-XL)] transition-all flex flex-col md:flex-row h-screen md:h-[min(672px,calc(100vh-82px))]">
 							<!-- Sidebar -->
-							<SettingsSidebar v-if="!activeItem || !isMobile" :model-value="activeItem" :menu-items="menuItems" @select="activeItem = $event" />
+							<SettingsSidebar v-if="!activeItem || !isMobile" :model-value="activeItem" :menu-items="menuItems" @select="activeItem = $event" @close="uiStore.closeSettingsModal" />
 
 							<!-- Content -->
 							<div v-if="activeItem || !isMobile" class="flex-1 flex flex-col bg-[var(--background-white-main)] relative overflow-hidden">

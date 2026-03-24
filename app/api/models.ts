@@ -28,7 +28,8 @@ export interface AIModel {
   context_length: number
   max_output_tokens: number
   is_default: boolean
-  execution_mode: string
+  execution_mode: string,
+  icon?: string,
   model_input?: ModelInput
 }
 
