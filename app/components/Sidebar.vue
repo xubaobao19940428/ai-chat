@@ -17,9 +17,9 @@
 		</div>
 
 		<!-- Nav Items Section -->
-		<div class="flex flex-col flex-1 min-h-0 p-[8px] pb-0 gap-px transition-all">
+		<div class="flex flex-col flex-1 min-h-0 p-[8px] pb-0 gap-px transition-all overflow-x-hidden overflow-y-auto custom-scrollbar">
 			<!-- Static New Task Item (Not draggable as requested) -->
-			<div @click="handleNewChat" :class="['flex items-center rounded-[10px] clickable cursor-pointer transition-colors w-full h-[36px] hover:bg-[var(--bg-hover)] group relative', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px] pe-[2px] gap-[12px]']">
+			<div @click="handleNewChat" :class="['flex items-center rounded-[10px] clickable cursor-pointer transition-colors w-full h-[36px] shrink-0 hover:bg-[var(--bg-hover)] group relative', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px] pe-[2px] gap-[12px]']">
 				<Tooltip :text="$t('chat.new_chat')" position="right" :disabled="!uiStore.sidebarCollapsed" fullWidth>
 					<div :class="['flex items-center', uiStore.sidebarCollapsed ? 'justify-center' : 'w-full gap-[12px]']">
 						<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
@@ -47,7 +47,7 @@
 				@dragenter="draggingOverZone = 'main-' + index"
 				@dragleave="draggingOverZone = null"
 				@click="item.handler"
-				:class="['flex items-center rounded-[10px] bg-[var(--bg-sidebar)] clickable cursor-pointer transition-all w-full h-[36px] hover:bg-[var(--bg-hover)] group relative', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px] gap-[12px]', draggingItem?.index === index && draggingItem?.source === 'main' ? 'opacity-20 scale-95' : 'opacity-100', draggingOverZone === 'main-' + index ? 'bg-[var(--bg-hover)] ring-2 ring-[var(--border-main)]' : '']">
+				:class="['flex items-center rounded-[10px] bg-[var(--bg-sidebar)] clickable cursor-pointer transition-all w-full h-[36px] shrink-0 hover:bg-[var(--bg-hover)] group relative', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px] gap-[12px]', draggingItem?.index === index && draggingItem?.source === 'main' ? 'opacity-20 scale-95' : 'opacity-100', draggingOverZone === 'main-' + index ? 'bg-[var(--bg-hover)] ring-2 ring-[var(--border-main)]' : '']">
 				<div v-if="draggingOverZone === 'main-' + index" class="absolute -top-0.5 left-0 right-0 h-0.5 bg-[var(--text-tertiary)] rounded-full opacity-50"></div>
 				<Tooltip :text="item.label" position="right" :disabled="!uiStore.sidebarCollapsed" fullWidth>
 					<div :class="['flex items-center w-full h-full', uiStore.sidebarCollapsed ? 'justify-center' : 'gap-[12px]']">
@@ -62,7 +62,7 @@
 			</div>
 
 			<!-- More Menu (Accordion + Hover Popover) -->
-			<div v-if="moreItems.length > 0" class="flex flex-col gap-px relative">
+			<div v-if="moreItems.length > 0" class="flex flex-col gap-px relative shrink-0">
 				<Tooltip :text="$t('common.more_tools')" position="right" :disabled="!uiStore.sidebarCollapsed" fullWidth>
 					<div
 						@click="handleMoreMenuOpen"
@@ -147,10 +147,9 @@
 				</div>
 			</transition>
 
-			<!-- History Content (Scrollable) -->
-			<div class="flex flex-col flex-1 min-h-0 -mx-[8px] transition-all overflow-hidden" style="opacity: 1">
-				<div class="w-full border-t-[1px] border-[var(--border-light)] opacity-50 my-2"></div>
-				<div class="flex flex-col flex-1 min-h-0 overflow-x-hidden overflow-y-auto custom-scrollbar pt-0 px-[8px]">
+			<!-- History Content -->
+			<div class="w-full border-t-[1px] border-[var(--border-light)] opacity-50 my-1 shrink-0"></div>
+			<div class="flex flex-col shrink-0">
 					<!-- Projects Toggle -->
 					<div @click="toggleProjects" :class="['group flex items-center rounded-[10px] mb-1 h-[36px] clickable hover:bg-[var(--bg-hover)] transition-colors active:bg-[var(--bg-hover)] transition-all', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px] pe-[2px] py-[2px] justify-between gap-[12px]']">
 						<div v-if="!uiStore.sidebarCollapsed" class="flex items-center flex-1 min-w-0 gap-0.5">
@@ -166,7 +165,7 @@
 					</div>
 
 					<!-- Project List -->
-					<div v-show="!projectsCollapsed" class="flex flex-col gap-px mb-4">
+					<div v-show="!projectsCollapsed" class="flex flex-col gap-px mb-1">
 						<div v-if="projectStore.isLoading" class="flex flex-col gap-2 px-2 py-1">
 							<div v-for="i in 3" :key="i" class="h-8 w-full bg-[var(--bg-hover)] rounded-lg animate-pulse"></div>
 						</div>
@@ -204,13 +203,20 @@
 					</div>
 
 					<!-- Recent Chat Header -->
-					<div v-if="!uiStore.sidebarCollapsed" class="group flex items-center justify-between ps-[10px] pe-[2px] py-[2px] h-[36px] gap-[12px] rounded-[10px] mb-1">
-						<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium min-w-0 truncate tracking-tight uppercase">{{ $t('common.recent_chat') }}</span>
-					</div>
-					<div v-else class="h-[1px] bg-[var(--border-light)] opacity-50 my-2 mx-2"></div>
+					<Tooltip :text="$t('common.recent_chat')" position="right" :disabled="!uiStore.sidebarCollapsed" fullWidth>
+						<div @click="uiStore.sidebarCollapsed ? uiStore.toggleSidebar() : (recentChatsCollapsed = !recentChatsCollapsed)" :class="['group flex items-center rounded-[10px] mb-1 h-[36px] clickable hover:bg-[var(--bg-hover)] transition-colors', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px] pe-[2px] py-[2px] justify-between gap-[12px]']">
+							<div v-if="!uiStore.sidebarCollapsed" class="flex items-center flex-1 min-w-0 gap-0.5">
+								<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium min-w-0 truncate tracking-tight uppercase">{{ $t('common.recent_chat') }}</span>
+								<ChevronUp :size="14" :class="['transition-all shrink-0 group-hover:opacity-100 text-[var(--text-tertiary)]', recentChatsCollapsed ? 'rotate-180' : '']" />
+							</div>
+							<div v-else class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-tertiary)] opacity-60">
+								<MessageSquare :size="16" />
+							</div>
+						</div>
+					</Tooltip>
 
 					<!-- Chat List -->
-					<div class="flex flex-col gap-px">
+					<div v-show="!recentChatsCollapsed && !uiStore.sidebarCollapsed" class="flex flex-col gap-px">
 						<template v-if="conversationStore.isGroupSwitching || (conversationStore.isLoading && conversationStore.conversations.length === 0)">
 							<div class="flex flex-col gap-2 px-2 py-1">
 								<div v-for="i in 5" :key="i" class="h-8 w-full bg-[var(--bg-hover)] rounded-lg animate-pulse"></div>
@@ -297,7 +303,6 @@
 							</div>
 						</template>
 					</div>
-				</div>
 			</div>
 		</div>
 
@@ -483,6 +488,7 @@ onMounted(() => {
 })
 const currentEditingProject = ref<any>(null)
 const projectsCollapsed = ref(false)
+const recentChatsCollapsed = ref(false)
 
 // Confirm Dialog State
 const confirmDialog = ref({

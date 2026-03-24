@@ -259,49 +259,57 @@
 	<div v-for="field in fields.dynamicSelectFields.value" :key="field.key" class="relative group/chip">
 		<!-- Aspect Ratio -->
 		<template v-if="field.key === 'aspect_ratio'">
-			<button @click="fields.toggleDropdown(field.key)" class="unified-pill"
+			<button ref="ratioPillRef" @click="fields.toggleDropdown(field.key)" class="unified-pill"
 				:class="fields.activeDropdown.value === field.key ? 'unified-pill-active' : ''">
-				<span class="flex items-center justify-center">
-					<div v-if="isLandscapeRatio(getParamValue(field.key, field.default))"
-						class="w-3.5 h-2 border-[1.5px] border-current rounded-[1px]"></div>
-					<div v-else-if="String(getParamValue(field.key, field.default)).startsWith('1:')"
-						class="w-3 h-3 border-[1.5px] border-current rounded-[1px]"></div>
-					<div v-else class="w-2 h-3.5 border-[1.5px] border-current rounded-[1px]"></div>
-				</span>
+				<Square :size="14" class="text-[var(--text-secondary)]" />
 				<span class="unified-pill-text">{{ getParamValue(field.key, field.default) }}</span>
 			</button>
-			<Transition enter-active-class="transition duration-150 ease-out"
-				enter-from-class="translate-y-1 opacity-0 scale-95" enter-to-class="translate-y-0 opacity-100 scale-100"
-				leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
-				leave-to-class="translate-y-1 opacity-0">
-				<div v-if="fields.activeDropdown.value === field.key"
-					class="absolute bottom-full left-0 mb-2 z-[60] min-w-[max-content]">
-					<div class="unified-popover flex gap-5 items-center">
-						<div class="flex flex-col gap-2.5">
-							<span class="text-[var(--text-tertiary)] px-1 font-bold text-[10px] uppercase tracking-widest text-center">Aspect Ratio</span>
-							<div class="flex gap-1.5 min-w-[max-content]">
+			<Teleport to="body">
+				<Transition enter-active-class="transition duration-150 ease-out"
+					enter-from-class="translate-y-1 opacity-0 scale-95"
+					enter-to-class="translate-y-0 opacity-100 scale-100"
+					leave-active-class="transition duration-100 ease-in"
+					leave-from-class="translate-y-0 opacity-100"
+					leave-to-class="translate-y-1 opacity-0">
+					<div v-if="fields.activeDropdown.value === field.key" ref="ratioPopoverRef"
+						data-ratio-popover class="fixed z-[9999]" :style="ratioPopoverStyle">
+						<div class="p-6 flex gap-8 items-center min-w-max rounded-2xl border border-[var(--border-light)] bg-[var(--bg-main)] shadow-[0_20px_25px_-5px_rgb(0_0_0/0.1),0_8px_10px_-6px_rgb(0_0_0/0.1)]">
+							<!-- Left: Ratio Buttons Grid -->
+							<div class="flex flex-wrap gap-2 w-[280px]">
 								<button v-for="opt in field.options" :key="opt"
 									@click="fields.setParamAndClose(field.key, opt)"
-									class="flex flex-col items-center justify-center gap-2 w-16 h-16 rounded-xl transition-all border"
-									:class="getParamValue(field.key, field.default) === opt ? 'bg-[var(--fill-tsp-gray-main)] border-[var(--text-primary)]/20 shadow-sm' : 'bg-transparent border-transparent hover:bg-[var(--bg-hover)] hover:border-[var(--border-main)]'">
-									<div v-if="isLandscapeRatio(opt)" class="w-6 h-3.5 border-[1.8px] border-[var(--text-primary)] rounded-[2px] opacity-80"></div>
-									<div v-else-if="isPortraitRatio(opt)" class="w-3.5 h-6 border-[1.8px] border-[var(--text-primary)] rounded-[2px] opacity-80"></div>
-									<div v-else class="w-5 h-5 border-[1.8px] border-[var(--text-primary)] rounded-[2px] opacity-80"></div>
-									<span class="text-[10px] font-bold text-[var(--text-primary)]">{{ opt }}</span>
+									class="px-3 py-2 rounded-xl text-[13px] font-bold border transition-all min-w-[64px] flex-1 text-center"
+									:class="getParamValue(field.key, field.default) === opt ? 'bg-[var(--text-primary)] border-[var(--text-primary)] text-[var(--bg-main)] shadow-sm scale-[1.02]' : 'bg-transparent text-[var(--text-primary)] border-[var(--border-main)] hover:border-[var(--text-primary)]/20 hover:bg-[var(--bg-hover)]'">
+									{{ opt }}
 								</button>
 							</div>
-						</div>
-						<div class="relative flex items-center justify-center w-[120px] h-[120px] bg-transparent shrink-0">
-							<div class="relative bg-[var(--fill-tsp-gray-main)] rounded-lg border border-[var(--border-main)] transition-all duration-300 flex items-center justify-center overflow-hidden shadow-inner"
-								:style="fields.getPreviewStyle(getParamValue(field.key, field.default))">
-								<div class="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none opacity-20">
-									<div v-for="i in 9" :key="i" class="border-[0.5px] border-[var(--text-primary)]"></div>
+							<!-- Right: Visual Preview -->
+							<div
+								class="relative flex items-center justify-center w-[160px] h-[160px] bg-transparent shrink-0">
+								<div class="relative bg-[var(--fill-tsp-gray-main)] rounded-xl border border-[var(--border-main)] transition-all duration-300 flex items-center justify-center overflow-hidden shadow-inner"
+									:style="fields.getPreviewStyle(getParamValue(field.key, field.default))">
+									<div class="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none">
+										<div v-for="i in 9" :key="i"
+											class="border-[0.5px] border-[var(--border-main)] opacity-50"></div>
+									</div>
+								</div>
+								<div
+									class="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-[var(--text-tertiary)] rounded-full">
+								</div>
+								<div
+									class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-[var(--text-tertiary)] rounded-full">
+								</div>
+								<div
+									class="absolute top-1/2 -left-1 -translate-y-1/2 w-1 h-3 bg-[var(--text-tertiary)] rounded-full">
+								</div>
+								<div
+									class="absolute top-1/2 -right-1 -translate-y-1/2 w-1 h-3 bg-[var(--text-tertiary)] rounded-full">
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-			</Transition>
+				</Transition>
+			</Teleport>
 		</template>
 
 		<!-- Duration -->
@@ -474,8 +482,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { ImagePlus, Images, Loader2, Plus, Palette, Gem, Clock, LayoutGrid, Monitor, Check, X, Video } from 'lucide-vue-next'
+import { computed, ref, nextTick, watch } from 'vue'
+import { ImagePlus, Images, Loader2, Plus, Palette, Gem, Square, Clock, LayoutGrid, Monitor, Check, X, Video } from 'lucide-vue-next'
 import type { useInputFields } from '~/composables/useInputFields'
 import type { UploadedFile } from '~/composables/useFileUpload'
 
@@ -524,14 +532,41 @@ function adjustNumber(key: string, min: number, max: number, defaultVal: any, de
 	props.fields.setParam(key, next)
 }
 
-function isLandscapeRatio(ratio: string) {
-	const s = String(ratio)
-	return s.startsWith('16:') || s.startsWith('21:') || s.startsWith('3:2')
-}
+const ratioPillRef = ref<HTMLElement | null>(null)
+const ratioPopoverRef = ref<HTMLElement | null>(null)
+const ratioPopoverStyle = ref<Record<string, string>>({ visibility: 'hidden' })
 
-function isPortraitRatio(ratio: string) {
-	const s = String(ratio)
-	return s.startsWith('9:16') || s.startsWith('3:4') || s.startsWith('4:5') || s.startsWith('2:3')
+watch(() => props.fields.activeDropdown.value, async (val) => {
+	if (val === 'aspect_ratio') {
+		// First render offscreen to measure
+		ratioPopoverStyle.value = { visibility: 'hidden' }
+		await nextTick()
+		positionRatioPopover()
+	}
+})
+
+function positionRatioPopover() {
+	const pill = Array.isArray(ratioPillRef.value) ? ratioPillRef.value[0] : ratioPillRef.value
+	const popover = Array.isArray(ratioPopoverRef.value) ? ratioPopoverRef.value[0] : ratioPopoverRef.value
+	if (!pill || !popover) return
+
+	const pillRect = pill.getBoundingClientRect()
+	const popoverRect = popover.getBoundingClientRect()
+	const vw = window.innerWidth
+	const MARGIN = 16
+	const GAP = 21
+
+	// Vertical: above the pill, matching `bottom-full mb-2` behavior
+	const top = pillRect.top - popoverRect.height - GAP
+
+	// Horizontal: center on the pill, then clamp within viewport
+	let left = pillRect.left + pillRect.width / 2 - popoverRect.width / 2
+	left = Math.max(MARGIN, Math.min(left, vw - popoverRect.width - MARGIN))
+
+	ratioPopoverStyle.value = {
+		top: `${Math.max(MARGIN, top)}px`,
+		left: `${left}px`,
+	}
 }
 </script>
 

@@ -42,13 +42,26 @@
 					<MasonryGrid v-else :items="exampleImages" v-slot="{ item: example }">
 						<div
 							class="group relative rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--text-tertiary)] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md h-fit"
-							@click="useExample(example.prompt)"
+							@click="useExample(example)"
 						>
 							<img :src="example.url" loading="lazy" class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105 bg-[#f0eeeb] dark:bg-[#2c2c2c]" :alt="example.prompt" :style="{ minHeight: '200px' }" @load="($event.target as HTMLImageElement).style.minHeight = 'auto'" />
-							<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6 z-10 pointer-events-none">
-								<p class="text-white text-[13px] font-medium line-clamp-2 italic mb-3 leading-snug">"{{ example.prompt }}"</p>
-								<div class="flex items-center">
-									<span class="px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider backdrop-blur-md shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 pointer-events-auto" @click.stop="useExample(example.prompt)">{{ $t('common.use_prompt') }}</span>
+							<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 pointer-events-none">
+								<!-- Top Right: Favorite -->
+								<div class="absolute top-3 right-3 pointer-events-auto transform -translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 delay-75">
+									<button @click.stop="toggleFavorite(example.id)" class="size-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
+										<Heart :size="15" :class="isFavorited(example.id) ? 'text-red-400 fill-red-400' : 'text-white'" />
+									</button>
+								</div>
+								<!-- Bottom -->
+								<div class="absolute inset-x-0 bottom-0 p-4 flex items-end justify-between gap-3">
+									<!-- Left: Model info -->
+									<div class="flex-1 min-w-0 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+										<p class="text-white text-[13px] font-semibold truncate">{{ example.model || example.title }}</p>
+										<p v-if="example.description" class="text-white/70 text-[11px] line-clamp-5 mt-0.5">{{ example.description }}</p>
+										<p v-if="example.author" class="text-white/50 text-[11px] mt-0.5">@{{ example.author }}</p>
+									</div>
+									<!-- Right: Use prompt -->
+									<span class="shrink-0 px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-75 pointer-events-auto cursor-pointer hover:bg-white/90" @click.stop="useExample(example)">{{ $t('common.use_prompt') }}</span>
 								</div>
 							</div>
 						</div>
@@ -260,7 +273,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue'
-import { Link2, ImagePlus, Palette, Square, Gem, Sparkle, Paperclip, Zap, Loader2, Monitor, X, Image as ImageIcon, Download, ChevronDown, LayoutGrid, Sparkles, Plus } from 'lucide-vue-next'
+import { Link2, ImagePlus, Palette, Square, Gem, Sparkle, Paperclip, Zap, Loader2, Monitor, X, Image as ImageIcon, Download, ChevronDown, LayoutGrid, Sparkles, Plus, Heart } from 'lucide-vue-next'
 import { getModels, getAsyncTaskOutputs, uploadFile, getRecordPrompt, getRecordPrimaryUrl, getRecordModel, getRecordParams, type AIModel, type AsyncTaskRecord } from '@/utils/api'
 import { useRouter } from 'vue-router'
 import { useConversationStore } from '@/stores/conversation'
@@ -529,12 +542,57 @@ const exampleImages = computed(() => {
 		id: item.id,
 		prompt: item.related_data?.prompt || '',
 		url: item.related_data?.thumbnail || item.related_data?.assets?.[0] || '',
+		model: item.related_data?.model || '',
+		title: item.title || '',
+		subtitle: item.subtitle || '',
+		description: item.related_data?.description || item.subtitle || '',
+		author: item.related_data?.author || '',
+		config: item.related_data?.config || {},
 	}))
 })
 
-const useExample = (examplePrompt: string) => {
-	prompt.value = examplePrompt
-	unifiedInputRef.value?.setContent(examplePrompt)
+// Favorites
+const FAVORITES_KEY = 'image_favorites'
+const favoriteIds = ref<Set<number>>(new Set())
+
+onMounted(() => {
+	try {
+		const saved = localStorage.getItem(FAVORITES_KEY)
+		if (saved) favoriteIds.value = new Set(JSON.parse(saved))
+	} catch { }
+})
+
+const isFavorited = (id: number) => favoriteIds.value.has(id)
+
+const toggleFavorite = (id: number) => {
+	if (favoriteIds.value.has(id)) {
+		favoriteIds.value.delete(id)
+	} else {
+		favoriteIds.value.add(id)
+	}
+	favoriteIds.value = new Set(favoriteIds.value)
+	localStorage.setItem(FAVORITES_KEY, JSON.stringify([...favoriteIds.value]))
+}
+
+const useExample = (example: { prompt: string; model?: string; config?: Record<string, any> }) => {
+	prompt.value = example.prompt
+	unifiedInputRef.value?.setContent(example.prompt)
+
+	// Match and select the model if provided
+	if (example.model) {
+		const match = modelStore.models.find((m: any) =>
+			m.model === example.model || m.display_name === example.model || `${m.provider}:${m.model}` === example.model
+		)
+		if (match) {
+			modelStore.selectModel(`${match.provider}:${match.model}`, 'image_generation')
+		}
+	}
+
+	// Apply config params (aspect_ratio, style, etc.)
+	if (example.config && Object.keys(example.config).length > 0) {
+		unifiedInputRef.value?.setParams(example.config)
+	}
+
 	const mainEl = document.querySelector('main')
 	if (mainEl) mainEl.scrollTo({ top: mainEl.scrollHeight, behavior: 'smooth' })
 }

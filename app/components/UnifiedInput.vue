@@ -392,9 +392,14 @@ function handleSend() {
 
 // --- Click outside to close dropdowns ---
 function handleClickOutside(e: MouseEvent) {
-	if (fields.activeDropdown.value && containerRef.value && !containerRef.value.contains(e.target as Node)) {
-		fields.closeDropdown()
-	}
+	if (!fields.activeDropdown.value || !containerRef.value) return
+	const target = e.target as Node
+	// Don't close if clicking inside the container
+	if (containerRef.value.contains(target)) return
+	// Don't close if clicking inside a teleported popover
+	const el = target as HTMLElement
+	if (el.closest?.('[data-ratio-popover]')) return
+	fields.closeDropdown()
 }
 
 onMounted(() => {
@@ -419,6 +424,13 @@ defineExpose({
 		editor.value?.commands.focus()
 	},
 	getContent: () => editor.value?.getText() || '',
+	addFiles: (files: File[]) => {
+		fileUpload.uploadFiles(files)
+	},
+	setParams: (params: Record<string, any>) => {
+		const current = fields.dynamicParams.value
+		fields.dynamicParams.value = { ...current, ...params }
+	},
 })
 </script>
 

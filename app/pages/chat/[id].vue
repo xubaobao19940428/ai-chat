@@ -20,27 +20,10 @@
 				<p class="text-[13px] text-[var(--text-tertiary)]">{{ $t('chat.drag_drop_subtitle') }}</p>
 			</div>
 		</Transition>
-		<!-- <header
-			class="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-6 py-3 bg-[var(--bg-main)]/80 backdrop-blur-md border-b border-[var(--border-light)] transition-all">
-			<div class="flex items-center gap-3">
-				<div v-if="currentCharacter" class="flex items-center gap-2 pr-2 border-r border-[var(--border-light)]">
-					<img :src="currentCharacter.icon || currentCharacter.avatar"
-						class="w-6 h-6 rounded-full object-cover" />
-					<span class="text-[14px] font-bold text-[var(--text-primary)]">{{ currentCharacter.name }}</span>
-				</div>
-				<Tooltip text="Switch Model">
-					<ModelSelector position="top" />
-				</Tooltip>
-			</div>
-			<div class="flex items-center gap-2">
-				
-			</div>
-		</header> -->
-
 		<!-- Main Chat Area -->
 		<div class="flex-1 overflow-y-auto px-4 pb-48 pt-6 custom-scrollbar relative z-10" ref="messagesContainer"
 			@scroll="onMessagesScroll">
-			<div class="max-w-[1100px] mx-auto py-6">
+			<div class="max-w-full md:max-w-[900px] mx-auto py-6">
 				<!-- Initial Loading State -->
 				<div v-if="conversationStore.isLoading && (!currentConversation?.messages || currentConversation.messages.length === 0)"
 					class="flex flex-col items-center justify-center py-20 space-y-4">
@@ -234,10 +217,12 @@
 								<ArrowUp :size="12" />
 								{{ $t('chat.reuse_params') }}
 							</button>
-							<button v-if="group.videoUrl" @click="copyMessage(group.userMsg.content)"
-								class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors text-[12px] whitespace-nowrap">
-								<Copy :size="12" />
-								{{ $t('chat.copy_prompt') }}
+							<button v-if="group.videoUrl" @click="copyMessage(group.userMsg.content, `video-${group.userMsg.id}`)"
+								class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors text-[12px] whitespace-nowrap"
+								:class="copiedId === `video-${group.userMsg.id}` ? 'text-green-500' : 'hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'">
+								<Check v-if="copiedId === `video-${group.userMsg.id}`" :size="12" />
+								<Copy v-else :size="12" />
+								{{ copiedId === `video-${group.userMsg.id}` ? $t('chat.copied') : $t('chat.copy_prompt') }}
 							</button>
 							<a v-if="group.videoUrl" :href="group.videoUrl" download="video.mp4" target="_blank"
 								class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors text-[12px] whitespace-nowrap">
@@ -250,18 +235,9 @@
 
 				<!-- Chat Mode: standard message list -->
 				<component v-else :is="isMountedInitial ? 'TransitionGroup' : 'div'" name="message-list"
-					class="space-y-10">
-					<div v-for="message in visibleMessages" :key="message.id" class="flex gap-4 group"
-						:class="message.role === 'user' ? 'flex-row-reverse' : ''" @click="handleMessageClick">
-						<!-- Avatar -->
-						<div class="flex-shrink-0 mt-1">
-							<div
-								class="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden bg-[var(--bg-main)] border border-[var(--border-light)] shadow-sm">
-								<img :src="message.role === 'user' ? userStore.userInfo?.avatar || '/logo.png' : getModelIcon(message.model || currentConversation?.model, currentConversation?.modelId)"
-									class="w-full h-full object-cover p-0.5" :alt="message.role" />
-							</div>
-						</div>
-
+					class="space-y-6">
+					<div v-for="message in visibleMessages" :key="message.id" class="flex group"
+						:class="message.role === 'user' ? 'justify-end' : ''" @click="handleMessageClick">
 						<!-- Message Content -->
 						<div class="flex flex-col relative"
 							:class="message.role === 'user' ? 'items-end max-w-[85%] sm:max-w-[80%]' : 'items-start w-full min-w-0'">
@@ -292,10 +268,12 @@
 									<!-- Action bar (Hover only) -->
 									<div
 										class="absolute -top-10 right-0 flex items-center gap-1 opacity-0 group-hover/bubble:opacity-100 transition-opacity bg-[var(--bg-main)]/80 backdrop-blur-sm border border-[var(--border-light)] rounded-lg p-1 shadow-sm">
-										<button @click="copyMessage(message.content)"
-											class="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors"
+										<button @click="copyMessage(message.content, `user-${message.id}`)"
+											class="p-1.5 rounded-md transition-colors"
+											:class="copiedId === `user-${message.id}` ? 'text-green-500' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'"
 											:title="$t('chat.copy')">
-											<Copy :size="14" />
+											<Check v-if="copiedId === `user-${message.id}`" :size="14" />
+											<Copy v-else :size="14" />
 										</button>
 										<button @click="startEditing(message)"
 											class="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors"
@@ -330,10 +308,12 @@
 								<!-- Assistant Action Bar -->
 								<div class="mt-3 flex items-center gap-0.5">
 									<!-- Copy -->
-									<button @click.stop="copyMessage(message.content)"
-										class="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors"
+									<button @click.stop="copyMessage(message.content, `assistant-${message.id}`)"
+										class="p-1.5 rounded-md transition-colors"
+										:class="copiedId === `assistant-${message.id}` ? 'text-green-500' : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'"
 										:title="$t('chat.copy')">
-										<Copy :size="15" />
+										<Check v-if="copiedId === `assistant-${message.id}`" :size="15" />
+										<Copy v-else :size="15" />
 									</button>
 									<!-- Share -->
 									<button @click.stop="shareMessage(message.content)"
@@ -393,7 +373,7 @@
 				</div>
 				<!-- Follow-up Questions -->
 				<div v-if="followUpLoading || followUpQuestions.length > 0"
-					class="mt-4 ml-12 flex flex-col gap-2 items-start">
+					class="mt-4 flex flex-col gap-2 items-start">
 					<template v-if="followUpLoading">
 						<div v-for="i in 3" :key="i"
 							class="h-[38px] w-[180px] rounded-full bg-[var(--background-gray-subtle)] animate-pulse" />
@@ -444,7 +424,6 @@
 		<!-- Asset Picker Modal -->
 		<AssetPickerModal :show="isAssetPickerOpen" @close="isAssetPickerOpen = false" @select="onAssetsSelected" />
 
-		<!-- Old input code removed -->
 		<!-- Image Preview Lightbox -->
 		<Teleport to="body">
 			<Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0"
@@ -476,25 +455,20 @@
 
 <script setup lang="ts">
 definePageMeta({ ssr: false })
-import { ref, computed, onMounted, watch, nextTick, h, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MarkdownContent from '../../components/MarkdownContent.vue'
 import { PROMPT_SUGGESTIONS, type PromptSuggestion } from '../../utils/prompts'
-import { Popover, PopoverButton, PopoverPanel, Switch } from '@headlessui/vue'
 import { useConversationStore } from '../../stores/conversation'
 import { useChatStore } from '../../stores/chat'
 import { useModelStore } from '../../stores/models'
 import { useUserStore } from '../../stores/user'
 import { useDiscoveryStore } from '../../stores/discovery'
 import { useUIStore } from '../../stores/ui'
-import { useEditor, EditorContent } from '@tiptap/vue-3'
-import StarterKit from '@tiptap/starter-kit'
-import Placeholder from '@tiptap/extension-placeholder'
-import Tooltip from '../../components/Tooltip.vue'
 import AssetPickerModal from '../../components/AssetPickerModal.vue'
 import UnifiedInput from '../../components/UnifiedInput.vue'
-import { Copy, Pencil, Plus, Globe, Settings, ArrowUp, Square, SlidersHorizontal, Loader2, X, FileText, Share2, RefreshCw, Palette, Gem, LayoutGrid, Check, ImagePlus, Monitor, Clock, Download, Expand, TriangleAlert } from 'lucide-vue-next'
-import { fetchChatStream, generateImageStream, generateVideoStream, uploadFile, type ModelInputField } from '../../utils/api'
+import { Copy, Check, Pencil, ArrowUp, X, Share2, RefreshCw, Download, Expand, TriangleAlert } from 'lucide-vue-next'
+import { fetchChatStream, generateImageStream, generateVideoStream } from '../../utils/api'
 import { generateConversationTitle, generateFollowUpQuestions } from '../../api/conversation'
 const { t } = useI18n()
 
@@ -512,46 +486,8 @@ const supportsFileUpload = computed(() => {
 	return !!(fields?.file_ids || fields?.image_urls)
 })
 
-const supportsWebSearch = computed(() => {
-	const fields = modelStore.selectedModel?.model_input?.fields
-	return !!fields?.enable_web_search
-})
-
-const supportsMediaPrompt = computed(() => {
-	const fields = modelStore.selectedModel?.model_input?.fields || {}
-	return !!(fields.image_urls || fields.file_ids || fields.image || fields.images || fields.input_images || fields.input_image || fields.init_image || fields.end_image || fields.ref_image)
-})
-
-// Max images allowed based on model field type:
-// 'image'/'init_image'/'end_image'/'ref_image'/'input_image' → single (or 2 if both init+end)
-// 'input_images'/'images' → multiple
-const mediaImageUploadLimit = computed(() => {
-	const fields = modelStore.selectedModel?.model_input?.fields || {}
-	if (fields.input_images || fields.images) return Infinity
-	if (fields.init_image && fields.end_image) return 2
-	return 1
-})
-
-const uploadedMediaFiles = computed(() => {
-	return uploadedFiles.value.filter((f) => f.type?.startsWith('image/'))
-})
-
 const isAssetPickerOpen = ref(false)
 const previewImage = ref<string | null>(null)
-
-const triggerFileUploadAndClose = () => {
-	activeDropdownField.value = null
-	_mediaUploadContext.value = true
-	if (fileInputRef.value) {
-		fileInputRef.value.multiple = mediaImageUploadLimit.value > 1
-	}
-	triggerFileUpload()
-}
-
-const selectAssetAndClose = () => {
-	activeDropdownField.value = null
-	isAssetPickerOpen.value = true
-}
 
 const selectorCapability = computed(() => {
 	const cap = currentConversation.value?.capability
@@ -621,52 +557,8 @@ const modelInputFields = computed(() => {
 	return modelStore.selectedModel?.model_input?.fields || {}
 })
 
-const dynamicSelectFields = computed(() => {
-	const fields = []
-	for (const [key, field] of Object.entries(modelInputFields.value)) {
-		if ((field as any).type === 'select') {
-			fields.push({ key, ...(field as any) })
-		}
-	}
-	return fields
-})
-
-const dynamicNumberFields = computed(() => {
-	const fields = []
-	for (const [key, field] of Object.entries(modelInputFields.value)) {
-		if ((field as any).type === 'number') {
-			fields.push({ key, ...(field as any) })
-		}
-	}
-	return fields
-})
-
-const activeDropdownField = ref<string | null>(null)
-const toggleDropdown = (key: string) => {
-	activeDropdownField.value = activeDropdownField.value === key ? null : key
-}
-
-const setParamAndClose = (key: string, val: any) => {
-	updateParams({ ...currentConversation.value?.params, [key]: val })
-	activeDropdownField.value = null
-}
-
-const getPreviewStyle = (ratio: string) => {
-	const baseSize = 120
-	if (ratio === '1:1') return { width: baseSize + 'px', height: baseSize + 'px' }
-	if (ratio === '16:9') return { width: baseSize + 'px', height: baseSize * (9 / 16) + 'px' }
-	if (ratio === '9:16') return { width: baseSize * (9 / 16) + 'px', height: baseSize + 'px' }
-	if (ratio === '4:3') return { width: baseSize + 'px', height: baseSize * (3 / 4) + 'px' }
-	if (ratio === '3:4') return { width: baseSize * (3 / 4) + 'px', height: baseSize + 'px' }
-	if (ratio === '21:9') return { width: baseSize + 'px', height: baseSize * (9 / 21) + 'px' }
-	if (ratio === '9:21') return { width: baseSize * (9 / 21) + 'px', height: baseSize + 'px' }
-	if (ratio === '3:2') return { width: baseSize + 'px', height: baseSize * (2 / 3) + 'px' }
-	if (ratio === '2:3') return { width: baseSize * (2 / 3) + 'px', height: baseSize + 'px' }
-	return { width: baseSize + 'px', height: baseSize + 'px' }
-}
 const messagesContainer = ref<HTMLElement | null>(null)
 const inputMessage = ref('')
-const activeSubPrompts = ref<string[]>([])
 const isMountedInitial = ref(false)
 
 // Editing state
@@ -708,83 +600,15 @@ const onDrop = (e: DragEvent) => {
 	isDraggingOver.value = false
 	if (!supportsFileUpload.value) return
 	const files = Array.from(e.dataTransfer?.files || [])
-	if (files.length > 0) handleFilesUpload(files)
+	if (files.length > 0) unifiedInputRef.value?.addFiles(files)
 }
 
 // Abort controller for stream cancellation
 const abortController = ref<AbortController | null>(null)
 
 // File Upload State
-const fileInputRef = ref<HTMLInputElement | null>(null)
-const isUploading = ref(false)
 const uploadedFiles = ref<{ id: string; name: string; key: string; url: string; type: string; uploading: boolean; localUrl?: string }[]>([])
 const isWebSearchEnabled = ref(true)
-const _mediaUploadContext = ref(false)
-
-const triggerFileUpload = () => {
-	fileInputRef.value?.click()
-}
-
-const handleFilesUpload = async (files: File[], applyMediaLimit = false) => {
-	if (applyMediaLimit) {
-		const limit = mediaImageUploadLimit.value
-		const currentImageCount = uploadedMediaFiles.value.length
-		const remaining = Math.max(0, limit - currentImageCount)
-		if (remaining === 0) {
-			uiStore.showToast(limit === 1 ? t('chat.max_one_image') : t('chat.max_images_reached'), 'error')
-			return
-		}
-		files = files.slice(0, remaining)
-	}
-	const placeholders = files.map((file) => ({
-		id: Math.random().toString(36).slice(2),
-		name: file.name,
-		key: '',
-		url: '',
-		type: file.type,
-		uploading: true,
-		localUrl: file.type?.startsWith('image/') ? URL.createObjectURL(file) : undefined,
-	}))
-	uploadedFiles.value.push(...placeholders)
-	isUploading.value = true
-
-	await Promise.allSettled(
-		files.map(async (file, i) => {
-			const placeholder = placeholders[i]
-			if (!placeholder) return
-			try {
-				const { key, url } = await uploadFile(file, 'chat')
-				const item = uploadedFiles.value.find((f) => f.id === placeholder.id)
-				if (item) {
-					item.key = key
-					item.url = url
-					item.uploading = false
-				}
-			} catch {
-				uploadedFiles.value = uploadedFiles.value.filter((f) => f.id !== placeholder.id)
-				uiStore.showToast(t('chat.upload_failed', { name: file.name }), 'error')
-			}
-		}),
-	)
-
-	isUploading.value = uploadedFiles.value.some((f) => f.uploading)
-}
-
-const handleFileUpload = async (event: Event) => {
-	const target = event.target as HTMLInputElement
-	if (!target.files?.length) return
-	const files = Array.from(target.files)
-	if (fileInputRef.value) fileInputRef.value.value = ''
-	const fromMedia = _mediaUploadContext.value
-	_mediaUploadContext.value = false
-	await handleFilesUpload(files, fromMedia)
-}
-
-const removeFile = (id: string) => {
-	const item = uploadedFiles.value.find((f) => f.id === id)
-	if (item?.localUrl) URL.revokeObjectURL(item.localUrl)
-	uploadedFiles.value = uploadedFiles.value.filter((f) => f.id !== id)
-}
 
 const stopGeneration = () => {
 	abortController.value?.abort()
@@ -832,124 +656,6 @@ const currentCharacter = computed(() => {
 		}
 		: null
 })
-
-// --- Typewriter Placeholder Effect ---
-const displayedPlaceholder = ref('')
-let typewriterInterval: ReturnType<typeof setInterval> | null = null
-
-const runTypewriter = () => {
-	if (typewriterInterval) clearInterval(typewriterInterval)
-	displayedPlaceholder.value = ''
-	let i = 0
-	const text = t('chat.assign_task')
-	typewriterInterval = setInterval(() => {
-		if (i < text.length) {
-			displayedPlaceholder.value += text[i]
-			i++
-			if (editor.value) {
-				editor.value.view.dispatch(editor.value.state.tr)
-			}
-		} else {
-			clearInterval(typewriterInterval!)
-		}
-	}, 20)
-}
-
-const editor = useEditor({
-	content: '',
-	extensions: [
-		StarterKit.configure({
-			heading: false,
-			bulletList: false,
-			orderedList: false,
-			blockquote: false,
-			codeBlock: false,
-			horizontalRule: false,
-		}),
-		Placeholder.configure({
-			placeholder: () => displayedPlaceholder.value,
-		}),
-	],
-	editorProps: {
-		attributes: {
-			class: 'prose dark:prose-invert focus:outline-none min-h-[44px]  py-3 text-[15px] font-medium leading-relaxed text-[var(--text-primary)]',
-		},
-	},
-	onUpdate: ({ editor }) => {
-		inputMessage.value = editor.getText()
-	},
-})
-
-// Custom key handler for Enter
-const handleEnter = (e: KeyboardEvent) => {
-	if (e.key === 'Enter' && !e.shiftKey) {
-		e.preventDefault()
-		sendMessage()
-	}
-}
-
-// Add event listener to editor DOM element when mounted
-watch(
-	() => editor.value,
-	(newEditor) => {
-		if (newEditor) {
-			newEditor.setOptions({
-				editorProps: {
-					handleKeyDown: (view, event) => {
-						if (event.key === 'Enter' && !event.shiftKey) {
-							event.preventDefault()
-							sendMessage()
-							return true
-						}
-						return false
-					},
-					handlePaste: (view, event) => {
-						if (!supportsFileUpload.value) return false
-						const items = Array.from(event.clipboardData?.items || [])
-						const imageItems = items.filter((item) => item.type?.startsWith('image/'))
-						if (imageItems.length === 0) return false
-						event.preventDefault()
-						const files = imageItems.map((item) => item.getAsFile()).filter(Boolean) as File[]
-						if (files.length > 0) {
-							handleFilesUpload(files)
-						}
-						return true
-					},
-					attributes: {
-						class: 'prose dark:prose-invert focus:outline-none min-h-[44px] px-4 py-3 text-[15px] font-medium leading-relaxed text-[var(--text-primary)]',
-					},
-				},
-			})
-		}
-	},
-	{ immediate: true },
-)
-
-const hasContent = computed(() => {
-	return inputMessage.value.trim().length > 0
-})
-
-// Draft persistence per conversation
-const DRAFT_PREFIX = 'chat_draft_'
-const saveDraft = (text: string) => {
-	const id = currentConversationId.value
-	if (!id) return
-	if (text.trim()) {
-		localStorage.setItem(DRAFT_PREFIX + id, text)
-	} else {
-		localStorage.removeItem(DRAFT_PREFIX + id)
-	}
-}
-const loadDraft = () => {
-	const id = currentConversationId.value
-	if (!id) return
-	const draft = localStorage.getItem(DRAFT_PREFIX + id)
-	if (draft && editor.value) {
-		editor.value.commands.setContent(draft)
-		inputMessage.value = draft
-	}
-}
-watch(inputMessage, (val) => saveDraft(val))
 
 const getModelIcon = (modelId?: string, numericId?: number) => {
 	const id = (modelId || '').toLowerCase()
@@ -1110,11 +816,9 @@ const videoGenerationGroups = computed(() => {
 const regenerateFromGroup = (group: { userMsg: any }) => {
 	if (!currentConversation.value || chatStore.isLoading) return
 	conversationStore.truncateFromMessage(currentConversationId.value, group.userMsg.id)
-	if (editor.value) {
-		editor.value.commands.setContent(group.userMsg.content)
-		inputMessage.value = group.userMsg.content
-		sendMessage()
-	}
+	inputMessage.value = group.userMsg.content
+	unifiedInputRef.value?.setContent(group.userMsg.content)
+	sendMessage()
 }
 
 const fillFollowUpQuestion = (q: string) => {
@@ -1123,11 +827,9 @@ const fillFollowUpQuestion = (q: string) => {
 }
 
 const reuseGroupPrompt = (group: { userMsg: any }) => {
-	if (editor.value) {
-		editor.value.commands.setContent(group.userMsg.content)
-		inputMessage.value = group.userMsg.content
-		editor.value.commands.focus()
-	}
+	inputMessage.value = group.userMsg.content
+	unifiedInputRef.value?.setContent(group.userMsg.content)
+	unifiedInputRef.value?.focus()
 }
 
 const downloadAllImages = (urls: string[]) => {
@@ -1180,17 +882,12 @@ const resetParams = () => {
 }
 
 const handleApplyPrompt = (suggestion: PromptSuggestion) => {
-	if (editor.value) {
-		editor.value.commands.setContent(suggestion.prompt)
-		inputMessage.value = suggestion.prompt
-		editor.value.commands.focus()
-	}
+	inputMessage.value = suggestion.prompt
+	unifiedInputRef.value?.setContent(suggestion.prompt)
+	unifiedInputRef.value?.focus()
 }
 
 onMounted(async () => {
-	// Start typewriter placeholder animation
-	runTypewriter()
-
 	// 1. 初始化本地存储
 	await conversationStore.initFromLocalStorage()
 
@@ -1218,8 +915,6 @@ onMounted(async () => {
 					// If there's a pending message from WelcomeScreen, send it
 					if (chatStore.pendingMessage) {
 						sendMessage(true)
-					} else {
-						loadDraft()
 					}
 				}, 50)
 			})
@@ -1227,10 +922,6 @@ onMounted(async () => {
 	} else {
 		isMountedInitial.value = true
 	}
-})
-
-onBeforeUnmount(() => {
-	editor.value?.destroy()
 })
 
 watch(
@@ -1251,7 +942,6 @@ watch(
 			}
 			nextTick(() => {
 				scrollToBottom(true, true)
-				loadDraft()
 			})
 		}
 	},
@@ -1312,9 +1002,9 @@ const sendMessage = async (isInitial = false) => {
 		chatStore.setPendingMessage(null) // Consume it
 	}
 
-	// Double check editor content if inputMessage is empty (to avoid race conditions)
-	if (!userMessage && editor.value) {
-		userMessage = editor.value.getText().trim()
+	// Double check UnifiedInput content if inputMessage is empty (to avoid race conditions)
+	if (!userMessage && unifiedInputRef.value) {
+		userMessage = unifiedInputRef.value.getContent().trim()
 	}
 
 	if (!userMessage && uploadedFiles.value.length === 0 && !isInitial) {
@@ -1404,9 +1094,8 @@ const sendMessage = async (isInitial = false) => {
 	// 1. Clear input if not initial
 	if (!isInitial) {
 		inputMessage.value = ''
-		editor.value?.commands.clearContent()
+		unifiedInputRef.value?.clearContent()
 		uploadedFiles.value = []
-		localStorage.removeItem(DRAFT_PREFIX + currentConversationId.value)
 	}
 
 	// 2. Add user message ONLY IF not already there (initial messages are added by the caller)
@@ -1577,11 +1266,19 @@ const sendMessage = async (isInitial = false) => {
 	}
 }
 
-const copyMessage = (content: string) => {
+// Track which element is showing "copied" feedback
+const copiedId = ref<string | null>(null)
+let copiedTimer: ReturnType<typeof setTimeout> | null = null
+
+const copyMessage = (content: string, feedbackId?: string) => {
 	navigator.clipboard
 		.writeText(content)
 		.then(() => {
-			uiStore.showToast(t('chat.copied'))
+			if (feedbackId) {
+				copiedId.value = feedbackId
+				if (copiedTimer) clearTimeout(copiedTimer)
+				copiedTimer = setTimeout(() => { copiedId.value = null }, 1500)
+			}
 		})
 		.catch(() => {
 			uiStore.showToast(t('chat.copy_failed'), 'error')
@@ -1608,11 +1305,9 @@ const regenerateMessage = () => {
 	const lastUserMsg = messages[messages.length - 1 - lastUserMsgIndex]
 	if (!lastUserMsg) return
 	conversationStore.truncateFromMessage(currentConversationId.value, lastUserMsg.id)
-	if (editor.value) {
-		editor.value.commands.setContent(lastUserMsg.content)
-		inputMessage.value = lastUserMsg.content
-		sendMessage()
-	}
+	inputMessage.value = lastUserMsg.content
+	unifiedInputRef.value?.setContent(lastUserMsg.content)
+	sendMessage()
 }
 
 const startEditing = (message: any) => {
@@ -1649,35 +1344,49 @@ const submitEdit = () => {
 
 	// Truncate conversation from the edited message onwards, then regenerate
 	conversationStore.truncateFromMessage(currentConversationId.value, messageId)
-
-	if (editor.value) {
-		editor.value.commands.setContent(content)
-		inputMessage.value = content
-		sendMessage()
-	}
+	inputMessage.value = content
+	unifiedInputRef.value?.setContent(content)
+	sendMessage()
 }
 
 const retryMessage = () => {
 	if (!failedMessageContent.value || chatStore.isLoading) return
 	const content = failedMessageContent.value
 	failedMessageContent.value = null
-	if (editor.value) {
-		editor.value.commands.setContent(content)
-		inputMessage.value = content
-		sendMessage()
-	}
+	inputMessage.value = content
+	unifiedInputRef.value?.setContent(content)
+	sendMessage()
 }
 
 // Global click handler for dynamic content (like code block copy buttons)
 const handleMessageClick = (e: MouseEvent) => {
 	const target = e.target as HTMLElement
-	// Check if clicked element or parent is .copy-code-btn
 	const btn = target.closest('.copy-code-btn') as HTMLElement
 
 	if (btn) {
 		const code = btn.getAttribute('data-code')
 		if (code) {
-			copyMessage(code)
+			navigator.clipboard.writeText(code).then(() => {
+				// Swap icon + text to "Copied!" feedback
+				const svg = btn.querySelector('svg')
+				const label = btn.querySelector('span')
+				if (svg) {
+					svg.outerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pointer-events-none" style="color:#22c55e"><polyline points="20 6 9 17 4 12"/></svg>'
+				}
+				if (label) label.textContent = 'Copied!'
+				btn.style.color = '#22c55e'
+
+				setTimeout(() => {
+					const newSvg = btn.querySelector('svg')
+					if (newSvg) {
+						newSvg.outerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pointer-events-none"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2v1"/></svg>'
+					}
+					if (label) label.textContent = 'Copy'
+					btn.style.color = ''
+				}, 1500)
+			}).catch(() => {
+				uiStore.showToast(t('chat.copy_failed'), 'error')
+			})
 		}
 	}
 }
@@ -1727,28 +1436,6 @@ const handleMessageClick = (e: MouseEvent) => {
 .message-list-leave-to {
 	opacity: 0;
 	transform: translateY(10px);
-}
-
-.prose {
-	/* Improve prose readability */
-	line-height: 1.625;
-}
-
-:deep(.dark) .prose {
-	color: var(--text-primary);
-}
-
-/* Tiptap Styles */
-:deep(.tiptap) {
-	outline: none !important;
-
-	p.is-editor-empty:first-child::before {
-		color: var(--text-tertiary);
-		content: attr(data-placeholder);
-		float: left;
-		height: 0;
-		pointer-events: none;
-	}
 }
 
 /* Code Block Styles */

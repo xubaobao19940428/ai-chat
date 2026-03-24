@@ -1,36 +1,30 @@
 <template>
 	<div class="flex-1 flex flex-col h-full bg-[var(--background-gray-main)] overflow-hidden transition-colors">
-		<!-- Header & Control Area -->
-		<div class="flex-shrink-0 px-5 pb-4">
-			<div class="w-full">
-				<!-- Header Row -->
-				<div class="flex items-center justify-between mb-8">
-					<h1 class="text-[32px] font-black text-[var(--text-primary)] tracking-tight">{{ $t('explore.title') }}</h1>
-					<div class="flex items-center gap-3">
-						<button class="px-5 py-2.5 rounded-xl border border-[var(--border-light)] text-[14px] font-bold text-[var(--text-primary)] hover:bg-[var(--fill-tsp-white-dark)] transition-all shadow-sm">
-							{{ $t('explore.my_created') }}
-						</button>
-						<button class="px-5 py-2.5 rounded-xl bg-[#18181b] text-white text-[14px] font-bold hover:bg-[#27272a] transition-all flex items-center gap-2 shadow-md">
-							<Plus :size="18" />
-							<span>{{ $t('explore.create_bot') }}</span>
-						</button>
-					</div>
-				</div>
+		<!-- Header -->
+		<header class="hidden lg:flex bg-[var(--bg-main)] border-b border-[var(--border-main)] px-6 py-3 items-center justify-between gap-6 shrink-0 z-10">
+			<h1 class="text-xl font-bold text-[var(--text-primary)] tracking-tight">{{ $t('explore.title') }}</h1>
+			<div class="flex items-center gap-3">
+				<button class="flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--border-light)] text-[13px] font-bold text-[var(--text-primary)] hover:bg-[var(--fill-tsp-white-dark)] transition-all shadow-sm">
+					{{ $t('explore.my_created') }}
+				</button>
+				<button class="flex items-center gap-2 px-4 py-2 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-xl font-bold text-[13px] hover:opacity-90 transition-all shadow-sm">
+					<Plus :size="16" />
+					<span>{{ $t('explore.create_bot') }}</span>
+				</button>
+			</div>
+		</header>
 
-				<!-- Control Bar: Tags + Search -->
-				<div class="flex flex-col lg:flex-row lg:items-start gap-6 w-full">
-					<!-- Filter Tags -->
-					<div class="flex flex-wrap gap-2 flex-1 w-full lg:w-auto scrollbar-hide overflow-x-auto">
-						<button v-for="tag in filterTags" :key="tag.id" class="flex-shrink-0 px-5 py-2.5 rounded-xl text-[14px] font-bold transition-all border" :class="selectedTag === tag.id ? 'bg-[#18181b] text-white border-transparent shadow-md' : 'bg-white text-[#71717a] border-[#e4e4e7] hover:bg-[#f4f4f5]'" @click="handleTagChange(tag.id)">
-							{{ $t('explore.tags.' + tag.name) }}
-						</button>
-					</div>
-					<!-- Search Bar -->
-					<div class="relative flex items-center w-full lg:w-[360px] shrink-0">
-						<Search :size="18" class="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] pointer-events-none" />
-						<input v-model="searchQuery" type="text" :placeholder="$t('explore.search_placeholder')" class="block w-full pl-11 pr-4 py-2.5 bg-[#f4f4f5] border border-transparent focus:border-[var(--border-main)] rounded-2xl text-[15px] transition-all placeholder-[var(--text-disable)] text-[var(--text-primary)] outline-none" />
-					</div>
-				</div>
+		<!-- Control Area -->
+		<!-- Filter Bar -->
+		<div class="flex-shrink-0 flex items-center gap-3 px-6 py-3 overflow-x-auto no-scrollbar">
+			<div class="flex items-center gap-2 flex-1 min-w-0 overflow-x-auto no-scrollbar">
+				<button v-for="tag in filterTags" :key="tag.id" @click="handleTagChange(tag.id)" :class="['flex-shrink-0 px-4 py-1.5 text-[13px] font-medium rounded-full border transition-all whitespace-nowrap', selectedTag === tag.id ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]']">
+					{{ $t('explore.tags.' + tag.name) }}
+				</button>
+			</div>
+			<div class="relative flex items-center w-[280px] shrink-0">
+				<Search :size="14" class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] pointer-events-none" />
+				<input v-model="searchQuery" type="text" :placeholder="$t('explore.search_placeholder')" class="w-full h-8 pl-9 pr-3 bg-[var(--fill-tsp-gray-main)] border border-transparent focus:border-[var(--text-tertiary)] focus:bg-[var(--bg-main)] rounded-xl text-[13px] transition-all placeholder-[var(--text-disable)] text-[var(--text-primary)] outline-none" />
 			</div>
 		</div>
 
@@ -38,58 +32,38 @@
 		<div class="flex-1 overflow-y-auto px-5 pb-12 custom-scrollbar" ref="scrollContainer" @scroll="handleScroll">
 			<div class="w-full">
 				<!-- Skeleton Loading State (initial) -->
-				<div v-if="discoveryStore.isLoading && botsList.length === 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[10px]">
-					<div v-for="i in 12" :key="i" class="flex items-start p-3 rounded-2xl bg-[var(--background-white-main)] border border-[var(--border-light)] animate-pulse">
-						<!-- Icon Placeholder -->
-						<div class="flex-shrink-0 w-[72px] h-[72px] rounded-2xl bg-[var(--background-gray-main)]"></div>
-
-						<!-- Content Placeholder -->
-						<div class="flex-1 min-w-0 ml-5 pt-1">
-							<div class="h-5 bg-[var(--background-gray-main)] rounded-md w-3/4 mb-3"></div>
-							<div class="h-3.5 bg-[var(--background-gray-main)] rounded-md w-full mb-2"></div>
-							<div class="h-3.5 bg-[var(--background-gray-main)] rounded-md w-2/3 mb-4"></div>
-
-							<div class="flex items-center gap-4 mt-1">
-								<div class="h-3 bg-[var(--background-gray-main)] rounded-md w-12"></div>
-								<div class="h-3 bg-[var(--background-gray-main)] rounded-md w-16"></div>
-							</div>
+				<div v-if="discoveryStore.isLoading && botsList.length === 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+					<div v-for="i in 16" :key="i" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[var(--background-white-main)] border border-[var(--border-light)] animate-pulse">
+						<div class="flex-shrink-0 w-10 h-10 rounded-xl bg-[var(--background-gray-main)]"></div>
+						<div class="flex-1 min-w-0">
+							<div class="h-3.5 bg-[var(--background-gray-main)] rounded w-2/3 mb-1.5"></div>
+							<div class="h-3 bg-[var(--background-gray-main)] rounded w-full"></div>
 						</div>
 					</div>
 				</div>
 
 				<!-- Bot Cards Grid -->
-				<div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[10px]">
-					<div v-for="bot in botsList" :key="bot.id" class="flex items-start p-3 rounded-2xl bg-[var(--background-white-main)] border border-[var(--border-light)] hover:border-[var(--border-main)] hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group" @click="handleBotClick(bot)">
+				<div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+					<div v-for="bot in botsList" :key="bot.id" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[var(--background-white-main)] border border-[var(--border-light)] hover:border-[var(--border-main)] hover:shadow-md transition-all cursor-pointer group" @click="handleBotClick(bot)">
 						<!-- Icon -->
-						<div class="flex-shrink-0 w-[72px] h-[72px] rounded-2xl overflow-hidden bg-[var(--background-gray-main)] flex items-center justify-center text-3xl shadow-sm border border-[var(--border-light)]">
-							<img v-if="bot.icon && bot.icon.startsWith('http')" :src="bot.icon" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+						<div class="flex-shrink-0 w-10 h-10 rounded-xl overflow-hidden bg-[var(--background-gray-main)] flex items-center justify-center text-lg border border-[var(--border-light)]">
+							<img v-if="bot.icon && bot.icon.startsWith('http')" :src="bot.icon" class="w-full h-full object-cover" />
 							<span v-else>{{ bot.icon || '🤖' }}</span>
 						</div>
 
 						<!-- Content -->
-						<div class="flex-1 min-w-0 ml-5 pt-0.5">
-							<div class="flex items-center justify-between mb-1.5">
-								<h3 class="text-[17px] font-black text-[var(--text-primary)] truncate leading-tight">
+						<div class="flex-1 min-w-0">
+							<div class="flex items-center gap-2">
+								<h3 class="text-[14px] font-bold text-[var(--text-primary)] truncate leading-tight">
 									{{ bot.name }}
 								</h3>
-								<span v-if="bot.type === 'character'" class="px-1.5 py-0.5 rounded-md bg-[var(--fill-tsp-white-main)] text-[var(--text-secondary)] text-[10px] font-bold uppercase tracking-wider flex-shrink-0"> {{ $t('explore.official_badge') }} </span>
+								<span v-if="bot.type === 'character'" class="px-1 py-px rounded bg-[var(--fill-tsp-white-main)] text-[var(--text-tertiary)] text-[9px] font-bold uppercase tracking-wider flex-shrink-0">{{ $t('explore.official_badge') }}</span>
 							</div>
-							<p class="text-[13.5px] text-[var(--text-tertiary)] line-clamp-2 leading-relaxed mb-4">
+							<p class="text-[12px] text-[var(--text-tertiary)] truncate mt-0.5">
 								{{ bot.description || $t('explore.no_description') }}
 							</p>
-
-							<!-- Stats Footer -->
-							<div class="flex items-center gap-4 text-[11px] font-bold text-[var(--text-tertiary)]/60 uppercase tracking-widest">
-								<div class="flex items-center gap-1.5">
-									<Flame :size="14" class="text-orange-500" />
-									<span>3M</span>
-								</div>
-								<div class="flex items-center gap-1">
-									<span class="opacity-70">{{ $t('explore.by_author') }}</span>
-									<span class="hover:text-[var(--text-primary)] transition-colors">@{{ bot.provider || 'Aura' }}</span>
-								</div>
-							</div>
 						</div>
+
 					</div>
 				</div>
 
@@ -112,6 +86,7 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ hideTopBar: true })
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search, Flame, Plus } from 'lucide-vue-next'

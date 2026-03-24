@@ -25,8 +25,8 @@
 										</div>
 									</div>
 
-									<!-- Nav Items -->
-									<div class="flex flex-col p-[8px] pb-0 gap-px">
+									<!-- Scrollable Area -->
+									<div class="flex flex-col flex-1 min-h-0 overflow-x-hidden overflow-y-auto p-[8px] pb-0 gap-px">
 										<!-- New Chat -->
 										<div @click="handleNewChat" class="flex items-center rounded-[10px] cursor-pointer transition-colors w-full h-[40px] hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px] gap-[12px]">
 											<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
@@ -42,10 +42,9 @@
 											</div>
 											<span class="flex-1 text-[14px] font-medium text-[var(--text-primary)] truncate">{{ item.label }}</span>
 										</div>
-									</div>
 
 									<!-- More Tools -->
-									<div class="flex flex-col px-[8px] pb-0 gap-px mt-1">
+									<div class="flex flex-col pb-0 gap-px mt-1">
 										<div @click="toggleMoreTools" class="group flex items-center justify-between rounded-[10px] h-[36px] cursor-pointer hover:bg-[var(--bg-hover)] transition-colors ps-[10px] pe-[2px]">
 											<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium uppercase tracking-tight">{{ $t('common.more_tools') }}</span>
 											<ChevronUp :size="14" :class="['transition-all shrink-0 text-[var(--text-tertiary)] me-1', moreCollapsed ? 'rotate-180' : '']" />
@@ -61,11 +60,9 @@
 									</div>
 
 									<!-- Divider -->
-									<div class="mx-[8px] border-t border-[var(--border-light)] opacity-50 my-2"></div>
+									<div class="border-t border-[var(--border-light)] opacity-50 my-2"></div>
 
-									<!-- Scrollable content -->
-									<div class="flex flex-col flex-1 min-h-0 overflow-y-auto px-[8px] pb-[8px]">
-										<!-- Projects -->
+									<!-- Projects -->
 										<div class="group flex items-center justify-between rounded-[10px] mb-1 h-[36px] hover:bg-[var(--bg-hover)] transition-colors ps-[10px] pe-[2px] py-[2px]">
 											<div @click="toggleProjects" class="flex-1 flex items-center gap-1 cursor-pointer h-full">
 												<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium uppercase tracking-tight">{{ $t('common.projects') }}</span>
@@ -92,10 +89,13 @@
 										</div>
 
 										<!-- Recent Chat -->
-										<div class="flex items-center h-[36px] ps-[10px] mb-1">
-											<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium uppercase tracking-tight">{{ $t('common.recent_chat') }}</span>
+										<div @click="mobileRecentCollapsed = !mobileRecentCollapsed" class="group flex items-center h-[36px] ps-[10px] mb-1 rounded-[10px] clickable hover:bg-[var(--bg-hover)] transition-colors cursor-pointer">
+											<div class="flex items-center flex-1 min-w-0 gap-0.5">
+												<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium uppercase tracking-tight">{{ $t('common.recent_chat') }}</span>
+												<ChevronUp :size="14" :class="['transition-all shrink-0 group-hover:opacity-100 text-[var(--text-tertiary)]', mobileRecentCollapsed ? 'rotate-180' : '']" />
+											</div>
 										</div>
-										<div class="flex flex-col gap-px">
+										<div v-show="!mobileRecentCollapsed" class="flex flex-col gap-px">
 											<!-- Loading skeleton -->
 											<template v-if="conversationStore.isGroupSwitching || (conversationStore.isLoading && conversationStore.conversations.length === 0)">
 												<div v-for="i in 5" :key="i" class="h-[40px] rounded-[10px] bg-[var(--bg-hover)] animate-pulse mx-1"></div>
@@ -183,6 +183,7 @@ const discoveryStore = useDiscoveryStore()
 
 const projectsCollapsed = ref(false)
 const moreCollapsed = ref(false)
+const mobileRecentCollapsed = ref(false)
 const showCreateProjectModal = ref(false)
 
 const sortedConversations = computed(() =>

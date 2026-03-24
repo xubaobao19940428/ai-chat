@@ -1,7 +1,8 @@
 <template>
 	<div class="flex-1 flex flex-col h-full bg-[var(--bg-main)] overflow-hidden relative transition-colors">
 		<!-- Top Header Bar -->
-		<header class="flex-shrink-0 flex items-center justify-end px-4 h-[52px] border-b border-[var(--border-light)] bg-[var(--bg-main)]/80 backdrop-blur-md z-20">
+		<header class="flex-shrink-0 flex items-center justify-between px-4 h-[52px] border-b border-[var(--border-light)] bg-[var(--bg-main)]/80 backdrop-blur-md z-20">
+			<ModelSelector variant="ghost" capability="chat" position="top" />
 			<button @click="handleShare" class="p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors">
 				<Share2 :size="16" />
 			</button>
@@ -23,14 +24,9 @@
 			<!-- Main: Chat -->
 			<main class="flex-1 flex flex-col h-full bg-[var(--bg-main)] relative overflow-hidden">
 				<!-- Messages -->
-				<div class="flex-1 overflow-y-auto custom-scrollbar px-5 pb-36 pt-6" ref="scrollContainer">
-					<div class="max-w-[1100px] mx-auto w-full">
-						<!-- Date Separator -->
-						<div class="flex justify-center mb-12">
-							<span class="text-[10px] text-[var(--text-disable)] font-bold tracking-widest uppercase">{{ todayStr }}</span>
-						</div>
-
-						<div v-if="!conversationId" class="flex flex-col items-center pt-12 pb-16 animate-in fade-in slide-in-from-bottom-6 duration-700">
+				<div class="flex-1 overflow-y-auto custom-scrollbar px-4 pb-36 pt-6" ref="scrollContainer">
+					<div class="max-w-full md:max-w-[900px] mx-auto w-full">
+							<div v-if="!conversationId" class="flex flex-col items-center pt-12 pb-16 animate-in fade-in slide-in-from-bottom-6 duration-700">
 							<!-- Character Profile Section (Centered) -->
 							<div class="flex flex-col items-center mb-12">
 								<!-- Avatar -->
@@ -72,21 +68,10 @@
 						</div>
 
 						<!-- Store messages -->
-						<div class="space-y-10">
-							<div v-for="message in storeMessages" :key="message.id" class="flex gap-4 group" :class="message.role === 'user' ? 'flex-row-reverse' : ''">
-								<div class="flex-shrink-0 mt-1">
-									<div class="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden bg-[var(--bg-main)] border border-[var(--border-light)] shadow-sm">
-										<template v-if="message.role === 'assistant'">
-											<img v-if="character.avatar" :src="character.avatar" class="w-full h-full object-cover" />
-											<Bot v-else :size="14" class="text-[var(--text-secondary)]" />
-										</template>
-										<template v-else>
-											<img :src="userStore.userInfo?.avatar || '/logo.png'" class="w-full h-full object-cover p-0.5" />
-										</template>
-									</div>
-								</div>
+						<div class="space-y-6">
+							<div v-for="message in storeMessages" :key="message.id" class="flex group" :class="message.role === 'user' ? 'justify-end' : ''">
 								<!-- Bubble -->
-								<div class="flex flex-col max-w-[85%] sm:max-w-[78%]" :class="message.role === 'user' ? 'items-end' : 'items-start'">
+								<div class="flex flex-col max-w-[85%] sm:max-w-[80%]" :class="message.role === 'user' ? 'items-end' : 'items-start'">
 									<div v-if="message.role === 'user'" class="bg-[var(--bg-chat-bubble-user)] text-[var(--text-primary)] px-5 py-2.5 rounded-[24px] text-[15px] font-medium leading-relaxed border border-[var(--border-light)] shadow-sm">
 										<div class="whitespace-pre-wrap break-words">{{ message.content }}</div>
 									</div>
@@ -140,10 +125,12 @@ import { ref, computed, onMounted, nextTick, markRaw, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Share2, User as UserIcon, Info, Code, ThumbsUp, Bot } from 'lucide-vue-next'
 import UnifiedInput from '~/components/UnifiedInput.vue'
+import ModelSelector from '~/components/ModelSelector.vue'
 import { getCharacterDetail, type Character } from '~/api/character'
 import { fetchChatStream } from '~/utils/api'
 import { renderMarkdown } from '~/utils/markdown'
 import { useConversationStore } from '~/stores/conversation'
+import { useModelStore } from '~/stores/models'
 import { useUIStore } from '~/stores/ui'
 import { useUserStore } from '~/stores/user'
 
@@ -152,6 +139,7 @@ definePageMeta({ hideTopBar: true })
 const route = useRoute()
 const router = useRouter()
 const conversationStore = useConversationStore()
+const modelStore = useModelStore()
 const uiStore = useUIStore()
 const userStore = useUserStore()
 
@@ -187,7 +175,6 @@ const storeMessages = computed(() => {
 	return conv?.messages || []
 })
 
-const todayStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 
 const formatTime = (timestamp?: number) => {
 	if (!timestamp) return ''
@@ -238,6 +225,7 @@ watch(
 )
 
 onMounted(async () => {
+	modelStore.setActiveCapability('chat')
 	const id = Number(route.params.id)
 	if (!id) {
 		isLoadingCharacter.value = false
@@ -297,7 +285,7 @@ const sendMessage = async (content?: string) => {
 	try {
 		await fetchChatStream({
 			message: userMsg,
-			model: undefined,
+			model: modelStore.selectedModelId || undefined,
 			signal: abortController.signal,
 			options: { context: { conversation_id: convId, character_id: character.value.id, max_history: 20 } },
 			onMessage: (content) => {
