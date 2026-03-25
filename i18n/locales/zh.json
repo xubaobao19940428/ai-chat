@@ -88,6 +88,7 @@
 		"ai-image": "AI 绘图",
 		"ai-video": "AI 视频",
 		"no_models_found": "未找到模型",
+		"load_models_failed": "模型加载失败",
 		"edit": "编辑",
 		"free_plan_label": "免费版",
 		"sign_in": "登录",
@@ -363,7 +364,8 @@
 			"lifestyle": "生活方式/自然",
 			"scifi": "科技/未来",
 			"ui": "UI/界面",
-			"uncategorized": "未分类"
+			"uncategorized": "未分类",
+			"favorites": "我的收藏"
 		}
 	},
 	"video_generation": {
@@ -376,7 +378,8 @@
 			"scifi_action": "科幻动作",
 			"anime_game": "动漫游戏",
 			"healing": "生活治愈",
-			"uncategorized": "未分类"
+			"uncategorized": "未分类",
+			"favorites": "我的收藏"
 		}
 	},
 	"explore": {
@@ -394,7 +397,8 @@
 			"emotion": "情感",
 			"business": "商业",
 			"tools": "工具",
-			"uncategorized": "未分类"
+			"uncategorized": "未分类",
+			"favorites": "我的收藏"
 		},
 		"official_badge": "官方",
 		"by_author": "作者",

@@ -1,9 +1,11 @@
 <template>
 	<div class="flex-1 flex flex-col h-full bg-[var(--bg-main)] overflow-hidden relative transition-colors">
 		<!-- Top Header Bar -->
-		<header class="flex-shrink-0 flex items-center justify-between px-4 h-[52px] border-b border-[var(--border-light)] bg-[var(--bg-main)]/80 backdrop-blur-md z-20">
+		<header
+			class="flex-shrink-0 flex items-center justify-between px-4 h-[52px] border-b border-[var(--border-light)] bg-[var(--bg-main)]/80 backdrop-blur-md z-20">
 			<ModelSelector variant="ghost" capability="chat" position="top" />
-			<button @click="handleShare" class="p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors">
+			<button @click="handleShare"
+				class="p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors">
 				<Share2 :size="16" />
 			</button>
 		</header>
@@ -16,7 +18,9 @@
 		<!-- Error -->
 		<div v-else-if="!character" class="flex-1 flex flex-col items-center justify-center gap-4">
 			<p class="text-[var(--text-tertiary)] text-sm">Character not found.</p>
-			<button @click="handleGoBack" class="px-5 py-2 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-lg text-sm font-semibold">Go back</button>
+			<button @click="handleGoBack"
+				class="px-5 py-2 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-lg text-sm font-semibold">Go
+				back</button>
 		</div>
 
 		<!-- Content -->
@@ -26,20 +30,26 @@
 				<!-- Messages -->
 				<div class="flex-1 overflow-y-auto custom-scrollbar px-4 pb-36 pt-6" ref="scrollContainer">
 					<div class="max-w-full md:max-w-[900px] mx-auto w-full">
-							<div v-if="!conversationId" class="flex flex-col items-center pt-12 pb-16 animate-in fade-in slide-in-from-bottom-6 duration-700">
+						<div v-if="!conversationId"
+							class="flex flex-col items-center pt-12 pb-16 animate-in fade-in slide-in-from-bottom-6 duration-700">
 							<!-- Character Profile Section (Centered) -->
 							<div class="flex flex-col items-center mb-12">
 								<!-- Avatar -->
-								<div class="w-[88px] h-[88px] rounded-2xl overflow-hidden border-2 border-[var(--border-light)] bg-[var(--bg-main)] flex-shrink-0 mb-6 shadow-sm">
-									<img v-if="character.avatar" :src="character.avatar" class="w-full h-full object-cover" />
+								<div
+									class="w-[88px] h-[88px] rounded-2xl overflow-hidden border-2 border-[var(--border-light)] bg-[var(--bg-main)] flex-shrink-0 mb-6 shadow-sm">
+									<img v-if="character.avatar" :src="character.avatar"
+										class="w-full h-full object-cover" />
 									<div v-else class="w-full h-full flex items-center justify-center text-4xl">🤖</div>
 								</div>
 
 								<!-- Name -->
-								<h1 class="text-[28px] font-black text-[var(--text-primary)] leading-tight tracking-tight mb-4 text-center">{{ character.name }}</h1>
+								<h1
+									class="text-[28px] font-black text-[var(--text-primary)] leading-tight tracking-tight mb-4 text-center">
+									{{ character.name }}</h1>
 
 								<!-- Description -->
-								<p class="text-[15px] text-[var(--text-secondary)] leading-relaxed font-normal max-w-[480px] text-center">
+								<p
+									class="text-[15px] text-[var(--text-secondary)] leading-relaxed font-normal max-w-[480px] text-center">
 									{{ character.description }}
 								</p>
 							</div>
@@ -48,14 +58,19 @@
 							<div v-if="welcomeMessage" class="w-full max-w-[700px] mb-12 px-4 sm:px-0">
 								<div class="flex gap-3">
 									<div class="flex-shrink-0 mt-0.5">
-										<div class="size-6 rounded-md overflow-hidden border border-[var(--border-light)] bg-[var(--bg-main)] flex items-center justify-center shadow-sm">
-											<img v-if="character.avatar" :src="character.avatar" class="w-full h-full object-cover" />
+										<div
+											class="size-6 rounded-md overflow-hidden border border-[var(--border-light)] bg-[var(--bg-main)] flex items-center justify-center shadow-sm">
+											<img v-if="character.avatar" :src="character.avatar"
+												class="w-full h-full object-cover" />
 											<Bot v-else :size="12" class="text-[var(--text-secondary)]" />
 										</div>
 									</div>
 									<div class="flex flex-col">
-										<span class="text-[14px] font-bold text-[var(--text-primary)] mb-1">{{ character.name }}</span>
-										<div class="text-[15px] text-[var(--text-primary)] leading-relaxed whitespace-pre-wrap opacity-90">{{ welcomeMessage }}</div>
+										<span class="text-[14px] font-bold text-[var(--text-primary)] mb-1">{{
+											character.name }}</span>
+										<div
+											class="text-[15px] text-[var(--text-primary)] leading-relaxed whitespace-pre-wrap opacity-90">
+											{{ welcomeMessage }}</div>
 									</div>
 								</div>
 							</div>
@@ -69,25 +84,37 @@
 
 						<!-- Store messages -->
 						<div class="space-y-6">
-							<div v-for="message in storeMessages" :key="message.id" class="flex group" :class="message.role === 'user' ? 'justify-end' : ''">
+							<div v-for="message in storeMessages" :key="message.id" class="flex group"
+								:class="message.role === 'user' ? 'justify-end' : ''">
 								<!-- Bubble -->
-								<div class="flex flex-col max-w-[85%] sm:max-w-[80%]" :class="message.role === 'user' ? 'items-end' : 'items-start'">
-									<div v-if="message.role === 'user'" class="bg-[var(--bg-chat-bubble-user)] text-[var(--text-primary)] px-5 py-2.5 rounded-[24px] text-[15px] font-medium leading-relaxed border border-[var(--border-light)] shadow-sm">
+								<div class="flex flex-col max-w-[85%] sm:max-w-[80%]"
+									:class="message.role === 'user' ? 'items-end' : 'items-start'">
+									<div v-if="message.role === 'user'"
+										class="bg-[var(--bg-chat-bubble-user)] text-[var(--text-primary)] px-5 py-2.5 rounded-[24px] text-[15px] font-medium leading-relaxed border border-[var(--border-light)] shadow-sm">
 										<div class="whitespace-pre-wrap break-words">{{ message.content }}</div>
 									</div>
-									<div v-else class="text-[var(--text-primary)] text-[15px] leading-relaxed break-words">
-										<div v-if="!message.content && isStreaming" class="flex items-center gap-2.5 py-2">
+									<div v-else
+										class="text-[var(--text-primary)] text-[15px] leading-relaxed break-words">
+										<div v-if="!message.content && isStreaming"
+											class="flex items-center gap-2.5 py-2">
 											<div class="flex space-x-1">
-												<div class="w-1.5 h-1.5 bg-[var(--text-tertiary)] rounded-full animate-bounce" style="animation-delay: 0s"></div>
-												<div class="w-1.5 h-1.5 bg-[var(--text-tertiary)] rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
-												<div class="w-1.5 h-1.5 bg-[var(--text-tertiary)] rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+												<div class="w-1.5 h-1.5 bg-[var(--text-tertiary)] rounded-full animate-bounce"
+													style="animation-delay: 0s"></div>
+												<div class="w-1.5 h-1.5 bg-[var(--text-tertiary)] rounded-full animate-bounce"
+													style="animation-delay: 0.15s"></div>
+												<div class="w-1.5 h-1.5 bg-[var(--text-tertiary)] rounded-full animate-bounce"
+													style="animation-delay: 0.3s"></div>
 											</div>
-											<span class="text-[13px] text-[var(--text-tertiary)] font-medium" style="animation: thinking-pulse 1.5s ease-in-out infinite">{{ $t('chat.thinking') }}</span>
+											<span class="text-[13px] text-[var(--text-tertiary)] font-medium"
+												style="animation: thinking-pulse 1.5s ease-in-out infinite">{{
+													$t('chat.thinking') }}</span>
 										</div>
-										<div v-else class="prose dark:prose-invert prose-neutral max-w-none break-words" v-html="renderMarkdown(message.content)"></div>
+										<div v-else class="prose dark:prose-invert prose-neutral max-w-none break-words"
+											v-html="renderMarkdown(message.content)"></div>
 									</div>
 									<!-- Timestamp -->
-									<div class="mt-1 px-1 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-[var(--text-disable)]">
+									<div
+										class="mt-1 px-1 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-[var(--text-disable)]">
 										{{ formatTime(message.timestamp) }}
 									</div>
 								</div>
@@ -97,29 +124,29 @@
 				</div>
 
 				<!-- Floating Input Area -->
-				<div class="flex-shrink-0 px-4 pb-8 pt-2 absolute bottom-0 left-0 right-0 z-50 pointer-events-none">
+				<div class="flex-shrink-0 px-4 pt-2 absolute left-0 right-0 z-50 pointer-events-none"
+					:style="{ bottom: keyboardHeight > 0 ? `${keyboardHeight + 8}px` : '0px', paddingBottom: keyboardHeight > 0 ? '8px' : '32px' }">
 					<div class="max-w-[840px] mx-auto relative pointer-events-auto">
 						<!-- Suggested Questions (2x2 grid) -->
-						<div v-if="!conversationId && suggestedQuestions.length" class="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full px-1 mb-4">
-							<button v-for="(q, idx) in suggestedQuestions" :key="idx" @click="handleSuggestedQuestionClick(q)" class="flex items-center justify-between gap-3 h-[38px] px-4 rounded-xl border border-[var(--border-light)] bg-[var(--bg-main)]/50 backdrop-blur-sm hover:border-[var(--border-main)] hover:bg-[var(--bg-main)] text-[13px] text-[var(--text-primary)] text-left transition-all group/fq shadow-sm">
+						<div v-if="!conversationId && suggestedQuestions.length"
+							class="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full px-1 mb-4">
+							<button v-for="(q, idx) in suggestedQuestions" :key="idx"
+								@click="handleSuggestedQuestionClick(q)"
+								class="flex items-center justify-between gap-3 h-[38px] px-4 rounded-xl border border-[var(--border-light)] bg-[var(--bg-main)]/50 backdrop-blur-sm hover:border-[var(--border-main)] hover:bg-[var(--bg-main)] text-[13px] text-[var(--text-primary)] text-left transition-all group/fq shadow-sm">
 								<span class="truncate">{{ q }}</span>
-								<span class="text-[var(--text-tertiary)] group-hover/fq:text-[var(--text-secondary)] shrink-0 transition-colors">→</span>
+								<span
+									class="text-[var(--text-tertiary)] group-hover/fq:text-[var(--text-secondary)] shrink-0 transition-colors">→</span>
 							</button>
 						</div>
 
-						<UnifiedInput
-							ref="unifiedInputRef"
-							capability="chat"
-							:is-loading="isStreaming"
-							:character-name="character?.name"
-							:show-model-selector="true"
-							@send="handleUnifiedSend"
-							@stop="stopStreaming"
-						/>
+						<UnifiedInput ref="unifiedInputRef" capability="chat" :is-loading="isStreaming"
+							:character-name="character?.name" :show-model-selector="true" @send="handleUnifiedSend"
+							@stop="stopStreaming" />
 					</div>
 				</div>
 			</main>
 		</div>
+
 	</div>
 </template>
 
@@ -136,8 +163,10 @@ import { useConversationStore } from '~/stores/conversation'
 import { useModelStore } from '~/stores/models'
 import { useUIStore } from '~/stores/ui'
 import { useUserStore } from '~/stores/user'
+import { useKeyboardOffset } from '~/composables/useKeyboardOffset'
 
 definePageMeta({ hideTopBar: true })
+const { keyboardHeight } = useKeyboardOffset()
 
 const route = useRoute()
 const router = useRouter()
@@ -343,16 +372,25 @@ const handleShare = () => {
 
 <style scoped>
 @keyframes thinking-pulse {
-	0%, 100% { opacity: 0.4; }
-	50% { opacity: 1; }
+
+	0%,
+	100% {
+		opacity: 0.4;
+	}
+
+	50% {
+		opacity: 1;
+	}
 }
 
 .custom-scrollbar::-webkit-scrollbar {
 	width: 4px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
 	background: transparent;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
 	background: var(--text-disable);
 	border-radius: 10px;
@@ -363,6 +401,7 @@ const handleShare = () => {
 	line-height: 1.65;
 	font-size: 15px;
 }
+
 :deep(.prose) {
 	@apply leading-relaxed;
 }

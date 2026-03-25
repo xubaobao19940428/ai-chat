@@ -315,49 +315,49 @@
 						:class="message.role === 'user' ? 'justify-end' : ''" @click="handleMessageClick">
 						<!-- Message Content -->
 						<div class="flex flex-col relative"
-							:class="message.role === 'user' ? 'items-end max-w-[85%] sm:max-w-[80%]' : 'items-start w-full min-w-0'">
-							<!-- User Message -->
-							<div v-if="message.role === 'user'" class="w-full flex justify-end">
+							:class="message.role === 'user' ? 'items-end w-full' : 'items-start w-full min-w-0'" <!--
+							User Message -->
+							<div v-if="message.role === 'user'" class="w-full flex flex-col items-end">
 								<!-- Edit Mode -->
 								<div v-if="editingMessageId === message.id"
-									class="w-[500px] max-w-full bg-[var(--bg-chat-bubble-user)] rounded-[24px] border border-[var(--border-light)] p-2 shadow-sm animate-in fade-in duration-200">
+									class="w-full max-w-full bg-[var(--bg-chat-bubble-user)] rounded-2xl p-4 animate-in fade-in duration-200">
 									<div ref="editContentRef" contenteditable="true"
 										@input="editingContent = ($event.target as HTMLElement).textContent || ''"
 										@keydown.enter.exact.prevent="submitEdit" @keydown.escape="cancelEditing()"
-										class="w-full bg-transparent outline-none text-[15px] font-medium leading-relaxed px-3 py-1 min-h-[32px] max-h-48 overflow-y-auto custom-scrollbar whitespace-pre-wrap break-words">
+										class="w-full bg-transparent outline-none text-[15px] leading-relaxed min-h-[32px] max-h-48 overflow-y-auto custom-scrollbar whitespace-pre-wrap break-words text-[var(--text-primary)]">
 									</div>
-									<div class="flex justify-end gap-2 mt-1">
+									<div class="flex justify-end items-center gap-2 mt-3">
 										<button @click="cancelEditing()"
-											class="px-3 py-1 text-xs font-semibold rounded-full hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-secondary)]">Cancel</button>
+											class="px-4 py-1.5 text-[13px] font-medium rounded-full border border-[var(--border-main)] hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-primary)]">
+											{{ $t('common.cancel') }}
+										</button>
 										<button @click="submitEdit"
-											class="px-4 py-1.5 text-xs font-semibold bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full hover:opacity-90 transition-opacity">Send</button>
+											class="px-4 py-1.5 text-[13px] font-medium bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full hover:opacity-90 transition-opacity">
+											{{ $t('chat.send') }}
+										</button>
 									</div>
 								</div>
 								<!-- View Mode -->
-								<div v-else class="relative group/bubble">
+								<div v-else class="group/bubble max-w-[70%]">
 									<div
-										class="bg-[var(--bg-chat-bubble-user)] text-[var(--text-primary)] px-5 py-3 rounded-[24px] text-[15px] font-medium leading-relaxed tracking-tight shadow-sm border border-[var(--border-light)] max-h-[300px] overflow-y-auto custom-scrollbar">
+										class="bg-[var(--bg-chat-bubble-user)] text-[var(--text-primary)] px-4 py-2.5 rounded-[22px] text-[15px] leading-6 max-h-[300px] overflow-y-auto custom-scrollbar">
 										<div class="whitespace-pre-wrap break-words">{{ message.content }}</div>
 									</div>
-
-									<!-- Action bar (Hover only) — flush against bubble top with invisible bridge -->
+									<!-- Action bar — below bubble, right-aligned -->
 									<div
-										class="absolute -top-8 right-0 pt-0 pb-1 opacity-0 group-hover/bubble:opacity-100 transition-opacity">
-										<div
-											class="flex items-center gap-1 bg-[var(--bg-main)]/80 backdrop-blur-sm border border-[var(--border-light)] rounded-lg p-1 shadow-sm">
-											<button @click="copyMessage(message.content, `user-${message.id}`)"
-												class="p-1.5 rounded-md transition-colors"
-												:class="copiedId === `user-${message.id}` ? 'text-green-500' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'"
-												:title="$t('chat.copy')">
-												<Check v-if="copiedId === `user-${message.id}`" :size="14" />
-												<Copy v-else :size="14" />
-											</button>
-											<button @click="startEditing(message)"
-												class="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors"
-												:title="$t('common.edit')">
-												<Pencil :size="14" />
-											</button>
-										</div>
+										class="flex justify-end gap-1 mt-1 pr-1 opacity-0 group-hover/bubble:opacity-100 transition-opacity">
+										<button @click="copyMessage(message.content, `user-${message.id}`)"
+											class="p-1 rounded-md transition-colors"
+											:class="copiedId === `user-${message.id}` ? 'text-green-500' : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'"
+											:title="$t('chat.copy')">
+											<Check v-if="copiedId === `user-${message.id}`" :size="16" />
+											<Copy v-else :size="16" />
+										</button>
+										<button @click="startEditing(message)"
+											class="p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] rounded-md transition-colors"
+											:title="$t('common.edit')">
+											<Pencil :size="16" />
+										</button>
 									</div>
 								</div>
 							</div>
@@ -483,7 +483,8 @@
 		</Transition>
 
 		<!-- Floating Input Pill -->
-		<div class="absolute bottom-8 left-0 right-0 z-50 px-4 pointer-events-none">
+		<div class="absolute left-0 right-0 z-50 px-4 pointer-events-none"
+			:style="{ bottom: keyboardHeight > 0 ? `${keyboardHeight + 8}px` : '32px' }">
 			<div class="max-w-[840px] mx-auto relative pointer-events-auto">
 				<UnifiedInput ref="unifiedInputRef" :capability="selectorCapability" :is-loading="chatStore.isLoading"
 					:external-params="currentConversation?.params" :show-model-selector="true" @send="handleUnifiedSend"
@@ -555,7 +556,9 @@ import UnifiedInput from '../../components/UnifiedInput.vue'
 import { Copy, Check, Pencil, ArrowUp, X, Share2, RefreshCw, Download, Expand, TriangleAlert } from 'lucide-vue-next'
 import { fetchChatStream, generateImageStream, generateVideoStream } from '../../utils/api'
 import { generateConversationTitle, generateFollowUpQuestions } from '../../api/conversation'
+import { useKeyboardOffset } from '~/composables/useKeyboardOffset'
 const { t } = useI18n()
+const { keyboardHeight } = useKeyboardOffset()
 
 const route = useRoute()
 const conversationStore = useConversationStore()

@@ -39,7 +39,8 @@
 		<!-- Filter Bar -->
 		<div class="flex-shrink-0 flex items-center gap-3 px-4 lg:px-6 py-2.5 overflow-x-auto no-scrollbar">
 			<div class="flex items-center gap-2 flex-1 min-w-0 overflow-x-auto no-scrollbar">
-				<button v-for="tag in filterTags" :key="tag.id" @click="handleTagChange(tag.id)" :class="['flex-shrink-0 px-4 py-1.5 text-[13px] font-medium rounded-full border transition-all whitespace-nowrap', selectedTag === tag.id ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]']">
+				<button v-for="tag in filterTags" :key="tag.id" @click="handleTagChange(tag.id)" :class="['flex-shrink-0 flex items-center gap-1.5 px-4 py-1.5 text-[13px] font-medium rounded-full border transition-all whitespace-nowrap', selectedTag === tag.id ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]']">
+					<Heart v-if="tag.id === 'favorites'" :size="13" class="!stroke-transparent" :class="selectedTag === 'favorites' ? 'fill-white' : 'fill-red-500'" />
 					{{ $t('explore.tags.' + tag.name) }}
 				</button>
 			</div>
@@ -91,6 +92,12 @@
 							</p>
 						</div>
 
+						<!-- Favorite -->
+						<button @click.stop="toggleFavorite(bot.id)"
+							class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity outline-none border-none bg-transparent"
+							:class="isFavorited(bot.id) ? '!opacity-100' : ''">
+							<Heart :size="18" :class="isFavorited(bot.id) ? 'fill-red-500 !stroke-transparent' : 'fill-transparent text-[var(--text-tertiary)]'" />
+						</button>
 					</div>
 				</div>
 
@@ -116,7 +123,8 @@
 definePageMeta({ hideTopBar: true })
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { Search, Flame, Plus, Menu } from 'lucide-vue-next'
+import { Search, Flame, Plus, Menu, Heart } from 'lucide-vue-next'
+import { useFavorite } from '~/composables/useFavorite'
 import { useUIStore } from '~/stores/ui'
 import { useExploreDiscoveryStore } from '~/stores/discovery'
 import { useConversationStore } from '~/stores/conversation'
@@ -125,6 +133,9 @@ const router = useRouter()
 const uiStore = useUIStore()
 const discoveryStore = useExploreDiscoveryStore()
 const conversationStore = useConversationStore()
+
+// Favorites
+const { isFavorited, toggleFavorite } = useFavorite('character')
 
 // State
 const searchQuery = ref('')
@@ -174,6 +185,10 @@ const filterTags = [
 	// 	id: 9,
 	// 	name: 'uncategorized',
 	// },
+	{
+		id: 'favorites',
+		name: 'favorites',
+	},
 ]
 
 // Load initial data
@@ -198,7 +213,9 @@ watch(() => discoveryStore.isLoading, async (loading) => {
 const handleTagChange = (tag: number | string) => {
 	if (selectedTag.value === tag) return
 	selectedTag.value = tag
-	discoveryStore.fetchDiscovery(tag)
+	if (tag !== 'favorites') {
+		discoveryStore.fetchDiscovery(tag)
+	}
 }
 
 // Map API items to display format
@@ -217,6 +234,11 @@ const botsList = computed(() => {
 			action_url: item.action_url,
 		}
 	})
+
+	// Favorites filtering
+	if (selectedTag.value === 'favorites') {
+		return mapped.filter((b: any) => isFavorited(Number(b.id)))
+	}
 
 	// Search filtering
 	if (searchQuery.value) {

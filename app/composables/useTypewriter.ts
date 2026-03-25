@@ -5,7 +5,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
  * Animates text character-by-character at 20ms intervals.
  */
 export function useTypewriter(getText: () => string) {
-	const displayedText = ref('')
+	const displayedText = ref(getText())
 	let interval: ReturnType<typeof setInterval> | null = null
 
 	function start() {

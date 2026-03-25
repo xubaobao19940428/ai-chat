@@ -82,6 +82,7 @@
 		"ai-image": "Générateur d'images IA",
 		"ai-video": "Générateur de vidéos IA",
 		"no_models_found": "Aucun modèle trouvé",
+		"load_models_failed": "Échec du chargement des modèles",
 		"edit": "Modifier",
 		"free_plan_label": "Gratuit",
 		"sign_in": "Se connecter",

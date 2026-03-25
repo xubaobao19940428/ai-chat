@@ -286,10 +286,36 @@
     
     pre {
       @apply m-0 p-4 overflow-x-auto bg-[#fafafa] dark:bg-[#0d0d0d] !important;
-      
+      transition: max-height 0.3s ease;
+
       code {
         @apply p-0 bg-transparent text-[13.5px] leading-[1.6] font-mono !important;
       }
+    }
+
+    /* Collapsed state: fade-out gradient at bottom */
+    &.code-collapsed pre {
+      overflow: hidden;
+      position: relative;
+    }
+    &.code-collapsed pre::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: linear-gradient(to bottom, transparent, #fafafa);
+      pointer-events: none;
+    }
+    :is(.dark) &.code-collapsed pre::after {
+      background: linear-gradient(to bottom, transparent, #0d0d0d);
+    }
+
+    .code-collapse-toggle {
+      @apply w-full flex items-center justify-center gap-1.5 px-4 py-2 text-[12px] font-medium cursor-pointer;
+      @apply text-[var(--text-secondary)] border-t border-[var(--border-light)];
+      background-color: var(--background-gray-main);
     }
   }
 

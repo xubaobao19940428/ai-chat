@@ -435,6 +435,15 @@ defineExpose({
 </script>
 
 <style scoped>
+/* === Tiptap Placeholder === */
+:deep(.tiptap p.is-editor-empty:first-child::before) {
+	content: attr(data-placeholder);
+	float: left;
+	color: var(--text-tertiary);
+	pointer-events: none;
+	height: 0;
+}
+
 /* === Send Button === */
 .unified-send-btn {
 	display: flex; align-items: center; justify-content: center;

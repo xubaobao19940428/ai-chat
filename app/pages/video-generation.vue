@@ -16,7 +16,8 @@
 
 		<!-- Category Filter Chips (Fixed, Outside Scroll Area) -->
 		<div v-if="activeTab === 'inspiration'" class="flex items-center gap-2 px-4 pb-4 overflow-x-auto no-scrollbar">
-			<button v-for="cat in categories" :key="cat.id" @click="handleCategoryChange(cat.id)" :class="['px-4 py-1.5 text-[13px] font-medium rounded-full border transition-all whitespace-nowrap', selectedCategory === cat.id ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]']">
+			<button v-for="cat in categories" :key="cat.id" @click="handleCategoryChange(cat.id)" :class="['flex items-center gap-1.5 px-4 py-1.5 text-[13px] font-medium rounded-full border transition-all whitespace-nowrap', selectedCategory === cat.id ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]']">
+				<Heart v-if="cat.id === 'favorites'" :size="13" class="!stroke-transparent" :class="selectedCategory === 'favorites' ? 'fill-white' : 'fill-red-500'" />
 				{{ $t('video_generation.categories.' + cat.name) }}
 			</button>
 		</div>
@@ -46,12 +47,19 @@
 							<!-- Hover Video (PC Only) -->
 							<video v-if="hoveredIndex === example.id && example.videoUrl" :src="example.videoUrl" autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover hidden md:block z-0" />
 
+							<!-- Center heart animation -->
+							<div v-if="heartAnimId === example.id" class="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
+								<Heart :size="100" class="absolute fill-red-500/50 !stroke-transparent animate-heart-ripple-1" />
+								<Heart :size="100" class="absolute fill-red-500/30 !stroke-transparent animate-heart-ripple-2" />
+								<Heart :size="100" class="fill-red-500 !stroke-transparent animate-heart-burst" />
+							</div>
 							<!-- Hover Overlay -->
 							<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 pointer-events-none">
 								<!-- Top Right: Favorite -->
-								<div class="absolute top-3 right-3 pointer-events-auto transform -translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 delay-75">
-									<button @click.stop="toggleFavorite(example.id)" class="size-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
-										<Heart :size="15" :class="isFavorited(example.id) ? 'text-red-400 fill-red-400' : 'text-white'" />
+								<div class="absolute top-3 right-3 pointer-events-auto transform -translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 delay-75"
+									:class="isFavorited(example.id) ? '!opacity-100 !translate-y-0' : ''">
+									<button @click.stop="handleFavorite(example.id)" class="outline-none">
+										<Heart :size="20" :class="['!stroke-transparent drop-shadow-md', isFavorited(example.id) ? 'fill-red-500' : 'fill-white/80']" />
 									</button>
 								</div>
 								<!-- Bottom -->
@@ -318,6 +326,7 @@ import { ImagePlus, Plus, Check, Zap, Loader2, X, Film, Download, ChevronDown, S
 import { getModels, getAsyncTaskOutputs, uploadFile, getRecordPrompt, getRecordPrimaryUrl, getRecordModel, getRecordParams, type AIModel, type AsyncTaskRecord } from '@/utils/api'
 import { useModelStore } from '@/stores/models'
 import UnifiedInput from '~/components/UnifiedInput.vue'
+import { useFavorite } from '~/composables/useFavorite'
 import ModelSelector from '@/components/ModelSelector.vue'
 import { useRouter } from 'vue-router'
 import { useConversationStore } from '@/stores/conversation'
@@ -421,7 +430,7 @@ interface ActiveTask {
 
 const activeTasks = ref<ActiveTask[]>([])
 const isGenerating = computed(() => activeTasks.value.length > 0)
-const selectedCategory = ref(46)
+const selectedCategory = ref<number | string>(46)
 const openDropdown = ref<string | null>(null)
 const playingVideoId = ref<number | null>(null)
 
@@ -478,6 +487,7 @@ const categories = [
 	// 	id: 45,
 	// 	name: 'uncategorized',
 	// },
+	{ id: 'favorites', name: 'favorites' },
 ]
 
 const generatedVideos = ref<AsyncTaskRecord[]>([])
@@ -523,6 +533,7 @@ onMounted(() => {
 
 	// Initialize Infinite Scroll — auto-fill if viewport not full
 	const tryLoadMore = async () => {
+		if (selectedCategory.value === 'favorites') return
 		while (
 			loadMoreTrigger.value &&
 			discoveryStore.hasMore &&
@@ -582,9 +593,9 @@ const formatDuration = (seconds: number) => {
 	return `${mins}:${secs.toString().padStart(2, '0')}`
 }
 
-const exampleVideos = computed(() => {
+const allExampleVideos = computed(() => {
 	return discoveryStore.allItems.map((item) => ({
-		id: item.id,
+		id: item.related_id || item.id,
 		prompt: item.related_data?.prompt || item.subtitle || '',
 		thumbnail: item.related_data?.thumbnail || item.cover || '',
 		videoUrl: item.related_data?.assets?.[0] || '',
@@ -597,27 +608,34 @@ const exampleVideos = computed(() => {
 	}))
 })
 
-// Favorites
-const VIDEO_FAVORITES_KEY = 'video_favorites'
-const favoriteIds = ref<Set<number>>(new Set())
-
-onMounted(() => {
-	try {
-		const saved = localStorage.getItem(VIDEO_FAVORITES_KEY)
-		if (saved) favoriteIds.value = new Set(JSON.parse(saved))
-	} catch { }
+const exampleVideos = computed(() => {
+	if (selectedCategory.value === 'favorites') {
+		return favoriteItems.value.map((item: any) => ({
+			id: item.id,
+			prompt: item.prompt || '',
+			thumbnail: item.thumbnail || item.original_url || '',
+			videoUrl: item.assets?.[0] || '',
+			model: item.model || '',
+			title: '',
+			subtitle: '',
+			description: item.description || '',
+			author: item.author || '',
+			config: item.config || {},
+		}))
+	}
+	return allExampleVideos.value
 })
 
-const isFavorited = (id: number) => favoriteIds.value.has(id)
+// Favorites
+const { isFavorited, toggleFavorite, favoriteItems, isFavoritesLoading, hasMoreFavorites, fetchFavoriteList } = useFavorite('prompt_video')
+const heartAnimId = ref<number | null>(null)
 
-const toggleFavorite = (id: number) => {
-	if (favoriteIds.value.has(id)) {
-		favoriteIds.value.delete(id)
-	} else {
-		favoriteIds.value.add(id)
+const handleFavorite = (id: number) => {
+	if (!isFavorited(id)) {
+		heartAnimId.value = id
+		setTimeout(() => { heartAnimId.value = null }, 900)
 	}
-	favoriteIds.value = new Set(favoriteIds.value)
-	localStorage.setItem(VIDEO_FAVORITES_KEY, JSON.stringify([...favoriteIds.value]))
+	toggleFavorite(id)
 }
 
 const useExample = (example: string | { prompt: string; model?: string; config?: Record<string, any> }) => {
@@ -839,10 +857,14 @@ const setParamAndClose = (key: string, val: any) => {
 	toggleDropdown(key)
 }
 
-const handleCategoryChange = (id: number) => {
+const handleCategoryChange = (id: number | string) => {
 	if (selectedCategory.value === id) return
 	selectedCategory.value = id
-	discoveryStore.fetchDiscovery(id)
+	if (id === 'favorites') {
+		fetchFavoriteList(true)
+	} else {
+		discoveryStore.fetchDiscovery(id as number)
+	}
 }
 </script>
 
@@ -1015,5 +1037,54 @@ const handleCategoryChange = (id: number) => {
 
 .animate-float {
 	animation: float 10s ease-in-out infinite;
+}
+
+@keyframes heart-burst {
+	0% {
+		transform: scale(0);
+		opacity: 0;
+	}
+	20% {
+		transform: scale(1.4);
+		opacity: 1;
+	}
+	40% {
+		transform: scale(1);
+		opacity: 1;
+	}
+	60% {
+		transform: scale(1.15);
+		opacity: 0.9;
+	}
+	100% {
+		transform: scale(1.6);
+		opacity: 0;
+	}
+}
+
+.animate-heart-burst {
+	animation: heart-burst 0.9s cubic-bezier(0.17, 0.67, 0.35, 1.2) forwards;
+	filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.5));
+}
+
+@keyframes heart-ripple {
+	0% {
+		transform: scale(1);
+		opacity: 0.6;
+	}
+	100% {
+		transform: scale(1.8);
+		opacity: 0;
+	}
+}
+
+.animate-heart-ripple-1 {
+	animation: heart-ripple 0.7s 0.1s ease-out forwards;
+	opacity: 0;
+}
+
+.animate-heart-ripple-2 {
+	animation: heart-ripple 0.7s 0.25s ease-out forwards;
+	opacity: 0;
 }
 </style>

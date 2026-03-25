@@ -61,6 +61,17 @@
 							class="w-5 h-5 border-2 border-[var(--text-blue)] border-t-transparent rounded-full animate-spin mx-auto">
 						</div>
 					</div>
+					<div v-else-if="modelStore.fetchError" class="p-6 flex flex-col items-center gap-3">
+						<div class="size-8 rounded-full bg-red-500/10 flex items-center justify-center">
+							<TriangleAlert :size="16" class="text-red-500" />
+						</div>
+						<p class="text-[13px] text-[var(--text-secondary)]">{{ $t('common.load_models_failed') }}</p>
+						<button @click="modelStore.fetchModels()"
+							class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--fill-tsp-gray-main)] hover:bg-[var(--bg-hover)] text-[13px] font-medium text-[var(--text-primary)] transition-colors">
+							<RefreshCw :size="13" />
+							{{ $t('common.retry') }}
+						</button>
+					</div>
 					<div v-else>
 						<!-- Search -->
 						<div class="p-2 border-b border-[var(--border-main)]">
@@ -120,7 +131,7 @@
 import { ref, onMounted, onUnmounted, computed, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useModelStore } from '../stores/models'
-import { ChevronRight, ChevronDown, Check, Search, X } from 'lucide-vue-next'
+import { ChevronRight, ChevronDown, Check, Search, X, RefreshCw, TriangleAlert } from 'lucide-vue-next'
 
 const props = withDefaults(
 	defineProps<{

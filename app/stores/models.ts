@@ -5,6 +5,7 @@ import { getModels, type AIModel } from '~/utils/api'
 export const useModelStore = defineStore('model', () => {
   const models = ref<AIModel[]>([])
   const isLoading = ref(false)
+  const fetchError = ref(false)
 
   // Per-capability model selection (cookie-persisted)
   const selectedModelIds = useCookie<Record<string, string>>('selected-model-ids', {
@@ -37,11 +38,13 @@ export const useModelStore = defineStore('model', () => {
 
   const fetchModels = async () => {
     isLoading.value = true
+    fetchError.value = false
     try {
       const res: any = await getModels({})
       models.value = res.data || []
     } catch (error) {
       console.error('Fetch models failed:', error)
+      fetchError.value = true
     } finally {
       isLoading.value = false
     }
@@ -61,6 +64,7 @@ export const useModelStore = defineStore('model', () => {
   return {
     models,
     isLoading,
+    fetchError,
     selectedModelId,
     selectedModelIds,
     selectedModel,

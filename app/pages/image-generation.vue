@@ -16,7 +16,8 @@
 
 		<!-- Category Filter Chips (Fixed, Outside Scroll Area) -->
 		<div v-if="activeTab === 'inspiration'" class="flex items-center gap-2 px-4 pb-4 overflow-x-auto no-scrollbar">
-			<button v-for="cat in categories" :key="cat.id" @click="handleCategoryChange(cat.id)" :class="['px-4 py-1.5 text-[13px] font-medium rounded-full border transition-all whitespace-nowrap', selectedCategory === cat.id ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]']">
+			<button v-for="cat in categories" :key="cat.id" @click="handleCategoryChange(cat.id)" :class="['flex items-center gap-1.5 px-4 py-1.5 text-[13px] font-medium rounded-full border transition-all whitespace-nowrap', selectedCategory === cat.id ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]']">
+				<Heart v-if="cat.id === 'favorites'" :size="13" class="!stroke-transparent" :class="selectedCategory === 'favorites' ? 'fill-white' : 'fill-red-500'" />
 				{{ $t('image_generation.categories.' + cat.name) }}
 			</button>
 		</div>
@@ -45,11 +46,18 @@
 							@click="useExample(example)"
 						>
 							<img :src="example.url" loading="lazy" class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105 bg-[#f0eeeb] dark:bg-[#2c2c2c]" :alt="example.prompt" :style="{ minHeight: '200px' }" @load="($event.target as HTMLImageElement).style.minHeight = 'auto'" />
+							<!-- Center heart animation -->
+							<div v-if="heartAnimId === example.id" class="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
+								<Heart :size="100" class="absolute fill-red-500/50 !stroke-transparent animate-heart-ripple-1" />
+								<Heart :size="100" class="absolute fill-red-500/30 !stroke-transparent animate-heart-ripple-2" />
+								<Heart :size="100" class="fill-red-500 !stroke-transparent animate-heart-burst" />
+							</div>
 							<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 pointer-events-none">
 								<!-- Top Right: Favorite -->
-								<div class="absolute top-3 right-3 pointer-events-auto transform -translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 delay-75">
-									<button @click.stop="toggleFavorite(example.id)" class="size-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
-										<Heart :size="15" :class="isFavorited(example.id) ? 'text-red-400 fill-red-400' : 'text-white'" />
+								<div class="absolute top-3 right-3 pointer-events-auto transform -translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 delay-75"
+									:class="isFavorited(example.id) ? '!opacity-100 !translate-y-0' : ''">
+									<button @click.stop="handleFavorite(example.id)" class="outline-none">
+										<Heart :size="20" :class="['!stroke-transparent drop-shadow-md', isFavorited(example.id) ? 'fill-red-500' : 'fill-white/80']" />
 									</button>
 								</div>
 								<!-- Bottom -->
@@ -281,6 +289,7 @@ import { useChatStore } from '@/stores/chat'
 import { useImageDiscoveryStore } from '~/stores/discovery'
 import { useModelStore } from '@/stores/models'
 import UnifiedInput from '~/components/UnifiedInput.vue'
+import { useFavorite } from '~/composables/useFavorite'
 
 const router = useRouter()
 const conversationStore = useConversationStore()
@@ -304,7 +313,7 @@ interface ActiveTask {
 
 const activeTasks = ref<ActiveTask[]>([])
 const isGenerating = computed(() => activeTasks.value.length > 0)
-const selectedCategory = ref(35)
+const selectedCategory = ref<number | string>(35)
 const openDropdown = ref<string | null>(null)
 
 // --- Typewriter Placeholder Effect ---
@@ -420,6 +429,7 @@ const categories = [
 	{ id: 33, name: 'scifi' },
 	{ id: 29, name: 'ui' },
 	// { id: 34, name: 'uncategorized' },
+	{ id: 'favorites', name: 'favorites' },
 ]
 
 const generatedImages = ref<AsyncTaskRecord[]>([])
@@ -484,6 +494,7 @@ onMounted(() => {
 
 	// Initialize Infinite Scroll — auto-fill if viewport not full
 	const tryLoadMore = async () => {
+		if (selectedCategory.value === 'favorites') return
 		while (
 			loadMoreTrigger.value &&
 			discoveryStore.hasMore &&
@@ -537,9 +548,9 @@ const formatModel = (modelStr?: string) => {
 	return (name || '').replace(/-/g, ' ').toUpperCase()
 }
 
-const exampleImages = computed(() => {
+const allExampleImages = computed(() => {
 	return discoveryStore.allItems.map((item) => ({
-		id: item.id,
+		id: item.related_id || item.id,
 		prompt: item.related_data?.prompt || '',
 		url: item.related_data?.thumbnail || item.related_data?.assets?.[0] || '',
 		model: item.related_data?.model || '',
@@ -551,27 +562,33 @@ const exampleImages = computed(() => {
 	}))
 })
 
-// Favorites
-const FAVORITES_KEY = 'image_favorites'
-const favoriteIds = ref<Set<number>>(new Set())
-
-onMounted(() => {
-	try {
-		const saved = localStorage.getItem(FAVORITES_KEY)
-		if (saved) favoriteIds.value = new Set(JSON.parse(saved))
-	} catch { }
+const exampleImages = computed(() => {
+	if (selectedCategory.value === 'favorites') {
+		return favoriteItems.value.map((item: any) => ({
+			id: item.id,
+			prompt: item.prompt || '',
+			url: item.thumbnail || item.original_url || '',
+			model: item.model || '',
+			title: '',
+			subtitle: '',
+			description: item.description || '',
+			author: item.author || '',
+			config: item.config || {},
+		}))
+	}
+	return allExampleImages.value
 })
 
-const isFavorited = (id: number) => favoriteIds.value.has(id)
+// Favorites
+const { isFavorited, toggleFavorite, favoriteItems, isFavoritesLoading, hasMoreFavorites, fetchFavoriteList } = useFavorite('prompt_image')
+const heartAnimId = ref<number | null>(null)
 
-const toggleFavorite = (id: number) => {
-	if (favoriteIds.value.has(id)) {
-		favoriteIds.value.delete(id)
-	} else {
-		favoriteIds.value.add(id)
+const handleFavorite = (id: number) => {
+	if (!isFavorited(id)) {
+		heartAnimId.value = id
+		setTimeout(() => { heartAnimId.value = null }, 900)
 	}
-	favoriteIds.value = new Set(favoriteIds.value)
-	localStorage.setItem(FAVORITES_KEY, JSON.stringify([...favoriteIds.value]))
+	toggleFavorite(id)
 }
 
 const useExample = (example: { prompt: string; model?: string; config?: Record<string, any> }) => {
@@ -823,10 +840,14 @@ const getPreviewStyle = (ratio: string) => {
 	}
 }
 
-const handleCategoryChange = (id: number) => {
+const handleCategoryChange = (id: number | string) => {
 	if (selectedCategory.value === id) return
 	selectedCategory.value = id
-	discoveryStore.fetchDiscovery(id)
+	if (id === 'favorites') {
+		fetchFavoriteList(true)
+	} else {
+		discoveryStore.fetchDiscovery(id as number)
+	}
 }
 
 
@@ -1038,5 +1059,54 @@ textarea::placeholder {
 
 .animate-float {
 	animation: float 8s ease-in-out infinite;
+}
+
+@keyframes heart-burst {
+	0% {
+		transform: scale(0);
+		opacity: 0;
+	}
+	20% {
+		transform: scale(1.4);
+		opacity: 1;
+	}
+	40% {
+		transform: scale(1);
+		opacity: 1;
+	}
+	60% {
+		transform: scale(1.15);
+		opacity: 0.9;
+	}
+	100% {
+		transform: scale(1.6);
+		opacity: 0;
+	}
+}
+
+.animate-heart-burst {
+	animation: heart-burst 0.9s cubic-bezier(0.17, 0.67, 0.35, 1.2) forwards;
+	filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.5));
+}
+
+@keyframes heart-ripple {
+	0% {
+		transform: scale(1);
+		opacity: 0.6;
+	}
+	100% {
+		transform: scale(1.8);
+		opacity: 0;
+	}
+}
+
+.animate-heart-ripple-1 {
+	animation: heart-ripple 0.7s 0.1s ease-out forwards;
+	opacity: 0;
+}
+
+.animate-heart-ripple-2 {
+	animation: heart-ripple 0.7s 0.25s ease-out forwards;
+	opacity: 0;
 }
 </style>

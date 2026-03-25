@@ -82,6 +82,7 @@
 		"ai-image": "AI画像生成",
 		"ai-video": "AI動画生成",
 		"no_models_found": "モデルが見つかりません",
+		"load_models_failed": "モデルの読み込みに失敗しました",
 		"edit": "編集",
 		"free_plan_label": "無料",
 		"sign_in": "サインイン",

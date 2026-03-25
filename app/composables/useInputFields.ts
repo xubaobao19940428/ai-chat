@@ -36,8 +36,14 @@ export function useInputFields(options?: {
 	const dynamicSelectFields = computed(() => {
 		const fields: any[] = []
 		for (const [key, field] of Object.entries(modelInputFields.value)) {
-			if ((field as any).type === 'select' && !EXCLUDED_FIELD_KEYS.has(key)) {
-				fields.push({ key, ...(field as any) })
+			if (EXCLUDED_FIELD_KEYS.has(key)) continue
+			const f = field as any
+			// Match: type=select, or widget=select, or has enum/options array
+			const isSelect = f.type === 'select' || f.widget === 'select' || (Array.isArray(f.enum) && f.enum.length > 0)
+			if (isSelect) {
+				// Normalize: ensure options array exists (from enum or options)
+				const options = f.options || f.enum || []
+				fields.push({ key, ...f, options })
 			}
 		}
 		return fields
@@ -46,8 +52,14 @@ export function useInputFields(options?: {
 	const dynamicNumberFields = computed(() => {
 		const fields: any[] = []
 		for (const [key, field] of Object.entries(modelInputFields.value)) {
-			if ((field as any).type === 'number' && !EXCLUDED_FIELD_KEYS.has(key)) {
-				fields.push({ key, ...(field as any) })
+			if (EXCLUDED_FIELD_KEYS.has(key)) continue
+			const f = field as any
+			const isNumber = f.type === 'number' || f.type === 'integer' || f.widget === 'slider' || f.widget === 'number'
+			if (isNumber) {
+				// Normalize: JSON Schema uses minimum/maximum, internal uses min/max
+				const min = f.min ?? f.minimum
+				const max = f.max ?? f.maximum
+				fields.push({ key, ...f, min, max })
 			}
 		}
 		return fields
@@ -78,12 +90,15 @@ export function useInputFields(options?: {
 			const newParams: Record<string, any> = {}
 			for (const [key, field] of Object.entries(fields)) {
 				if (EXCLUDED_FIELD_KEYS.has(key)) continue
-				if (field.default !== undefined) {
-					newParams[key] = field.default
-				} else if ((field as any).options?.length > 0) {
-					newParams[key] = (field as any).options[0]
-				} else if (field.type === 'number') {
-					newParams[key] = field.min || 1
+				const f = field as any
+				if (f.default !== undefined) {
+					newParams[key] = f.default
+				} else if (f.options?.length > 0) {
+					newParams[key] = f.options[0]
+				} else if (f.enum?.length > 0) {
+					newParams[key] = f.enum[0]
+				} else if (f.type === 'number' || f.type === 'integer') {
+					newParams[key] = f.min ?? f.minimum ?? 1
 				}
 			}
 			_localParams.value = newParams

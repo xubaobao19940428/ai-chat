@@ -17,6 +17,46 @@ const renderedContent = computed(() => {
 	return renderMarkdown(props.content)
 })
 
+// --- Code block collapse for long blocks ---
+const CODE_COLLAPSE_THRESHOLD = 15
+
+const initCodeCollapse = () => {
+	if (!markdownRef.value) return
+	const wrappers = markdownRef.value.querySelectorAll('.code-block-wrapper:not([data-collapse-init])')
+	wrappers.forEach((wrapper) => {
+		wrapper.setAttribute('data-collapse-init', 'true')
+		const codeEl = wrapper.querySelector('pre code')
+		if (!codeEl) return
+		const lineCount = (codeEl.textContent || '').split('\n').length
+		if (lineCount <= CODE_COLLAPSE_THRESHOLD) return
+
+		const pre = wrapper.querySelector('pre') as HTMLElement
+		if (!pre) return
+
+		// Mark as collapsed
+		wrapper.classList.add('code-collapsed')
+		pre.style.maxHeight = '320px'
+
+		// Create toggle button
+		const toggleBtn = document.createElement('button')
+		toggleBtn.className = 'code-collapse-toggle'
+		toggleBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg><span>Show all (${lineCount} lines)</span>`
+		toggleBtn.addEventListener('click', () => {
+			const isCollapsed = wrapper.classList.contains('code-collapsed')
+			if (isCollapsed) {
+				wrapper.classList.remove('code-collapsed')
+				pre.style.maxHeight = 'none'
+				toggleBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg><span>Collapse</span>`
+			} else {
+				wrapper.classList.add('code-collapsed')
+				pre.style.maxHeight = '320px'
+				toggleBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg><span>Show all (${lineCount} lines)</span>`
+			}
+		})
+		wrapper.appendChild(toggleBtn)
+	})
+}
+
 // Mermaid integration
 let mermaid: any = null
 
@@ -106,6 +146,7 @@ const initInteractiveMermaid = () => {
 
 onMounted(() => {
 	initInteractiveMermaid()
+	initCodeCollapse()
 })
 
 const initMermaid = async () => {
@@ -208,7 +249,10 @@ let mermaidDebounceTimer: ReturnType<typeof setTimeout> | null = null
 onUpdated(() => {
 	if (mermaidDebounceTimer) clearTimeout(mermaidDebounceTimer)
 	mermaidDebounceTimer = setTimeout(() => {
-		nextTick(() => initMermaid())
+		nextTick(() => {
+			initMermaid()
+			initCodeCollapse()
+		})
 	}, 300)
 })
 

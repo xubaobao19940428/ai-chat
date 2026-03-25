@@ -88,6 +88,7 @@
 		"ai-image": "AI Image Generator",
 		"ai-video": "AI Video Generator",
 		"no_models_found": "No models found",
+		"load_models_failed": "Failed to load models",
 		"edit": "Edit",
 		"free_plan_label": "Free",
 		"sign_in": "Sign in",
@@ -363,7 +364,8 @@
 			"lifestyle": "Lifestyle / Nature",
 			"scifi": "Sci-Fi / Future",
 			"ui": "UI / Interface",
-			"uncategorized": "Uncategorized"
+			"uncategorized": "Uncategorized",
+			"favorites": "Favorites"
 		}
 	},
 	"video_generation": {
@@ -376,7 +378,8 @@
 			"scifi_action": "Sci-Fi Action",
 			"anime_game": "Anime & Gaming",
 			"healing": "Lifestyle & Healing",
-			"uncategorized": "Uncategorized"
+			"uncategorized": "Uncategorized",
+			"favorites": "Favorites"
 		}
 	},
 	"explore": {
@@ -394,7 +397,8 @@
 			"emotion": "Emotion",
 			"business": "Business",
 			"tools": "Tools",
-			"uncategorized": "Uncategorized"
+			"uncategorized": "Uncategorized",
+			"favorites": "Favorites"
 		},
 		"official_badge": "Official",
 		"by_author": "By",
