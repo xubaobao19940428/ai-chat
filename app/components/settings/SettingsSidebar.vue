@@ -12,9 +12,9 @@
 		<div class="items-center px-5 pt-5 pb-3 hidden md:flex">
 			<div class="flex gap-0.5 text-black dark:text-white">
 				<div class="flex items-center size-8 justify-center shrink-0">
-					<img src="/favicon.svg" class="size-6 pointer-events-none" alt="Aura Logo" />
+					<img src="/favicon.svg" class="size-6 pointer-events-none" alt="MixU Logo" />
 				</div>
-				<span class="font-bold text-lg tracking-tight ml-2">aura</span>
+				<span class="font-bold text-lg tracking-tight ml-2">MixU</span>
 			</div>
 		</div>
 

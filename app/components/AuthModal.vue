@@ -18,8 +18,8 @@
 									<!-- Logo & Name -->
 									<div>
 										<div class="flex items-center gap-2.5 mb-8">
-											<img src="/favicon.svg" class="w-8 h-8" alt="Aura" />
-											<span class="text-lg font-semibold text-[var(--text-primary)]">Aura AI</span>
+											<img src="/favicon.svg" class="w-8 h-8" alt="MixU" />
+											<span class="text-lg font-semibold text-[var(--text-primary)]">MixU AI</span>
 										</div>
 										<h2 class="text-2xl font-semibold text-[var(--text-primary)] leading-snug mb-3">{{ $t('auth.headline') }}</h2>
 										<p class="text-sm text-[var(--text-secondary)] leading-relaxed">{{ $t('auth.subheadline') }}</p>

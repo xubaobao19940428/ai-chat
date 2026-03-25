@@ -181,7 +181,7 @@ const placeholderFn = () => {
 	if (props.characterName) return `Message ${props.characterName}...`
 	if (props.capability === 'image_generation') return 'Describe an image and click generate...'
 	if (props.capability === 'video_generation') return 'Describe a video and click generate...'
-	return 'Message Aura...'
+	return 'Message MixU...'
 }
 const { displayedText: displayedPlaceholder } = useTypewriter(placeholderFn)
 

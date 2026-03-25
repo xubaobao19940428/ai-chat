@@ -54,7 +54,7 @@
 				enter-to-class="transform translate-y-0 opacity-100"
 				leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100"
 				leave-to-class="opacity-0">
-				<div v-if="isOpen" :style="dropdownStyle"
+				<div v-if="isOpen" ref="dropdownRef" :style="dropdownStyle"
 					class="fixed w-[280px] max-w-[90vw] rounded-[12px] bg-[var(--background-white-main)] shadow-[var(--shadow-L)] z-[9999] overflow-hidden border border-[var(--border-main)]">
 					<div v-if="modelStore.isLoading" class="p-6 text-center">
 						<div
@@ -89,11 +89,40 @@
 						</div>
 						<!-- List -->
 						<div ref="modelListRef" class="max-h-[320px] overflow-y-auto no-scrollbar p-1.5 space-y-0.5">
-							<template v-if="filteredModels.length">
-								<button v-for="model in filteredModels" :key="model.model"
+							<template v-if="displayModels.length">
+								<!-- Favorited Models (pinned at top) -->
+								<template v-if="favoritedModels.length && !searchQuery">
+									<button v-for="model in favoritedModels" :key="'fav-' + model.model"
+										@click="selectModel(`${model.provider}:${model.model}`)"
+										:data-model-id="`${model.provider}:${model.model}`"
+										class="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-[8px] transition-colors text-left group/model"
+										:class="isSelected(model) ? 'bg-[var(--fill-blue)]' : 'hover:bg-[var(--fill-tsp-white-main)]'">
+										<div class="w-7 h-7 rounded-[7px] bg-[var(--background-gray-main)] flex items-center justify-center flex-shrink-0 overflow-hidden">
+											<img :src="getModelIcon(model)" class="w-4 h-4 object-contain" :alt="model.display_name" />
+										</div>
+										<div class="flex-1 min-w-0">
+											<div class="text-[13px] font-medium leading-tight truncate"
+												:class="isSelected(model) ? 'text-[var(--text-blue)]' : 'text-[var(--text-primary)]'">
+												{{ model.display_name }}
+											</div>
+											<div class="text-[11px] leading-tight mt-0.5 truncate"
+												:class="isSelected(model) ? 'text-[var(--text-blue)]/70' : 'text-[var(--text-tertiary)]'">
+												{{ formatProvider(model.provider) }}
+											</div>
+										</div>
+										<Check v-if="isSelected(model)" :size="13" class="flex-shrink-0 text-[var(--text-blue)]" />
+										<button @click.stop="toggleFavorite(model.id)" class="flex-shrink-0 outline-none opacity-100 transition-opacity">
+											<Star :size="14" class="fill-amber-400 !stroke-transparent" />
+										</button>
+									</button>
+									<!-- Separator -->
+									<div class="my-1 mx-2 border-t border-[var(--border-main)]"></div>
+								</template>
+								<!-- All Models -->
+								<button v-for="model in displayModels" :key="model.model"
 									@click="selectModel(`${model.provider}:${model.model}`)"
 									:data-model-id="`${model.provider}:${model.model}`"
-									class="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-[8px] transition-colors text-left group"
+									class="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-[8px] transition-colors text-left group/model"
 									:class="isSelected(model) ? 'bg-[var(--fill-blue)]' : 'hover:bg-[var(--fill-tsp-white-main)]'">
 									<!-- Icon -->
 									<div
@@ -112,12 +141,17 @@
 											{{ formatProvider(model.provider) }}
 										</div>
 									</div>
-									<!-- Check -->
+									<!-- Check + Favorite -->
 									<Check v-if="isSelected(model)" :size="13"
 										class="flex-shrink-0 text-[var(--text-blue)]" />
+									<button @click.stop="toggleFavorite(model.id)"
+										class="flex-shrink-0 outline-none transition-opacity"
+										:class="isFavorited(model.id) ? 'opacity-100' : 'opacity-0 group-hover/model:opacity-100'">
+										<Star :size="14" :class="isFavorited(model.id) ? 'fill-amber-400 !stroke-transparent' : 'text-[var(--text-tertiary)]'" />
+									</button>
 								</button>
 							</template>
-							<div v-else class="py-6 text-center text-[12px] text-[var(--text-tertiary)]">{{
+							<div v-else class="py-6 text-center text-[12px] text-[var(--text-tertiary)]">{{ 
 								$t('common.no_models_found') }}</div>
 						</div>
 					</div>
@@ -131,7 +165,8 @@
 import { ref, onMounted, onUnmounted, computed, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useModelStore } from '../stores/models'
-import { ChevronRight, ChevronDown, Check, Search, X, RefreshCw, TriangleAlert } from 'lucide-vue-next'
+import { ChevronRight, ChevronDown, Check, Search, X, RefreshCw, TriangleAlert, Star } from 'lucide-vue-next'
+import { useFavorite } from '~/composables/useFavorite'
 
 const props = withDefaults(
 	defineProps<{
@@ -159,6 +194,7 @@ const dropdownStyle = ref<Record<string, string>>({})
 const searchQuery = ref('')
 const searchInputRef = ref<HTMLInputElement | null>(null)
 const modelListRef = ref<HTMLElement | null>(null)
+const dropdownRef = ref<HTMLElement | null>(null)
 
 const IMAGE_CAPS = ['image', 'image_generation']
 const VIDEO_CAPS = ['video', 'video_generation']
@@ -200,6 +236,15 @@ const filteredModels = computed(() => {
 
 	return models
 })
+
+// Model Favorites
+const { isFavorited, toggleFavorite } = useFavorite('model')
+
+const favoritedModels = computed(() => {
+	return filteredModels.value.filter((m: any) => isFavorited(m.id))
+})
+
+const displayModels = computed(() => filteredModels.value)
 
 const updateDropdownPosition = () => {
 	if (!containerRef.value || !isOpen.value) return
@@ -361,7 +406,11 @@ const selectModel = (id: string) => {
 }
 
 const handleClickOutside = (event: MouseEvent) => {
-	if (containerRef.value && !containerRef.value.contains(event.target as Node)) {
+	const target = event.target as Node
+	if (
+		containerRef.value && !containerRef.value.contains(target) &&
+		(!dropdownRef.value || !dropdownRef.value.contains(target))
+	) {
 		isOpen.value = false
 	}
 }

@@ -76,7 +76,7 @@
     margin-bottom: 0;
   }
 
-  /* 多级列表 marker 样式（与 Aura 一致） */
+  /* 多级列表 marker 样式（与 MixU 一致） */
   ul > li > ul                  { list-style-type: circle; }
   ul > li > ul > li > ul        { list-style-type: square; }
 

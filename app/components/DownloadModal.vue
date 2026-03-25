@@ -22,7 +22,7 @@
 							</DialogTitle>
 							<div class="mt-2">
 								<p class="text-sm text-[var(--text-secondary)] font-bold">
-									Scan the QR code to experience Aura on your mobile device.
+									Scan the QR code to experience MixU on your mobile device.
 								</p>
 							</div>
 

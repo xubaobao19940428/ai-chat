@@ -17,7 +17,7 @@
 		<!-- Category Filter Chips (Fixed, Outside Scroll Area) -->
 		<div v-if="activeTab === 'inspiration'" class="flex items-center gap-2 px-4 pb-4 overflow-x-auto no-scrollbar">
 			<button v-for="cat in categories" :key="cat.id" @click="handleCategoryChange(cat.id)" :class="['flex items-center gap-1.5 px-4 py-1.5 text-[13px] font-medium rounded-full border transition-all whitespace-nowrap', selectedCategory === cat.id ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]']">
-				<Heart v-if="cat.id === 'favorites'" :size="13" class="!stroke-transparent" :class="selectedCategory === 'favorites' ? 'fill-white' : 'fill-red-500'" />
+				<Heart v-if="cat.id === 'favorites'" :size="13" class="!stroke-transparent" :class="selectedCategory === 'favorites' ? 'fill-white' : 'fill-black'" />
 				{{ $t('video_generation.categories.' + cat.name) }}
 			</button>
 		</div>
@@ -53,13 +53,17 @@
 								<Heart :size="100" class="absolute fill-red-500/30 !stroke-transparent animate-heart-ripple-2" />
 								<Heart :size="100" class="fill-red-500 !stroke-transparent animate-heart-burst" />
 							</div>
-							<!-- Hover Overlay -->
+							<!-- Top Left: Model Name (always visible) -->
+						<div v-if="example.model || example.title" class="absolute top-2.5 left-2.5 z-20">
+							<span class="px-2 py-0.5 rounded-md bg-white/80 backdrop-blur-sm text-[10px] font-semibold text-black/80 leading-tight shadow-sm">{{ example.model || example.title }}</span>
+						</div>
+						<!-- Hover Overlay -->
 							<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 pointer-events-none">
 								<!-- Top Right: Favorite -->
 								<div class="absolute top-3 right-3 pointer-events-auto transform -translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 delay-75"
 									:class="isFavorited(Number(example.id)) ? '!opacity-100 !translate-y-0' : ''">
-									<button @click.stop="handleFavorite(Number(example.id))" class="outline-none">
-										<Heart :size="20" :class="['!stroke-transparent drop-shadow-md', isFavorited(Number(example.id)) ? 'fill-red-500' : 'fill-white/80']" />
+									<button @click.stop="handleFavorite(Number(example.id))" class="outline-none size-8 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors">
+										<Heart :size="16" :class="['!stroke-transparent drop-shadow-md', isFavorited(Number(example.id)) ? 'fill-red-500' : 'fill-white/80']" />
 									</button>
 								</div>
 								<!-- Bottom -->
@@ -67,11 +71,11 @@
 									<!-- Left: Model info -->
 									<div class="flex-1 min-w-0 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
 										<p class="text-white text-[13px] font-semibold truncate">{{ example.model || example.title }}</p>
-										<p v-if="example.description" class="text-white/70 text-[11px] line-clamp-5 mt-0.5">{{ example.description }}</p>
-										<p v-if="example.author" class="text-white/50 text-[11px] mt-0.5">@{{ example.author }}</p>
+										<p v-if="example.description" class="text-white text-[13px] line-clamp-5 mt-0.5">{{ example.description }}</p>
+										<a v-if="example.author" :href="`https://x.com/${example.author}`" target="_blank" rel="noopener noreferrer" @click.stop class="text-white/50 text-[11px] mt-0.5 hover:text-white/80 hover:underline transition-colors pointer-events-auto block">@{{ example.author }}</a>
 									</div>
 									<!-- Right: Use prompt -->
-									<span class="shrink-0 px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-75 pointer-events-auto cursor-pointer hover:bg-white/90" @click.stop="useExample(example)">{{ $t('common.use_prompt') }}</span>
+									<span class="shrink-0 px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-75 pointer-events-auto cursor-pointer hover:bg-white/90 inline-flex items-center gap-1" @click.stop="useExample(example)"><Sparkles :size="12" />{{ $t('common.use_prompt') }}</span>
 								</div>
 							</div>
 
@@ -136,7 +140,7 @@
 
 						<div class="text-center mt-14 relative z-10 space-y-3">
 							<h3 class="text-[15px] font-black text-[var(--text-primary)] tracking-[0.25em] uppercase">Cinematic Dimensions</h3>
-							<p class="text-[var(--text-tertiary)] text-[13.5px] max-w-[320px] px-4 leading-relaxed font-normal tracking-wide italic opacity-80">Every visionary motion sequence is preserved in the Aura collection. Begin your orchestration.</p>
+							<p class="text-[var(--text-tertiary)] text-[13.5px] max-w-[320px] px-4 leading-relaxed font-normal tracking-wide italic opacity-80">Every visionary motion sequence is preserved in the MixU collection. Begin your orchestration.</p>
 						</div>
 
 						<button @click="triggerFocus" class="mt-14 px-12 py-3 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-xl font-black text-[11px] uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all shadow-xl hover:shadow-[var(--shadow-M)] flex items-center gap-4 group/btn">

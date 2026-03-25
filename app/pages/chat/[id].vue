@@ -557,6 +557,7 @@ import { Copy, Check, Pencil, ArrowUp, X, Share2, RefreshCw, Download, Expand, T
 import { fetchChatStream, generateImageStream, generateVideoStream } from '../../utils/api'
 import { generateConversationTitle, generateFollowUpQuestions } from '../../api/conversation'
 import { useKeyboardOffset } from '~/composables/useKeyboardOffset'
+import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 const { keyboardHeight } = useKeyboardOffset()
 

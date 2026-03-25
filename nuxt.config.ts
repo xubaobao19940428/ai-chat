@@ -74,7 +74,7 @@ export default defineNuxtConfig({
 
     app: {
         head: {
-            title: 'Aura AI',
+            title: 'MixU AI',
             script: [
                 {
                     innerHTML: `

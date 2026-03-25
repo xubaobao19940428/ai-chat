@@ -4,7 +4,7 @@
 		"placeholder": "请输入你想聊的内容...",
 		"send": "发送",
 		"welcome_title": "有什么我可以帮您的？",
-		"connect_tools": "连接您的工具到 Aura",
+		"connect_tools": "连接您的工具到 MixU",
 		"no_history": "暂无对话记录",
 		"start_new_chat": "点击上方开启新对话",
 		"new_conversation_default": "新对话",
@@ -92,7 +92,7 @@
 		"edit": "编辑",
 		"free_plan_label": "免费版",
 		"sign_in": "登录",
-		"use_prompt": "使用提示词",
+		"use_prompt": "做同款",
 		"expanding_vision": "加载更多",
 		"end_of_list": "已经到底了",
 		"aspect_ratio": "宽高比",
@@ -103,7 +103,7 @@
 		"usage": "用量",
 		"billing": "账单",
 		"scheduled_tasks": "定时任务",
-		"mail_aura": "邮件 Aura",
+		"mail_aura": "邮件 MixU",
 		"data_controls": "数据管理",
 		"security": "安全",
 		"cloud_browser": "云浏览器",
@@ -137,7 +137,7 @@
 		"manage": "管理",
 		"personalization_tab": {
 			"basic_style_tone": "基本风格和语调",
-			"basic_style_tone_desc": "设置 Aura 回复你的风格和语调。这不会影响 Aura 的功能。",
+			"basic_style_tone_desc": "设置 MixU 回复你的风格和语调。这不会影响 MixU 的功能。",
 			"characteristics": "特征",
 			"characteristics_desc": "在基本风格和语调的基础上选择额外的自定义项。",
 			"gentle_considerate": "温和体贴",
@@ -149,7 +149,7 @@
 			"custom_inst_placeholder": "其他行为、风格和语调偏好设置",
 			"about_you": "关于你",
 			"nickname": "昵称",
-			"nickname_placeholder": "Aura 应该怎么称呼你？",
+			"nickname_placeholder": "MixU 应该怎么称呼你？",
 			"occupation": "职业",
 			"occupation_placeholders": ["软件工程师", "产品经理", "UI 设计师", "数据科学家", "自由撰稿人", "大学生", "创业者", "市场运营", "高中教师", "全栈开发者"],
 			"your_details": "你的详情",
@@ -157,22 +157,22 @@
 			"memory": "记忆",
 			"manage": "管理",
 			"ref_saved_mem": "参考保存的记忆",
-			"ref_saved_mem_desc": "让 Aura 保存记忆并在回复时使用记忆。",
+			"ref_saved_mem_desc": "让 MixU 保存记忆并在回复时使用记忆。",
 			"ref_chat_history": "参考历史聊天记录",
-			"ref_chat_history_desc": "让 Aura 在回复时参考最近的对话。",
+			"ref_chat_history_desc": "让 MixU 在回复时参考最近的对话。",
 			"memory_footer": "GPT 可使用记忆库，通过必应等搜索提供商进行个性化查询。 {link}",
 			"learn_more": "了解更多",
 			"advanced": "高级",
 			"web_search": "网页搜索",
-			"web_search_desc": "让 Aura 自动搜索网页以获取答案。",
+			"web_search_desc": "让 MixU 自动搜索网页以获取答案。",
 			"canvas": "画布",
-			"canvas_desc": "与 Aura 协作处理文本和代码。",
-			"voice": "Aura 语音",
-			"voice_desc": "启用 Aura 的语音功能",
+			"canvas_desc": "与 MixU 协作处理文本和代码。",
+			"voice": "MixU 语音",
+			"voice_desc": "启用 MixU 的语音功能",
 			"adv_voice": "高级语音",
 			"adv_voice_desc": "使用语音功能开展更自然的对话。",
 			"connector_search": "连接器搜索",
-			"connector_search_desc": "让 Aura 自动搜索关联的来源以获取答案。",
+			"connector_search_desc": "让 MixU 自动搜索关联的来源以获取答案。",
 			"style_tones": {
 				"default": {
 					"title": "默认",
@@ -279,7 +279,7 @@
 		"headline": "您的智能聊天助手",
 		"subheadline": "在一个简洁、快速的界面中访问强大的 AI 模型。",
 		"safe_private": "安全、私密、持续改进。",
-		"sign_in_title": "登录 Aura",
+		"sign_in_title": "登录 MixU",
 		"create_account_title": "创建账号",
 		"welcome_back": "欢迎回来",
 		"email_started": "输入您的邮箱开始使用。",
@@ -365,7 +365,7 @@
 			"scifi": "科技/未来",
 			"ui": "UI/界面",
 			"uncategorized": "未分类",
-			"favorites": "我的收藏"
+			"favorites": "喜欢"
 		}
 	},
 	"video_generation": {
@@ -379,7 +379,7 @@
 			"anime_game": "动漫游戏",
 			"healing": "生活治愈",
 			"uncategorized": "未分类",
-			"favorites": "我的收藏"
+			"favorites": "喜欢"
 		}
 	},
 	"explore": {
@@ -398,7 +398,7 @@
 			"business": "商业",
 			"tools": "工具",
 			"uncategorized": "未分类",
-			"favorites": "我的收藏"
+			"favorites": "喜欢"
 		},
 		"official_badge": "官方",
 		"by_author": "作者",

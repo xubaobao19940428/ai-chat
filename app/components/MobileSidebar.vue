@@ -16,9 +16,9 @@
 									<div class="flex items-center justify-between h-[56px] px-[12px] shrink-0">
 										<div class="flex items-center gap-1 ps-[8px]">
 											<div class="flex items-center size-8 justify-center shrink-0">
-												<img src="/favicon.svg" class="size-6 pointer-events-none" alt="Aura Logo" />
+												<img src="/favicon.svg" class="size-6 pointer-events-none" alt="MixU Logo" />
 											</div>
-											<span class="text-lg font-bold text-[var(--text-primary)] tracking-tight ml-1">aura</span>
+											<span class="text-lg font-bold text-[var(--text-primary)] tracking-tight ml-1">MixU</span>
 										</div>
 										<div @click="uiStore.closeMobileMenu" class="flex items-center justify-center rounded-md hover:bg-[var(--bg-hover)] cursor-pointer size-[32px] shrink-0 transition-colors">
 											<X class="text-[var(--text-secondary)] size-[18px]" />

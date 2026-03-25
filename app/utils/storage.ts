@@ -5,7 +5,7 @@
  * Uses connection caching for performance.
  */
 
-const DB_NAME = 'AuraChatDB';
+const DB_NAME = 'MixUChatDB';
 const DB_VERSION = 3;
 const STORES = {
   MESSAGES: 'messages',
