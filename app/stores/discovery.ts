@@ -22,12 +22,21 @@ const createDiscoveryStore = (id: string, placement: string) => {
     }>>({})
 
     const fetchDiscovery = async (tagId: number | string = placement, force = false) => {
-        console.log(tagId)
+      // Save current tag's state to cache before switching (so scroll-loaded data isn't lost)
+      if (currentTagId.value !== tagId && allItems.value.length > 0) {
+        cache.value[currentTagId.value] = {
+          groups: [...groups.value],
+          items: [...allItems.value],
+          page: currentPage.value,
+          hasMore: hasMore.value
+        }
+      }
+
       // Restore from cache if available and not forcing a refresh
       if (!force && cache.value[tagId]) {
         const cached = cache.value[tagId]
-        groups.value = cached.groups
-        allItems.value = cached.items
+        groups.value = [...cached.groups]
+        allItems.value = [...cached.items]
         currentPage.value = cached.page
         hasMore.value = cached.hasMore
         currentTagId.value = tagId
@@ -54,10 +63,10 @@ const createDiscoveryStore = (id: string, placement: string) => {
           hasMore.value = list.length >= pageSize
         }
 
-        // Save to cache
+        // Save to cache (deep copy)
         cache.value[tagId] = {
-          groups: groups.value,
-          items: allItems.value,
+          groups: [...groups.value],
+          items: [...allItems.value],
           page: currentPage.value,
           hasMore: hasMore.value
         }
@@ -97,10 +106,10 @@ const createDiscoveryStore = (id: string, placement: string) => {
           }
         }
 
-        // Update cache with new paged data
+        // Update cache with new paged data (deep copy)
         if (cache.value[tagId]) {
-          cache.value[tagId].items = allItems.value
-          cache.value[tagId].groups = groups.value
+          cache.value[tagId].items = [...allItems.value]
+          cache.value[tagId].groups = [...groups.value]
           cache.value[tagId].page = currentPage.value
           cache.value[tagId].hasMore = hasMore.value
         }

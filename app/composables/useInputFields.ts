@@ -197,12 +197,31 @@ export function useInputFields(options?: {
 	// --- Dropdown state ---
 
 	const activeDropdown = ref<string | null>(null)
+	let _closeTimer: ReturnType<typeof setTimeout> | null = null
+
+	const openDropdown = (key: string) => {
+		if (_closeTimer) { clearTimeout(_closeTimer); _closeTimer = null }
+		activeDropdown.value = key
+	}
 
 	const toggleDropdown = (key: string) => {
+		if (_closeTimer) { clearTimeout(_closeTimer); _closeTimer = null }
 		activeDropdown.value = activeDropdown.value === key ? null : key
 	}
 
+	const scheduleCloseDropdown = () => {
+		_closeTimer = setTimeout(() => {
+			activeDropdown.value = null
+			_closeTimer = null
+		}, 150)
+	}
+
+	const cancelCloseDropdown = () => {
+		if (_closeTimer) { clearTimeout(_closeTimer); _closeTimer = null }
+	}
+
 	const closeDropdown = () => {
+		if (_closeTimer) { clearTimeout(_closeTimer); _closeTimer = null }
 		activeDropdown.value = null
 	}
 
@@ -212,7 +231,7 @@ export function useInputFields(options?: {
 		} else {
 			_localParams.value = { ..._localParams.value, [key]: val }
 		}
-		activeDropdown.value = null
+		// Don't close on selection — let hover handle close
 	}
 
 	const setParam = (key: string, val: any) => {
@@ -260,7 +279,10 @@ export function useInputFields(options?: {
 		mediaImageUploadLimit,
 		// Dropdown
 		activeDropdown,
+		openDropdown,
 		toggleDropdown,
+		scheduleCloseDropdown,
+		cancelCloseDropdown,
 		closeDropdown,
 		setParamAndClose,
 		setParam,

@@ -246,6 +246,8 @@ watch(() => discoveryStore.isLoading, async (loading) => {
 const handleTagChange = (tag: number | string) => {
 	if (selectedTag.value === tag) return
 	selectedTag.value = tag
+	// Reset scroll position to top
+	if (scrollContainer.value) scrollContainer.value.scrollTop = 0
 	if (tag !== 'favorites') {
 		discoveryStore.fetchDiscovery(tag)
 	}

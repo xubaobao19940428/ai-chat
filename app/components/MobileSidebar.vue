@@ -37,7 +37,7 @@
 
 										<!-- Nav items (no shortcuts on mobile) -->
 										<div v-for="item in navItems" :key="item.id" @click="item.handler" class="flex items-center rounded-[10px] cursor-pointer transition-colors w-full h-[40px] shrink-0 hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px] gap-[12px]">
-											<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)]">
+											<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
 												<component :is="item.icon" :size="18" />
 											</div>
 											<span class="flex-1 text-[14px] font-medium text-[var(--text-primary)] truncate">{{ item.label }}</span>
@@ -51,7 +51,7 @@
 										</div>
 										<div v-show="!moreCollapsed" class="flex flex-col gap-px">
 											<div v-for="item in moreNavItems" :key="item.id" @click="item.handler" class="flex items-center rounded-[10px] cursor-pointer transition-colors w-full h-[40px] hover:bg-[var(--bg-hover)] ps-[9px] pe-[2px] gap-[12px]">
-												<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-secondary)]">
+												<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
 													<component :is="item.icon" :size="18" />
 												</div>
 												<span class="text-[14px] font-medium text-[var(--text-primary)] truncate">{{ item.label }}</span>
@@ -111,10 +111,12 @@
 												<div class="shrink-0 size-[18px] flex items-center justify-center overflow-hidden">
 													<img v-if="getConversationAvatar(conversation)" :src="getConversationAvatar(conversation)" class="size-full object-cover rounded-[4px]" />
 													<template v-else>
-														<div v-if="conversation.characterId && conversation.characterId > 1" class="size-full flex items-center justify-center bg-blue-500/10 rounded-[4px]">
-															<Bot :size="14" class="text-blue-500 opacity-80" />
+														<div v-if="conversation.characterId && conversation.characterId > 1" class="size-full flex items-center justify-center rounded-[4px]">
+															<Sparkles :size="15" class="text-[var(--text-primary)] opacity-60" />
 														</div>
-														<MessageSquare v-else :size="16" class="text-[var(--text-secondary)] opacity-40" />
+														<Image v-else-if="conversation.capability === 'image' || conversation.capability === 'image_generation'" :size="15" class="text-[var(--text-primary)] opacity-60" />
+														<Play v-else-if="conversation.capability === 'video' || conversation.capability === 'video_generation'" :size="15" fill="currentColor" class="text-[var(--text-primary)] opacity-60" />
+														<MessageSquare v-else :size="16" class="text-[var(--text-primary)] opacity-60" />
 													</template>
 												</div>
 												<span class="flex-1 text-[14px] text-[var(--text-primary)] font-medium truncate">{{ conversation.title || $t('chat.new_conversation_default') }}</span>
@@ -166,7 +168,7 @@
 <script setup lang="ts">
 import { ref, markRaw, computed, onMounted } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { X, SquarePen, Search, Library, AlignJustify, Folder, MessageSquare, Settings2, Sun, Moon, LogOut, Bot, Compass, BookOpen, Image, Video, ChevronUp, Plus, DollarSign, Book, GraduationCap, Pencil, PenTool, Code, Terminal, Music, Coffee, Paintbrush, Palette, Stethoscope, Asterisk, Flower, Briefcase, BarChart, CircleDot, Dumbbell, Notebook, Scale, Globe, Plane, Earth, Wrench, PawPrint, FlaskConical, Brain, Heart, Sprout } from 'lucide-vue-next'
+import { X, SquarePen, Search, Library, AlignJustify, Folder, MessageSquare, Settings2, Sun, Moon, LogOut, Bot, Compass, BookOpen, Image, Video, ChevronUp, Plus, DollarSign, Book, GraduationCap, Pencil, PenTool, Code, Terminal, Music, Coffee, Paintbrush, Palette, Stethoscope, Asterisk, Flower, Briefcase, BarChart, CircleDot, Dumbbell, Notebook, Scale, Globe, Plane, Earth, Wrench, PawPrint, FlaskConical, Brain, Heart, Sprout, Sparkles, Play } from 'lucide-vue-next'
 import { useConversationStore } from '../stores/conversation'
 import { useUIStore } from '../stores/ui'
 import { useUserStore } from '../stores/user'

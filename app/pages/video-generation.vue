@@ -23,7 +23,7 @@
 		</div>
 
 		<!-- Scrollable Content Area -->
-		<main class="flex-1 overflow-y-auto px-4 py-6 pb-56 custom-scrollbar relative">
+		<main class="flex-1 overflow-y-auto px-4 py-6 pb-56 custom-scrollbar relative" ref="scrollContainer">
 			<div class="max-w-full mx-auto">
 				<!-- Tab Content -->
 				<div v-if="activeTab === 'inspiration'">
@@ -435,6 +435,7 @@ interface ActiveTask {
 const activeTasks = ref<ActiveTask[]>([])
 const isGenerating = computed(() => activeTasks.value.length > 0)
 const selectedCategory = ref<number | string>(46)
+const scrollContainer = ref<HTMLElement | null>(null)
 const openDropdown = ref<string | null>(null)
 const playingVideoId = ref<number | null>(null)
 
@@ -864,6 +865,8 @@ const setParamAndClose = (key: string, val: any) => {
 const handleCategoryChange = (id: number | string) => {
 	if (selectedCategory.value === id) return
 	selectedCategory.value = id
+	// Reset scroll position to top
+	if (scrollContainer.value) scrollContainer.value.scrollTop = 0
 	if (id === 'favorites') {
 		fetchFavoriteList(true)
 	} else {

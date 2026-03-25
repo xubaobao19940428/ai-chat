@@ -1,7 +1,7 @@
 <template>
 	<!-- Reference Image (single: image field) -->
-	<div v-if="showRefImage" class="relative group/chip">
-		<button @click="fields.toggleDropdown('ref_image')" :disabled="isUploading" class="unified-pill"
+	<div v-if="showRefImage" class="relative group/chip" @mouseleave="fields.scheduleCloseDropdown()">
+		<button @mouseenter="fields.openDropdown('ref_image')" :disabled="isUploading" class="unified-pill"
 			:class="fields.activeDropdown.value === 'ref_image' ? 'unified-pill-active' : refImageFile ? 'border-[var(--border-main)]' : ''">
 			<Loader2 v-if="isUploading && uploadingParam === 'image'" :size="14" class="animate-spin text-[var(--text-secondary)]" />
 			<template v-else-if="refImageFile">
@@ -20,6 +20,7 @@
 			leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
 			leave-to-class="translate-y-1 opacity-0">
 			<div v-if="fields.activeDropdown.value === 'ref_image'"
+				@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[250px]">
 				<div class="unified-popover flex flex-col gap-4">
 					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
@@ -41,8 +42,8 @@
 	</div>
 
 	<!-- Reference Images (multiple: input_images field) -->
-	<div v-if="showRefImages" class="relative group/chip">
-		<button @click="fields.toggleDropdown('ref_images')" :disabled="isUploading" class="unified-pill"
+	<div v-if="showRefImages" class="relative group/chip" @mouseleave="fields.scheduleCloseDropdown()">
+		<button @mouseenter="fields.openDropdown('ref_images')" :disabled="isUploading" class="unified-pill"
 			:class="fields.activeDropdown.value === 'ref_images' ? 'unified-pill-active' : refImagesFiles.length > 0 ? 'border-[var(--border-main)]' : ''">
 			<Loader2 v-if="isUploading && uploadingParam === 'input_images'" :size="14" class="animate-spin text-[var(--text-secondary)]" />
 			<template v-else-if="refImagesFiles.length > 0">
@@ -69,6 +70,7 @@
 			leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
 			leave-to-class="translate-y-1 opacity-0">
 			<div v-if="fields.activeDropdown.value === 'ref_images'"
+				@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[250px]">
 				<div class="unified-popover flex flex-col gap-4">
 					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
@@ -90,8 +92,8 @@
 	</div>
 
 	<!-- Start Frame (init_image) -->
-	<div v-if="showStartFrame" class="relative group/chip">
-		<button @click="fields.toggleDropdown('start_frame')" :disabled="isUploading" class="unified-pill"
+	<div v-if="showStartFrame" class="relative group/chip" @mouseleave="fields.scheduleCloseDropdown()">
+		<button @mouseenter="fields.openDropdown('start_frame')" :disabled="isUploading" class="unified-pill"
 			:class="fields.activeDropdown.value === 'start_frame' ? 'unified-pill-active' : startFrameFile ? 'border-[var(--border-main)]' : ''">
 			<Loader2 v-if="isUploading && uploadingParam === 'init_image'" :size="14" class="animate-spin text-[var(--text-secondary)]" />
 			<template v-else-if="startFrameFile">
@@ -110,6 +112,7 @@
 			leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
 			leave-to-class="translate-y-1 opacity-0">
 			<div v-if="fields.activeDropdown.value === 'start_frame'"
+				@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[250px]">
 				<div class="unified-popover flex flex-col gap-4">
 					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
@@ -131,8 +134,8 @@
 	</div>
 
 	<!-- End Frame (end_image) -->
-	<div v-if="showEndFrame" class="relative group/chip">
-		<button @click="fields.toggleDropdown('end_frame')" :disabled="isUploading" class="unified-pill"
+	<div v-if="showEndFrame" class="relative group/chip" @mouseleave="fields.scheduleCloseDropdown()">
+		<button @mouseenter="fields.openDropdown('end_frame')" :disabled="isUploading" class="unified-pill"
 			:class="fields.activeDropdown.value === 'end_frame' ? 'unified-pill-active' : endFrameFile ? 'border-[var(--border-main)]' : ''">
 			<Loader2 v-if="isUploading && uploadingParam === 'end_image'" :size="14" class="animate-spin text-[var(--text-secondary)]" />
 			<template v-else-if="endFrameFile">
@@ -151,6 +154,7 @@
 			leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
 			leave-to-class="translate-y-1 opacity-0">
 			<div v-if="fields.activeDropdown.value === 'end_frame'"
+				@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[250px]">
 				<div class="unified-popover flex flex-col gap-4">
 					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
@@ -172,8 +176,8 @@
 	</div>
 
 	<!-- Reference Video (single: video field) -->
-	<div v-if="showRefVideo" class="relative group/chip">
-		<button @click="fields.toggleDropdown('ref_video')" :disabled="isUploading" class="unified-pill"
+	<div v-if="showRefVideo" class="relative group/chip" @mouseleave="fields.scheduleCloseDropdown()">
+		<button @mouseenter="fields.openDropdown('ref_video')" :disabled="isUploading" class="unified-pill"
 			:class="fields.activeDropdown.value === 'ref_video' ? 'unified-pill-active' : refVideoFile ? 'border-[var(--border-main)]' : ''">
 			<Loader2 v-if="isUploading && uploadingParam === 'video'" :size="14" class="animate-spin text-[var(--text-secondary)]" />
 			<template v-else-if="refVideoFile">
@@ -192,6 +196,7 @@
 			leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
 			leave-to-class="translate-y-1 opacity-0">
 			<div v-if="fields.activeDropdown.value === 'ref_video'"
+				@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[250px]">
 				<div class="unified-popover flex flex-col gap-4">
 					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
@@ -213,8 +218,8 @@
 	</div>
 
 	<!-- Reference Videos (multiple: input_videos field) -->
-	<div v-if="showRefVideos" class="relative group/chip">
-		<button @click="fields.toggleDropdown('ref_videos')" :disabled="isUploading" class="unified-pill"
+	<div v-if="showRefVideos" class="relative group/chip" @mouseleave="fields.scheduleCloseDropdown()">
+		<button @mouseenter="fields.openDropdown('ref_videos')" :disabled="isUploading" class="unified-pill"
 			:class="fields.activeDropdown.value === 'ref_videos' ? 'unified-pill-active' : refVideosFiles.length > 0 ? 'border-[var(--border-main)]' : ''">
 			<Loader2 v-if="isUploading && uploadingParam === 'input_videos'" :size="14" class="animate-spin text-[var(--text-secondary)]" />
 			<template v-else-if="refVideosFiles.length > 0">
@@ -235,6 +240,7 @@
 			leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
 			leave-to-class="translate-y-1 opacity-0">
 			<div v-if="fields.activeDropdown.value === 'ref_videos'"
+				@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[250px]">
 				<div class="unified-popover flex flex-col gap-4">
 					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
@@ -256,10 +262,10 @@
 	</div>
 
 	<!-- Dynamic Select Fields (aspect_ratio, duration, resolution, style, etc.) -->
-	<div v-for="field in fields.dynamicSelectFields.value" :key="field.key" class="relative group/chip">
+	<div v-for="field in fields.dynamicSelectFields.value" :key="field.key" class="relative group/chip" @mouseleave="fields.scheduleCloseDropdown()">
 		<!-- Aspect Ratio -->
 		<template v-if="field.key === 'aspect_ratio'">
-			<button ref="ratioPillRef" @click="fields.toggleDropdown(field.key)" class="unified-pill"
+			<button ref="ratioPillRef" @mouseenter="fields.openDropdown(field.key)" class="unified-pill"
 				:class="fields.activeDropdown.value === field.key ? 'unified-pill-active' : ''">
 				<Square :size="14" class="text-[var(--text-secondary)]" />
 				<span class="unified-pill-text">{{ getParamValue(field.key, field.default) }}</span>
@@ -272,6 +278,7 @@
 					leave-from-class="translate-y-0 opacity-100"
 					leave-to-class="translate-y-1 opacity-0">
 					<div v-if="fields.activeDropdown.value === field.key" ref="ratioPopoverRef"
+						@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 						data-ratio-popover class="fixed z-[9999]" :style="ratioPopoverStyle">
 						<div class="p-6 flex gap-8 items-center min-w-max rounded-2xl border border-[var(--border-light)] bg-[var(--bg-main)] shadow-[0_20px_25px_-5px_rgb(0_0_0/0.1),0_8px_10px_-6px_rgb(0_0_0/0.1)]">
 							<!-- Left: Ratio Buttons Grid -->
@@ -312,9 +319,9 @@
 			</Teleport>
 		</template>
 
-		<!-- Duration (slider style, whether select or number type) -->
+		<!-- Duration (select with options → button grid; number → slider) -->
 		<template v-else-if="field.key === 'duration'">
-			<button @click="fields.toggleDropdown(field.key)" class="unified-pill"
+			<button @mouseenter="fields.openDropdown(field.key)" class="unified-pill"
 				:class="fields.activeDropdown.value === field.key ? 'unified-pill-active' : ''">
 				<Clock :size="14" class="text-[var(--text-secondary)]" />
 				<span class="unified-pill-text">{{ getParamValue(field.key, field.default) }}s</span>
@@ -324,37 +331,55 @@
 				leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
 				leave-to-class="translate-y-1 opacity-0">
 				<div v-if="fields.activeDropdown.value === field.key"
-					class="absolute bottom-full left-0 mb-2 z-[60] min-w-[220px]">
+					@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
+					class="absolute bottom-full left-0 mb-2 z-[60]"
+					:class="isDurationSelect(field) ? 'min-w-[170px]' : 'min-w-[220px]'">
 					<div class="unified-popover p-3.5">
 						<p class="text-[10px] font-bold text-[var(--text-tertiary)] mb-2.5 px-1 uppercase tracking-widest text-center">Duration</p>
-						<div class="flex items-center gap-2.5 mb-2">
-							<button @click="adjustDurationSelect(field, -1)"
-								class="size-7 rounded-lg flex items-center justify-center border border-[var(--border-main)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors text-sm font-bold shrink-0">
-								−
-							</button>
-							<div class="flex-1 text-center">
-								<span class="text-[18px] font-black text-[var(--text-primary)] tabular-nums">
-									{{ getParamValue(field.key, field.default) }}
-								</span>
-								<span class="text-[11px] text-[var(--text-tertiary)] font-medium ml-0.5">s</span>
+
+						<!-- Select-type: discrete button grid -->
+						<template v-if="isDurationSelect(field)">
+							<div class="flex flex-wrap gap-1.5 justify-center">
+								<button v-for="opt in field.options" :key="opt"
+									@click="fields.setParamAndClose(field.key, opt)"
+									class="px-3 py-2 rounded-xl text-[13px] font-bold border transition-all min-w-[52px] flex-1 text-center"
+									:class="String(getParamValue(field.key, field.default)) === String(opt) ? 'bg-[var(--text-primary)] border-[var(--text-primary)] text-[var(--bg-main)] shadow-sm scale-[1.02]' : 'bg-transparent text-[var(--text-primary)] border-[var(--border-main)] hover:border-[var(--text-primary)]/20 hover:bg-[var(--bg-hover)]'">
+									{{ opt }}s
+								</button>
 							</div>
-							<button @click="adjustDurationSelect(field, 1)"
-								class="size-7 rounded-lg flex items-center justify-center border border-[var(--border-main)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors text-sm font-bold shrink-0">
-								+
-							</button>
-						</div>
-						<div class="relative px-0.5">
-							<input type="range"
-								:min="getDurationMin(field)" :max="getDurationMax(field)"
-								:step="getDurationStep(field)"
-								:value="getParamValue(field.key, field.default)"
-								@input="(e: Event) => fields.setParam(field.key, Number((e.target as HTMLInputElement).value))"
-								class="number-slider w-full" />
-							<div class="flex justify-between mt-1">
-								<span class="text-[9px] text-[var(--text-tertiary)] font-medium">{{ getDurationMin(field) }}s</span>
-								<span class="text-[9px] text-[var(--text-tertiary)] font-medium">{{ getDurationMax(field) }}s</span>
+						</template>
+
+						<!-- Number-type: slider UI -->
+						<template v-else>
+							<div class="flex items-center gap-2.5 mb-2">
+								<button @click="adjustDurationSelect(field, -1)"
+									class="size-7 rounded-lg flex items-center justify-center border border-[var(--border-main)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors text-sm font-bold shrink-0">
+									−
+								</button>
+								<div class="flex-1 text-center">
+									<span class="text-[18px] font-black text-[var(--text-primary)] tabular-nums">
+										{{ getParamValue(field.key, field.default) }}
+									</span>
+									<span class="text-[11px] text-[var(--text-tertiary)] font-medium ml-0.5">s</span>
+								</div>
+								<button @click="adjustDurationSelect(field, 1)"
+									class="size-7 rounded-lg flex items-center justify-center border border-[var(--border-main)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors text-sm font-bold shrink-0">
+									+
+								</button>
 							</div>
-						</div>
+							<div class="relative px-0.5">
+								<input type="range"
+									:min="getDurationMin(field)" :max="getDurationMax(field)"
+									:step="getDurationStep(field)"
+									:value="getParamValue(field.key, field.default)"
+									@input="(e: Event) => fields.setParam(field.key, Number((e.target as HTMLInputElement).value))"
+									class="number-slider w-full" />
+								<div class="flex justify-between mt-1">
+									<span class="text-[9px] text-[var(--text-tertiary)] font-medium">{{ getDurationMin(field) }}s</span>
+									<span class="text-[9px] text-[var(--text-tertiary)] font-medium">{{ getDurationMax(field) }}s</span>
+								</div>
+							</div>
+						</template>
 					</div>
 				</div>
 			</Transition>
@@ -362,7 +387,7 @@
 
 		<!-- Style Transfer -->
 		<template v-else-if="field.key === 'style'">
-			<button @click="fields.toggleDropdown(field.key)" class="unified-pill"
+			<button @mouseenter="fields.openDropdown(field.key)" class="unified-pill"
 				:class="fields.activeDropdown.value === field.key ? 'unified-pill-active' : ''">
 				<Palette :size="14" class="text-[var(--text-secondary)]" />
 				<span class="unified-pill-text">
@@ -373,6 +398,7 @@
 				enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-100 ease-in"
 				leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1 opacity-0">
 				<div v-if="fields.activeDropdown.value === field.key"
+					@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 					class="absolute bottom-full left-0 mb-2 w-44 z-[60] max-h-56 overflow-y-auto custom-scrollbar">
 					<div class="unified-popover p-1.5">
 						<button v-for="s in field.options" :key="s" @click="fields.setParamAndClose(field.key, s)"
@@ -387,7 +413,7 @@
 
 		<!-- Generic Select (resolution, audio_enabled, etc.) -->
 		<template v-else>
-			<button @click="fields.toggleDropdown(field.key)" class="unified-pill"
+			<button @mouseenter="fields.openDropdown(field.key)" class="unified-pill"
 				:class="fields.activeDropdown.value === field.key ? 'unified-pill-active' : ''">
 				<Gem v-if="field.key === 'resolution'" :size="14" class="text-[var(--text-secondary)]" />
 				<LayoutGrid v-else :size="14" class="text-[var(--text-secondary)]" />
@@ -401,6 +427,7 @@
 				leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
 				leave-to-class="translate-y-1 opacity-0">
 				<div v-if="fields.activeDropdown.value === field.key"
+					@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 					class="absolute bottom-full left-0 mb-2 z-[60] min-w-[170px]">
 					<div class="unified-popover p-3.5">
 						<p class="text-[10px] font-bold text-[var(--text-tertiary)] mb-2.5 px-1 uppercase tracking-widest text-center">
@@ -427,8 +454,8 @@
 	</div>
 
 	<!-- Dynamic Number Fields (duration, num_outputs, etc.) -->
-	<div v-for="field in fields.dynamicNumberFields.value" :key="field.key" class="relative group/chip">
-		<button @click="fields.toggleDropdown(field.key)" class="unified-pill"
+	<div v-for="field in fields.dynamicNumberFields.value" :key="field.key" class="relative group/chip" @mouseleave="fields.scheduleCloseDropdown()">
+		<button @mouseenter="fields.openDropdown(field.key)" class="unified-pill"
 			:class="fields.activeDropdown.value === field.key ? 'unified-pill-active' : ''">
 			<Clock v-if="field.key === 'duration'" :size="14" class="text-[var(--text-secondary)]" />
 			<Monitor v-else :size="14" class="text-[var(--text-secondary)]" />
@@ -441,6 +468,7 @@
 			leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
 			leave-to-class="translate-y-1 opacity-0">
 			<div v-if="fields.activeDropdown.value === field.key"
+				@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 				class="absolute bottom-full left-0 mb-2 z-[60]"
 				:class="field.key === 'duration' || field.max - field.min > 10 ? 'min-w-[220px]' : 'min-w-[170px]'">
 				<div class="unified-popover p-3.5">
@@ -550,6 +578,11 @@ const refVideosFiles = computed(() => props.allFiles.filter(f => f.paramKey === 
 function getParamValue(key: string, defaultVal: any) {
 	if (props.externalParams) return props.externalParams[key] ?? defaultVal
 	return props.fields.dynamicParams.value[key] ?? defaultVal
+}
+
+// Determine if duration field is select-type (has discrete options) vs number-type (continuous range)
+function isDurationSelect(field: any): boolean {
+	return Array.isArray(field.options) && field.options.length > 0
 }
 
 // Duration helpers: works for both select (options array) and number (min/max) types

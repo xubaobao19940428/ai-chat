@@ -1,7 +1,7 @@
 <template>
 	<!-- Image Prompt Upload -->
-	<div v-if="fields.supportsMediaPrompt.value" class="relative group/chip">
-		<button @click="fields.toggleDropdown('media_prompt')" :disabled="isUploading" class="unified-pill"
+	<div v-if="fields.supportsMediaPrompt.value" class="relative group/chip" @mouseleave="fields.scheduleCloseDropdown()">
+		<button @mouseenter="fields.openDropdown('media_prompt')" :disabled="isUploading" class="unified-pill"
 			:class="fields.activeDropdown.value === 'media_prompt' ? 'unified-pill-active' : mediaFiles.length > 0 ? 'border-[var(--border-main)]' : ''">
 			<Loader2 v-if="isUploading" :size="14" class="animate-spin text-[var(--text-secondary)]" />
 			<template v-else-if="mediaFiles.length > 0">
@@ -26,6 +26,7 @@
 			leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
 			leave-to-class="translate-y-1 opacity-0">
 			<div v-if="fields.activeDropdown.value === 'media_prompt'"
+				@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[280px]">
 				<div class="unified-popover flex flex-col gap-4">
 					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
@@ -48,10 +49,10 @@
 	</div>
 
 	<!-- Dynamic Select Fields (aspect_ratio, style, resolution, etc.) -->
-	<div v-for="field in fields.dynamicSelectFields.value" :key="field.key" class="relative group/chip">
+	<div v-for="field in fields.dynamicSelectFields.value" :key="field.key" class="relative group/chip" @mouseleave="fields.scheduleCloseDropdown()">
 		<!-- Aspect Ratio -->
 		<template v-if="field.key === 'aspect_ratio'">
-			<button ref="ratioPillRef" @click="fields.toggleDropdown(field.key)" class="unified-pill"
+			<button ref="ratioPillRef" @mouseenter="fields.openDropdown(field.key)" class="unified-pill"
 				:class="fields.activeDropdown.value === field.key ? 'unified-pill-active' : ''">
 				<Square :size="14" class="text-[var(--text-secondary)]" />
 				<span class="unified-pill-text">{{ getParamValue(field.key, field.default) }}</span>
@@ -64,6 +65,7 @@
 					leave-from-class="translate-y-0 opacity-100"
 					leave-to-class="translate-y-1 opacity-0">
 					<div v-if="fields.activeDropdown.value === field.key" ref="ratioPopoverRef"
+						@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 						data-ratio-popover class="fixed z-[9999]" :style="ratioPopoverStyle">
 						<div class="p-6 flex gap-8 items-center min-w-max rounded-2xl border border-[var(--border-light)] bg-[var(--bg-main)] shadow-[0_20px_25px_-5px_rgb(0_0_0/0.1),0_8px_10px_-6px_rgb(0_0_0/0.1)]">
 							<!-- Left: Ratio Buttons Grid -->
@@ -106,7 +108,7 @@
 
 		<!-- Style Transfer -->
 		<template v-else-if="field.key === 'style'">
-			<button @click="fields.toggleDropdown(field.key)" class="unified-pill"
+			<button @mouseenter="fields.openDropdown(field.key)" class="unified-pill"
 				:class="fields.activeDropdown.value === field.key ? 'unified-pill-active' : ''">
 				<Palette :size="14" class="text-[var(--text-secondary)]" />
 				<span class="unified-pill-text">
@@ -118,6 +120,7 @@
 				enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-100 ease-in"
 				leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1 opacity-0">
 				<div v-if="fields.activeDropdown.value === field.key"
+					@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 					class="absolute bottom-full left-0 mb-2 w-44 z-[60] max-h-56 overflow-y-auto custom-scrollbar">
 					<div class="unified-popover p-1.5">
 						<button v-for="s in field.options" :key="s" @click="fields.setParamAndClose(field.key, s)"
@@ -133,7 +136,7 @@
 
 		<!-- Generic Select (resolution, etc.) -->
 		<template v-else>
-			<button @click="fields.toggleDropdown(field.key)" class="unified-pill"
+			<button @mouseenter="fields.openDropdown(field.key)" class="unified-pill"
 				:class="fields.activeDropdown.value === field.key ? 'unified-pill-active' : ''">
 				<Gem v-if="field.key === 'resolution'" :size="14" class="text-[var(--text-secondary)]" />
 				<LayoutGrid v-else :size="14" class="text-[var(--text-secondary)]" />
@@ -149,6 +152,7 @@
 				leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
 				leave-to-class="translate-y-1 opacity-0">
 				<div v-if="fields.activeDropdown.value === field.key"
+					@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 					class="absolute bottom-full left-0 mb-2 z-[60] min-w-[170px]">
 					<div class="unified-popover p-3.5">
 						<p
@@ -179,8 +183,8 @@
 	</div>
 
 	<!-- Dynamic Number Fields (num_outputs) -->
-	<div v-for="field in fields.dynamicNumberFields.value" :key="field.key" class="relative group/chip">
-		<button @click="fields.toggleDropdown(field.key)" class="unified-pill"
+	<div v-for="field in fields.dynamicNumberFields.value" :key="field.key" class="relative group/chip" @mouseleave="fields.scheduleCloseDropdown()">
+		<button @mouseenter="fields.openDropdown(field.key)" class="unified-pill"
 			:class="fields.activeDropdown.value === field.key ? 'unified-pill-active' : ''">
 			<Monitor :size="14" class="text-[var(--text-secondary)]" />
 			<span class="unified-pill-text">{{ getParamValue(field.key, field.default) }} Outputs</span>
@@ -189,6 +193,7 @@
 			enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-100 ease-in"
 			leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1 opacity-0">
 			<div v-if="fields.activeDropdown.value === field.key"
+				@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 				class="absolute bottom-full left-0 mb-2 z-[60] min-w-[180px]">
 				<div class="unified-popover p-3">
 					<p

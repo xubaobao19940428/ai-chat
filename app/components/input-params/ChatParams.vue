@@ -4,8 +4,8 @@
 	</template>
 
 	<!-- Attach Button (Image-Generation Style) -->
-	<div v-if="fields.supportsFileUpload.value" class="relative group/chip">
-		<button @click="fields.toggleDropdown('chat_upload')" :disabled="isUploading" class="unified-pill"
+	<div v-if="fields.supportsFileUpload.value" class="relative group/chip" @mouseleave="fields.scheduleCloseDropdown()">
+		<button @mouseenter="fields.openDropdown('chat_upload')" :disabled="isUploading" class="unified-pill"
 			:class="fields.activeDropdown.value === 'chat_upload' ? 'unified-pill-active' : mediaFiles.length > 0 ? 'border-[var(--border-main)]' : ''">
 			<Loader2 v-if="isUploading" :size="14" class="animate-spin text-[var(--text-secondary)]" />
 			<template v-else-if="mediaFiles.length > 0">
@@ -28,6 +28,7 @@
 			leave-active-class="transition duration-100 ease-in" leave-from-class="translate-y-0 opacity-100"
 			leave-to-class="translate-y-1 opacity-0">
 			<div v-if="fields.activeDropdown.value === 'chat_upload'"
+				@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[280px]">
 				<div class="unified-popover flex flex-col gap-4">
 					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
@@ -50,22 +51,23 @@
 	</div>
 
 	<!-- Web Search -->
-	<Popover v-if="fields.supportsWebSearch.value" class="relative" v-slot="{ open }">
+	<div v-if="fields.supportsWebSearch.value" class="relative" @mouseleave="fields.scheduleCloseDropdown()">
 		<Tooltip text="Web Search">
-			<PopoverButton
+			<button @mouseenter="fields.openDropdown('web_search')"
 				class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors relative"
-				:class="{ 'text-[var(--text-primary)] bg-[var(--bg-hover)]': open || isWebSearchEnabled }">
+				:class="{ 'text-[var(--text-primary)] bg-[var(--bg-hover)]': fields.activeDropdown.value === 'web_search' || isWebSearchEnabled }">
 				<Globe :size="18" />
 				<div v-if="isWebSearchEnabled"
 					class="absolute top-1.5 right-1.5 w-2 h-2 bg-[var(--text-primary)] rounded-full border border-[var(--bg-main)]">
 				</div>
-			</PopoverButton>
+			</button>
 		</Tooltip>
 		<Transition enter-active-class="transition duration-150 ease-out"
 			enter-from-class="translate-y-1.5 opacity-0 scale-[0.98]"
 			enter-to-class="translate-y-0 opacity-100 scale-100" leave-active-class="transition duration-100 ease-in"
 			leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1.5 opacity-0">
-			<PopoverPanel
+			<div v-if="fields.activeDropdown.value === 'web_search'"
+				@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 				class="absolute bottom-full left-0 mb-3 z-50 w-[300px] max-w-[calc(100vw-2rem)] bg-[var(--bg-main)] rounded-2xl shadow-lg border border-[var(--border-light)] p-4 cursor-default">
 				<div class="text-[14px] font-semibold text-[var(--text-primary)] mb-3">Web Search</div>
 				<div class="h-[1px] bg-[var(--border-light)] -mx-4 mb-3"></div>
@@ -82,24 +84,25 @@
 							class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm" />
 					</Switch>
 				</div>
-			</PopoverPanel>
+			</div>
 		</Transition>
-	</Popover>
+	</div>
 
 	<!-- Parameters Settings -->
-	<Popover class="relative" v-slot="{ open }">
+	<div class="relative" @mouseleave="fields.scheduleCloseDropdown()">
 		<Tooltip text="Model Parameters">
-			<PopoverButton
+			<button @mouseenter="fields.openDropdown('model_params')"
 				class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors"
-				:class="{ 'text-[var(--text-primary)] bg-[var(--bg-hover)]': open }">
+				:class="{ 'text-[var(--text-primary)] bg-[var(--bg-hover)]': fields.activeDropdown.value === 'model_params' }">
 				<Settings :size="18" />
-			</PopoverButton>
+			</button>
 		</Tooltip>
 		<Transition enter-active-class="transition duration-150 ease-out"
 			enter-from-class="translate-y-1.5 opacity-0 scale-[0.98]"
 			enter-to-class="translate-y-0 opacity-100 scale-100" leave-active-class="transition duration-100 ease-in"
 			leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1.5 opacity-0">
-			<PopoverPanel
+			<div v-if="fields.activeDropdown.value === 'model_params'"
+				@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 				class="absolute bottom-full left-0 mb-3 z-50 w-[300px] max-w-[calc(100vw-2rem)] bg-[var(--bg-main)] rounded-2xl shadow-lg border border-[var(--border-light)]">
 				<div class="px-4 pt-3.5 pb-3 border-b border-[var(--border-light)] flex items-center justify-between">
 					<div class="flex items-center gap-2">
@@ -111,13 +114,13 @@
 				</div>
 				<ModelParameters :model-input="modelStore.selectedModel?.model_input" :values="externalParams || {}"
 					@update:values="(v: any) => $emit('update:params', v)" />
-			</PopoverPanel>
+			</div>
 		</Transition>
-	</Popover>
+	</div>
 </template>
 
 <script setup lang="ts">
-import { Popover, PopoverButton, PopoverPanel, Switch } from '@headlessui/vue'
+import { Switch } from '@headlessui/vue'
 import { Paperclip, FileUp, FolderOpen, Globe, Settings, SlidersHorizontal, Loader2 } from 'lucide-vue-next'
 import { useModelStore } from '~/stores/models'
 import type { useInputFields } from '~/composables/useInputFields'

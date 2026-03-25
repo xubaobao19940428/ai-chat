@@ -53,10 +53,14 @@ export function useMasonry(getItems: () => MasonryItem[]) {
 	// Watch items changes
 	watch(getItems, (newItems, oldItems) => {
 		const count = columnCount.value
+		// Detect if items were fully swapped (e.g. category switch from cache)
+		const itemsSwapped = oldItems && newItems.length > 0 && oldItems.length > 0
+			&& newItems[0]?.id !== oldItems[0]?.id
 		if (
 			columns.value.length !== count ||
 			!oldItems ||
-			newItems.length < processedCount
+			newItems.length < processedCount ||
+			itemsSwapped
 		) {
 			resetColumns()
 		} else if (newItems.length > processedCount) {
