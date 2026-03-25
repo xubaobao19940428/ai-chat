@@ -396,6 +396,29 @@
 		"empty_state_subtitle": "Versuche ein anderes Stichwort oder durchsuche alle Kategorien",
 		"empty_state_browse_all": "Alle anzeigen",
 		"loading_more": "Wird geladen...",
-		"no_more": "Keine weiteren Elemente"
+		"no_more": "Keine weiteren Elemente",
+		"my_created_empty": "Noch keine Charaktere erstellt",
+		"my_created_empty_subtitle": "Erstelle deinen ersten KI-Charakter"
+	},
+	"character_create": {
+		"title": "KI-Charakter erstellen",
+		"name_label": "Name",
+		"name_placeholder": "Charaktername eingeben",
+		"description_label": "Beschreibung",
+		"description_placeholder": "Beschreibe kurz die Fähigkeiten und Eigenschaften des Charakters",
+		"prompt_label": "Charakter-Prompt",
+		"prompt_placeholder": "Beispiel: Du bist ein erfahrener Englischlehrer, der Schüler mit ansprechenden Lehrmethoden begeistert und Humor sowie praktische Beispiele nutzt.",
+		"avatar_label": "Avatar",
+		"avatar_upload": "Avatar hochladen",
+		"access_label": "Zugriffseinstellungen",
+		"access_public": "Öffentlich · Jeder kann chatten",
+		"access_private": "Privat · Nur du kannst chatten",
+		"private_label": "Privat",
+		"submit": "KI-Charakter erstellen",
+		"creating": "Wird erstellt...",
+		"create_success": "Charakter erfolgreich erstellt!",
+		"create_failed": "Erstellung fehlgeschlagen, bitte erneut versuchen",
+		"name_required": "Bitte einen Charakternamen eingeben",
+		"prompt_required": "Bitte einen Charakter-Prompt eingeben"
 	}
 }

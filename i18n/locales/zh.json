@@ -407,6 +407,29 @@
 		"empty_state_subtitle": "试试其他关键词，或浏览全部分类",
 		"empty_state_browse_all": "浏览全部",
 		"loading_more": "正在加载...",
-		"no_more": "已经到底了"
+		"no_more": "已经到底了",
+		"my_created_empty": "还没有创建智能体",
+		"my_created_empty_subtitle": "点击下方按钮创建你的第一个 AI 智能体"
+	},
+	"character_create": {
+		"title": "创建 AI 智能体",
+		"name_label": "名称",
+		"name_placeholder": "输入名称",
+		"description_label": "描述",
+		"description_placeholder": "简要描述智能体的功能和特点",
+		"prompt_label": "设定描述",
+		"prompt_placeholder": "示例：你是一位经验丰富的英语老师，擅有激发学生学习热情的教学方法，你善于运用幽默和实际应用案例，使对话充满趣味。",
+		"avatar_label": "头像",
+		"avatar_upload": "上传头像",
+		"access_label": "权限设置",
+		"access_public": "公开 · 所有人可对话",
+		"access_private": "私密 · 仅自己可对话",
+		"private_label": "私密",
+		"submit": "创建 AI 智能体",
+		"creating": "创建中...",
+		"create_success": "智能体创建成功！",
+		"create_failed": "创建失败，请重试",
+		"name_required": "请输入智能体名称",
+		"prompt_required": "请输入设定描述"
 	}
 }

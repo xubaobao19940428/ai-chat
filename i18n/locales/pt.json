@@ -396,6 +396,29 @@
 		"empty_state_subtitle": "Tente outra palavra-chave ou navegue por todas as categorias",
 		"empty_state_browse_all": "Ver tudo",
 		"loading_more": "Carregando...",
-		"no_more": "Sem mais itens"
+		"no_more": "Sem mais itens",
+		"my_created_empty": "Nenhum personagem criado ainda",
+		"my_created_empty_subtitle": "Crie seu primeiro personagem IA para começar"
+	},
+	"character_create": {
+		"title": "Criar personagem IA",
+		"name_label": "Nome",
+		"name_placeholder": "Digite o nome do personagem",
+		"description_label": "Descrição",
+		"description_placeholder": "Descreva brevemente as habilidades e características do personagem",
+		"prompt_label": "Prompt do personagem",
+		"prompt_placeholder": "Exemplo: Você é um professor de inglês experiente que inspira estudantes com métodos de ensino envolventes, usando humor e exemplos práticos.",
+		"avatar_label": "Avatar",
+		"avatar_upload": "Fazer upload do avatar",
+		"access_label": "Configurações de acesso",
+		"access_public": "Público · Todos podem conversar",
+		"access_private": "Privado · Somente você pode conversar",
+		"private_label": "Privado",
+		"submit": "Criar personagem IA",
+		"creating": "Criando...",
+		"create_success": "Personagem criado com sucesso!",
+		"create_failed": "Falha ao criar, tente novamente",
+		"name_required": "Por favor, insira o nome do personagem",
+		"prompt_required": "Por favor, insira o prompt do personagem"
 	}
 }

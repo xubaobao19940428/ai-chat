@@ -396,6 +396,29 @@
 		"empty_state_subtitle": "다른 키워드를 시도하거나 전체 카테고리를 탐색하세요",
 		"empty_state_browse_all": "전체 보기",
 		"loading_more": "로딩 중...",
-		"no_more": "더 이상 항목이 없습니다"
+		"no_more": "더 이상 항목이 없습니다",
+		"my_created_empty": "아직 캐릭터를 만들지 않았습니다",
+		"my_created_empty_subtitle": "첫 번째 AI 캐릭터를 만들어 보세요"
+	},
+	"character_create": {
+		"title": "AI 캐릭터 만들기",
+		"name_label": "이름",
+		"name_placeholder": "캐릭터 이름 입력",
+		"description_label": "설명",
+		"description_placeholder": "캐릭터의 기능과 특징을 간략히 설명하세요",
+		"prompt_label": "캐릭터 프롬프트",
+		"prompt_placeholder": "예시: 당신은 유머와 실용적인 예시를 활용하여 학생들의 학습 열정을 이끌어내는 경험 많은 영어 교사입니다.",
+		"avatar_label": "아바타",
+		"avatar_upload": "아바타 업로드",
+		"access_label": "접근 설정",
+		"access_public": "공개 · 모든 사람이 대화 가능",
+		"access_private": "비공개 · 본인만 대화 가능",
+		"private_label": "비공개",
+		"submit": "AI 캐릭터 만들기",
+		"creating": "생성 중...",
+		"create_success": "캐릭터가 성공적으로 생성되었습니다!",
+		"create_failed": "생성 실패, 다시 시도해 주세요",
+		"name_required": "캐릭터 이름을 입력해 주세요",
+		"prompt_required": "캐릭터 프롬프트를 입력해 주세요"
 	}
 }

@@ -272,8 +272,10 @@ onMounted(async () => {
 		} else if (character.value?.welcome) {
 			welcomeMessage.value = character.value.welcome
 		}
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Failed to load character:', error)
+		const msg = error?.response?.data?.message || error?.message || 'Failed to load character'
+		uiStore.showToast(msg, 'error')
 	} finally {
 		isLoadingCharacter.value = false
 	}

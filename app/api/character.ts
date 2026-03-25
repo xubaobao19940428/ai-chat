@@ -37,3 +37,19 @@ export const getPopularCharacters = (limit: number = 10) => {
 export const searchCharacters = (keyword: string, params: { page?: number, page_size?: number } = {}) => {
   return request.get('/v1/characters/search', { params: { keyword, ...params } })
 }
+
+export interface CreateCharacterParams {
+  name: string
+  prompt: string
+  description?: string
+  avatar?: string
+  access_type?: number // 1=private, 2=public
+}
+
+export const createCharacter = (data: CreateCharacterParams) => {
+  return request.post('/v1/characters', data)
+}
+
+export const getMyCharacters = (params: { page?: number, page_size?: number } = {}) => {
+  return request.get('/v1/characters/my', { params })
+}

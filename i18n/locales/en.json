@@ -407,6 +407,29 @@
 		"empty_state_subtitle": "Try a different keyword or browse all categories",
 		"empty_state_browse_all": "Browse All",
 		"loading_more": "Loading...",
-		"no_more": "No more items"
+		"no_more": "No more items",
+		"my_created_empty": "No characters created yet",
+		"my_created_empty_subtitle": "Create your first AI character to get started"
+	},
+	"character_create": {
+		"title": "Create AI Character",
+		"name_label": "Name",
+		"name_placeholder": "Enter character name",
+		"description_label": "Description",
+		"description_placeholder": "Briefly describe the character's abilities and features",
+		"prompt_label": "Character Prompt",
+		"prompt_placeholder": "Example: You are an experienced English teacher who inspires students with engaging teaching methods, using humor and practical examples to make conversations fun.",
+		"avatar_label": "Avatar",
+		"avatar_upload": "Upload Avatar",
+		"access_label": "Access Settings",
+		"access_public": "Public · Everyone can chat",
+		"access_private": "Private · Only you can chat",
+		"private_label": "Private",
+		"submit": "Create AI Character",
+		"creating": "Creating...",
+		"create_success": "Character created successfully!",
+		"create_failed": "Creation failed, please try again",
+		"name_required": "Please enter a character name",
+		"prompt_required": "Please enter a character prompt"
 	}
 }

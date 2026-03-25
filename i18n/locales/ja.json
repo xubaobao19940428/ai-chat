@@ -396,6 +396,29 @@
 		"empty_state_subtitle": "別のキーワードを試すか、すべてのカテゴリを閲覧してください",
 		"empty_state_browse_all": "すべて表示",
 		"loading_more": "読み込み中...",
-		"no_more": "これ以上はありません"
+		"no_more": "これ以上はありません",
+		"my_created_empty": "まだキャラクターを作成していません",
+		"my_created_empty_subtitle": "最初のAIキャラクターを作成しましょう"
+	},
+	"character_create": {
+		"title": "AIキャラクターを作成",
+		"name_label": "名前",
+		"name_placeholder": "キャラクター名を入力",
+		"description_label": "説明",
+		"description_placeholder": "キャラクターの能力や特徴を簡単に説明してください",
+		"prompt_label": "キャラクタープロンプト",
+		"prompt_placeholder": "例：あなたは経験豊富な英語教師で、ユーモアと実例を交えた魅力的な教授法で生徒の学習意欲を引き出します。",
+		"avatar_label": "アバター",
+		"avatar_upload": "アバターをアップロード",
+		"access_label": "アクセス設定",
+		"access_public": "公開 · 誰でもチャット可能",
+		"access_private": "非公開 · 自分のみチャット可能",
+		"private_label": "非公開",
+		"submit": "AIキャラクターを作成",
+		"creating": "作成中...",
+		"create_success": "キャラクターが作成されました！",
+		"create_failed": "作成に失敗しました。もう一度お試しください",
+		"name_required": "キャラクター名を入力してください",
+		"prompt_required": "キャラクタープロンプトを入力してください"
 	}
 }

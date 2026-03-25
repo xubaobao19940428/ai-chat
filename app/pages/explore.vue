@@ -4,10 +4,10 @@
 		<header class="hidden lg:flex bg-[var(--bg-main)] border-b border-[var(--border-main)] px-6 py-3 items-center justify-between gap-6 shrink-0 z-10">
 			<h1 class="text-xl font-bold text-[var(--text-primary)] tracking-tight">{{ $t('explore.title') }}</h1>
 			<div class="flex items-center gap-3">
-				<button class="flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--border-light)] text-[13px] font-bold text-[var(--text-primary)] hover:bg-[var(--fill-tsp-white-dark)] transition-all shadow-sm">
+				<button @click="toggleMyCreated" :class="['flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-bold transition-all shadow-sm', showMyCreated ? 'bg-[var(--text-primary)] text-[var(--bg-main)]' : 'border border-[var(--border-light)] text-[var(--text-primary)] hover:bg-[var(--fill-tsp-white-dark)]']">
 					{{ $t('explore.my_created') }}
 				</button>
-				<button class="flex items-center gap-2 px-4 py-2 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-xl font-bold text-[13px] hover:opacity-90 transition-all shadow-sm">
+				<button @click="router.push('/character/create')" class="flex items-center gap-2 px-4 py-2 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-xl font-bold text-[13px] hover:opacity-90 transition-all shadow-sm">
 					<Plus :size="16" />
 					<span>{{ $t('explore.create_bot') }}</span>
 				</button>
@@ -23,7 +23,10 @@
 					</button>
 					<h1 class="text-lg font-bold text-[var(--text-primary)] tracking-tight">{{ $t('explore.title') }}</h1>
 				</div>
-				<button class="flex items-center gap-1.5 px-3 py-2 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-xl font-bold text-[13px] hover:opacity-90 transition-all shadow-sm">
+				<button @click="toggleMyCreated" :class="['flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold text-[13px] transition-all shadow-sm', showMyCreated ? 'bg-[var(--text-primary)] text-[var(--bg-main)]' : 'border border-[var(--border-light)] text-[var(--text-primary)] hover:bg-[var(--fill-tsp-white-dark)]']">
+					{{ $t('explore.my_created') }}
+				</button>
+				<button @click="router.push('/character/create')" class="flex items-center gap-1.5 px-3 py-2 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-xl font-bold text-[13px] hover:opacity-90 transition-all shadow-sm">
 					<Plus :size="14" />
 					<span>{{ $t('explore.create_bot') }}</span>
 				</button>
@@ -37,7 +40,7 @@
 		</header>
 
 		<!-- Filter Bar -->
-		<div class="flex-shrink-0 flex items-center gap-3 px-4 lg:px-6 py-2.5 overflow-x-auto no-scrollbar">
+		<div v-if="!showMyCreated" class="flex-shrink-0 flex items-center gap-3 px-4 lg:px-6 py-2.5 overflow-x-auto no-scrollbar">
 			<div class="flex items-center gap-2 flex-1 min-w-0 overflow-x-auto no-scrollbar">
 				<button v-for="tag in filterTags" :key="tag.id" @click="handleTagChange(tag.id)" :class="['flex-shrink-0 flex items-center gap-1.5 px-4 py-1.5 text-[13px] font-medium rounded-full border transition-all whitespace-nowrap', selectedTag === tag.id ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]']">
 					<Heart v-if="tag.id === 'favorites'" :size="13" class="!stroke-transparent" :class="selectedTag === 'favorites' ? 'fill-white' : 'fill-red-500'" />
@@ -51,11 +54,11 @@
 		</div>
 
 		<!-- Scrollable Content -->
-		<div class="flex-1 overflow-y-auto px-4 lg:px-5 pb-12 custom-scrollbar" ref="scrollContainer" @scroll="handleScroll">
+		<div :class="['flex-1 overflow-y-auto px-4 lg:px-5 pb-12 custom-scrollbar', showMyCreated ? 'pt-4' : '']" ref="scrollContainer" @scroll="handleScroll">
 			<div class="w-full">
 				<!-- Skeleton Loading State (initial) -->
-				<div v-if="discoveryStore.isLoading && botsList.length === 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3.5">
-					<div v-for="i in 32" :key="i" class="flex items-center gap-3.5 px-4 py-3.5 rounded-2xl bg-[var(--background-white-main)] border border-[var(--border-light)] animate-pulse">
+				<div v-if="isListLoading && displayList.length === 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3.5">
+					<div v-for="i in 12" :key="i" class="flex items-center gap-3.5 px-4 py-3.5 rounded-2xl bg-[var(--background-white-main)] border border-[var(--border-light)] animate-pulse">
 						<div class="flex-shrink-0 w-11 h-11 rounded-xl bg-[var(--background-gray-main)]"></div>
 						<div class="flex-1 min-w-0">
 							<div class="h-3.5 bg-[var(--background-gray-main)] rounded w-2/3 mb-1.5"></div>
@@ -66,7 +69,7 @@
 
 				<!-- Bot Cards Grid -->
 				<div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3.5">
-					<div v-for="bot in botsList" :key="bot.id" class="relative flex items-center gap-3.5 px-4 py-3.5 rounded-2xl bg-[var(--background-white-main)] border border-[var(--border-light)] hover:border-[var(--border-main)] hover:shadow-md transition-all cursor-pointer group" @click="handleBotClick(bot)">
+					<div v-for="bot in displayList" :key="bot.id" class="relative flex items-center gap-3.5 px-4 py-3.5 rounded-2xl bg-[var(--background-white-main)] border border-[var(--border-light)] hover:border-[var(--border-main)] hover:shadow-md transition-all cursor-pointer group" @click="handleBotClick(bot)">
 						<!-- Hover Tooltip: full description -->
 						<div v-if="bot.description" class="absolute bottom-full left-0 right-0 mb-1.5 px-3 py-2 rounded-lg bg-[var(--text-primary)] text-[var(--bg-main)] text-[12px] leading-relaxed opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none z-50 shadow-lg max-w-full">
 							{{ bot.description }}
@@ -85,7 +88,8 @@
 								<h3 class="text-[14px] font-bold text-[var(--text-primary)] truncate leading-tight">
 									{{ bot.name }}
 								</h3>
-								<span v-if="bot.type === 'character'" class="px-1 py-px rounded bg-[var(--fill-tsp-white-main)] text-[var(--text-tertiary)] text-[9px] font-bold uppercase tracking-wider flex-shrink-0">{{ $t('explore.official_badge') }}</span>
+								<span v-if="bot.type === 'character' && !showMyCreated" class="px-1 py-px rounded bg-[var(--fill-tsp-white-main)] text-[var(--text-tertiary)] text-[9px] font-bold uppercase tracking-wider flex-shrink-0">{{ $t('explore.official_badge') }}</span>
+								<span v-if="showMyCreated && bot.access_type === 1" class="px-1.5 py-px rounded bg-[var(--fill-tsp-white-main)] text-[var(--text-tertiary)] text-[9px] font-bold flex-shrink-0">{{ $t('character_create.private_label') }}</span>
 							</div>
 							<p class="text-[12px] text-[var(--text-tertiary)] truncate mt-0.5">
 								{{ bot.description || $t('explore.no_description') }}
@@ -93,7 +97,7 @@
 						</div>
 
 						<!-- Favorite -->
-						<button @click.stop="toggleFavorite(Number(bot.id))"
+						<button v-if="!showMyCreated" @click.stop="toggleFavorite(Number(bot.id))"
 							class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity outline-none border-none bg-transparent"
 							:class="isFavorited(Number(bot.id)) ? '!opacity-100' : ''">
 							<Heart :size="18" :class="isFavorited(Number(bot.id)) ? 'fill-red-500 !stroke-transparent' : 'fill-transparent text-[var(--text-tertiary)]'" />
@@ -102,17 +106,20 @@
 				</div>
 
 				<!-- Empty State (only after first fetch completes) -->
-				<div v-if="hasFetched && !discoveryStore.isLoading && botsList.length === 0" class="flex flex-col items-center justify-center py-20 gap-4">
+				<div v-if="hasFetched && !isListLoading && displayList.length === 0" class="flex flex-col items-center justify-center py-20 gap-4">
 					<SearchX :size="48" class="text-[var(--text-disable)]" />
-					<h3 class="text-lg font-semibold text-[var(--text-primary)]">{{ $t('explore.empty_state') }}</h3>
-					<p class="text-sm text-[var(--text-tertiary)]">{{ $t('explore.empty_state_subtitle') }}</p>
-					<button @click="handleTagChange(10); searchQuery = ''" class="mt-2 px-5 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[13px] font-semibold hover:opacity-90 transition-opacity">
+					<h3 class="text-lg font-semibold text-[var(--text-primary)]">{{ showMyCreated ? $t('explore.my_created_empty') : $t('explore.empty_state') }}</h3>
+					<p class="text-sm text-[var(--text-tertiary)]">{{ showMyCreated ? $t('explore.my_created_empty_subtitle') : $t('explore.empty_state_subtitle') }}</p>
+					<button v-if="showMyCreated" @click="router.push('/character/create')" class="mt-2 px-5 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[13px] font-semibold hover:opacity-90 transition-opacity">
+						{{ $t('explore.create_bot') }}
+					</button>
+					<button v-else @click="handleTagChange(10); searchQuery = ''" class="mt-2 px-5 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[13px] font-semibold hover:opacity-90 transition-opacity">
 						{{ $t('explore.empty_state_browse_all') }}
 					</button>
 				</div>
 
 				<!-- Loading More Indicator -->
-				<div v-if="discoveryStore.isLoadingMore" class="flex justify-center py-8">
+				<div v-if="discoveryStore.isLoadingMore && !showMyCreated" class="flex justify-center py-8">
 					<div class="flex items-center gap-3 text-[var(--text-tertiary)]">
 						<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-current"></div>
 						<span class="text-sm font-medium">{{ $t('explore.loading_more') }}</span>
@@ -120,7 +127,7 @@
 				</div>
 
 				<!-- No More Data -->
-				<div v-if="!discoveryStore.hasMore && botsList.length > 0 && !discoveryStore.isLoading" class="text-center py-6 text-[var(--text-disable)] text-sm">{{ $t('explore.no_more') }}</div>
+				<div v-if="!showMyCreated && !discoveryStore.hasMore && botsList.length > 0 && !discoveryStore.isLoading" class="text-center py-6 text-[var(--text-disable)] text-sm">{{ $t('explore.no_more') }}</div>
 			</div>
 		</div>
 	</div>
@@ -135,6 +142,7 @@ import { useFavorite } from '~/composables/useFavorite'
 import { useUIStore } from '~/stores/ui'
 import { useExploreDiscoveryStore } from '~/stores/discovery'
 import { useConversationStore } from '~/stores/conversation'
+import { getMyCharacters } from '~/api/character'
 
 const router = useRouter()
 const uiStore = useUIStore()
@@ -149,6 +157,9 @@ const searchQuery = ref('')
 const debouncedSearch = ref('')
 const selectedTag = ref<number | string>(10)
 const hasFetched = ref(false)
+const showMyCreated = ref(false)
+const myCharacters = ref<any[]>([])
+const isLoadingMyCharacters = ref(false)
 const scrollContainer = ref<HTMLElement | null>(null)
 
 // Debounce search query
@@ -308,6 +319,38 @@ const handleBotClick = (bot: any) => {
 		router.push(`/character/${bot.id}`)
 	}
 }
+
+// My Created Characters
+const toggleMyCreated = async () => {
+	showMyCreated.value = !showMyCreated.value
+	if (showMyCreated.value) {
+		await fetchMyCharacters()
+	}
+}
+
+const fetchMyCharacters = async () => {
+	isLoadingMyCharacters.value = true
+	try {
+		const res: any = await getMyCharacters({ page: 1, page_size: 100 })
+		myCharacters.value = (res?.data?.list || []).map((c: any) => ({
+			id: String(c.id),
+			name: c.name,
+			description: c.description || '',
+			icon: c.avatar || '',
+			type: 'my_character',
+			access_type: c.access_type,
+		}))
+	} catch (err: any) {
+		console.error('Failed to fetch my characters:', err)
+		myCharacters.value = []
+	} finally {
+		isLoadingMyCharacters.value = false
+	}
+}
+
+// Computed display list & loading state
+const displayList = computed(() => showMyCreated.value ? myCharacters.value : botsList.value)
+const isListLoading = computed(() => showMyCreated.value ? isLoadingMyCharacters.value : discoveryStore.isLoading)
 </script>
 
 <style scoped>
