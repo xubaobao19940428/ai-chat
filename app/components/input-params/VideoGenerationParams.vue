@@ -492,6 +492,19 @@
 			</div>
 		</Transition>
 	</div>
+
+	<!-- Dynamic Boolean Fields (audio_enabled, etc.) -->
+	<div v-for="field in fields.dynamicBooleanFields.value" :key="field.key">
+		<button @click="fields.setParam(field.key, !getParamValue(field.key, field.default))" class="unified-pill"
+			:class="getParamValue(field.key, field.default) ? 'unified-pill-active' : ''">
+			<div class="relative w-7 h-4 rounded-full transition-colors"
+				:class="getParamValue(field.key, field.default) ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'">
+				<div class="absolute top-0.5 w-3 h-3 rounded-full bg-white shadow-sm transition-transform"
+					:class="getParamValue(field.key, field.default) ? 'translate-x-3.5' : 'translate-x-0.5'" />
+			</div>
+			<span class="unified-pill-text">{{ field.description || field.key }}</span>
+		</button>
+	</div>
 </template>
 
 <script setup lang="ts">

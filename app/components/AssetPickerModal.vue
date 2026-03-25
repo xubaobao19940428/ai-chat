@@ -97,7 +97,7 @@
                   Cancel
                 </button>
                 <button @click="confirm" :disabled="selectedFiles.length === 0"
-                  class="px-5 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[13px] font-medium hover:opacity-90 transition-all disabled:opacity-40 disabled:pointer-events-none">
+                  class="px-5 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[13px] font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none">
                   Confirm
                 </button>
               </div>

@@ -50,8 +50,8 @@
 							@click="useExample(example)">
 							<img :src="example.url" loading="lazy"
 								class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105 bg-[#f0eeeb] dark:bg-[#2c2c2c]"
-								:alt="example.prompt" :style="{ minHeight: '200px' }"
-								@load="($event.target as HTMLImageElement).style.minHeight = 'auto'" />
+								:alt="example.prompt" :style="{ aspectRatio: '3/4' }"
+								@load="(e: Event) => { const img = e.target as HTMLImageElement; img.style.aspectRatio = `${img.naturalWidth}/${img.naturalHeight}` }" />
 							<!-- Center heart animation -->
 							<div v-if="heartAnimId === example.id"
 								class="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">

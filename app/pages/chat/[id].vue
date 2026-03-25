@@ -186,7 +186,7 @@
 								<!-- Action bar -->
 								<div class="flex items-center gap-0.5 mt-1.5 text-[12px] text-[var(--text-tertiary)]">
 									<button @click="regenerateFromGroup(group)" :disabled="chatStore.isLoading"
-										class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-40">
+										class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
 										<RefreshCw :size="12" />
 										{{ $t('chat.retry') }}
 									</button>
@@ -215,7 +215,7 @@
 									<p class="text-[11px] text-[var(--text-tertiary)] text-center leading-relaxed">
 										{{ $t('chat.image_generation_failed_desc') }}</p>
 									<button @click="regenerateFromGroup(group)" :disabled="chatStore.isLoading"
-										class="mt-1 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[11px] font-semibold hover:opacity-90 transition-opacity disabled:opacity-40">
+										class="mt-1 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[11px] font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
 										<RefreshCw :size="11" />
 										{{ $t('chat.retry') }}
 									</button>
@@ -270,7 +270,7 @@
 							<div v-else class="flex flex-col items-center justify-center gap-3 py-14">
 								<div class="text-white/30 text-[13px]">{{ $t('chat.video_generation_failed') }}</div>
 								<button @click="regenerateFromGroup(group)" :disabled="chatStore.isLoading"
-									class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/60 hover:text-white text-[12px] transition-colors disabled:opacity-40">
+									class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/60 hover:text-white text-[12px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
 									<RefreshCw :size="12" />
 									{{ $t('chat.retry') }}
 								</button>
@@ -281,7 +281,7 @@
 						<div v-if="!group.isLoading"
 							class="flex items-center gap-0 px-2 py-2 border-t border-[var(--border-light)] overflow-x-auto no-scrollbar">
 							<button @click="regenerateFromGroup(group)" :disabled="chatStore.isLoading"
-								class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-40 text-[12px] whitespace-nowrap">
+								class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[12px] whitespace-nowrap">
 								<RefreshCw :size="12" />
 								{{ $t('chat.retry') }}
 							</button>
@@ -405,7 +405,7 @@
 									<button
 										v-if="currentConversation?.messages[currentConversation.messages.length - 1]?.id === message.id"
 										@click.stop="regenerateMessage()" :disabled="chatStore.isLoading"
-										class="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors disabled:opacity-40"
+										class="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 										:title="$t('chat.regenerate')">
 										<RefreshCw :size="15" :class="chatStore.isLoading ? 'animate-spin' : ''" />
 									</button>

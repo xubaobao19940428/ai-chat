@@ -102,7 +102,7 @@
 					</button>
 					<button v-else @click="handleSend"
 						:disabled="(!hasContent && fileUpload.uploadedFiles.value.length === 0) || fileUpload.isUploading.value"
-						class="unified-send-btn disabled:opacity-20 disabled:scale-100 shrink-0 self-end">
+						class="unified-send-btn disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 shrink-0 self-end">
 						<Sparkles v-if="capability === 'image_generation' || capability === 'video_generation'"
 							:size="20" fill="currentColor" />
 						<ArrowUp v-else :size="18" :stroke-width="2.5" />

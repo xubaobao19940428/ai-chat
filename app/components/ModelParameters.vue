@@ -60,8 +60,17 @@ const emit = defineEmits<{
 const numericFields = computed(() => {
 	if (!props.modelInput?.fields) return []
 	return Object.entries(props.modelInput.fields)
-		.filter(([_, field]) => field.type === 'number')
-		.map(([key, field]) => ({ ...field, key }))
+		.filter(([_, field]) => field.type === 'number' || field.type === 'integer')
+		.map(([key, field]) => {
+			const f = field as any
+			return {
+				...f,
+				key,
+				min: f.min ?? f.minimum ?? 0,
+				max: f.max ?? f.maximum ?? 100,
+				step: f.step ?? (f.type === 'integer' ? 1 : 0.1),
+			}
+		})
 })
 
 const getValue = (key: string, defaultValue: any) => {

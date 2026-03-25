@@ -353,7 +353,8 @@
 			"lifestyle": "Lifestyle / Natur",
 			"scifi": "Sci-Fi / Zukunft",
 			"ui": "UI / Oberfläche",
-			"uncategorized": "Nicht kategorisiert"
+			"uncategorized": "Nicht kategorisiert",
+			"favorites": "Favoriten"
 		}
 	},
 	"video_generation": {
@@ -366,7 +367,8 @@
 			"scifi_action": "Sci-Fi Action",
 			"anime_game": "Anime & Gaming",
 			"healing": "Wellness & Alltag",
-			"uncategorized": "Nicht kategorisiert"
+			"uncategorized": "Nicht kategorisiert",
+			"favorites": "Favoriten"
 		}
 	},
 	"explore": {
@@ -384,12 +386,15 @@
 			"emotion": "Emotion",
 			"business": "Business",
 			"tools": "Werkzeuge",
-			"uncategorized": "Nicht kategorisiert"
+			"uncategorized": "Nicht kategorisiert",
+			"favorites": "Favoriten"
 		},
 		"official_badge": "Offiziell",
 		"by_author": "Von",
 		"no_description": "Keine Beschreibung verfügbar.",
 		"empty_state": "Keine Bots gefunden",
+		"empty_state_subtitle": "Versuche ein anderes Stichwort oder durchsuche alle Kategorien",
+		"empty_state_browse_all": "Alle anzeigen",
 		"loading_more": "Wird geladen...",
 		"no_more": "Keine weiteren Elemente"
 	}

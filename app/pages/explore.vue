@@ -102,7 +102,14 @@
 				</div>
 
 				<!-- Empty State (only after first fetch completes) -->
-				<div v-if="hasFetched && !discoveryStore.isLoading && botsList.length === 0" class="text-center py-20 text-[var(--text-tertiary)]">{{ $t('explore.empty_state') }}</div>
+				<div v-if="hasFetched && !discoveryStore.isLoading && botsList.length === 0" class="flex flex-col items-center justify-center py-20 gap-4">
+					<SearchX :size="48" class="text-[var(--text-disable)]" />
+					<h3 class="text-lg font-semibold text-[var(--text-primary)]">{{ $t('explore.empty_state') }}</h3>
+					<p class="text-sm text-[var(--text-tertiary)]">{{ $t('explore.empty_state_subtitle') }}</p>
+					<button @click="handleTagChange(10); searchQuery = ''" class="mt-2 px-5 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[13px] font-semibold hover:opacity-90 transition-opacity">
+						{{ $t('explore.empty_state_browse_all') }}
+					</button>
+				</div>
 
 				<!-- Loading More Indicator -->
 				<div v-if="discoveryStore.isLoadingMore" class="flex justify-center py-8">
@@ -121,9 +128,9 @@
 
 <script setup lang="ts">
 definePageMeta({ hideTopBar: true })
-import { ref, computed, onMounted, nextTick, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { Search, Flame, Plus, Menu, Heart } from 'lucide-vue-next'
+import { Search, SearchX, Flame, Plus, Menu, Heart } from 'lucide-vue-next'
 import { useFavorite } from '~/composables/useFavorite'
 import { useUIStore } from '~/stores/ui'
 import { useExploreDiscoveryStore } from '~/stores/discovery'
@@ -139,9 +146,20 @@ const { isFavorited, toggleFavorite } = useFavorite('character')
 
 // State
 const searchQuery = ref('')
+const debouncedSearch = ref('')
 const selectedTag = ref<number | string>(10)
 const hasFetched = ref(false)
 const scrollContainer = ref<HTMLElement | null>(null)
+
+// Debounce search query
+const SEARCH_DEBOUNCE_MS = 300
+let searchTimer: ReturnType<typeof setTimeout> | undefined
+watch(searchQuery, (val) => {
+	clearTimeout(searchTimer)
+	searchTimer = setTimeout(() => {
+		debouncedSearch.value = val
+	}, SEARCH_DEBOUNCE_MS)
+})
 
 // Filter Tags
 const filterTags = [
@@ -190,6 +208,10 @@ const filterTags = [
 		name: 'favorites',
 	},
 ]
+
+onUnmounted(() => {
+	clearTimeout(searchTimer)
+})
 
 // Load initial data
 onMounted(async () => {
@@ -241,8 +263,8 @@ const botsList = computed(() => {
 	}
 
 	// Search filtering
-	if (searchQuery.value) {
-		const query = searchQuery.value.toLowerCase()
+	if (debouncedSearch.value) {
+		const query = debouncedSearch.value.toLowerCase()
 		return mapped.filter((b: any) => (b.name && b.name.toLowerCase().includes(query)) || (b.description && b.description.toLowerCase().includes(query)))
 	}
 

@@ -4,6 +4,15 @@ import { useModelStore } from '~/stores/models'
 /**
  * Extracts dynamic parameter fields from the selected model's model_input.fields.
  * Eliminates duplicated logic across chat, image-generation, video-generation, character pages.
+ *
+ * Field type resolution follows capability-schema-specification.md:
+ *   - string + (widget=select | enum[]) → select
+ *   - number + (widget=select | enum[]) → select (not number input)
+ *   - number/integer + minimum/maximum (no enum) → number input
+ *   - boolean → boolean toggle
+ *   - string + widget=textarea → excluded (handled by editor)
+ *   - string + format=uri → excluded (handled by media upload)
+ *   - array → excluded (handled by media upload)
  */
 export function useInputFields(options?: {
 	/** chat/[id] mode: params are stored on the conversation object, not locally */
@@ -22,26 +31,41 @@ export function useInputFields(options?: {
 	// Fields handled elsewhere (editor, media upload, web search, model params popover) — not shown as pills
 	const EXCLUDED_FIELD_KEYS = new Set([
 		// Handled by text editor
-		'prompt', 'messages',
+		'prompt', 'negative_prompt', 'messages',
 		// Internal model parameters (shown in ModelParameters popover for chat)
 		'temperature', 'top_p', 'top_k', 'max_tokens', 'stream', 'stop',
 		'presence_penalty', 'frequency_penalty',
-		// Handled by media upload button
+		// Handled by media upload button (all uri/image/video fields)
 		'image_urls', 'file_ids', 'image', 'images', 'input_images', 'input_image',
-		'init_image', 'end_image', 'ref_image', 'video', 'input_videos',
+		'init_image', 'start_image', 'end_image', 'ref_image', 'video', 'input_videos',
 		// Handled by web search toggle
 		'enable_web_search', 'web_search_query', 'web_search_depth',
 	])
+
+	/** Also exclude fields by shape: format=uri strings, textarea widgets, array types */
+	const isExcludedByShape = (f: any): boolean => {
+		if (f.format === 'uri') return true
+		if (f.widget === 'textarea') return true
+		if (f.type === 'array') return true
+		return false
+	}
+
+	/** Determine if a field should render as a select dropdown */
+	const isSelectField = (f: any): boolean => {
+		if (f.widget === 'select') return true
+		if (f.type === 'select') return true
+		if (Array.isArray(f.enum) && f.enum.length > 0) return true
+		if (Array.isArray(f.options) && f.options.length > 0) return true
+		return false
+	}
 
 	const dynamicSelectFields = computed(() => {
 		const fields: any[] = []
 		for (const [key, field] of Object.entries(modelInputFields.value)) {
 			if (EXCLUDED_FIELD_KEYS.has(key)) continue
 			const f = field as any
-			// Match: type=select, or widget=select, or has enum/options array
-			const isSelect = f.type === 'select' || f.widget === 'select' || (Array.isArray(f.enum) && f.enum.length > 0)
-			if (isSelect) {
-				// Normalize: ensure options array exists (from enum or options)
+			if (isExcludedByShape(f)) continue
+			if (isSelectField(f)) {
 				const options = f.options || f.enum || []
 				fields.push({ key, ...f, options })
 			}
@@ -54,12 +78,27 @@ export function useInputFields(options?: {
 		for (const [key, field] of Object.entries(modelInputFields.value)) {
 			if (EXCLUDED_FIELD_KEYS.has(key)) continue
 			const f = field as any
+			if (isExcludedByShape(f)) continue
+			// Only pure number fields (no enum — those go to select)
+			if (isSelectField(f)) continue
 			const isNumber = f.type === 'number' || f.type === 'integer' || f.widget === 'slider' || f.widget === 'number'
 			if (isNumber) {
-				// Normalize: JSON Schema uses minimum/maximum, internal uses min/max
 				const min = f.min ?? f.minimum
 				const max = f.max ?? f.maximum
 				fields.push({ key, ...f, min, max })
+			}
+		}
+		return fields
+	})
+
+	const dynamicBooleanFields = computed(() => {
+		const fields: any[] = []
+		for (const [key, field] of Object.entries(modelInputFields.value)) {
+			if (EXCLUDED_FIELD_KEYS.has(key)) continue
+			const f = field as any
+			if (isExcludedByShape(f)) continue
+			if (f.type === 'boolean') {
+				fields.push({ key, ...f })
 			}
 		}
 		return fields
@@ -91,6 +130,7 @@ export function useInputFields(options?: {
 			for (const [key, field] of Object.entries(fields)) {
 				if (EXCLUDED_FIELD_KEYS.has(key)) continue
 				const f = field as any
+				if (isExcludedByShape(f)) continue
 				if (f.default !== undefined) {
 					newParams[key] = f.default
 				} else if (f.options?.length > 0) {
@@ -99,6 +139,8 @@ export function useInputFields(options?: {
 					newParams[key] = f.enum[0]
 				} else if (f.type === 'number' || f.type === 'integer') {
 					newParams[key] = f.min ?? f.minimum ?? 1
+				} else if (f.type === 'boolean') {
+					newParams[key] = false
 				}
 			}
 			_localParams.value = newParams
@@ -138,7 +180,7 @@ export function useInputFields(options?: {
 
 	const supportsMediaPrompt = computed(() => {
 		const f = modelInputFields.value
-		return !!(f.image_urls || f.file_ids || f.image || f.images || f.input_images || f.input_image || f.init_image || f.end_image || f.ref_image)
+		return !!(f.image_urls || f.file_ids || f.image || f.images || f.input_images || f.input_image || f.init_image || f.start_image || f.end_image || f.ref_image)
 	})
 
 	const supportsMultipleImages = computed(() => {
@@ -148,7 +190,7 @@ export function useInputFields(options?: {
 	const mediaImageUploadLimit = computed(() => {
 		const f = modelInputFields.value
 		if (f.input_images || f.images) return Infinity
-		if (f.init_image && f.end_image) return 2
+		if ((f.init_image || f.start_image) && f.end_image) return 2
 		return 1
 	})
 
@@ -203,6 +245,7 @@ export function useInputFields(options?: {
 		modelInputFields,
 		dynamicSelectFields,
 		dynamicNumberFields,
+		dynamicBooleanFields,
 		dynamicParams,
 		// Capability
 		capability,

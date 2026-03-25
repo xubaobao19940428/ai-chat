@@ -102,7 +102,7 @@
 														<ShieldCheck class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--icon-secondary)]" />
 														<input type="text" v-model="code" required class="w-full pl-10 pr-4 py-3 rounded-[8px] border border-[var(--border-main)] bg-[var(--background-white-main)] text-[var(--text-primary)] focus:border-[var(--border-blue)] outline-none transition-colors text-sm" :placeholder="$t('auth.verification_code')" />
 													</div>
-													<button type="button" @click="handleSendCode" :disabled="countdown > 0 || sendingCode" class="px-4 py-3 bg-[var(--Button-secondary-gray)] text-[var(--text-primary)] rounded-[8px] font-medium text-sm transition-opacity disabled:opacity-40 whitespace-nowrap hover:opacity-80">
+													<button type="button" @click="handleSendCode" :disabled="countdown > 0 || sendingCode" class="px-4 py-3 bg-[var(--Button-secondary-gray)] text-[var(--text-primary)] rounded-[8px] font-medium text-sm transition-opacity disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap hover:opacity-80">
 														{{ countdown > 0 ? `${countdown}s` : $t('auth.send_code') }}
 													</button>
 												</div>

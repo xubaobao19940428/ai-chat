@@ -353,7 +353,8 @@
 			"lifestyle": "라이프스타일/자연",
 			"scifi": "SF/미래",
 			"ui": "UI/인터페이스",
-			"uncategorized": "미분류"
+			"uncategorized": "미분류",
+			"favorites": "즐겨찾기"
 		}
 	},
 	"video_generation": {
@@ -366,7 +367,8 @@
 			"scifi_action": "SF 액션",
 			"anime_game": "애니메이션 & 게임",
 			"healing": "힐링 & 일상",
-			"uncategorized": "미분류"
+			"uncategorized": "미분류",
+			"favorites": "즐겨찾기"
 		}
 	},
 	"explore": {
@@ -384,12 +386,15 @@
 			"emotion": "감정",
 			"business": "비즈니스",
 			"tools": "도구",
-			"uncategorized": "미분류"
+			"uncategorized": "미분류",
+			"favorites": "즐겨찾기"
 		},
 		"official_badge": "공식",
 		"by_author": "작성자",
 		"no_description": "설명이 없습니다.",
 		"empty_state": "봇을 찾을 수 없습니다",
+		"empty_state_subtitle": "다른 키워드를 시도하거나 전체 카테고리를 탐색하세요",
+		"empty_state_browse_all": "전체 보기",
 		"loading_more": "로딩 중...",
 		"no_more": "더 이상 항목이 없습니다"
 	}

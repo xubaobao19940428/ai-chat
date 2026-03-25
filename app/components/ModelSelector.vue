@@ -55,7 +55,7 @@
 				leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100"
 				leave-to-class="opacity-0">
 				<div v-if="isOpen" :style="dropdownStyle"
-					class="fixed w-[280px] rounded-[12px] bg-[var(--background-white-main)] shadow-[var(--shadow-L)] z-[9999] overflow-hidden border border-[var(--border-main)]">
+					class="fixed w-[280px] max-w-[90vw] rounded-[12px] bg-[var(--background-white-main)] shadow-[var(--shadow-L)] z-[9999] overflow-hidden border border-[var(--border-main)]">
 					<div v-if="modelStore.isLoading" class="p-6 text-center">
 						<div
 							class="w-5 h-5 border-2 border-[var(--text-blue)] border-t-transparent rounded-full animate-spin mx-auto">

@@ -404,6 +404,8 @@
 		"by_author": "By",
 		"no_description": "No description available.",
 		"empty_state": "No bots found",
+		"empty_state_subtitle": "Try a different keyword or browse all categories",
+		"empty_state_browse_all": "Browse All",
 		"loading_more": "Loading...",
 		"no_more": "No more items"
 	}

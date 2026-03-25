@@ -42,7 +42,7 @@
 					<!-- Masonry Grid Layout for Inspiration -->
 					<MasonryGrid v-else :items="exampleVideos" v-slot="{ item: example }">
 						<div class="group relative rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--text-tertiary)] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md h-fit" @click="useExample(example)" @mouseenter="hoveredIndex = example.id" @mouseleave="hoveredIndex = null">
-							<img :src="example.thumbnail" loading="lazy" class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105 bg-[#f0eeeb] dark:bg-[#2c2c2c]" :alt="example.prompt" :style="{ minHeight: '200px' }" @load="($event.target as HTMLImageElement).style.minHeight = 'auto'" />
+							<img :src="example.thumbnail" loading="lazy" class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105 bg-[#f0eeeb] dark:bg-[#2c2c2c]" :alt="example.prompt" :style="{ aspectRatio: '3/4' }" @load="(e: Event) => { const img = e.target as HTMLImageElement; img.style.aspectRatio = `${img.naturalWidth}/${img.naturalHeight}` }" />
 
 							<!-- Hover Video (PC Only) -->
 							<video v-if="hoveredIndex === example.id && example.videoUrl" :src="example.videoUrl" autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover hidden md:block z-0" />

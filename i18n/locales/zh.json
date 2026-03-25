@@ -404,6 +404,8 @@
 		"by_author": "作者",
 		"no_description": "暂无详情",
 		"empty_state": "未找到相关的机器人",
+		"empty_state_subtitle": "试试其他关键词，或浏览全部分类",
+		"empty_state_browse_all": "浏览全部",
 		"loading_more": "正在加载...",
 		"no_more": "已经到底了"
 	}
