@@ -57,9 +57,9 @@
 							<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 pointer-events-none">
 								<!-- Top Right: Favorite -->
 								<div class="absolute top-3 right-3 pointer-events-auto transform -translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 delay-75"
-									:class="isFavorited(example.id) ? '!opacity-100 !translate-y-0' : ''">
-									<button @click.stop="handleFavorite(example.id)" class="outline-none">
-										<Heart :size="20" :class="['!stroke-transparent drop-shadow-md', isFavorited(example.id) ? 'fill-red-500' : 'fill-white/80']" />
+									:class="isFavorited(Number(example.id)) ? '!opacity-100 !translate-y-0' : ''">
+									<button @click.stop="handleFavorite(Number(example.id))" class="outline-none">
+										<Heart :size="20" :class="['!stroke-transparent drop-shadow-md', isFavorited(Number(example.id)) ? 'fill-red-500' : 'fill-white/80']" />
 									</button>
 								</div>
 								<!-- Bottom -->
@@ -628,7 +628,7 @@ const exampleVideos = computed(() => {
 
 // Favorites
 const { isFavorited, toggleFavorite, favoriteItems, isFavoritesLoading, hasMoreFavorites, fetchFavoriteList } = useFavorite('prompt_video')
-const heartAnimId = ref<number | null>(null)
+const heartAnimId = ref<number | string | null>(null)
 
 const handleFavorite = (id: number) => {
 	if (!isFavorited(id)) {

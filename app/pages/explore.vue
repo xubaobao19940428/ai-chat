@@ -93,10 +93,10 @@
 						</div>
 
 						<!-- Favorite -->
-						<button @click.stop="toggleFavorite(bot.id)"
+						<button @click.stop="toggleFavorite(Number(bot.id))"
 							class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity outline-none border-none bg-transparent"
-							:class="isFavorited(bot.id) ? '!opacity-100' : ''">
-							<Heart :size="18" :class="isFavorited(bot.id) ? 'fill-red-500 !stroke-transparent' : 'fill-transparent text-[var(--text-tertiary)]'" />
+							:class="isFavorited(Number(bot.id)) ? '!opacity-100' : ''">
+							<Heart :size="18" :class="isFavorited(Number(bot.id)) ? 'fill-red-500 !stroke-transparent' : 'fill-transparent text-[var(--text-tertiary)]'" />
 						</button>
 					</div>
 				</div>
