@@ -22,6 +22,19 @@ export function useSpeechRecognition(options?: SpeechRecognitionOptions) {
 	const isSupported = typeof window !== 'undefined' &&
 		('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)
 
+	// Map short locale codes to BCP 47 tags for Web Speech API
+	const LOCALE_MAP: Record<string, string> = {
+		zh: 'zh-CN', en: 'en-US', ja: 'ja-JP', ko: 'ko-KR',
+		es: 'es-ES', fr: 'fr-FR', de: 'de-DE', pt: 'pt-BR',
+	}
+
+	function resolveLang(): string {
+		const raw = options?.lang
+		const code = raw ? (typeof raw === 'string' ? raw : raw.value) : ''
+		if (!code) return navigator.language || 'zh-CN'
+		return LOCALE_MAP[code] || code
+	}
+
 	function setupAudioAnalysis(stream: MediaStream) {
 		mediaStream = stream
 		audioContext = new AudioContext()
@@ -83,8 +96,7 @@ export function useSpeechRecognition(options?: SpeechRecognitionOptions) {
 		recognition = new SpeechRecognitionAPI()
 		recognition.continuous = true
 		recognition.interimResults = true
-		const lang = options?.lang
-		recognition.lang = (lang ? (typeof lang === 'string' ? lang : lang.value) : null) || navigator.language || 'zh-CN'
+		recognition.lang = resolveLang()
 
 		recognition.onresult = (event: any) => {
 			let finalText = ''
