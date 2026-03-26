@@ -1,7 +1,7 @@
-import { ref, onUnmounted } from 'vue'
+import { ref, type Ref, onUnmounted } from 'vue'
 
 interface SpeechRecognitionOptions {
-	lang?: string
+	lang?: Ref<string> | string
 	onResult?: (text: string) => void
 }
 
@@ -83,7 +83,8 @@ export function useSpeechRecognition(options?: SpeechRecognitionOptions) {
 		recognition = new SpeechRecognitionAPI()
 		recognition.continuous = true
 		recognition.interimResults = true
-		recognition.lang = options?.lang || navigator.language || 'zh-CN'
+		const lang = options?.lang
+		recognition.lang = (lang ? (typeof lang === 'string' ? lang : lang.value) : null) || navigator.language || 'zh-CN'
 
 		recognition.onresult = (event: any) => {
 			let finalText = ''

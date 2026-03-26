@@ -208,7 +208,8 @@ const placeholderFn = () => {
 }
 const { displayedText: displayedPlaceholder } = useTypewriter(placeholderFn)
 
-const speech = useSpeechRecognition()
+const { locale } = useI18n()
+const speech = useSpeechRecognition({ lang: locale })
 
 // --- State ---
 const containerRef = ref<HTMLElement | null>(null)
