@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MixU Logo Preview</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Inter, -apple-system, sans-serif; background: #f8f8f7; padding: 40px; }
+  h1 { font-size: 24px; color: #34322d; margin-bottom: 8px; font-weight: 600; }
+  .subtitle { font-size: 14px; color: #858481; margin-bottom: 32px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+  .card { background: #fff; border: 1px solid #0000000f; border-radius: 16px; padding: 24px; transition: box-shadow .2s; }
+  .card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+  .card h3 { font-size: 13px; color: #858481; margin-bottom: 16px; font-weight: 500; }
+  .previews { display: flex; gap: 12px; margin-bottom: 16px; }
+  .sidebar-mock { background: #ebebeb; border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 8px; flex: 1; }
+  .sidebar-mock span { font-size: 17px; font-weight: 700; color: #34322d; letter-spacing: -0.3px; }
+  .dark-mock { background: #212122; border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 8px; flex: 1; }
+  .dark-mock span { font-size: 17px; font-weight: 700; color: #dadada; letter-spacing: -0.3px; }
+  .sizes { display: flex; align-items: flex-end; gap: 16px; }
+  .sizes .s { text-align: center; }
+  .sizes .s small { font-size: 10px; color: #b9b9b7; display: block; margin-top: 4px; }
+</style>
+</head>
+<body>
+<h1>MixU Logo 方案预览 ✨</h1>
+<p class="subtitle">手工 SVG · 浅色/深色模式 · 多尺寸预览 — 刷新页面查看最新方案</p>
+<div class="grid">
+
+<!-- 1: DNA helix / mixing spiral -->
+<div class="card">
+  <h3>① DNA 双螺旋 — 混合的含义</h3>
+  <div class="previews">
+    <div class="sidebar-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <path d="M8 4C8 4 8 10 16 16C24 22 24 28 24 28" stroke="#34322d" stroke-width="2.8" stroke-linecap="round"/>
+        <path d="M24 4C24 4 24 10 16 16C8 22 8 28 8 28" stroke="#34322d" stroke-width="2.8" stroke-linecap="round"/>
+        <circle cx="8" cy="4" r="2.2" fill="#34322d"/>
+        <circle cx="24" cy="28" r="2.2" fill="#34322d"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+    <div class="dark-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <path d="M8 4C8 4 8 10 16 16C24 22 24 28 24 28" stroke="#dadada" stroke-width="2.8" stroke-linecap="round"/>
+        <path d="M24 4C24 4 24 10 16 16C8 22 8 28 8 28" stroke="#dadada" stroke-width="2.8" stroke-linecap="round"/>
+        <circle cx="8" cy="4" r="2.2" fill="#dadada"/>
+        <circle cx="24" cy="28" r="2.2" fill="#dadada"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+  </div>
+  <div class="sizes">
+    <div class="s"><svg width="16" height="16" viewBox="0 0 32 32" fill="none"><path d="M8 4C8 4 8 10 16 16C24 22 24 28 24 28" stroke="#34322d" stroke-width="2.8" stroke-linecap="round"/><path d="M24 4C24 4 24 10 16 16C8 22 8 28 8 28" stroke="#34322d" stroke-width="2.8" stroke-linecap="round"/><circle cx="8" cy="4" r="2.2" fill="#34322d"/><circle cx="24" cy="28" r="2.2" fill="#34322d"/></svg><small>16</small></div>
+    <div class="s"><svg width="24" height="24" viewBox="0 0 32 32" fill="none"><path d="M8 4C8 4 8 10 16 16C24 22 24 28 24 28" stroke="#34322d" stroke-width="2.8" stroke-linecap="round"/><path d="M24 4C24 4 24 10 16 16C8 22 8 28 8 28" stroke="#34322d" stroke-width="2.8" stroke-linecap="round"/><circle cx="8" cy="4" r="2.2" fill="#34322d"/><circle cx="24" cy="28" r="2.2" fill="#34322d"/></svg><small>24</small></div>
+    <div class="s"><svg width="40" height="40" viewBox="0 0 32 32" fill="none"><path d="M8 4C8 4 8 10 16 16C24 22 24 28 24 28" stroke="#34322d" stroke-width="2.8" stroke-linecap="round"/><path d="M24 4C24 4 24 10 16 16C8 22 8 28 8 28" stroke="#34322d" stroke-width="2.8" stroke-linecap="round"/><circle cx="8" cy="4" r="2.2" fill="#34322d"/><circle cx="24" cy="28" r="2.2" fill="#34322d"/></svg><small>40</small></div>
+  </div>
+</div>
+
+<!-- 2: Möbius strip / infinity chat -->
+<div class="card">
+  <h3>② 莫比乌斯环 — 无限对话</h3>
+  <div class="previews">
+    <div class="sidebar-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <path d="M4 16C4 10 8 8 12 12C16 16 16 16 16 16C16 16 16 16 20 12C24 8 28 10 28 16C28 22 24 24 20 20C16 16 16 16 16 16C16 16 16 16 12 20C8 24 4 22 4 16Z" stroke="#34322d" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+    <div class="dark-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <path d="M4 16C4 10 8 8 12 12C16 16 16 16 16 16C16 16 16 16 20 12C24 8 28 10 28 16C28 22 24 24 20 20C16 16 16 16 16 16C16 16 16 16 12 20C8 24 4 22 4 16Z" stroke="#dadada" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+  </div>
+  <div class="sizes">
+    <div class="s"><svg width="16" height="16" viewBox="0 0 32 32" fill="none"><path d="M4 16C4 10 8 8 12 12C16 16 16 16 16 16C16 16 16 16 20 12C24 8 28 10 28 16C28 22 24 24 20 20C16 16 16 16 16 16C16 16 16 16 12 20C8 24 4 22 4 16Z" stroke="#34322d" stroke-width="2.6" fill="none"/></svg><small>16</small></div>
+    <div class="s"><svg width="24" height="24" viewBox="0 0 32 32" fill="none"><path d="M4 16C4 10 8 8 12 12C16 16 16 16 16 16C16 16 16 16 20 12C24 8 28 10 28 16C28 22 24 24 20 20C16 16 16 16 16 16C16 16 16 16 12 20C8 24 4 22 4 16Z" stroke="#34322d" stroke-width="2.6" fill="none"/></svg><small>24</small></div>
+    <div class="s"><svg width="40" height="40" viewBox="0 0 32 32" fill="none"><path d="M4 16C4 10 8 8 12 12C16 16 16 16 16 16C16 16 16 16 20 12C24 8 28 10 28 16C28 22 24 24 20 20C16 16 16 16 16 16C16 16 16 16 12 20C8 24 4 22 4 16Z" stroke="#34322d" stroke-width="2.6" fill="none"/></svg><small>40</small></div>
+  </div>
+</div>
+
+<!-- 3: Abstract eye / AI vision -->
+<div class="card">
+  <h3>③ AI 之眼 — 智能视觉</h3>
+  <div class="previews">
+    <div class="sidebar-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <path d="M2 16C2 16 8 6 16 6C24 6 30 16 30 16C30 16 24 26 16 26C8 26 2 16 2 16Z" stroke="#34322d" stroke-width="2.4" stroke-linejoin="round" fill="none"/>
+        <circle cx="16" cy="16" r="5" stroke="#34322d" stroke-width="2.4" fill="none"/>
+        <circle cx="16" cy="16" r="1.8" fill="#34322d"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+    <div class="dark-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <path d="M2 16C2 16 8 6 16 6C24 6 30 16 30 16C30 16 24 26 16 26C8 26 2 16 2 16Z" stroke="#dadada" stroke-width="2.4" stroke-linejoin="round" fill="none"/>
+        <circle cx="16" cy="16" r="5" stroke="#dadada" stroke-width="2.4" fill="none"/>
+        <circle cx="16" cy="16" r="1.8" fill="#dadada"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+  </div>
+  <div class="sizes">
+    <div class="s"><svg width="16" height="16" viewBox="0 0 32 32" fill="none"><path d="M2 16C2 16 8 6 16 6C24 6 30 16 30 16C30 16 24 26 16 26C8 26 2 16 2 16Z" stroke="#34322d" stroke-width="2.4" stroke-linejoin="round" fill="none"/><circle cx="16" cy="16" r="5" stroke="#34322d" stroke-width="2.4" fill="none"/><circle cx="16" cy="16" r="1.8" fill="#34322d"/></svg><small>16</small></div>
+    <div class="s"><svg width="24" height="24" viewBox="0 0 32 32" fill="none"><path d="M2 16C2 16 8 6 16 6C24 6 30 16 30 16C30 16 24 26 16 26C8 26 2 16 2 16Z" stroke="#34322d" stroke-width="2.4" stroke-linejoin="round" fill="none"/><circle cx="16" cy="16" r="5" stroke="#34322d" stroke-width="2.4" fill="none"/><circle cx="16" cy="16" r="1.8" fill="#34322d"/></svg><small>24</small></div>
+    <div class="s"><svg width="40" height="40" viewBox="0 0 32 32" fill="none"><path d="M2 16C2 16 8 6 16 6C24 6 30 16 30 16C30 16 24 26 16 26C8 26 2 16 2 16Z" stroke="#34322d" stroke-width="2.4" stroke-linejoin="round" fill="none"/><circle cx="16" cy="16" r="5" stroke="#34322d" stroke-width="2.4" fill="none"/><circle cx="16" cy="16" r="1.8" fill="#34322d"/></svg><small>40</small></div>
+  </div>
+</div>
+
+<!-- 4: Constellation / neural sparks -->
+<div class="card">
+  <h3>④ 星座连线 — 神经网络</h3>
+  <div class="previews">
+    <div class="sidebar-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <line x1="6" y1="8" x2="16" y2="4" stroke="#34322d" stroke-width="1.8"/>
+        <line x1="16" y1="4" x2="26" y2="10" stroke="#34322d" stroke-width="1.8"/>
+        <line x1="6" y1="8" x2="12" y2="20" stroke="#34322d" stroke-width="1.8"/>
+        <line x1="16" y1="4" x2="16" y2="16" stroke="#34322d" stroke-width="1.8"/>
+        <line x1="26" y1="10" x2="20" y2="22" stroke="#34322d" stroke-width="1.8"/>
+        <line x1="12" y1="20" x2="20" y2="22" stroke="#34322d" stroke-width="1.8"/>
+        <line x1="12" y1="20" x2="16" y2="28" stroke="#34322d" stroke-width="1.8"/>
+        <line x1="20" y1="22" x2="16" y2="28" stroke="#34322d" stroke-width="1.8"/>
+        <line x1="16" y1="16" x2="12" y2="20" stroke="#34322d" stroke-width="1.8"/>
+        <line x1="16" y1="16" x2="20" y2="22" stroke="#34322d" stroke-width="1.8"/>
+        <circle cx="6" cy="8" r="2.5" fill="#34322d"/>
+        <circle cx="16" cy="4" r="3" fill="#34322d"/>
+        <circle cx="26" cy="10" r="2.5" fill="#34322d"/>
+        <circle cx="16" cy="16" r="3.5" fill="#34322d"/>
+        <circle cx="12" cy="20" r="2" fill="#34322d"/>
+        <circle cx="20" cy="22" r="2" fill="#34322d"/>
+        <circle cx="16" cy="28" r="2.5" fill="#34322d"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+    <div class="dark-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <line x1="6" y1="8" x2="16" y2="4" stroke="#dadada" stroke-width="1.8"/>
+        <line x1="16" y1="4" x2="26" y2="10" stroke="#dadada" stroke-width="1.8"/>
+        <line x1="6" y1="8" x2="12" y2="20" stroke="#dadada" stroke-width="1.8"/>
+        <line x1="16" y1="4" x2="16" y2="16" stroke="#dadada" stroke-width="1.8"/>
+        <line x1="26" y1="10" x2="20" y2="22" stroke="#dadada" stroke-width="1.8"/>
+        <line x1="12" y1="20" x2="20" y2="22" stroke="#dadada" stroke-width="1.8"/>
+        <line x1="12" y1="20" x2="16" y2="28" stroke="#dadada" stroke-width="1.8"/>
+        <line x1="20" y1="22" x2="16" y2="28" stroke="#dadada" stroke-width="1.8"/>
+        <line x1="16" y1="16" x2="12" y2="20" stroke="#dadada" stroke-width="1.8"/>
+        <line x1="16" y1="16" x2="20" y2="22" stroke="#dadada" stroke-width="1.8"/>
+        <circle cx="6" cy="8" r="2.5" fill="#dadada"/>
+        <circle cx="16" cy="4" r="3" fill="#dadada"/>
+        <circle cx="26" cy="10" r="2.5" fill="#dadada"/>
+        <circle cx="16" cy="16" r="3.5" fill="#dadada"/>
+        <circle cx="12" cy="20" r="2" fill="#dadada"/>
+        <circle cx="20" cy="22" r="2" fill="#dadada"/>
+        <circle cx="16" cy="28" r="2.5" fill="#dadada"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+  </div>
+</div>
+
+<!-- 5: Origami / paper crane -->
+<div class="card">
+  <h3>⑤ 折纸风格 — 几何立体感</h3>
+  <div class="previews">
+    <div class="sidebar-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <path d="M16 2L30 16L16 30L2 16Z" stroke="#34322d" stroke-width="2.2" stroke-linejoin="round" fill="none"/>
+        <path d="M16 2L16 30" stroke="#34322d" stroke-width="1.5"/>
+        <path d="M2 16L16 12L30 16" stroke="#34322d" stroke-width="1.5" stroke-linejoin="round"/>
+        <circle cx="16" cy="16" r="2" fill="#34322d"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+    <div class="dark-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <path d="M16 2L30 16L16 30L2 16Z" stroke="#dadada" stroke-width="2.2" stroke-linejoin="round" fill="none"/>
+        <path d="M16 2L16 30" stroke="#dadada" stroke-width="1.5"/>
+        <path d="M2 16L16 12L30 16" stroke="#dadada" stroke-width="1.5" stroke-linejoin="round"/>
+        <circle cx="16" cy="16" r="2" fill="#dadada"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+  </div>
+</div>
+
+<!-- 6: Chat bubble with spark -->
+<div class="card">
+  <h3>⑥ 聊天气泡 + 灵感火花</h3>
+  <div class="previews">
+    <div class="sidebar-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <path d="M6 6h20c0 0 2 0 2 2v12c0 2-2 2-2 2H14l-6 5v-5H6c-2 0-2-2-2-2V8c0-2 2-2 2-2z" stroke="#34322d" stroke-width="2.2" stroke-linejoin="round" fill="none"/>
+        <path d="M13 14L16 10L19 14" stroke="#34322d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="16" y1="10" x2="16" y2="6" stroke="#34322d" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="22" cy="8" r="1.5" fill="#34322d"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+    <div class="dark-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <path d="M6 6h20c0 0 2 0 2 2v12c0 2-2 2-2 2H14l-6 5v-5H6c-2 0-2-2-2-2V8c0-2 2-2 2-2z" stroke="#dadada" stroke-width="2.2" stroke-linejoin="round" fill="none"/>
+        <path d="M13 14L16 10L19 14" stroke="#dadada" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="16" y1="10" x2="16" y2="6" stroke="#dadada" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="22" cy="8" r="1.5" fill="#dadada"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+  </div>
+</div>
+
+<!-- 7: Yin-yang mixing -->
+<div class="card">
+  <h3>⑦ 阴阳混合 — 融合之美</h3>
+  <div class="previews">
+    <div class="sidebar-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="13" stroke="#34322d" stroke-width="2.2" fill="none"/>
+        <path d="M16 3C16 3 16 16 16 16C16 16 9 16 9 9.5C9 3 16 3 16 3Z" fill="#34322d"/>
+        <path d="M16 29C16 29 16 16 16 16C16 16 23 16 23 22.5C23 29 16 29 16 29Z" fill="#34322d"/>
+        <circle cx="16" cy="9.5" r="2" fill="white"/>
+        <circle cx="16" cy="22.5" r="2" fill="#34322d" stroke="#34322d" stroke-width="0.5"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+    <div class="dark-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="13" stroke="#dadada" stroke-width="2.2" fill="none"/>
+        <path d="M16 3C16 3 16 16 16 16C16 16 9 16 9 9.5C9 3 16 3 16 3Z" fill="#dadada"/>
+        <path d="M16 29C16 29 16 16 16 16C16 16 23 16 23 22.5C23 29 16 29 16 29Z" fill="#dadada"/>
+        <circle cx="16" cy="9.5" r="2" fill="#212122"/>
+        <circle cx="16" cy="22.5" r="2" fill="#dadada" stroke="#dadada" stroke-width="0.5"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+  </div>
+</div>
+
+<!-- 8: Lightning bolt / spark -->
+<div class="card">
+  <h3>⑧ 闪电 — AI 能量</h3>
+  <div class="previews">
+    <div class="sidebar-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <path d="M18 2L8 18H15L13 30L24 14H17L18 2Z" fill="#34322d"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+    <div class="dark-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <path d="M18 2L8 18H15L13 30L24 14H17L18 2Z" fill="#dadada"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+  </div>
+</div>
+
+<!-- 9: Abstract wave -->
+<div class="card">
+  <h3>⑨ 声波 — AI 脉动</h3>
+  <div class="previews">
+    <div class="sidebar-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <path d="M3 16C5 16 5 8 8 8C11 8 11 24 14 24C17 24 17 4 20 4C23 4 23 28 26 28C29 28 29 16 29 16" stroke="#34322d" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+    <div class="dark-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <path d="M3 16C5 16 5 8 8 8C11 8 11 24 14 24C17 24 17 4 20 4C23 4 23 28 26 28C29 28 29 16 29 16" stroke="#dadada" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+  </div>
+</div>
+
+<!-- 10: Hexagon with M -->
+<div class="card">
+  <h3>⑩ 蜂巢六边形 — 科技结构</h3>
+  <div class="previews">
+    <div class="sidebar-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <path d="M16 2L28 9V23L16 30L4 23V9Z" stroke="#34322d" stroke-width="2.2" stroke-linejoin="round" fill="none"/>
+        <path d="M10 22V12L16 18L22 12V22" stroke="#34322d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+    <div class="dark-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <path d="M16 2L28 9V23L16 30L4 23V9Z" stroke="#dadada" stroke-width="2.2" stroke-linejoin="round" fill="none"/>
+        <path d="M10 22V12L16 18L22 12V22" stroke="#dadada" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+  </div>
+</div>
+
+<!-- 11: Three circles / Venn -->
+<div class="card">
+  <h3>⑪ 三圆交叠 — Mix 概念</h3>
+  <div class="previews">
+    <div class="sidebar-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <circle cx="12" cy="12" r="8" stroke="#34322d" stroke-width="2" fill="none"/>
+        <circle cx="20" cy="12" r="8" stroke="#34322d" stroke-width="2" fill="none"/>
+        <circle cx="16" cy="19" r="8" stroke="#34322d" stroke-width="2" fill="none"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+    <div class="dark-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <circle cx="12" cy="12" r="8" stroke="#dadada" stroke-width="2" fill="none"/>
+        <circle cx="20" cy="12" r="8" stroke="#dadada" stroke-width="2" fill="none"/>
+        <circle cx="16" cy="19" r="8" stroke="#dadada" stroke-width="2" fill="none"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+  </div>
+</div>
+
+<!-- 12: Rounded M in circle -->
+<div class="card">
+  <h3>⑫ 圆中 M — 简洁大气</h3>
+  <div class="previews">
+    <div class="sidebar-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="14" stroke="#34322d" stroke-width="2" fill="none"/>
+        <path d="M9 22V10L16 17L23 10V22" stroke="#34322d" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+    <div class="dark-mock">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="14" stroke="#dadada" stroke-width="2" fill="none"/>
+        <path d="M9 22V10L16 17L23 10V22" stroke="#dadada" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span>MixU</span>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

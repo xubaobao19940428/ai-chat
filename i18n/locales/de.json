@@ -38,6 +38,7 @@
 		"max_images_reached": "Maximale Anzahl an Bildern erreicht",
 		"send_failed": "Senden fehlgeschlagen. Bitte Verbindung prüfen und erneut versuchen.",
 		"retry": "Erneut versuchen",
+		"scroll_to_bottom": "Nach unten scrollen",
 		"connection_failed": "Verbindung fehlgeschlagen. Bitte erneut versuchen.",
 		"drag_drop_title": "Dateien hier ablegen zum Hochladen",
 		"drag_drop_subtitle": "Unterstützt Bilder und Dateien",

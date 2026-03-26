@@ -38,6 +38,7 @@
 		"max_images_reached": "최대 이미지 수에 도달했습니다",
 		"send_failed": "전송 실패. 네트워크를 확인하고 다시 시도하세요.",
 		"retry": "다시 시도",
+		"scroll_to_bottom": "맨 아래로 스크롤",
 		"connection_failed": "연결에 실패했습니다. 다시 시도해 주세요.",
 		"drag_drop_title": "파일을 여기에 드래그하여 업로드",
 		"drag_drop_subtitle": "이미지 및 파일 지원",

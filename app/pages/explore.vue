@@ -16,20 +16,21 @@
 
 		<!-- Header: Mobile -->
 		<header class="lg:hidden bg-[var(--bg-main)] border-b border-[var(--border-main)] px-4 shrink-0 z-10">
-			<div class="flex items-center justify-between gap-3 py-2">
-				<div class="flex items-center gap-3">
-					<button @click="uiStore.openMobileMenu()" class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
+			<div class="flex items-center justify-between gap-2 py-2">
+				<div class="flex items-center gap-3 min-w-0">
+					<button @click="uiStore.openMobileMenu()" :aria-label="$t('common.menu')" class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors shrink-0">
 						<Menu :size="20" />
 					</button>
-					<h1 class="text-lg font-bold text-[var(--text-primary)] tracking-tight">{{ $t('explore.title') }}</h1>
+					<h1 class="text-lg font-bold text-[var(--text-primary)] tracking-tight truncate">{{ $t('explore.title') }}</h1>
 				</div>
-				<button @click="toggleMyCreated" :class="['flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold text-[13px] transition-all shadow-sm', showMyCreated ? 'bg-[var(--text-primary)] text-[var(--bg-main)]' : 'border border-[var(--border-light)] text-[var(--text-primary)] hover:bg-[var(--fill-tsp-white-dark)]']">
-					{{ $t('explore.my_created') }}
-				</button>
-				<button @click="router.push('/character/create')" class="flex items-center gap-1.5 px-3 py-2 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-xl font-bold text-[13px] hover:opacity-90 transition-all shadow-sm">
-					<Plus :size="14" />
-					<span>{{ $t('explore.create_bot') }}</span>
-				</button>
+				<div class="flex items-center gap-1.5 shrink-0">
+					<button @click="toggleMyCreated" :class="['flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-bold text-[12px] transition-all whitespace-nowrap', showMyCreated ? 'bg-[var(--text-primary)] text-[var(--bg-main)]' : 'border border-[var(--border-light)] text-[var(--text-primary)] hover:bg-[var(--fill-tsp-white-dark)]']">
+						{{ $t('explore.my_created') }}
+					</button>
+					<button @click="router.push('/character/create')" :aria-label="$t('explore.create_bot')" class="flex items-center justify-center size-8 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-lg hover:opacity-90 transition-all shrink-0">
+						<Plus :size="16" />
+					</button>
+				</div>
 			</div>
 			<div class="pb-2.5">
 				<div class="relative">

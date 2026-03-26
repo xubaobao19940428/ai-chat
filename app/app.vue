@@ -1,5 +1,6 @@
 <template>
 	<div class="h-screen overflow-hidden">
+		<NetworkStatus />
 		<NuxtLayout>
 			<NuxtPage />
 		</NuxtLayout>

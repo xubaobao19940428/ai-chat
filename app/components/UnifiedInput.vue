@@ -28,6 +28,7 @@
 							<Loader2 :size="18" class="animate-spin text-white" />
 						</div>
 						<button v-else @click="fileUpload.removeFileByIndex(index)"
+							:aria-label="$t('common.delete')"
 							class="absolute -top-1.5 -right-1.5 size-[18px] bg-[var(--text-primary)] text-[var(--bg-main)] rounded-full flex items-center justify-center shadow-md opacity-0 group-hover/preview:opacity-100 transition-all scale-75 group-hover/preview:scale-100">
 							<X :size="9" stroke-width="3.5" />
 						</button>
@@ -35,6 +36,7 @@
 					<!-- Quick add button for multiple images -->
 					<button v-if="fields.supportsMultipleImages.value && capability !== 'chat'"
 						@click="triggerMediaUpload"
+						:aria-label="$t('common.add')"
 						class="w-14 h-14 shrink-0 rounded-2xl border-2 border-dashed border-[var(--border-main)] flex items-center justify-center hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)] transition-all">
 						<Plus :size="16" class="text-[var(--text-tertiary)]" />
 					</button>
@@ -117,10 +119,12 @@
 
 					<!-- Send / Stop Button -->
 					<button v-if="isLoading" @click="$emit('stop')"
+						:aria-label="$t('common.stop')"
 						class="unified-send-btn shrink-0 self-end">
 						<Square :size="14" fill="currentColor" />
 					</button>
 					<button v-else @click="handleSend"
+						:aria-label="$t('chat.send')"
 						:disabled="(!hasContent && fileUpload.uploadedFiles.value.length === 0) || fileUpload.isUploading.value"
 						class="unified-send-btn disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 shrink-0 self-end">
 						<Sparkles v-if="capability === 'image_generation' || capability === 'video_generation'"

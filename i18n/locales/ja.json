@@ -38,6 +38,7 @@
 		"max_images_reached": "画像の最大枚数に達しました",
 		"send_failed": "送信に失敗しました。接続を確認して再試行してください。",
 		"retry": "再試行",
+		"scroll_to_bottom": "一番下にスクロール",
 		"connection_failed": "接続に失敗しました。再試行してください。",
 		"drag_drop_title": "ファイルをここにドロップしてアップロード",
 		"drag_drop_subtitle": "画像とファイルに対応",

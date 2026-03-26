@@ -170,7 +170,7 @@
 										<!-- Hover overlay: zoom + download -->
 										<div
 											class="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 transition-colors flex items-end justify-end p-2 gap-1.5 opacity-0 group-hover/img:opacity-100">
-											<button @click.stop="previewImage = url"
+											<button @click.stop="previewImage = url" :aria-label="$t('common.preview')"
 												class="flex items-center justify-center w-7 h-7 rounded-full bg-black/50 backdrop-blur-sm text-white hover:bg-black/70 transition-colors">
 												<Expand :size="13" />
 											</button>
@@ -446,7 +446,7 @@
 						<RefreshCw :size="13" />
 						{{ $t('chat.retry') }}
 					</button>
-					<button @click="failedMessageContent = null"
+					<button @click="failedMessageContent = null" :aria-label="$t('common.close')"
 						class="p-1 text-red-400 hover:text-red-500 transition-colors">
 						<X :size="13" />
 					</button>
@@ -473,6 +473,7 @@
 			enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in"
 			leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-2">
 			<button v-if="isUserScrolledUp" @click="scrollToBottom(false, true)"
+				:aria-label="$t('chat.scroll_to_bottom')"
 				class="absolute bottom-36 right-8 z-40 size-9 flex items-center justify-center rounded-full bg-[var(--bg-main)] border border-[var(--border-light)] shadow-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:shadow-xl transition-all">
 				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
 					stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -484,21 +485,21 @@
 
 		<!-- Floating Input Pill -->
 		<div class="absolute left-0 right-0 z-50 px-4 pointer-events-none"
-			:style="{ bottom: keyboardHeight > 0 ? `${keyboardHeight + 8}px` : '32px' }">
+			:style="{ bottom: keyboardHeight > 0 ? `${keyboardHeight + 8}px` : '12px' }">
 			<div class="max-w-[840px] mx-auto relative pointer-events-auto">
 				<UnifiedInput ref="unifiedInputRef" :capability="selectorCapability" :is-loading="chatStore.isLoading"
 					:external-params="currentConversation?.params" :show-model-selector="true" @send="handleUnifiedSend"
 					@stop="stopGeneration" @update:params="updateParams" />
 
 				<!-- Suggestions -->
-				<div v-if="currentConversation?.messages.length === 0" class="mt-6 flex flex-wrap justify-center gap-2">
+				<!-- <div v-if="currentConversation?.messages.length === 0" class="mt-6 flex flex-wrap justify-center gap-2">
 					<button v-for="suggestion in PROMPT_SUGGESTIONS.slice(0, 3)" :key="suggestion.id"
 						@click="handleApplyPrompt(suggestion)"
 						class="flex items-center gap-2 px-4 py-2 bg-[var(--bg-main)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] rounded-full border border-[var(--border-light)] transition-all text-sm font-medium shadow-sm active:scale-95">
 						<span class="opacity-70 text-xs">{{ suggestion.icon }}</span>
 						<span>{{ suggestion.label }}</span>
 					</button>
-				</div>
+				</div> -->
 			</div>
 		</div>
 
@@ -522,7 +523,7 @@
 						<img :src="previewImage"
 							class="max-w-full max-h-[90vh] rounded-2xl shadow-2xl object-contain" />
 						<!-- Close -->
-						<button @click="previewImage = null"
+						<button @click="previewImage = null" :aria-label="$t('common.close')"
 							class="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white flex items-center justify-center transition-colors border border-white/20">
 							<X :size="14" />
 						</button>

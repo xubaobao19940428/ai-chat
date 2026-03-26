@@ -15,6 +15,7 @@ export interface Character {
   user_id: number
   created_at: number
   updated_at: number
+  common_questions?: string[]
   related_data?: {
     provider?: string
     [key: string]: any

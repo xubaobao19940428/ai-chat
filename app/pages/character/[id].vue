@@ -125,7 +125,7 @@
 
 				<!-- Floating Input Area -->
 				<div class="flex-shrink-0 px-4 pt-2 absolute left-0 right-0 z-50 pointer-events-none"
-					:style="{ bottom: keyboardHeight > 0 ? `${keyboardHeight + 8}px` : '0px', paddingBottom: keyboardHeight > 0 ? '8px' : '32px' }">
+					:style="{ bottom: keyboardHeight > 0 ? `${keyboardHeight + 8}px` : '0px', paddingBottom: keyboardHeight > 0 ? '8px' : '12px' }">
 					<div class="max-w-[840px] mx-auto relative pointer-events-auto">
 						<!-- Suggested Questions (2x2 grid) -->
 						<div v-if="!conversationId && suggestedQuestions.length"
@@ -193,11 +193,11 @@ const tabs = [
 	{ key: 'api', label: 'API', icon: markRaw(Code) },
 ]
 
-// Suggested questions: prefer character's related_data, fallback to defaults
+// Suggested questions from API's common_questions field
 const suggestedQuestions = computed(() => {
-	const custom = character.value?.related_data?.suggested_questions
-	if (Array.isArray(custom) && custom.length > 0) return custom
-	return ['你能帮我分析一下最近的数据吗？', '多种条件怎么求和？', '写一个关于职场成长的建议列表', '帮我写一个工作总结模板']
+	const questions = character.value?.common_questions
+	if (Array.isArray(questions) && questions.length > 0) return questions as string[]
+	return [] as string[]
 })
 
 // Derive messages from the store for the current conversation

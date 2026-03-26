@@ -1,8 +1,10 @@
 <template>
 	<!-- MixU Desktop Sidebar -->
-	<aside :class="['hidden lg:flex flex-col h-full bg-[var(--bg-sidebar)] text-[var(--text-primary)] border-r border-[var(--border-light)] transition-all duration-300 relative z-[40] overflow-hidden flex-shrink-0', uiStore.sidebarCollapsed ? 'w-[68px]' : 'w-[300px]']">
+	<aside
+		:class="['hidden lg:flex flex-col h-full bg-[var(--bg-sidebar)] text-[var(--text-primary)] border-r border-[var(--border-light)] transition-all duration-300 relative z-[40] overflow-hidden flex-shrink-0', uiStore.sidebarCollapsed ? 'w-[68px]' : 'w-[300px]']">
 		<!-- Top Section: Logo & Collapse -->
-		<div :class="['flex items-center h-[56px] py-[12px] shrink-0', uiStore.sidebarCollapsed ? 'justify-center ps-0 pe-0' : 'justify-between pe-[10px] ps-[12px]']">
+		<div
+			:class="['flex items-center h-[56px] py-[12px] shrink-0', uiStore.sidebarCollapsed ? 'justify-center ps-0 pe-0' : 'justify-between pe-[10px] ps-[12px]']">
 			<!-- Logo Section -->
 			<div v-show="!uiStore.sidebarCollapsed" class="flex items-center gap-1 ps-[8px] clickable">
 				<div class="flex items-center size-8 justify-center shrink-0">
@@ -11,56 +13,60 @@
 				<span class="text-lg font-bold text-[var(--text-primary)] tracking-tight ml-1">MixU</span>
 			</div>
 
-			<div @click="uiStore.toggleSidebar" class="flex items-center justify-center rounded-md hover:bg-[var(--bg-hover)] cursor-pointer size-[32px] shrink-0 transition-colors">
+			<div @click="uiStore.toggleSidebar"
+				class="flex items-center justify-center rounded-md hover:bg-[var(--bg-hover)] cursor-pointer size-[32px] shrink-0 transition-colors">
 				<PanelLeft class="text-[var(--text-primary)] size-[18px]" />
 			</div>
 		</div>
 
 		<!-- Nav Items Section -->
-		<div class="flex flex-col flex-1 min-h-0 p-[8px] pb-0 gap-px transition-all overflow-x-hidden overflow-y-auto custom-scrollbar">
+		<div
+			class="flex flex-col flex-1 min-h-0 p-[8px] pb-0 gap-px transition-all overflow-x-hidden overflow-y-auto custom-scrollbar">
 			<!-- Static New Task Item (Not draggable as requested) -->
-			<div @click="handleNewChat" :class="['flex items-center rounded-[10px] clickable cursor-pointer transition-colors w-full h-[36px] shrink-0 hover:bg-[var(--bg-hover)] group relative', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px] pe-[2px] gap-[12px]']">
+			<div @click="handleNewChat"
+				:class="['flex items-center rounded-[10px] clickable cursor-pointer transition-colors w-full h-[36px] shrink-0 hover:bg-[var(--bg-hover)] group relative', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px] pe-[2px] gap-[12px]']">
 				<Tooltip :text="$t('chat.new_chat')" position="right" :disabled="!uiStore.sidebarCollapsed" fullWidth>
-					<div :class="['flex items-center', uiStore.sidebarCollapsed ? 'justify-center' : 'w-full gap-[12px]']">
+					<div
+						:class="['flex items-center', uiStore.sidebarCollapsed ? 'justify-center' : 'w-full gap-[12px]']">
 						<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
 							<SquarePen :size="18" />
 						</div>
-						<div v-if="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex items-center text-[14px] font-medium text-[var(--text-primary)]">
+						<div v-if="!uiStore.sidebarCollapsed"
+							class="flex-1 min-w-0 flex items-center text-[14px] font-medium text-[var(--text-primary)]">
 							<span class="truncate">{{ $t('chat.new_chat') }}</span>
 						</div>
 					</div>
 				</Tooltip>
-				<div v-if="!uiStore.sidebarCollapsed" class="absolute right-0 top-0 bottom-0 flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+				<div v-if="!uiStore.sidebarCollapsed"
+					class="absolute right-0 top-0 bottom-0 flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
 					<div class="text-[var(--text-tertiary)] text-sm inline-flex items-center gap-1 pe-[8px]">⌘ K</div>
 				</div>
 			</div>
 
 			<!-- Main Nav Items (Draggable) -->
-			<div
-				v-for="(item, index) in sidebarNavItems"
-				:key="item.id"
-				draggable="true"
+			<div v-for="(item, index) in sidebarNavItems" :key="item.id" draggable="true"
 				@dragstart="handleDragStart($event, 'main', index)"
-				@dragover.prevent="handleDragOver($event, 'main', index)"
-				@drop="handleDrop($event, 'main', index)"
-				@dragend="handleDragEnd"
-				@dragenter="draggingOverZone = 'main-' + index"
-				@dragleave="draggingOverZone = null"
-				@click="item.handler"
-				:class="[
+				@dragover.prevent="handleDragOver($event, 'main', index)" @drop="handleDrop($event, 'main', index)"
+				@dragend="handleDragEnd" @dragenter="draggingOverZone = 'main-' + index"
+				@dragleave="draggingOverZone = null" @click="item.handler" :class="[
 					'flex items-center rounded-[10px] clickable cursor-pointer transition-all w-full h-[36px] shrink-0 hover:bg-[var(--bg-hover)] group relative',
 					uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px] gap-[12px]',
 					isNavActive(item.id) ? 'bg-[var(--bg-hover)]' : 'bg-[var(--bg-sidebar)]',
 					draggingItem?.index === index && draggingItem?.source === 'main' ? 'opacity-20 scale-95' : 'opacity-100',
 					draggingOverZone === 'main-' + index ? 'bg-[var(--bg-hover)] ring-2 ring-[var(--border-main)]' : '',
 				]">
-				<div v-if="draggingOverZone === 'main-' + index" class="absolute -top-0.5 left-0 right-0 h-0.5 bg-[var(--text-tertiary)] rounded-full opacity-50"></div>
+				<div v-if="draggingOverZone === 'main-' + index"
+					class="absolute -top-0.5 left-0 right-0 h-0.5 bg-[var(--text-tertiary)] rounded-full opacity-50">
+				</div>
 				<Tooltip :text="item.label" position="right" :disabled="!uiStore.sidebarCollapsed" fullWidth>
-					<div :class="['flex items-center w-full h-full', uiStore.sidebarCollapsed ? 'justify-center' : 'gap-[12px]']">
-						<div class="shrink-0 size-[18px] flex items-center justify-center" :class="item.iconClass || 'text-[var(--text-primary)]'">
+					<div
+						:class="['flex items-center w-full h-full', uiStore.sidebarCollapsed ? 'justify-center' : 'gap-[12px]']">
+						<div class="shrink-0 size-[18px] flex items-center justify-center"
+							:class="item.iconClass || 'text-[var(--text-primary)]'">
 							<component :is="item.icon" :size="18" />
 						</div>
-						<div v-if="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex gap-[4px] items-center text-[14px] font-medium text-[var(--text-primary)]">
+						<div v-if="!uiStore.sidebarCollapsed"
+							class="flex-1 min-w-0 flex gap-[4px] items-center text-[14px] font-medium text-[var(--text-primary)]">
 							<span class="truncate">{{ $t('common.' + item.id) }}</span>
 						</div>
 					</div>
@@ -69,40 +75,50 @@
 
 			<!-- More Menu (Accordion + Hover Popover) -->
 			<div v-if="moreItems.length > 0" class="flex flex-col gap-px relative shrink-0">
-				<Tooltip :text="$t('common.more_tools')" position="right" :disabled="!uiStore.sidebarCollapsed" fullWidth>
-					<div
-						@click="handleMoreMenuOpen"
-						@mouseenter="handleMouseEnter"
-						@mouseleave="handleMouseLeave"
+				<Tooltip :text="$t('common.more_tools')" position="right" :disabled="!uiStore.sidebarCollapsed"
+					fullWidth>
+					<div @click="handleMoreMenuOpen" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave"
 						@dragover.prevent="handleDragOver($event, 'more-btn')"
-						@drop="handleDrop($event, 'more-container')"
-						@dragenter="draggingOverZone = 'more-btn'"
+						@drop="handleDrop($event, 'more-container')" @dragenter="draggingOverZone = 'more-btn'"
 						@dragleave="draggingOverZone = null"
 						:class="['w-full flex items-center rounded-[10px] clickable cursor-pointer transition-all h-[36px] hover:bg-[var(--bg-hover)] group mb-1 relative', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px] pe-[10px] justify-between', draggingOverZone === 'more-btn' ? 'bg-[var(--bg-hover)] ring-2 ring-[var(--border-main)]' : '']">
 						<div :class="['flex items-center', uiStore.sidebarCollapsed ? 'justify-center' : 'gap-[12px]']">
-							<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
+							<div
+								class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
 								<LayoutGrid :size="18" />
 							</div>
-							<span v-if="!uiStore.sidebarCollapsed" class="text-[14px] font-medium text-[var(--text-primary)] truncate">{{ isMoreMenuOpen ? $t('common.collapse') : $t('common.more_tools') }}</span>
+							<span v-if="!uiStore.sidebarCollapsed"
+								class="text-[14px] font-medium text-[var(--text-primary)] truncate">{{ isMoreMenuOpen ?
+									$t('common.collapse') : $t('common.more_tools') }}</span>
 						</div>
-						<ChevronRight v-if="!uiStore.sidebarCollapsed" :size="14" :class="['text-[var(--text-tertiary)] opacity-60 group-hover:opacity-100 transition-transform duration-200', isMoreMenuOpen ? 'rotate-90' : '']" />
+						<ChevronRight v-if="!uiStore.sidebarCollapsed" :size="14"
+							:class="['text-[var(--text-tertiary)] opacity-60 group-hover:opacity-100 transition-transform duration-200', isMoreMenuOpen ? 'rotate-90' : '']" />
 					</div>
 				</Tooltip>
 
 				<!-- Hover Popover (Teleported) -->
 				<Teleport to="body">
-					<div v-if="isHoverMenuOpen && !isMoreMenuOpen" class="fixed z-[9998]" :style="hoverMenuPosition" @mouseenter="handlePopoverMouseEnter" @mouseleave="handleMouseLeave">
-						<transition appear enter-active-class="transition duration-100 ease-out" enter-from-class="transform scale-95 opacity-0 translate-x-1" enter-to-class="transform scale-100 opacity-100 translate-x-0">
-							<div class="w-60 origin-left rounded-[16px] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] py-1.5 overflow-hidden">
+					<div v-if="isHoverMenuOpen && !isMoreMenuOpen" class="fixed z-[9998]" :style="hoverMenuPosition"
+						@mouseenter="handlePopoverMouseEnter" @mouseleave="handleMouseLeave">
+						<transition appear enter-active-class="transition duration-100 ease-out"
+							enter-from-class="transform scale-95 opacity-0 translate-x-1"
+							enter-to-class="transform scale-100 opacity-100 translate-x-0">
+							<div
+								class="w-60 origin-left rounded-[16px] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] py-1.5 overflow-hidden">
 								<div class="px-1 py-1">
-									<button v-for="(item, index) in moreItems" :key="item.name" draggable="true" @dragstart="handleDragStart($event, 'more', index)" @click="handleMoreItemClick(item)" class="group flex w-full items-center gap-3 rounded-[10px] ps-3.5 pe-4 py-2.5 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors">
-										<component :is="item.icon" :size="18" class="opacity-80 group-hover:opacity-100 transition-opacity" />
+									<button v-for="(item, index) in moreItems" :key="item.name" draggable="true"
+										@dragstart="handleDragStart($event, 'more', index)"
+										@click="handleMoreItemClick(item)"
+										class="group flex w-full items-center gap-3 rounded-[10px] ps-3.5 pe-4 py-2.5 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors">
+										<component :is="item.icon" :size="18"
+											class="opacity-80 group-hover:opacity-100 transition-opacity" />
 										<span class="flex-1 text-left">{{ $t('common.' + item.id) }}</span>
 										<ArrowUpRight :size="16" class="opacity-40 group-hover:opacity-100" />
 									</button>
 								</div>
 								<div class="px-3 py-2 border-t border-[var(--border-light)] mt-1">
-									<div class="flex items-center gap-2 text-[11px] text-[var(--text-tertiary)] font-medium">
+									<div
+										class="flex items-center gap-2 text-[11px] text-[var(--text-tertiary)] font-medium">
 										<Lightbulb :size="12" />
 										{{ $t('common.drag_to_sort') }}
 									</div>
@@ -114,28 +130,26 @@
 
 				<!-- Inline Accordion Sub-items -->
 				<div v-show="isMoreMenuOpen" class="flex flex-col gap-px overflow-hidden transition-all duration-300">
-					<button
-						v-for="(item, index) in moreItems"
-						:key="item.name"
-						draggable="true"
+					<button v-for="(item, index) in moreItems" :key="item.name" draggable="true"
 						@dragstart="handleDragStart($event, 'more', index)"
 						@dragover.prevent="handleDragOver($event, 'more', index)"
-						@drop="handleDrop($event, 'more', index)"
-						@dragenter="draggingOverZone = 'more-' + index"
-						@dragleave="draggingOverZone = null"
-						@click="handleMoreItemClick(item)"
-						:class="[
+						@drop="handleDrop($event, 'more', index)" @dragenter="draggingOverZone = 'more-' + index"
+						@dragleave="draggingOverZone = null" @click="handleMoreItemClick(item)" :class="[
 							'group flex w-full items-center rounded-[10px] h-[36px] transition-all hover:bg-[var(--bg-hover)] relative',
 							uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[16px] pe-[12px] gap-[12px]',
 							isNavActive(item.id) ? 'bg-[var(--bg-hover)]' : 'bg-[var(--bg-sidebar)]',
 							draggingItem?.index === index && draggingItem?.source === 'more' ? 'opacity-20 scale-95' : 'opacity-100',
 							draggingOverZone === 'more-' + index ? 'bg-[var(--bg-hover)] ring-2 ring-[var(--border-main)]' : '',
 						]">
-						<div v-if="draggingOverZone === 'more-' + index" class="absolute -top-0.5 left-[16px] right-[12px] h-0.5 bg-[var(--text-tertiary)] rounded-full opacity-50"></div>
-						<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)] group-hover:opacity-100 transition-opacity">
+						<div v-if="draggingOverZone === 'more-' + index"
+							class="absolute -top-0.5 left-[16px] right-[12px] h-0.5 bg-[var(--text-tertiary)] rounded-full opacity-50">
+						</div>
+						<div
+							class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)] group-hover:opacity-100 transition-opacity">
 							<component :is="item.id === 'ai-bots' ? Compass : item.icon" :size="18" />
 						</div>
-						<div v-if="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex items-center justify-between text-[13px] font-medium text-[var(--text-primary)]">
+						<div v-if="!uiStore.sidebarCollapsed"
+							class="flex-1 min-w-0 flex items-center justify-between text-[13px] font-medium text-[var(--text-primary)]">
 							<span class="truncate">{{ $t('common.' + item.id) }}</span>
 							<ArrowUpRight :size="14" class="opacity-0 group-hover:opacity-40 transition-opacity" />
 						</div>
@@ -144,18 +158,23 @@
 			</div>
 
 			<!-- Standalone Drag to Collapse Zone (Only when More menu is empty and dragging) -->
-			<transition enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0 transform translate-y-2 scale-95" enter-to-class="opacity-100 transform translate-y-0 scale-100" leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
-				<div
-					v-if="draggingItem?.source === 'main' && moreItems.length === 0 && !uiStore.sidebarCollapsed"
+			<transition enter-active-class="transition duration-300 ease-out"
+				enter-from-class="opacity-0 transform translate-y-2 scale-95"
+				enter-to-class="opacity-100 transform translate-y-0 scale-100"
+				leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 scale-100"
+				leave-to-class="opacity-0 scale-95">
+				<div v-if="draggingItem?.source === 'main' && moreItems.length === 0 && !uiStore.sidebarCollapsed"
 					@dragover.prevent="handleDragOver($event, 'more-container')"
-					@drop="handleDrop($event, 'more-container')"
-					@dragenter="draggingOverZone = 'empty-more'"
+					@drop="handleDrop($event, 'more-container')" @dragenter="draggingOverZone = 'empty-more'"
 					@dragleave="draggingOverZone = null"
 					:class="['mx-2 p-3 border-2 border-dashed rounded-xl flex items-center justify-center gap-2 group/collapse transition-all duration-300', draggingOverZone === 'empty-more' ? 'bg-[var(--bg-hover)] border-[var(--text-tertiary)] scale-[1.02] shadow-sm' : 'bg-[var(--bg-sidebar)] border-[var(--border-main)] animate-pulse-subtle']">
-					<div class="shrink-0 size-6 flex items-center justify-center rounded-lg bg-[var(--bg-hover)] text-[var(--text-primary)] transition-colors group-hover/collapse:bg-[var(--border-main)]">
+					<div
+						class="shrink-0 size-6 flex items-center justify-center rounded-lg bg-[var(--bg-hover)] text-[var(--text-primary)] transition-colors group-hover/collapse:bg-[var(--border-main)]">
 						<LayoutGrid :size="14" />
 					</div>
-					<span class="text-[12px] font-medium text-[var(--text-tertiary)] opacity-80 group-hover/collapse:opacity-100">{{ $t('common.drag_to_collapse') }}</span>
+					<span
+						class="text-[12px] font-medium text-[var(--text-tertiary)] opacity-80 group-hover/collapse:opacity-100">{{
+							$t('common.drag_to_collapse') }}</span>
 				</div>
 			</transition>
 
@@ -163,15 +182,22 @@
 			<div class="w-full border-t-[1px] border-[var(--border-light)] opacity-50 my-1 shrink-0"></div>
 			<div class="flex flex-col shrink-0">
 				<!-- Projects Toggle -->
-				<div @click="toggleProjects" :class="['group flex items-center rounded-[10px] mb-1 h-[36px] clickable hover:bg-[var(--bg-hover)] transition-colors active:bg-[var(--bg-hover)] transition-all', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px] pe-[2px] py-[2px] justify-between gap-[12px]']">
+				<div @click="toggleProjects"
+					:class="['group flex items-center rounded-[10px] mb-1 h-[36px] clickable hover:bg-[var(--bg-hover)] transition-colors active:bg-[var(--bg-hover)] transition-all', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px] pe-[2px] py-[2px] justify-between gap-[12px]']">
 					<div v-if="!uiStore.sidebarCollapsed" class="flex items-center flex-1 min-w-0 gap-0.5">
-						<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium min-w-0 truncate tracking-tight uppercase">{{ $t('common.projects') }}</span>
-						<ChevronRight :size="14" :class="['transition-all shrink-0 group-hover:opacity-100 text-[var(--text-tertiary)]', projectsCollapsed ? '' : 'rotate-90']" />
+						<span
+							class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium min-w-0 truncate tracking-tight uppercase">{{
+								$t('common.projects') }}</span>
+						<ChevronRight :size="14"
+							:class="['transition-all shrink-0 group-hover:opacity-100 text-[var(--text-tertiary)]', projectsCollapsed ? '' : 'rotate-90']" />
 					</div>
-					<div v-else class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
+					<div v-else
+						class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
 						<PanelLeft class="text-[var(--text-primary)] size-[18px]" />
 					</div>
-					<div v-if="!uiStore.sidebarCollapsed" @click.stop="openCreateProjectModal" class="flex items-center justify-center size-[32px] rounded-[8px] hover:bg-[var(--bg-hover)] clickable transition-colors">
+					<div v-if="!uiStore.sidebarCollapsed" @click.stop="openCreateProjectModal" role="button"
+						:aria-label="$t('common.add')"
+						class="flex items-center justify-center size-[32px] rounded-[8px] hover:bg-[var(--bg-hover)] clickable transition-colors">
 						<Plus :size="16" class="text-[var(--text-tertiary)]" />
 					</div>
 				</div>
@@ -179,30 +205,43 @@
 				<!-- Project List -->
 				<div v-show="!projectsCollapsed" class="flex flex-col gap-px mb-1">
 					<div v-if="projectStore.isLoading" class="flex flex-col gap-2 px-2 py-1">
-						<div v-for="i in 3" :key="i" class="h-8 w-full bg-[var(--bg-hover)] rounded-lg animate-pulse"></div>
+						<div v-for="i in 3" :key="i" class="h-8 w-full bg-[var(--bg-hover)] rounded-lg animate-pulse">
+						</div>
 					</div>
 					<template v-else>
-						<div @click="selectProject(null)" :class="['w-full flex items-center rounded-[10px] h-[36px] transition-colors clickable transition-all', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px] pe-[8px] gap-[8px]', conversationStore.selectedGroupId === null || conversationStore.selectedGroupId === 0 ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', conversationStore.isGroupSwitching ? 'opacity-50 pointer-events-none' : '']">
-							<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
+						<div @click="selectProject(null)"
+							:class="['w-full flex items-center rounded-[10px] h-[36px] transition-colors clickable transition-all relative', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px] pe-[8px] gap-[8px]', 'hover:bg-[var(--bg-hover)]', conversationStore.isGroupSwitching ? 'opacity-50 pointer-events-none' : '']">
+							<div v-if="isProjectActive(null)" class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-full bg-[var(--text-primary)]"></div>
+							<div
+								class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
 								<AlignJustify :size="16" />
 							</div>
-							<div v-if="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
+							<div v-if="!uiStore.sidebarCollapsed"
+								class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
 								<span class="truncate">{{ $t('common.all_sessions') }}</span>
 							</div>
 						</div>
-						<div v-for="group in projectStore.projects" :key="group.id" @click="selectProject(group.id)" :class="['w-full group flex items-center rounded-[10px] h-[36px] transition-colors clickable relative transition-all', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px] pe-[8px] gap-[8px]', conversationStore.selectedGroupId == group.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', conversationStore.isGroupSwitching ? 'opacity-50 pointer-events-none' : '']">
-							<div class="shrink-0 size-[18px] flex items-center justify-center opacity-80" :style="{ color: getProjectColor(group.color) }">
+						<div v-for="group in projectStore.projects" :key="group.id" @click="selectProject(group.id)"
+							:class="['w-full group flex items-center rounded-[10px] h-[36px] transition-colors clickable relative transition-all', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px] pe-[8px] gap-[8px]', 'hover:bg-[var(--bg-hover)]', conversationStore.isGroupSwitching ? 'opacity-50 pointer-events-none' : '']">
+							<div v-if="isProjectActive(group.id)" class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-full bg-[var(--text-primary)]"></div>
+							<div class="shrink-0 size-[18px] flex items-center justify-center opacity-80"
+								:style="{ color: getProjectColor(group.color) }">
 								<component :is="getProjectIcon(group.icon)" :size="16" />
 							</div>
-							<div v-if="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
+							<div v-if="!uiStore.sidebarCollapsed"
+								class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
 								<span class="truncate">{{ group.name }}</span>
 							</div>
 							<!-- Project Actions -->
 							<div v-if="!uiStore.sidebarCollapsed" class="shrink-0 flex items-center gap-0.5">
-								<div @click.stop="handleEditProject(group)" class="size-7 flex rounded-[8px] items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 hover:bg-[var(--bg-sidebar)] transition-all text-[var(--text-primary)]">
+								<div @click.stop="handleEditProject(group)" role="button"
+									:aria-label="$t('common.edit')"
+									class="size-7 flex rounded-[8px] items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 hover:bg-[var(--bg-sidebar)] transition-all text-[var(--text-primary)]">
 									<Pencil :size="14" />
 								</div>
-								<div @click.stop="handleDeleteProject(group.id)" class="size-7 flex rounded-[8px] items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 hover:bg-[var(--bg-sidebar)] transition-all text-[var(--text-primary)]">
+								<div @click.stop="handleDeleteProject(group.id)" role="button"
+									:aria-label="$t('common.delete')"
+									class="size-7 flex rounded-[8px] items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 hover:bg-[var(--bg-sidebar)] transition-all text-[var(--text-primary)]">
 									<Trash2 :size="14" />
 								</div>
 							</div>
@@ -211,13 +250,19 @@
 				</div>
 
 				<!-- Recent Chat Header -->
-				<Tooltip :text="$t('common.recent_chat')" position="right" :disabled="!uiStore.sidebarCollapsed" fullWidth>
-					<div @click="uiStore.sidebarCollapsed ? uiStore.toggleSidebar() : (recentChatsCollapsed = !recentChatsCollapsed)" :class="['group flex items-center rounded-[10px] mb-1 h-[36px] clickable hover:bg-[var(--bg-hover)] transition-colors', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px] pe-[2px] py-[2px] justify-between gap-[12px]']">
+				<Tooltip :text="$t('common.recent_chat')" position="right" :disabled="!uiStore.sidebarCollapsed"
+					fullWidth>
+					<div @click="uiStore.sidebarCollapsed ? uiStore.toggleSidebar() : (recentChatsCollapsed = !recentChatsCollapsed)"
+						:class="['group flex items-center rounded-[10px] mb-1 h-[36px] clickable hover:bg-[var(--bg-hover)] transition-colors', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px] pe-[2px] py-[2px] justify-between gap-[12px]']">
 						<div v-if="!uiStore.sidebarCollapsed" class="flex items-center flex-1 min-w-0 gap-0.5">
-							<span class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium min-w-0 truncate tracking-tight uppercase">{{ $t('common.recent_chat') }}</span>
-							<ChevronRight :size="14" :class="['transition-all shrink-0 group-hover:opacity-100 text-[var(--text-tertiary)]', recentChatsCollapsed ? '' : 'rotate-90']" />
+							<span
+								class="text-[12px] leading-[18px] text-[var(--text-tertiary)] font-medium min-w-0 truncate tracking-tight uppercase">{{
+									$t('common.recent_chat') }}</span>
+							<ChevronRight :size="14"
+								:class="['transition-all shrink-0 group-hover:opacity-100 text-[var(--text-tertiary)]', recentChatsCollapsed ? '' : 'rotate-90']" />
 						</div>
-						<div v-else class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
+						<div v-else
+							class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
 							<MessageSquare :size="16" class="text-[var(--text-primary)]" />
 						</div>
 					</div>
@@ -225,77 +270,114 @@
 
 				<!-- Chat List -->
 				<div v-show="!recentChatsCollapsed && !uiStore.sidebarCollapsed" class="flex flex-col gap-px">
-					<template v-if="conversationStore.isGroupSwitching || (conversationStore.isLoading && conversationStore.conversations.length === 0)">
+					<template
+						v-if="conversationStore.isGroupSwitching || (conversationStore.isLoading && conversationStore.conversations.length === 0)">
 						<div class="flex flex-col gap-2 px-2 py-1">
-							<div v-for="i in 5" :key="i" class="h-8 w-full bg-[var(--bg-hover)] rounded-lg animate-pulse"></div>
+							<div v-for="i in 5" :key="i"
+								class="h-8 w-full bg-[var(--bg-hover)] rounded-lg animate-pulse"></div>
 						</div>
 					</template>
 					<template v-else-if="sortedConversations.length === 0">
-						<div v-if="!uiStore.sidebarCollapsed" class="flex flex-col items-center justify-center py-6 px-3 gap-2">
+						<div v-if="!uiStore.sidebarCollapsed"
+							class="flex flex-col items-center justify-center py-6 px-3 gap-2">
 							<MessageSquare :size="20" class="text-[var(--text-tertiary)] opacity-40" />
-							<p class="text-[12px] text-[var(--text-tertiary)] text-center leading-relaxed">{{ $t('chat.no_history') }}<br />{{ $t('chat.start_new_chat') }}</p>
+							<p class="text-[12px] text-[var(--text-tertiary)] text-center leading-relaxed">{{
+								$t('chat.no_history') }}<br />{{ $t('chat.start_new_chat') }}</p>
 						</div>
 					</template>
 					<template v-else>
-						<div v-for="conversation in sortedConversations" :key="conversation.id" @click="handleSelectConversation(String(conversation.id))" :data-cap="conversation.capability" :class="['group flex items-center rounded-[10px] clickable cursor-pointer transition-all w-full h-[36px]', conversationStore.currentConversationId == conversation.id ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px] pe-[2px] gap-[12px]']">
-							<div class="shrink-0 size-[18px] flex items-center justify-center overflow-hidden transition-all">
-								<img v-if="getConversationAvatar(conversation)" :src="getConversationAvatar(conversation)" class="size-full object-cover rounded-[4px] border border-[var(--border-light)]/50" />
+						<div v-for="conversation in sortedConversations" :key="conversation.id"
+							@click="handleSelectConversation(String(conversation.id))"
+							:data-cap="conversation.capability"
+							:class="['group flex items-center rounded-[10px] clickable cursor-pointer transition-all w-full h-[36px]', isConversationActive(conversation.id) ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px] pe-[2px] gap-[12px]']">
+							<div
+								class="shrink-0 size-[18px] flex items-center justify-center overflow-hidden transition-all">
+								<img v-if="getConversationAvatar(conversation)"
+									:src="getConversationAvatar(conversation)"
+									class="size-full object-cover rounded-[4px] border border-[var(--border-light)]/50" />
 								<template v-else>
-									<div v-if="conversation.characterId && conversation.characterId > 1" class="size-full flex items-center justify-center rounded-[4px]">
-										<Sparkles :size="15" class="text-[var(--text-primary)] opacity-60 group-hover:opacity-100 transition-opacity" />
+									<div v-if="conversation.characterId && conversation.characterId > 1"
+										class="size-full flex items-center justify-center rounded-[4px]">
+										<Sparkles :size="15"
+											class="text-[var(--text-primary)] opacity-60 group-hover:opacity-100 transition-opacity" />
 									</div>
-									<Image v-else-if="conversation.capability === 'image' || conversation.capability === 'image_generation'" :size="15" class="text-[var(--text-primary)] opacity-60 group-hover:opacity-100 transition-opacity" />
-									<Play v-else-if="conversation.capability === 'video' || conversation.capability === 'video_generation'" :size="15" fill="currentColor" class="text-[var(--text-primary)] opacity-60 group-hover:opacity-100 transition-opacity" />
-									<MessageSquare v-else :size="16" class="text-[var(--text-primary)] opacity-60 group-hover:opacity-100 transition-opacity" />
+									<Image
+										v-else-if="conversation.capability === 'image' || conversation.capability === 'image_generation'"
+										:size="15"
+										class="text-[var(--text-primary)] opacity-60 group-hover:opacity-100 transition-opacity" />
+									<Play
+										v-else-if="conversation.capability === 'video' || conversation.capability === 'video_generation'"
+										:size="15" fill="currentColor"
+										class="text-[var(--text-primary)] opacity-60 group-hover:opacity-100 transition-opacity" />
+									<MessageSquare v-else :size="16"
+										class="text-[var(--text-primary)] opacity-60 group-hover:opacity-100 transition-opacity" />
 								</template>
 							</div>
-							<div v-if="!uiStore.sidebarCollapsed" class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
-								<span class="truncate">{{ conversation.title || $t('chat.new_conversation_default') }}</span>
+							<div v-if="!uiStore.sidebarCollapsed"
+								class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
+								<span class="truncate">{{ conversation.title || $t('chat.new_conversation_default')
+									}}</span>
 							</div>
 							<div v-if="!uiStore.sidebarCollapsed" class="shrink-0 flex items-center">
 								<!-- Conversation Action Menu -->
 								<Menu as="div" class="relative inline-block text-left">
-									<MenuButton @click.stop="handleMenuClick($event, conversation.id)" class="size-7 flex rounded-[8px] items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 hover:bg-[var(--bg-hover)] transition-all text-[var(--text-tertiary)]">
+									<MenuButton @click.stop="handleMenuClick($event, conversation.id)"
+										:aria-label="$t('common.more')"
+										class="size-7 flex rounded-[8px] items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 hover:bg-[var(--bg-hover)] transition-all text-[var(--text-tertiary)]">
 										<MoreHorizontal :size="16" />
 									</MenuButton>
 
-									<transition enter-active-class="transition duration-100 ease-out" enter-from-class="transform scale-95 opacity-0" enter-to-class="transform scale-100 opacity-100" leave-active-class="transition duration-75 ease-in" leave-from-class="transform scale-100 opacity-100" leave-to-class="transform scale-95 opacity-0">
+									<transition enter-active-class="transition duration-100 ease-out"
+										enter-from-class="transform scale-95 opacity-0"
+										enter-to-class="transform scale-100 opacity-100"
+										leave-active-class="transition duration-75 ease-in"
+										leave-from-class="transform scale-100 opacity-100"
+										leave-to-class="transform scale-95 opacity-0">
 										<Teleport to="body">
-											<MenuItems v-if="activeMenuId === conversation.id" :style="menuPosition" data-menu-dropdown class="fixed z-[9999] w-48 origin-top-right rounded-[12px] bg-[var(--bg-main)] shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] focus:outline-none py-1.5 overflow-hidden">
+											<MenuItems v-if="activeMenuId === conversation.id" :style="menuPosition"
+												data-menu-dropdown
+												class="fixed z-[9999] w-48 origin-top-right rounded-[12px] bg-[var(--bg-main)] shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] focus:outline-none py-1.5 overflow-hidden">
 												<div class="px-1 py-1">
 													<MenuItem v-slot="{ active }">
-														<button @click="handleShare(conversation)" :class="[active ? 'bg-[var(--fill-tsp-white-main)]' : '', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm text-[var(--text-primary)] transition-colors']">
-															<Share :size="16" class="shrink-0 opacity-60" />
-															{{ $t('chat.share') }}
-														</button>
+													<button @click="handleShare(conversation)"
+														:class="[active ? 'bg-[var(--fill-tsp-white-main)]' : '', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm text-[var(--text-primary)] transition-colors']">
+														<Share :size="16" class="shrink-0 opacity-60" />
+														{{ $t('chat.share') }}
+													</button>
 													</MenuItem>
 													<MenuItem v-slot="{ active }">
-														<button @click="uiStore.openRenameModal(conversation)" :class="[active ? 'bg-[var(--fill-tsp-white-main)]' : '', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm text-[var(--text-primary)] transition-colors']">
-															<Pencil :size="16" class="shrink-0 opacity-60" />
-															{{ $t('chat.rename') }}
-														</button>
+													<button @click="uiStore.openRenameModal(conversation)"
+														:class="[active ? 'bg-[var(--fill-tsp-white-main)]' : '', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm text-[var(--text-primary)] transition-colors']">
+														<Pencil :size="16" class="shrink-0 opacity-60" />
+														{{ $t('chat.rename') }}
+													</button>
 													</MenuItem>
 
 													<!-- Move to Project -->
 													<div class="h-px bg-[var(--border-main)] my-1"></div>
-													<div class="px-3 py-1.5 text-[11px] font-bold text-[var(--text-tertiary)] uppercase tracking-tight">{{ $t('chat.move_to_project') }}</div>
+													<div
+														class="px-3 py-1.5 text-[11px] font-bold text-[var(--text-tertiary)] uppercase tracking-tight">
+														{{ $t('chat.move_to_project') }}</div>
 
 													<template v-if="projectStore.projects.length > 0">
-														<MenuItem v-for="proj in projectStore.projects" :key="proj.id" v-slot="{ active }">
-															<button @click="handleMoveToProject(conversation.id, proj.id)" :class="[active ? 'bg-[var(--fill-tsp-white-main)]' : '', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm text-[var(--text-primary)] transition-colors']">
-																<FolderOpen :size="16" class="shrink-0 opacity-60" />
-																<span class="truncate">{{ proj.name }}</span>
-															</button>
+														<MenuItem v-for="proj in projectStore.projects" :key="proj.id"
+															v-slot="{ active }">
+														<button @click="handleMoveToProject(conversation.id, proj.id)"
+															:class="[active ? 'bg-[var(--fill-tsp-white-main)]' : '', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm text-[var(--text-primary)] transition-colors']">
+															<FolderOpen :size="16" class="shrink-0 opacity-60" />
+															<span class="truncate">{{ proj.name }}</span>
+														</button>
 														</MenuItem>
 													</template>
 
 													<div class="h-px bg-[var(--border-main)] my-1"></div>
 
 													<MenuItem v-slot="{ active }">
-														<button @click="handleDeleteConversation(String(conversation.id))" :class="[active ? 'bg-red-50 text-red-600' : 'text-red-500', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm transition-colors']">
-															<Trash2 :size="16" class="shrink-0" />
-															{{ $t('chat.delete') }}
-														</button>
+													<button @click="handleDeleteConversation(String(conversation.id))"
+														:class="[active ? 'bg-red-50 text-red-600' : 'text-red-500', 'group flex w-full items-center gap-3 rounded-[8px] px-3 py-2 text-sm transition-colors']">
+														<Trash2 :size="16" class="shrink-0" />
+														{{ $t('chat.delete') }}
+													</button>
 													</MenuItem>
 												</div>
 											</MenuItems>
@@ -310,7 +392,8 @@
 		</div>
 
 		<!-- Bottom Section -->
-		<div class="flex flex-col justify-center items-start gap-[8px] bg-[var(--bg-sidebar)] p-[8px] overflow-hidden border-t border-[var(--border-light)] shrink-0 transition-all duration-300">
+		<div
+			class="flex flex-col justify-center items-start gap-[8px] bg-[var(--bg-sidebar)] p-[8px] overflow-hidden border-t border-[var(--border-light)] shrink-0 transition-all duration-300">
 			<!-- Share Card -->
 			<!-- <button v-if="!uiStore.sidebarCollapsed"
 				class="relative w-full rounded-[12px] border border-[var(--border-light)] clickable hover:opacity-90 text-sm text-[var(--text-primary)] transition-all bg-[var(--background-card-gray)] shadow-sm">
@@ -335,31 +418,39 @@
 				<HandHeart :size="18" class="shrink-0" />
 			</button> -->
 
-			<div :class="['flex w-full p-[2px] transition-all', uiStore.sidebarCollapsed ? 'flex-col items-center justify-center gap-2' : 'items-center justify-between px-1']">
+			<div
+				:class="['flex w-full p-[2px] transition-all', uiStore.sidebarCollapsed ? 'flex-col items-center justify-center gap-2' : 'items-center justify-between px-1']">
 				<!-- Expanded: User Profile -->
 				<div v-if="!uiStore.sidebarCollapsed" class="flex items-center gap-2.5 min-w-0 flex-1">
-					<div class="size-8 rounded-full bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[13px] font-bold text-[var(--text-primary)] uppercase shrink-0 border border-[var(--border-main)]">
+					<div
+						class="size-8 rounded-full bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[13px] font-bold text-[var(--text-primary)] uppercase shrink-0 border border-[var(--border-main)]">
 						{{ userStore.userInfo?.email?.charAt(0) || 'U' }}
 					</div>
 					<div class="min-w-0 flex-1">
-						<div class="text-[13px] font-medium text-[var(--text-primary)] truncate leading-tight">{{ userStore.userInfo?.email?.split('@')[0] || 'User' }}</div>
-						<div class="text-[11px] text-[var(--text-tertiary)] leading-tight mt-0.5">{{ $t('common.free_plan_label') }}</div>
+						<div class="text-[13px] font-medium text-[var(--text-primary)] truncate leading-tight">{{
+							userStore.userInfo?.email?.split('@')[0] || 'User' }}</div>
+						<div class="text-[11px] text-[var(--text-tertiary)] leading-tight mt-0.5">{{
+							$t('common.free_plan_label') }}</div>
 					</div>
 				</div>
 				<!-- Collapsed: avatar only -->
-				<Tooltip v-if="uiStore.sidebarCollapsed" :text="userStore.userInfo?.email?.split('@')[0] || 'User'" position="right">
-					<div class="size-8 rounded-full bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[13px] font-bold text-[var(--text-primary)] uppercase shrink-0 border border-[var(--border-main)] cursor-pointer" @click="uiStore.openSettingsModal()">
+				<Tooltip v-if="uiStore.sidebarCollapsed" :text="userStore.userInfo?.email?.split('@')[0] || 'User'"
+					position="right">
+					<div class="size-8 rounded-full bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[13px] font-bold text-[var(--text-primary)] uppercase shrink-0 border border-[var(--border-main)] cursor-pointer"
+						@click="uiStore.openSettingsModal()">
 						{{ userStore.userInfo?.email?.charAt(0) || 'U' }}
 					</div>
 				</Tooltip>
 				<!-- Settings + Mobile -->
 				<div :class="['flex items-center', uiStore.sidebarCollapsed ? 'flex-col gap-2' : 'gap-[4px]']">
 					<Tooltip :text="$t('common.settings')" position="right" :disabled="!uiStore.sidebarCollapsed">
-						<div @click="uiStore.openSettingsModal()" class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
+						<div @click="uiStore.openSettingsModal()" role="button" :aria-label="$t('common.settings')"
+							class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
 							<Settings2 :size="18" class="text-[var(--icon-primary)]" />
 						</div>
 					</Tooltip>
-					<div @click="uiStore.openMobileMenu()" class="flex items-center justify-center lg:hidden cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
+					<div @click="uiStore.openMobileMenu()" role="button" :aria-label="$t('common.menu')"
+						class="flex items-center justify-center lg:hidden cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 shrink-0 transition-colors">
 						<Smartphone :size="18" class="text-[var(--icon-primary)]" />
 					</div>
 				</div>
@@ -367,10 +458,12 @@
 		</div>
 
 		<!-- Global Modals -->
-		<ProjectModal :show="uiStore.showProjectModal" :editingProject="currentEditingProject" @close="handleCloseProjectModal" @success="projectStore.fetchProjects" />
+		<ProjectModal :show="uiStore.showProjectModal" :editingProject="currentEditingProject"
+			@close="handleCloseProjectModal" @success="projectStore.fetchProjects" />
 
 		<!-- Confirm Dialog -->
-		<ConfirmDialog :show="confirmDialog.show" :title="confirmDialog.title" :message="confirmDialog.message" @confirm="confirmDialog.onConfirm" @cancel="confirmDialog.show = false" />
+		<ConfirmDialog :show="confirmDialog.show" :title="confirmDialog.title" :message="confirmDialog.message"
+			@confirm="confirmDialog.onConfirm" @cancel="confirmDialog.show = false" />
 	</aside>
 </template>
 
@@ -490,6 +583,17 @@ const isNavActive = (id: string) => {
 	const target = NAV_ROUTE_MAP[id]
 	return target ? route.path.startsWith(target) : false
 }
+
+const isChatRoute = computed(() => route.path.startsWith('/chat'))
+
+const isConversationActive = (id: number | string) => {
+	return isChatRoute.value && conversationStore.currentConversationId == id
+}
+
+const isProjectActive = (groupId: number | null) => {
+	if (groupId === null) return conversationStore.selectedGroupId === null || conversationStore.selectedGroupId === 0
+	return conversationStore.selectedGroupId == groupId
+}
 const conversationStore = useConversationStore()
 const projectStore = useProjectStore()
 const uiStore = useUIStore()
@@ -511,7 +615,7 @@ const confirmDialog = ref({
 	show: false,
 	title: '',
 	message: '',
-	onConfirm: () => {},
+	onConfirm: () => { },
 })
 
 const projectIconMap: Record<string, any> = {
@@ -891,7 +995,7 @@ const loadSidebarLayout = () => {
 			const filtered = more.filter((id: string) => id !== 'search')
 			moreItems.value = filtered.map(getMoreItemDef).filter(Boolean)
 		}
-	} catch {}
+	} catch { }
 }
 
 // Load layout whenever user info becomes available (covers login + page refresh)
@@ -1027,6 +1131,7 @@ onMounted(async () => {
 }
 
 @keyframes pulse-subtle {
+
 	0%,
 	100% {
 		opacity: 1;

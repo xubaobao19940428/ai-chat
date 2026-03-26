@@ -38,6 +38,7 @@
 		"max_images_reached": "Nombre maximum d'images atteint",
 		"send_failed": "Échec de l'envoi. Vérifiez votre connexion et réessayez.",
 		"retry": "Réessayer",
+		"scroll_to_bottom": "Défiler vers le bas",
 		"connection_failed": "Connexion échouée. Veuillez réessayer.",
 		"drag_drop_title": "Déposez les fichiers ici pour les télécharger",
 		"drag_drop_subtitle": "Supporte les images et les fichiers",

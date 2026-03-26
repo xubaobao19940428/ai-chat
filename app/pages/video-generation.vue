@@ -53,9 +53,9 @@
 								<Heart :size="100" class="absolute fill-red-500/30 !stroke-transparent animate-heart-ripple-2" />
 								<Heart :size="100" class="fill-red-500 !stroke-transparent animate-heart-burst" />
 							</div>
-							<!-- Top Left: Model Name (always visible) -->
-						<div v-if="example.model || example.title" class="absolute top-2.5 left-2.5 z-20">
-							<span class="px-2 py-0.5 rounded-md bg-white/80 backdrop-blur-sm text-[10px] font-semibold text-black/80 leading-tight shadow-sm">{{ example.model || example.title }}</span>
+							<!-- Top Left: Model Name (hover only) -->
+						<div v-if="example.model || example.title" class="absolute top-3 left-3 z-20 transform -translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 delay-75">
+							<span class="h-8 inline-flex items-center px-2.5 rounded-full bg-black/40 backdrop-blur-sm text-[10px] font-semibold text-white/90 shadow-sm">{{ example.model || example.title }}</span>
 						</div>
 						<!-- Hover Overlay -->
 							<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 pointer-events-none">
@@ -70,9 +70,8 @@
 								<div class="absolute inset-x-0 bottom-0 p-4 flex items-end justify-between gap-3">
 									<!-- Left: Model info -->
 									<div class="flex-1 min-w-0 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-										<p class="text-white text-[13px] font-semibold truncate">{{ example.model || example.title }}</p>
-										<p v-if="example.description" class="text-white text-[13px] line-clamp-5 mt-0.5">{{ example.description }}</p>
-										<a v-if="example.author" :href="`https://x.com/${example.author}`" target="_blank" rel="noopener noreferrer" @click.stop class="text-white/50 text-[11px] mt-0.5 hover:text-white/80 hover:underline transition-colors pointer-events-auto block">@{{ example.author }}</a>
+										<p v-if="example.description" class="text-white text-[13px] line-clamp-5">{{ example.description }}</p>
+										<a v-if="example.author" :href="example.original_url || `https://x.com/${example.author}`" target="_blank" rel="noopener noreferrer" @click.stop class="text-white/50 text-[11px] mt-0.5 hover:text-white/80 hover:underline transition-colors pointer-events-auto block">@{{ example.author }}</a>
 									</div>
 									<!-- Right: Use prompt -->
 									<span class="shrink-0 px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-75 pointer-events-auto cursor-pointer hover:bg-white/90 inline-flex items-center gap-1" @click.stop="useExample(example)"><Sparkles :size="12" />{{ $t('common.use_prompt') }}</span>
@@ -276,7 +275,7 @@
 		</main>
 
 		<!-- UnifiedInput -->
-		<div class="absolute bottom-12 inset-x-0 flex justify-center px-4 z-50 pointer-events-none">
+		<div class="absolute bottom-3 inset-x-0 flex justify-center px-4 z-50 pointer-events-none">
 			<div class="w-full max-w-[840px] relative pointer-events-auto">
 				<UnifiedInput
 					ref="unifiedInputRef"

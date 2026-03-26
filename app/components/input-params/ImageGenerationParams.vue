@@ -213,22 +213,48 @@
 	</div>
 
 	<!-- Dynamic Boolean Fields (audio_enabled, etc.) -->
-	<div v-for="field in fields.dynamicBooleanFields.value" :key="field.key">
-		<button @click="fields.setParam(field.key, !getParamValue(field.key, field.default))" class="unified-pill"
-			:class="getParamValue(field.key, field.default) ? 'unified-pill-active' : ''">
-			<div class="relative w-7 h-4 rounded-full transition-colors"
-				:class="getParamValue(field.key, field.default) ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'">
-				<div class="absolute top-0.5 w-3 h-3 rounded-full bg-white shadow-sm transition-transform"
-					:class="getParamValue(field.key, field.default) ? 'translate-x-3.5' : 'translate-x-0.5'" />
+	<div v-for="field in fields.dynamicBooleanFields.value" :key="field.key" class="relative" @mouseleave="fields.scheduleCloseDropdown()">
+		<Tooltip :text="field.description || field.key">
+			<button @mouseenter="fields.openDropdown(field.key)"
+				class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors relative"
+				:class="{ 'text-[var(--text-primary)] bg-[var(--bg-hover)]': fields.activeDropdown.value === field.key || getParamValue(field.key, field.default) }">
+				<Volume2 v-if="field.key === 'audio_enabled'" :size="18" />
+				<ToggleRight v-else-if="getParamValue(field.key, field.default)" :size="18" />
+				<ToggleLeft v-else :size="18" />
+				<div v-if="getParamValue(field.key, field.default)"
+					class="absolute top-1.5 right-1.5 w-2 h-2 bg-[var(--text-primary)] rounded-full border border-[var(--bg-main)]" />
+			</button>
+		</Tooltip>
+		<Transition enter-active-class="transition duration-150 ease-out"
+			enter-from-class="translate-y-1.5 opacity-0 scale-[0.98]"
+			enter-to-class="translate-y-0 opacity-100 scale-100" leave-active-class="transition duration-100 ease-in"
+			leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1.5 opacity-0">
+			<div v-if="fields.activeDropdown.value === field.key"
+				@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
+				class="absolute bottom-full left-0 mb-3 z-50 w-[280px] max-w-[calc(100vw-2rem)] bg-[var(--bg-main)] rounded-2xl shadow-lg border border-[var(--border-light)] p-4 cursor-default">
+				<div class="text-[14px] font-semibold text-[var(--text-primary)] mb-3">{{ field.description || field.key }}</div>
+				<div class="h-[1px] bg-[var(--border-light)] -mx-4 mb-3"></div>
+				<div class="flex items-start justify-between">
+					<div class="pr-4">
+						<div class="text-[13px] font-medium text-[var(--text-primary)]">{{ field.description || field.key }}</div>
+					</div>
+					<Switch :model-value="!!getParamValue(field.key, field.default)"
+						@update:model-value="fields.setParam(field.key, $event)"
+						:class="getParamValue(field.key, field.default) ? 'bg-[var(--text-primary)]' : 'bg-[var(--border-dark)]'"
+						class="relative inline-flex h-5 w-[36px] shrink-0 items-center rounded-full transition-colors focus:outline-none mt-0.5">
+						<span :class="getParamValue(field.key, field.default) ? 'translate-x-[18px]' : 'translate-x-0.5'"
+							class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm" />
+					</Switch>
+				</div>
 			</div>
-			<span class="unified-pill-text">{{ field.description || field.key }}</span>
-		</button>
+		</Transition>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { ref, nextTick, watch } from 'vue'
-import { ImagePlus, Loader2, Plus, Palette, Gem, Square, LayoutGrid, Monitor, Check } from 'lucide-vue-next'
+import { ImagePlus, Loader2, Plus, Palette, Gem, Square, LayoutGrid, Monitor, Check, Volume2, ToggleLeft, ToggleRight } from 'lucide-vue-next'
+import { Switch } from '@headlessui/vue'
 import type { useInputFields } from '~/composables/useInputFields'
 
 const props = defineProps<{

@@ -38,6 +38,7 @@
 		"max_images_reached": "Maximum number of images reached",
 		"send_failed": "Failed to send. Please check your connection and retry.",
 		"retry": "Retry",
+		"scroll_to_bottom": "Scroll to bottom",
 		"connection_failed": "Connection failed. Please try again.",
 		"image_generation_failed_title": "Generation failed",
 		"image_generation_failed_desc": "Unable to generate image. This may be due to content restrictions or a temporary issue. Please try again.",
@@ -97,7 +98,17 @@
 		"end_of_list": "End of Orchestration",
 		"aspect_ratio": "Aspect Ratio",
 		"duration_label": "Duration",
-		"outputs_quantity": "Outputs Quantity"
+		"outputs_quantity": "Outputs Quantity",
+		"close": "Close",
+		"stop": "Stop",
+		"preview": "Preview",
+		"clear": "Clear",
+		"favorite": "Favorite",
+		"more": "More",
+		"menu": "Menu",
+		"add": "Add",
+		"network_offline": "Network disconnected. Some features may be unavailable.",
+		"network_restored": "Network connection restored"
 	},
 	"settings": {
 		"usage": "Usage",

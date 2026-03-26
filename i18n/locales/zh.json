@@ -38,6 +38,7 @@
 		"max_images_reached": "已达到最大图片上传数量",
 		"send_failed": "发送失败，请检查网络后重试",
 		"retry": "重试",
+		"scroll_to_bottom": "滚动到底部",
 		"connection_failed": "连接失败，请重试",
 		"image_generation_failed_title": "生成失败",
 		"image_generation_failed_desc": "无法生成图片，可能因内容限制或临时问题，请重试。",
@@ -97,7 +98,17 @@
 		"end_of_list": "已经到底了",
 		"aspect_ratio": "宽高比",
 		"duration_label": "时长",
-		"outputs_quantity": "输出数量"
+		"outputs_quantity": "输出数量",
+		"close": "关闭",
+		"stop": "停止",
+		"preview": "预览",
+		"clear": "清除",
+		"favorite": "收藏",
+		"more": "更多",
+		"menu": "菜单",
+		"add": "添加",
+		"network_offline": "网络连接已断开，部分功能可能不可用",
+		"network_restored": "网络连接已恢复"
 	},
 	"settings": {
 		"usage": "用量",

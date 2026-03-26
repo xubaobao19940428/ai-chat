@@ -3,14 +3,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 const props = withDefaults(defineProps<{
 	audioLevel?: number
-	active?: boolean
 }>(), {
 	audioLevel: 0,
-	active: false,
 })
 
 const SAMPLE_MS = 70
@@ -22,11 +20,9 @@ const FADE_COUNT = 16
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 
-// Each bar stores its final height — never changes once pushed
 const bars: { h: number; live: boolean }[] = []
 let maxBars = 0
 let timerId: ReturnType<typeof setInterval> | null = null
-let inited = false
 
 function getColors() {
 	const el = canvasRef.value
@@ -35,13 +31,6 @@ function getColors() {
 	const primary = style.getPropertyValue('--text-primary').trim() || '#000'
 	const tertiary = style.getPropertyValue('--text-tertiary').trim() || 'rgba(0,0,0,0.18)'
 	return { idle: tertiary, active: primary }
-}
-
-function calcMaxBars() {
-	const el = canvasRef.value
-	if (!el) return
-	const w = el.clientWidth
-	maxBars = Math.floor((w + BAR_GAP) / (BAR_W + BAR_GAP))
 }
 
 function draw() {
@@ -60,7 +49,7 @@ function draw() {
 	const h = rect.height
 	ctx.clearRect(0, 0, w, h)
 
-	const maxH = h - 2 // leave 1px padding top/bottom
+	const maxH = h - 2
 	const colors = getColors()
 	const isScrolling = bars.length > maxBars
 	const visible = isScrolling ? bars.slice(bars.length - maxBars) : bars
@@ -88,47 +77,32 @@ function draw() {
 	ctx.globalAlpha = 1
 }
 
-function initIdleBars() {
-	calcMaxBars()
-	bars.length = 0
-	for (let i = 0; i < maxBars; i++) {
-		bars.push({ h: MIN_H, live: false })
-	}
-	inited = true
-	draw()
-}
-
 function sample() {
 	const canvas = canvasRef.value
 	if (!canvas) return
 	const maxH = canvas.getBoundingClientRect().height - 2
 	const level = props.audioLevel
-	// Map audioLevel (0~1) to bar height
 	const barH = MIN_H + level * (maxH - MIN_H)
 	bars.push({ h: barH, live: true })
 	draw()
 }
 
-watch(() => props.active, (val) => {
-	if (val) {
-		nextTick(() => {
-			if (!inited) initIdleBars()
-			timerId = setInterval(sample, SAMPLE_MS)
-		})
-	} else {
-		if (timerId !== null) {
-			clearInterval(timerId)
-			timerId = null
-		}
-		bars.length = 0
-		inited = false
-	}
-}, { immediate: true })
-
 onMounted(() => {
-	if (props.active && !inited) {
-		initIdleBars()
+	const canvas = canvasRef.value
+	if (!canvas) return
+
+	// Calculate how many bars fit
+	const w = canvas.clientWidth
+	maxBars = Math.floor((w + BAR_GAP) / (BAR_W + BAR_GAP))
+
+	// Fill with gray idle bars and draw immediately
+	for (let i = 0; i < maxBars; i++) {
+		bars.push({ h: MIN_H, live: false })
 	}
+	draw()
+
+	// Start sampling right away
+	timerId = setInterval(sample, SAMPLE_MS)
 })
 
 onUnmounted(() => {

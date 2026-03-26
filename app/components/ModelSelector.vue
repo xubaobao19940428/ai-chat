@@ -82,6 +82,7 @@
 									:placeholder="$t('common.search_models')"
 									class="flex-1 bg-transparent text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-disable)] outline-none" />
 								<button v-if="searchQuery" @click="searchQuery = ''"
+									:aria-label="$t('common.clear')"
 									class="text-[var(--icon-secondary)] hover:text-[var(--text-primary)] transition-colors">
 									<X :size="12" />
 								</button>
@@ -111,9 +112,9 @@
 											</div>
 										</div>
 										<Check v-if="isSelected(model)" :size="13" class="flex-shrink-0 text-[var(--text-blue)]" />
-										<button @click.stop="toggleFavorite(model.id)" class="flex-shrink-0 outline-none opacity-100 transition-opacity">
+										<span @click.stop="toggleFavorite(model.id)" role="button" :aria-label="$t('common.favorite')" class="flex-shrink-0 outline-none opacity-100 transition-opacity cursor-pointer">
 											<Star :size="14" class="fill-amber-400 !stroke-transparent" />
-										</button>
+										</span>
 									</button>
 									<!-- Separator -->
 									<div class="my-1 mx-2 border-t border-[var(--border-main)]"></div>
@@ -146,6 +147,7 @@
 										class="flex-shrink-0 text-[var(--text-blue)]" />
 									<span @click.stop="toggleFavorite(model.id)"
 										role="button"
+										:aria-label="$t('common.favorite')"
 										class="flex-shrink-0 outline-none transition-opacity cursor-pointer"
 										:class="isFavorited(model.id) ? 'opacity-100' : 'opacity-0 group-hover/model:opacity-100'">
 										<Star :size="14" :class="isFavorited(model.id) ? 'fill-amber-400 !stroke-transparent' : 'text-[var(--text-tertiary)]'" />
