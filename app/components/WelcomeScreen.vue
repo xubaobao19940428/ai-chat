@@ -13,18 +13,11 @@
 
 				<!-- Input Card Area -->
 				<div class="flex flex-col gap-1 w-full animate-fade-in-up" style="animation-delay: 0.3s; animation-fill-mode: forwards">
-					<UnifiedInput
-						ref="unifiedInputRef"
-						:capability="currentCapability"
-						:is-loading="props.isLoading"
-						:allow-model-switch="true"
-						@send="handleUnifiedSend"
-					/>
+					<UnifiedInput ref="unifiedInputRef" :capability="currentCapability" :is-loading="props.isLoading" :allow-model-switch="true" @send="handleUnifiedSend" />
 				</div>
 
 				<!-- Suggestions / Home View -->
-				<div v-if="!activeTool" class="mt-8 flex flex-wrap justify-center gap-2 animate-fade-in-up" style="animation-delay: 0.4s; animation-fill-mode: forwards">
-				</div>
+				<div v-if="!activeTool" class="mt-8 flex flex-wrap justify-center gap-2 animate-fade-in-up" style="animation-delay: 0.4s; animation-fill-mode: forwards"></div>
 
 				<!-- Expanded Tool View -->
 				<div v-if="activeTool && currentTool" class="mt-8 flex flex-col gap-8 w-full animate-fade-in-up">
@@ -74,8 +67,6 @@ import SamplePrompts from './SamplePrompts.vue'
 import TemplateSelector from './TemplateSelector.vue'
 import ToolChips from './ToolChips.vue'
 import ToolIntegrations from './ToolIntegrations.vue'
-import Tooltip from './Tooltip.vue'
-import { Switch, Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
 
 // --- Custom Icons ---
 const FigmaIcon = () =>
@@ -169,7 +160,7 @@ function handleUnifiedSend(payload: { content: string; params: Record<string, an
 		}
 	}
 
-	const capability = currentCapability.value === 'image_generation' ? 'image' : (currentCapability.value === 'video_generation' ? 'video' : 'chat')
+	const capability = currentCapability.value === 'image_generation' ? 'image' : currentCapability.value === 'video_generation' ? 'video' : 'chat'
 	emit('send-message', content, modelId, payloadOptions, capability)
 
 	activeTool.value = null
@@ -528,10 +519,8 @@ function handleSendMessage(directContent?: string) {
 		})
 
 		// Merge file info with dynamic params (aspect ratio, duration, etc.)
-		const cleanParams = Object.fromEntries(
-			Object.entries(dynamicParams.value).filter(([, v]) => v !== null && v !== undefined && v !== '')
-		)
-		const capability = isImageModel.value ? 'image' : (isVideoModel.value ? 'video' : 'chat')
+		const cleanParams = Object.fromEntries(Object.entries(dynamicParams.value).filter(([, v]) => v !== null && v !== undefined && v !== ''))
+		const capability = isImageModel.value ? 'image' : isVideoModel.value ? 'video' : 'chat'
 		const payloadOptions: any = { ...cleanParams, file_ids, image_urls, files: uploadedFiles.value }
 
 		// Advanced Media Field Mapping
@@ -586,8 +575,7 @@ function handleToolSelect(toolId: string) {
 function handlePromptSelect(text: string) {
 	unifiedInputRef.value?.setContent(text)
 	unifiedInputRef.value?.focus()
-	nextTick(() => {
-	})
+	nextTick(() => {})
 }
 
 // Set up key handler when editor is ready
@@ -657,7 +645,7 @@ onBeforeUnmount(() => {
 	}
 }
 
-// Hide scrollbar but keep functionality
+/* Hide scrollbar but keep functionality */
 .scrollbar-none {
 	-ms-overflow-style: none;
 	scrollbar-width: none;

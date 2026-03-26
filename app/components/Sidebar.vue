@@ -73,6 +73,17 @@
 				</Tooltip>
 			</div>
 
+			<!-- Empty Main Drop Zone: allows dragging items back from More when main is empty -->
+			<div v-if="sidebarNavItems.length === 0 && draggingItem?.source === 'more' && !uiStore.sidebarCollapsed"
+				@dragover.prevent="handleDragOver($event, 'main', 0)"
+				@drop="handleDrop($event, 'main', 0)"
+				@dragenter="draggingOverZone = 'empty-main'"
+				@dragleave="draggingOverZone = null"
+				:class="['mx-1 p-3 border-2 border-dashed rounded-xl flex items-center justify-center gap-2 transition-all duration-300',
+					draggingOverZone === 'empty-main' ? 'bg-[var(--bg-hover)] border-[var(--text-tertiary)] scale-[1.02] shadow-sm' : 'bg-[var(--bg-sidebar)] border-[var(--border-main)] animate-pulse-subtle']">
+				<span class="text-[12px] font-medium text-[var(--text-tertiary)] opacity-80">{{ $t('common.drag_here') }}</span>
+			</div>
+
 			<!-- More Menu (Accordion + Hover Popover) -->
 			<div v-if="moreItems.length > 0" class="flex flex-col gap-px relative shrink-0">
 				<Tooltip :text="$t('common.more_tools')" position="right" :disabled="!uiStore.sidebarCollapsed"
@@ -989,7 +1000,7 @@ const loadSidebarLayout = () => {
 		if (Array.isArray(main)) {
 			const filtered = main.filter((id: string) => id !== 'search')
 			const items = filtered.map(getNavItemDef).filter(Boolean)
-			if (items.length) sidebarNavItems.value = items
+			sidebarNavItems.value = items
 		}
 		if (Array.isArray(more)) {
 			const filtered = more.filter((id: string) => id !== 'search')
