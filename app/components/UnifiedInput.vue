@@ -40,19 +40,24 @@
 					</button>
 				</div>
 
-				<!-- Editor -->
-				<div
-					class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 w-full text-[var(--text-primary)] placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[44px] max-h-[216px]">
-					<EditorContent v-if="editor" :editor="editor" />
-				</div>
+				<!-- Editor / Voice Waveform (swap area) -->
+			<div v-if="speech.isListening.value" class="flex items-center gap-3 px-4 h-[52px] shrink-0 overflow-hidden">
+				<VoiceWaveform :audio-level="speech.audioLevel.value" :active="speech.isListening.value" style="height: 42px; min-height: 42px; max-height: 42px;" class="flex-1" />
+				<span class="text-sm tabular-nums text-[var(--text-secondary)] shrink-0">{{ speech.formatDuration(speech.duration.value) }}</span>
+			</div>
+			<div v-else
+				class="overflow-auto ps-4 pe-2 bg-transparent pt-[1px] border-0 w-full text-[var(--text-primary)] placeholder:text-[var(--text-disable)] text-[15px] leading-[24px] min-h-[44px] max-h-[216px]">
+				<EditorContent v-if="editor" :editor="editor" />
+			</div>
 
-				<!-- Toolbar -->
-				<div class="flex items-center justify-between px-3 gap-2">
-					<div class="flex items-center gap-1.5 flex-wrap flex-1">
-						<!-- Model Selector -->
-						<ModelSelector v-if="showModelSelector" variant="pill" :capability="allowModelSwitch ? undefined : capability" class="mr-0.5 hidden lg:flex" />
+			<!-- Toolbar (always visible) -->
+			<div class="flex items-center justify-between px-3 gap-2">
+				<div class="flex items-center gap-1.5 flex-wrap flex-1">
+					<!-- Model Selector -->
+					<ModelSelector v-if="showModelSelector && !speech.isListening.value" variant="pill" :capability="allowModelSwitch ? undefined : capability" class="mr-0.5 hidden lg:flex" />
 
-						<!-- === Capability-specific Parameters === -->
+					<!-- === Capability-specific Parameters === -->
+					<template v-if="!speech.isListening.value">
 						<ImageGenerationParams
 							v-if="capability === 'image_generation' || (showModelSelector && fields.isImageModel.value)"
 							:fields="fields"
@@ -88,10 +93,25 @@
 							@update:params="(v: any) => $emit('update:params', v)"
 							@update:web-search="(v: boolean) => isWebSearchEnabled = v"
 						/>
-					</div>
+					</template>
+				</div>
 
-					<!-- Voice Input -->
-					<button disabled :title="$t('chat.voice_input')" class="flex items-center justify-center size-10 flex-shrink-0 rounded-full transition-colors self-end opacity-30 cursor-not-allowed">
+				<!-- Voice: Cancel / Confirm buttons -->
+				<template v-if="speech.isListening.value">
+					<button @click="cancelVoice" :title="$t('common.cancel')"
+						class="flex items-center justify-center size-10 shrink-0 rounded-full border border-[var(--border-main)] hover:bg-[var(--bg-hover)] transition-colors">
+						<X :size="16" class="text-[var(--text-secondary)]" />
+					</button>
+					<button @click="confirmVoice" :title="$t('common.confirm')"
+						class="flex items-center justify-center size-10 shrink-0 rounded-full border border-[var(--border-main)] hover:bg-[var(--bg-hover)] transition-colors">
+						<Check :size="16" class="text-[var(--text-secondary)]" />
+					</button>
+				</template>
+
+				<!-- Normal: Voice + Send buttons -->
+				<template v-else>
+					<button v-if="speech.isSupported" @click="speech.start()" :title="$t('chat.voice_input')"
+						class="flex items-center justify-center size-10 flex-shrink-0 rounded-full transition-colors self-end hover:bg-[var(--bg-hover)]">
 						<Mic :size="18" class="text-[var(--text-secondary)]" />
 					</button>
 
@@ -107,7 +127,8 @@
 							:size="20" fill="currentColor" />
 						<ArrowUp v-else :size="18" :stroke-width="2.5" />
 					</button>
-				</div>
+				</template>
+			</div>
 			</div>
 
 			<!-- Hidden File Input -->
@@ -127,14 +148,16 @@ import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import {
-	ArrowUp, Square, Sparkles, Plus, X, Loader2, FileText, Mic
+	ArrowUp, Square, Sparkles, Plus, X, Loader2, FileText, Mic, Check
 } from 'lucide-vue-next'
 import { useModelStore } from '~/stores/models'
 import { useInputFields } from '~/composables/useInputFields'
 import { useFileUpload } from '~/composables/useFileUpload'
+import { useSpeechRecognition } from '~/composables/useSpeechRecognition'
 import { useTypewriter } from '~/composables/useTypewriter'
 import ModelSelector from '~/components/ModelSelector.vue'
 import AssetPickerModal from '~/components/AssetPickerModal.vue'
+import VoiceWaveform from '~/components/VoiceWaveform.vue'
 import ChatParams from '~/components/input-params/ChatParams.vue'
 import ImageGenerationParams from '~/components/input-params/ImageGenerationParams.vue'
 import VideoGenerationParams from '~/components/input-params/VideoGenerationParams.vue'
@@ -184,6 +207,8 @@ const placeholderFn = () => {
 	return 'Message MixU...'
 }
 const { displayedText: displayedPlaceholder } = useTypewriter(placeholderFn)
+
+const speech = useSpeechRecognition()
 
 // --- State ---
 const containerRef = ref<HTMLElement | null>(null)
@@ -388,6 +413,22 @@ function handleSend() {
 	editor.value.commands.clearContent()
 	hasContent.value = false
 	fileUpload.clearFiles()
+}
+
+// --- Voice Input ---
+function confirmVoice() {
+	const text = speech.confirm()
+	if (text && editor.value) {
+		const existing = editor.value.getText().trim()
+		const combined = existing ? `${existing} ${text}` : text
+		editor.value.commands.setContent(combined)
+		hasContent.value = true
+		editor.value.commands.focus('end')
+	}
+}
+
+function cancelVoice() {
+	speech.cancel()
 }
 
 // --- Click outside to close dropdowns ---

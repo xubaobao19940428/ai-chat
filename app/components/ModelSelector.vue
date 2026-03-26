@@ -144,11 +144,12 @@
 									<!-- Check + Favorite -->
 									<Check v-if="isSelected(model)" :size="13"
 										class="flex-shrink-0 text-[var(--text-blue)]" />
-									<button @click.stop="toggleFavorite(model.id)"
-										class="flex-shrink-0 outline-none transition-opacity"
+									<span @click.stop="toggleFavorite(model.id)"
+										role="button"
+										class="flex-shrink-0 outline-none transition-opacity cursor-pointer"
 										:class="isFavorited(model.id) ? 'opacity-100' : 'opacity-0 group-hover/model:opacity-100'">
 										<Star :size="14" :class="isFavorited(model.id) ? 'fill-amber-400 !stroke-transparent' : 'text-[var(--text-tertiary)]'" />
-									</button>
+									</span>
 								</button>
 							</template>
 							<div v-else class="py-6 text-center text-[12px] text-[var(--text-tertiary)]">{{ 
