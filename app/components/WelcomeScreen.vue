@@ -17,7 +17,66 @@
 				</div>
 
 				<!-- Suggestions / Home View -->
-				<div v-if="!activeTool" class="mt-8 flex flex-wrap justify-center gap-2 animate-fade-in-up" style="animation-delay: 0.4s; animation-fill-mode: forwards"></div>
+				<div v-if="!activeTool" class="mt-8 flex flex-wrap justify-center gap-2 animate-fade-in-up" style="animation-delay: 0.4s; animation-fill-mode: forwards">
+					<!-- Create slides -->
+					<Tooltip text="Generate a presentation">
+						<button @click="handleToolSelect('slides')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="18" height="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors">
+								<path d="M6.99976 5.9974V4.26406C6.99976 3.38041 7.7161 2.66406 8.59976 2.66406H15.3998C16.2834 2.66406 16.9998 3.38041 16.9998 4.26406V5.9974" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+								<path d="M5.00024 10V8C5.00024 6.89543 5.89567 6 7.00024 6H17.0002C18.1048 6 19.0002 6.89543 19.0002 8V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+								<path d="M19 10H5C3.89543 10 3 10.8954 3 12V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V12C21 10.8954 20.1046 10 19 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+							</svg>
+							<span class="text-[var(--text-primary)] text-[14px]">Create slides</span>
+						</button>
+					</Tooltip>
+
+					<!-- Build website -->
+					<Tooltip text="Create a web page">
+						<button @click="handleToolSelect('website')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" fill="none" width="18" height="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors">
+								<path d="M15 1.5H3C2.17157 1.5 1.5 2.33947 1.5 3.375V14.625C1.5 15.6605 2.17157 16.5 3 16.5H15C15.8284 16.5 16.5 15.6605 16.5 14.625V3.375C16.5 2.33947 15.8284 1.5 15 1.5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+								<path d="M2 5H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+								<path d="M7 9L5.5 10.5L7 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+								<path d="M11 9L12.5 10.5L11 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+							</svg>
+							<span class="text-[var(--text-primary)] text-[14px]">Build website</span>
+						</button>
+					</Tooltip>
+
+					<!-- Develop apps -->
+					<Tooltip text="Build a mobile app">
+						<button @click="handleToolSelect('app')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
+							<Smartphone :size="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
+							<span class="text-[var(--text-primary)] text-[14px]">Develop apps</span>
+						</button>
+					</Tooltip>
+
+					<!-- Design -->
+					<Tooltip text="Create images or designs">
+						<button @click="handleToolSelect('design')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" width="18" height="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors">
+								<path d="M3.457 8.86C3.98 8.58 4.576 8.465 5.166 8.524c.59.06 1.15.293 1.608.67.458.378.793.882.965 1.45.17.568.169 1.174-.004 1.741-.173.568-.511 1.071-.97 1.447-.46.375-1.02.606-1.61.663-2.323.224-2.583.27-2.816 1.396" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+								<path d="M13.348 1.275c.5 0 .983.2 1.337.554.354.354.553.835.553 1.336 0 .502-.2 1.982-.553 2.337l-7.351 7.35-1.895-.99" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+							</svg>
+							<span class="text-[var(--text-primary)] text-[14px]">Design</span>
+						</button>
+					</Tooltip>
+
+					<div class="relative" ref="moreMenuRef">
+						<Tooltip text="Explore more tools">
+							<button @click.stop="isMoreMenuOpen = !isMoreMenuOpen" class="h-10 px-[14px] text-sm py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center clickable hover:bg-[var(--fill-tsp-white-light)] text-[var(--text-primary)] transition-colors" :class="{ 'bg-[var(--fill-tsp-white-light)]': isMoreMenuOpen }">More</button>
+						</Tooltip>
+
+						<!-- More Dropdown Menu -->
+						<div v-if="isMoreMenuOpen" class="absolute bottom-full mb-2 right-0 w-[220px] bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] py-2 z-50 animate-slide-up">
+							<div v-for="item in moreMenuItems" :key="item.name" class="flex items-center gap-3 px-4 py-[10px] hover:bg-[var(--fill-tsp-white-light)] cursor-pointer group transition-colors" @click="handleToolSelect(item.id || item.name)">
+								<component :is="item.icon" :size="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
+								<span class="text-[14px] text-[var(--text-primary)] font-normal flex-1">{{ item.name }}</span>
+								<ArrowUpRight v-if="item.name === 'Playbook'" :size="14" class="text-[var(--text-tertiary)]" />
+							</div>
+						</div>
+					</div>
+				</div>
 
 				<!-- Expanded Tool View -->
 				<div v-if="activeTool && currentTool" class="mt-8 flex flex-col gap-8 w-full animate-fade-in-up">
@@ -67,6 +126,7 @@ import SamplePrompts from './SamplePrompts.vue'
 import TemplateSelector from './TemplateSelector.vue'
 import ToolChips from './ToolChips.vue'
 import ToolIntegrations from './ToolIntegrations.vue'
+import Tooltip from './Tooltip.vue'
 
 // --- Custom Icons ---
 const FigmaIcon = () =>
