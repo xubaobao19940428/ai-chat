@@ -246,7 +246,7 @@
 <script setup lang="ts">
 import { ref, markRaw, computed, onMounted } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { X, SquarePen, Search, Library, AlignJustify, Folder, MessageSquare, Settings2, Sun, Moon, LogOut, Bot, Compass, BookOpen, Image, Video, ChevronUp, Plus, DollarSign, Book, GraduationCap, Pencil, PenTool, Code, Terminal, Music, Coffee, Paintbrush, Palette, Stethoscope, Asterisk, Flower, Briefcase, BarChart, CircleDot, Dumbbell, Notebook, Scale, Globe, Plane, Earth, Wrench, PawPrint, FlaskConical, Brain, Heart, Sprout, Sparkles, Play } from 'lucide-vue-next'
+import { X, SquarePen, Search, Library, AlignJustify, Folder, MessageSquare, Settings2, Sun, Moon, LogOut, Bot, Compass, BookOpen, Image, Video, ChevronUp, Plus, DollarSign, Book, GraduationCap, Pencil, PenTool, Code, Terminal, Music, Coffee, Paintbrush, Palette, Stethoscope, Asterisk, Flower, Briefcase, BarChart, CircleDot, Dumbbell, Notebook, Scale, Globe, Plane, Earth, Wrench, PawPrint, FlaskConical, Brain, Heart, Sprout, Sparkles, Play, Banana } from 'lucide-vue-next'
 import { useConversationStore } from '../stores/conversation'
 import { useUIStore } from '../stores/ui'
 import { useUserStore } from '../stores/user'
@@ -309,12 +309,12 @@ onMounted(() => {
 
 const navItems = [
 	{ id: 'search', label: 'Search', icon: markRaw(Search), shortcut: '⌘ K', handler: () => { uiStore.openSearchModal(); uiStore.closeMobileMenu() } },
-	{ id: 'library', label: 'Library', icon: markRaw(Library), handler: () => { uiStore.closeMobileMenu() } },
+	{ id: 'library', label: 'Library', icon: markRaw(Library), handler: () => { router.push('/library'); uiStore.closeMobileMenu() } },
+	{ id: 'nano-banana', label: 'Nano Banana', icon: markRaw(Banana), handler: () => { router.push('/nano-banana'); uiStore.closeMobileMenu() } },
 ]
 
 const moreNavItems = [
 	{ id: 'ai-bots', label: 'AI bots', icon: markRaw(Compass), handler: () => { router.push('/explore'); uiStore.closeMobileMenu() } },
-	{ id: 'ai-reading', label: 'AI Reading', icon: markRaw(BookOpen), handler: () => { router.push('/ai-search'); uiStore.closeMobileMenu() } },
 	{ id: 'ai-image', label: 'AI Image Generator', icon: markRaw(Image), handler: () => { router.push('/image-generation'); uiStore.closeMobileMenu() } },
 	{ id: 'ai-video', label: 'AI Video Generator', icon: markRaw(Video), handler: () => { router.push('/video-generation'); uiStore.closeMobileMenu() } },
 ]

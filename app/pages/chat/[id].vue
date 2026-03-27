@@ -340,7 +340,7 @@
 								<!-- View Mode -->
 								<div v-else class="group/bubble max-w-[70%]">
 									<div
-										class="bg-[var(--bg-chat-bubble-user)] text-[var(--text-primary)] px-4 py-2.5 rounded-[22px] text-[15px] leading-6 max-h-[300px] overflow-y-auto custom-scrollbar">
+										class="bg-[var(--bg-chat-bubble-user)] text-[var(--text-primary)] px-4 py-2.5 rounded-[16px] text-[15px] leading-6 max-h-[300px] overflow-y-auto custom-scrollbar">
 										<div class="whitespace-pre-wrap break-words">{{ message.content }}</div>
 									</div>
 									<!-- Action bar — below bubble, right-aligned -->

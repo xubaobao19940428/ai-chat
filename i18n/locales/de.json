@@ -83,6 +83,7 @@
 		"ai-reading": "KI-Lesen",
 		"ai-image": "KI-Bildgenerator",
 		"ai-video": "KI-Videogenerator",
+		"nano-banana": "Nano Banana",
 		"no_models_found": "Keine Modelle gefunden",
 		"load_models_failed": "Modelle konnten nicht geladen werden",
 		"edit": "Bearbeiten",

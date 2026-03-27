@@ -89,6 +89,7 @@
 		"ai-reading": "AI 阅读",
 		"ai-image": "AI 绘图",
 		"ai-video": "AI 视频",
+		"nano-banana": "Nano Banana",
 		"no_models_found": "未找到模型",
 		"load_models_failed": "模型加载失败",
 		"edit": "编辑",
@@ -364,6 +365,8 @@
 		"create": "创建"
 	},
 	"image_generation": {
+		"empty_state": "暂无图片",
+		"empty_state_subtitle": "请检查网络连接或尝试其他分类",
 		"categories": {
 			"all": "全部",
 			"portrait": "人物/头像",
@@ -381,6 +384,8 @@
 		}
 	},
 	"video_generation": {
+		"empty_state": "暂无视频",
+		"empty_state_subtitle": "请检查网络连接或尝试其他分类",
 		"categories": {
 			"all": "全部",
 			"drama": "剧情短片",
@@ -443,5 +448,14 @@
 		"create_failed": "创建失败，请重试",
 		"name_required": "请输入智能体名称",
 		"prompt_required": "请输入设定描述"
+	},
+	"nano_banana": {
+		"gallery_title": "Nano Banana 1000种玩法",
+		"cat_all": "全部",
+		"cat_character": "角色",
+		"cat_photo": "摄影",
+		"cat_art": "艺术风格",
+		"cat_product": "产品",
+		"cat_creative": "创意玩法"
 	}
 }

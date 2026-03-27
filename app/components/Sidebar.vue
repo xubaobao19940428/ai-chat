@@ -21,7 +21,9 @@
 
 		<!-- Nav Items Section -->
 		<div
-			class="flex flex-col flex-1 min-h-0 p-[8px] pb-0 gap-px transition-all overflow-x-hidden overflow-y-auto custom-scrollbar">
+			ref="navScrollRef"
+			class="flex flex-col flex-1 min-h-0 p-[8px] pb-0 gap-px transition-all overflow-x-hidden overflow-y-auto custom-scrollbar"
+			@scroll="handleNavScroll">
 			<!-- Static New Task Item (Not draggable as requested) -->
 			<div @click="handleNewChat"
 				:class="['flex items-center rounded-[10px] clickable cursor-pointer transition-colors w-full h-[36px] shrink-0 hover:bg-[var(--bg-hover)] group relative', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px] pe-[2px] gap-[12px]']">
@@ -590,6 +592,7 @@ import {
 	Medal,
 	Rocket,
 	Trophy,
+	Banana,
 } from 'lucide-vue-next'
 import { useConversationStore } from '../stores/conversation'
 import { useProjectStore } from '../stores/projects'
@@ -611,6 +614,7 @@ const NAV_ROUTE_MAP: Record<string, string> = {
 	'ai-bots': '/explore',
 	'ai-image': '/image-generation',
 	'ai-video': '/video-generation',
+	'nano-banana': '/nano-banana',
 }
 const isNavActive = (id: string) => {
 	const target = NAV_ROUTE_MAP[id]
@@ -639,6 +643,17 @@ onMounted(() => {
 		discoveryStore.fetchDiscovery('tag')
 	}
 })
+
+// Scroll auto-hide scrollbar
+const navScrollRef = ref<HTMLElement | null>(null)
+let scrollTimer: ReturnType<typeof setTimeout> | null = null
+const handleNavScroll = () => {
+	navScrollRef.value?.classList.add('is-scrolling')
+	if (scrollTimer) clearTimeout(scrollTimer)
+	scrollTimer = setTimeout(() => {
+		navScrollRef.value?.classList.remove('is-scrolling')
+	}, 1000)
+}
 const currentEditingProject = ref<any>(null)
 const projectsCollapsed = ref(false)
 const recentChatsCollapsed = ref(false)
@@ -865,6 +880,8 @@ const handleMoreItemClick = (item: any) => {
 		router.push('/ai-search')
 	} else if (item.id === 'library') {
 		router.push('/library')
+	} else if (item.id === 'nano-banana') {
+		router.push('/nano-banana')
 	} else {
 		// Default fallback
 		console.warn('No navigation defined for item:', item.id)
@@ -928,6 +945,15 @@ const sidebarNavItems = ref([
 		},
 		iconClass: 'text-[var(--text-primary)]',
 	},
+	{
+		id: 'nano-banana',
+		label: 'Nano Banana',
+		icon: markRaw(Banana),
+		handler: () => {
+			router.push('/nano-banana')
+		},
+		iconClass: 'text-[var(--text-primary)]',
+	},
 ])
 
 const moreItems = ref([
@@ -978,6 +1004,15 @@ const NAV_DEFS: Record<string, any> = {
 		},
 		iconClass: 'text-[var(--text-primary)]',
 	},
+	'nano-banana': {
+		id: 'nano-banana',
+		label: 'Nano Banana',
+		icon: markRaw(Banana),
+		handler: () => {
+			router.push('/nano-banana')
+		},
+		iconClass: 'text-[var(--text-primary)]',
+	},
 	'ai-video': {
 		id: 'ai-video',
 		label: 'AI Video Generator',
@@ -995,6 +1030,7 @@ const MORE_DEFS: Record<string, any> = {
 	'ai-video': { id: 'ai-video', name: 'AI Video Generator', icon: markRaw(Video) },
 
 	library: { id: 'library', name: 'Library', icon: markRaw(Library) },
+	'nano-banana': { id: 'nano-banana', name: 'Nano Banana', icon: markRaw(Banana) },
 }
 
 const getNavItemDef = (id: string): any => NAV_DEFS[id]
@@ -1150,11 +1186,15 @@ onMounted(async () => {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-	background: var(--border-light);
+	background: transparent;
 	border-radius: 10px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+.custom-scrollbar.is-scrolling::-webkit-scrollbar-thumb {
+	background: var(--border-light);
+}
+
+.custom-scrollbar.is-scrolling::-webkit-scrollbar-thumb:hover {
 	background: var(--text-tertiary);
 }
 

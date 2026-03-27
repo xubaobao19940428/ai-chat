@@ -56,7 +56,7 @@
 			<div class="flex items-center justify-between px-3 gap-2">
 				<div class="flex items-center gap-1.5 flex-wrap flex-1">
 					<!-- Model Selector -->
-					<ModelSelector v-if="showModelSelector && !speech.isListening.value" variant="pill" :capability="allowModelSwitch ? undefined : capability" class="mr-0.5 hidden lg:flex" />
+					<ModelSelector v-if="showModelSelector && !speech.isListening.value" variant="pill" :capability="allowModelSwitch ? undefined : capability" :provider="provider" class="mr-0.5 hidden lg:flex" />
 
 					<!-- === Capability-specific Parameters === -->
 					<template v-if="!speech.isListening.value">
@@ -176,6 +176,7 @@ const props = withDefaults(defineProps<{
 	externalParams?: Record<string, any>
 	placeholderText?: string
 	allowModelSwitch?: boolean
+	provider?: string
 }>(), {
 	isLoading: false,
 	floating: false,

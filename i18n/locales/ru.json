@@ -89,6 +89,7 @@
 		"ai-reading": "AI-чтение",
 		"ai-image": "AI-генератор изображений",
 		"ai-video": "AI-генератор видео",
+		"nano-banana": "Nano Banana",
 		"no_models_found": "Модели не найдены",
 		"load_models_failed": "Не удалось загрузить модели",
 		"edit": "Редактировать",

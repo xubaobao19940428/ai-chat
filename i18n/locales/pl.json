@@ -89,6 +89,7 @@
 		"ai-reading": "Czytanie AI",
 		"ai-image": "Generator obrazów AI",
 		"ai-video": "Generator wideo AI",
+		"nano-banana": "Nano Banana",
 		"no_models_found": "Nie znaleziono modeli",
 		"load_models_failed": "Nie udało się załadować modeli",
 		"edit": "Edytuj",

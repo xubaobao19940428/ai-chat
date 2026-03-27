@@ -179,6 +179,7 @@ const props = withDefaults(
 		showChevron?: boolean
 		icon?: any
 		capability?: string
+		provider?: string
 	}>(),
 	{
 		variant: 'standard',
@@ -210,6 +211,12 @@ const getEffectiveCap = (m: any) => m.model_input?.capability || m.capabilities?
 const filteredModels = computed(() => {
 	let models = modelStore.models
 	const cap = props.capability
+
+	// 0. Filter by provider if specified
+	if (props.provider) {
+		const p = props.provider.toLowerCase()
+		models = models.filter((m) => (m.provider || '').toLowerCase() === p)
+	}
 
 	if (isImageMatch(cap)) {
 		models = models.filter((m) => {
@@ -299,9 +306,17 @@ watch(isOpen, async (val) => {
 
 const initialValidModels = computed(() => {
 	const cap = props.capability
-	if (!cap) return modelStore.models
+	let models = modelStore.models
 
-	return modelStore.models.filter((m) => {
+	// Filter by provider if specified
+	if (props.provider) {
+		const p = props.provider.toLowerCase()
+		models = models.filter((m) => (m.provider || '').toLowerCase() === p)
+	}
+
+	if (!cap) return models
+
+	return models.filter((m) => {
 		const mCap = getEffectiveCap(m)
 		if (isImageMatch(cap)) return isImageMatch(mCap) || m.capabilities?.some(isImageMatch)
 		if (isVideoMatch(cap)) return isVideoMatch(mCap) || m.capabilities?.some(isVideoMatch)

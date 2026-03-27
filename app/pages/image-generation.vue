@@ -44,14 +44,26 @@
 							</div>
 						</div>
 					</div>
-					<!-- Masonry Grid Layout for Inspiration -->
-					<MasonryGrid v-else :items="exampleImages" v-slot="{ item: example }">
-						<div class="group relative rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--text-tertiary)] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md h-fit"
+				<!-- Empty State -->
+				<div v-else-if="!discoveryStore.isLoading && exampleImages.length === 0"
+					class="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] gap-1">
+					<SearchX :size="48" class="text-[var(--text-disable)] mb-2" />
+					<h3 class="text-lg font-semibold text-[var(--text-primary)]">{{ $t('image_generation.empty_state') }}</h3>
+					<p class="text-sm text-[var(--text-tertiary)]">{{ $t('image_generation.empty_state_subtitle') }}</p>
+					<button @click="handleRetry"
+						class="mt-4 px-5 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[13px] font-semibold hover:opacity-90 transition-opacity flex items-center gap-2">
+						<RefreshCw :size="14" />
+						{{ $t('chat.retry') }}
+					</button>
+				</div>
+				<!-- Masonry Grid Layout for Inspiration -->
+				<MasonryGrid v-else-if="exampleImages.length > 0" :items="exampleImages" v-slot="{ item: example }">
+						<div class="group relative rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--border-light)] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md h-fit"
 							@click="useExample(example)">
 							<img :src="example.url" loading="lazy"
 								class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105 bg-[#f0eeeb] dark:bg-[#2c2c2c]"
 								:alt="example.prompt" :style="{ aspectRatio: '3/4' }"
-								@load="(e: Event) => { const img = e.target as HTMLImageElement; img.style.aspectRatio = `${img.naturalWidth}/${img.naturalHeight}` }" />
+								@load="handleImageLoad" />
 							<!-- Center heart animation -->
 							<div v-if="heartAnimId === example.id"
 								class="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
@@ -125,7 +137,7 @@
 				<div v-else>
 					<!-- Noir Excellence Empty State (V2 Integrated) -->
 					<div v-if="generatedImages.length === 0 && activeTasks.length === 0"
-						class="py-32 flex flex-col items-center justify-center relative overflow-hidden">
+					class="min-h-[calc(100vh-200px)] flex flex-col items-center justify-center relative overflow-hidden">
 						<!-- Architectural Shadow/Light (Theme Aware) -->
 						<div
 							class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[var(--text-primary)]/[0.015] blur-[150px] rounded-full pointer-events-none transition-opacity duration-1000 group-hover:opacity-40">
@@ -162,7 +174,7 @@
 							</div>
 						</div>
 
-						<div class="text-center mt-14 relative z-10 space-y-3">
+						<div class="text-center mt-14 relative z-10 space-y-1">
 							<h3 class="text-[15px] font-black text-[var(--text-primary)] tracking-[0.25em] uppercase">
 								The Archive of Vision</h3>
 							<p
@@ -266,7 +278,7 @@
 						</div>
 
 						<div v-for="(image, index) in filteredGeneratedImages" :key="image.id"
-							class="break-inside-avoid group relative rounded-[24px] overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] hover:border-indigo-500/50 transition-all duration-500 shadow-sm hover:shadow-2xl hover:-translate-y-1">
+							class="break-inside-avoid group relative rounded-[24px] overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] hover:border-[var(--border-light)] transition-all duration-500 shadow-sm hover:shadow-2xl hover:-translate-y-1">
 							<!-- Image Container with Inner Shadow -->
 							<div class="relative overflow-hidden aspect-auto min-h-[100px] bg-[var(--bg-hover)]">
 								<!-- Image Grid Cell -->
@@ -373,7 +385,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue'
-import { Link2, ImagePlus, Palette, Square, Gem, Sparkle, Paperclip, Zap, Loader2, Monitor, X, Image as ImageIcon, Download, ChevronDown, LayoutGrid, Sparkles, Plus, Heart } from 'lucide-vue-next'
+import { Link2, ImagePlus, Palette, Square, Gem, Sparkle, Paperclip, Zap, Loader2, Monitor, X, Image as ImageIcon, Download, ChevronDown, LayoutGrid, Sparkles, Plus, Heart, SearchX, RefreshCw } from 'lucide-vue-next'
 import { getModels, getAsyncTaskOutputs, uploadFile, getRecordPrompt, getRecordPrimaryUrl, getRecordModel, getRecordParams, type AIModel, type AsyncTaskRecord } from '@/utils/api'
 import { useRouter } from 'vue-router'
 import { useConversationStore } from '@/stores/conversation'
@@ -683,6 +695,16 @@ const handleFavorite = (id: number) => {
 		setTimeout(() => { heartAnimId.value = null }, 900)
 	}
 	toggleFavorite(id)
+}
+
+const handleImageLoad = (e: Event) => {
+	const img = e.target as HTMLImageElement
+	img.style.aspectRatio = `${img.naturalWidth}/${img.naturalHeight}`
+}
+
+const handleRetry = () => {
+	discoveryStore.hasMore = true
+	discoveryStore.fetchDiscovery(selectedCategory, true)
 }
 
 const useExample = (example: Record<string, any>) => {

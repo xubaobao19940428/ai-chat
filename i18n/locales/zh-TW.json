@@ -89,6 +89,7 @@
 		"ai-reading": "AI 閱讀",
 		"ai-image": "AI 圖片產生器",
 		"ai-video": "AI 影片產生器",
+		"nano-banana": "Nano Banana",
 		"no_models_found": "找不到模型",
 		"load_models_failed": "載入模型失敗",
 		"edit": "編輯",

@@ -71,7 +71,7 @@
 		<!-- Scrollable Content -->
 		<div :class="['flex-1 overflow-y-auto px-4 lg:px-5 pb-12 custom-scrollbar', showMyCreated ? 'pt-4' : '']"
 			ref="scrollContainer" @scroll="handleScroll">
-			<div class="w-full">
+			<div class="w-full min-h-full">
 				<!-- Skeleton Loading State (initial) -->
 				<div v-if="isListLoading && displayList.length === 0"
 					class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3.5">
@@ -135,21 +135,21 @@
 					</div>
 				</div>
 
-				<!-- Empty State (only after first fetch completes) -->
 				<div v-if="hasFetched && !isListLoading && displayList.length === 0"
-					class="flex flex-col items-center justify-center py-20 gap-4">
-					<SearchX :size="48" class="text-[var(--text-disable)]" />
+					class="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] gap-1">
+					<SearchX :size="48" class="text-[var(--text-disable)] mb-2" />
 					<h3 class="text-lg font-semibold text-[var(--text-primary)]">{{ showMyCreated ?
 						$t('explore.my_created_empty') : $t('explore.empty_state') }}</h3>
 					<p class="text-sm text-[var(--text-tertiary)]">{{ showMyCreated ?
 						$t('explore.my_created_empty_subtitle') : $t('explore.empty_state_subtitle') }}</p>
 					<button v-if="showMyCreated" @click="router.push('/character/create')"
-						class="mt-2 px-5 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[13px] font-semibold hover:opacity-90 transition-opacity">
+						class="mt-4 px-5 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[13px] font-semibold hover:opacity-90 transition-opacity">
 						{{ $t('explore.create_bot') }}
 					</button>
-					<button v-else @click="handleTagChange(10); searchQuery = ''"
-						class="mt-2 px-5 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[13px] font-semibold hover:opacity-90 transition-opacity">
-						{{ $t('explore.empty_state_browse_all') }}
+					<button v-else @click="discoveryStore.hasMore = true; discoveryStore.fetchDiscovery(selectedTag, true)"
+						class="mt-4 px-5 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[13px] font-semibold hover:opacity-90 transition-opacity flex items-center gap-2">
+						<RefreshCw :size="14" />
+						{{ $t('chat.retry') }}
 					</button>
 				</div>
 
@@ -173,7 +173,7 @@
 definePageMeta({ hideTopBar: true })
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { Search, SearchX, Flame, Plus, Menu, Heart } from 'lucide-vue-next'
+import { Search, SearchX, Flame, Plus, Menu, Heart, RefreshCw } from 'lucide-vue-next'
 import { useFavorite } from '~/composables/useFavorite'
 import { useUIStore } from '~/stores/ui'
 import { useExploreDiscoveryStore } from '~/stores/discovery'

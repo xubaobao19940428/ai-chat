@@ -72,6 +72,7 @@ const createDiscoveryStore = (id: string, placement: string) => {
         }
       } catch (error) {
         console.error(`Fetch discovery (${id}) failed:`, error)
+        hasMore.value = false
       } finally {
         isLoading.value = false
       }
@@ -115,6 +116,7 @@ const createDiscoveryStore = (id: string, placement: string) => {
         }
       } catch (error) {
         console.error(`Fetch more discovery (${id}) failed:`, error)
+        hasMore.value = false
       } finally {
         isLoadingMore.value = false
       }

@@ -89,6 +89,7 @@
 		"ai-reading": "AI Reading",
 		"ai-image": "AI Image Generator",
 		"ai-video": "AI Video Generator",
+		"nano-banana": "Nano Banana",
 		"no_models_found": "No models found",
 		"load_models_failed": "Failed to load models",
 		"edit": "Edit",
@@ -364,6 +365,8 @@
 		"create": "Create"
 	},
 	"image_generation": {
+		"empty_state": "No images found",
+		"empty_state_subtitle": "Check your connection or try a different category",
 		"categories": {
 			"all": "All",
 			"portrait": "Portrait / Avatar",
@@ -381,6 +384,8 @@
 		}
 	},
 	"video_generation": {
+		"empty_state": "No videos found",
+		"empty_state_subtitle": "Check your connection or try a different category",
 		"categories": {
 			"all": "All",
 			"drama": "Short Drama",
@@ -443,5 +448,14 @@
 		"create_failed": "Creation failed, please try again",
 		"name_required": "Please enter a character name",
 		"prompt_required": "Please enter a character prompt"
+	},
+	"nano_banana": {
+		"gallery_title": "Nano Banana 1000 Ways to Play",
+		"cat_all": "All",
+		"cat_character": "Characters",
+		"cat_photo": "Photography",
+		"cat_art": "Art Styles",
+		"cat_product": "Product",
+		"cat_creative": "Creative"
 	}
 }

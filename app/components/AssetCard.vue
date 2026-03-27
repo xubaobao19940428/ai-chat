@@ -1,5 +1,5 @@
 <template>
-	<div class="group relative rounded-2xl overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] hover:border-[var(--text-tertiary)] transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer" :class="{ 'ring-2 ring-[var(--text-primary)] shadow-lg': isSelected }" @click="$emit('click', asset)">
+	<div class="group relative rounded-2xl overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] hover:border-[var(--border-light)] transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer" :class="{ 'ring-2 ring-[var(--text-primary)] shadow-lg': isSelected }" @click="$emit('click', asset)">
 		<!-- Thumbnail / Icon Area -->
 		<div class="aspect-square relative bg-[var(--fill-tsp-gray-main)] flex items-center justify-center overflow-hidden">
 			<template v-if="asset.thumbnail || asset.type === 'image' || asset.type === 'video'">

@@ -217,12 +217,11 @@
 		<Tooltip :text="field.description || field.key">
 			<button @mouseenter="fields.openDropdown(field.key)"
 				class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors relative"
-				:class="{ 'text-[var(--text-primary)] bg-[var(--bg-hover)]': fields.activeDropdown.value === field.key || getParamValue(field.key, field.default) }">
+				:class="{ 'text-[var(--text-primary)]': getParamValue(field.key, field.default), 'bg-[var(--bg-hover)]': true }">
 				<Volume2 v-if="field.key === 'audio_enabled'" :size="18" />
 				<ToggleRight v-else-if="getParamValue(field.key, field.default)" :size="18" />
 				<ToggleLeft v-else :size="18" />
-				<div v-if="getParamValue(field.key, field.default)"
-					class="absolute top-1.5 right-1.5 w-2 h-2 bg-[var(--text-primary)] rounded-full border border-[var(--bg-main)]" />
+
 			</button>
 		</Tooltip>
 		<Transition enter-active-class="transition duration-150 ease-out"

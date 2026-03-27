@@ -12,12 +12,17 @@
 		</div>
 
 		<!-- Empty State -->
-		<div v-else-if="items.length === 0" class="py-40 flex flex-col items-center justify-center">
-			<div class="size-20 rounded-3xl bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[var(--text-tertiary)] mb-4">
+		<div v-else-if="items.length === 0" class="min-h-[calc(100vh-200px)] flex flex-col items-center justify-center gap-1">
+			<div class="size-20 rounded-3xl bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[var(--text-tertiary)] mb-2">
 				<Library :size="32" />
 			</div>
-			<h3 class="text-xl font-bold text-[var(--text-primary)]">No assets found</h3>
-			<p class="text-[var(--text-tertiary)] text-[14px] mt-2">Try adjusting your filters or upload/generate something new.</p>
+			<h3 class="text-lg font-semibold text-[var(--text-primary)]">No assets found</h3>
+			<p class="text-sm text-[var(--text-tertiary)]">Try adjusting your filters or upload/generate something new.</p>
+			<button @click="assetStore.fetchAssets(true)"
+				class="mt-4 px-5 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[13px] font-semibold hover:opacity-90 transition-opacity flex items-center gap-2">
+				<RefreshCw :size="14" />
+				Retry
+			</button>
 		</div>
 
 		<!-- Grid State -->
@@ -37,7 +42,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { Library, Loader2 } from 'lucide-vue-next'
+import { Library, Loader2, RefreshCw } from 'lucide-vue-next'
 import AssetCard from './AssetCard.vue'
 import { useAssetStore, type UnifiedAsset } from '@/stores/assets'
 

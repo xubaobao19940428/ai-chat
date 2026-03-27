@@ -39,10 +39,29 @@
 						</div>
 					</div>
 
+					<!-- Empty State -->
+					<div v-else-if="!discoveryStore.isLoading && exampleVideos.length === 0" class="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] gap-1">
+						<SearchX :size="48" class="text-[var(--text-disable)] mb-2" />
+						<h3 class="text-lg font-semibold text-[var(--text-primary)]">{{ $t('video_generation.empty_state') }}</h3>
+						<p class="text-sm text-[var(--text-tertiary)]">{{ $t('video_generation.empty_state_subtitle') }}</p>
+						<button
+							@click="handleRetry"
+							class="mt-4 px-5 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[13px] font-semibold hover:opacity-90 transition-opacity flex items-center gap-2">
+							<RefreshCw :size="14" />
+							{{ $t('chat.retry') }}
+						</button>
+					</div>
+
 					<!-- Masonry Grid Layout for Inspiration -->
 					<MasonryGrid v-else :items="exampleVideos" v-slot="{ item: example }">
-						<div class="group relative rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--text-tertiary)] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md h-fit" @click="useExample(example)" @mouseenter="hoveredIndex = example.id" @mouseleave="hoveredIndex = null">
-							<img :src="example.thumbnail" loading="lazy" class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105 bg-[#f0eeeb] dark:bg-[#2c2c2c]" :alt="example.prompt" :style="{ aspectRatio: '3/4' }" @load="(e: Event) => { const img = e.target as HTMLImageElement; img.style.aspectRatio = `${img.naturalWidth}/${img.naturalHeight}` }" />
+						<div class="group relative rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--border-light)] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md h-fit" @click="useExample(example)" @mouseenter="hoveredIndex = example.id" @mouseleave="hoveredIndex = null">
+							<img
+								:src="example.thumbnail"
+								loading="lazy"
+								class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105 bg-[#f0eeeb] dark:bg-[#2c2c2c]"
+								:alt="example.prompt"
+								:style="{ aspectRatio: '3/4' }"
+								@load="handleImageLoad" />
 
 							<!-- Hover Video (PC Only) -->
 							<video v-if="hoveredIndex === example.id && example.videoUrl" :src="example.videoUrl" autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover hidden md:block z-0" />
@@ -54,14 +73,13 @@
 								<Heart :size="100" class="fill-red-500 !stroke-transparent animate-heart-burst" />
 							</div>
 							<!-- Top Left: Model Name (hover only) -->
-						<div v-if="example.model || example.title" class="absolute top-3 left-3 z-20 transform -translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 delay-75">
-							<span class="h-8 inline-flex items-center px-2.5 rounded-full bg-black/40 backdrop-blur-sm text-[10px] font-semibold text-white/90 shadow-sm">{{ example.model || example.title }}</span>
-						</div>
-						<!-- Hover Overlay -->
+							<div v-if="example.model || example.title" class="absolute top-3 left-3 z-20 transform -translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 delay-75">
+								<span class="h-8 inline-flex items-center px-2.5 rounded-full bg-black/40 backdrop-blur-sm text-[10px] font-semibold text-white/90 shadow-sm">{{ example.model || example.title }}</span>
+							</div>
+							<!-- Hover Overlay -->
 							<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 pointer-events-none">
 								<!-- Top Right: Favorite -->
-								<div class="absolute top-3 right-3 pointer-events-auto transform -translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 delay-75"
-									:class="isFavorited(Number(example.id)) ? '!opacity-100 !translate-y-0' : ''">
+								<div class="absolute top-3 right-3 pointer-events-auto transform -translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 delay-75" :class="isFavorited(Number(example.id)) ? '!opacity-100 !translate-y-0' : ''">
 									<button @click.stop="handleFavorite(Number(example.id))" class="outline-none size-8 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors">
 										<Heart :size="16" :class="['!stroke-transparent drop-shadow-md', isFavorited(Number(example.id)) ? 'fill-red-500' : 'fill-white/80']" />
 									</button>
@@ -106,7 +124,7 @@
 
 				<div v-else>
 					<!-- Noir Excellence Empty State (V2 Integrated) -->
-					<div v-if="generatedVideos.length === 0 && activeTasks.length === 0" class="py-32 flex flex-col items-center justify-center relative overflow-hidden">
+					<div v-if="generatedVideos.length === 0 && activeTasks.length === 0" class="min-h-[calc(100vh-200px)] flex flex-col items-center justify-center relative overflow-hidden">
 						<!-- Architectural Shadow/Light (Theme Aware) -->
 						<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[var(--text-primary)]/[0.015] blur-[150px] rounded-full pointer-events-none transition-opacity duration-1000 group-hover:opacity-40"></div>
 
@@ -137,7 +155,7 @@
 							</div>
 						</div>
 
-						<div class="text-center mt-14 relative z-10 space-y-3">
+						<div class="text-center mt-14 relative z-10 space-y-1">
 							<h3 class="text-[15px] font-black text-[var(--text-primary)] tracking-[0.25em] uppercase">Cinematic Dimensions</h3>
 							<p class="text-[var(--text-tertiary)] text-[13.5px] max-w-[320px] px-4 leading-relaxed font-normal tracking-wide italic opacity-80">Every visionary motion sequence is preserved in the MixU collection. Begin your orchestration.</p>
 						</div>
@@ -198,7 +216,7 @@
 							</div>
 						</div>
 
-						<div v-for="(video, index) in filteredGeneratedVideos" :key="video.id" class="break-inside-avoid group relative rounded-[24px] overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] hover:border-purple-500/50 transition-all duration-500 shadow-sm hover:shadow-2xl hover:-translate-y-1">
+						<div v-for="(video, index) in filteredGeneratedVideos" :key="video.id" class="break-inside-avoid group relative rounded-[24px] overflow-hidden bg-[var(--bg-main)] border border-[var(--border-main)] hover:border-[var(--border-light)] transition-all duration-500 shadow-sm hover:shadow-2xl hover:-translate-y-1">
 							<!-- Video Container -->
 							<div class="relative overflow-hidden aspect-video bg-[var(--bg-hover)]">
 								<template v-if="video.status === 1">
@@ -277,12 +295,7 @@
 		<!-- UnifiedInput -->
 		<div class="absolute bottom-3 inset-x-0 flex justify-center px-4 z-50 pointer-events-none">
 			<div class="w-full max-w-[840px] relative pointer-events-auto">
-				<UnifiedInput
-					ref="unifiedInputRef"
-					capability="video_generation"
-					:is-loading="isGenerating"
-					@send="handleUnifiedSend"
-				/>
+				<UnifiedInput ref="unifiedInputRef" capability="video_generation" :is-loading="isGenerating" @send="handleUnifiedSend" />
 			</div>
 		</div>
 	</div>
@@ -306,12 +319,7 @@
 					<p class="text-white/90 text-[15px] sm:text-lg font-medium italic leading-relaxed line-clamp-4 px-4">"{{ selectedVideo.prompt }}"</p>
 					<div class="flex justify-center mt-2">
 						<button
-							@click="
-								() => {
-									useExample(selectedVideo!.prompt)
-									selectedVideo = null
-								}
-							"
+							@click="handleUseSelectedVideoPrompt"
 							class="px-8 py-3 rounded-full bg-white text-black font-bold text-sm tracking-wide hover:bg-white/90 transition-all transform hover:scale-105 shadow-xl">
 							USE THIS PROMPT
 						</button>
@@ -320,12 +328,11 @@
 			</div>
 		</div>
 	</Transition>
-
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue'
-import { ImagePlus, Plus, Check, Zap, Loader2, X, Film, Download, ChevronDown, Sparkles, Play, Clock, Heart } from 'lucide-vue-next'
+import { ImagePlus, Plus, Check, Zap, Loader2, X, Film, Download, ChevronDown, Sparkles, Play, Clock, Heart, SearchX, RefreshCw } from 'lucide-vue-next'
 import { getModels, getAsyncTaskOutputs, uploadFile, getRecordPrompt, getRecordPrimaryUrl, getRecordModel, getRecordParams, type AIModel, type AsyncTaskRecord } from '@/utils/api'
 import { useModelStore } from '@/stores/models'
 import UnifiedInput from '~/components/UnifiedInput.vue'
@@ -539,13 +546,7 @@ onMounted(() => {
 	// Initialize Infinite Scroll — auto-fill if viewport not full
 	const tryLoadMore = async () => {
 		if (selectedCategory.value === 'favorites') return
-		while (
-			loadMoreTrigger.value &&
-			discoveryStore.hasMore &&
-			!discoveryStore.isLoadingMore &&
-			!discoveryStore.isLoading &&
-			isElementInViewport(loadMoreTrigger.value)
-		) {
+		while (loadMoreTrigger.value && discoveryStore.hasMore && !discoveryStore.isLoadingMore && !discoveryStore.isLoading && isElementInViewport(loadMoreTrigger.value)) {
 			await discoveryStore.fetchMore()
 			await nextTick()
 		}
@@ -638,9 +639,28 @@ const heartAnimId = ref<number | string | null>(null)
 const handleFavorite = (id: number) => {
 	if (!isFavorited(id)) {
 		heartAnimId.value = id
-		setTimeout(() => { heartAnimId.value = null }, 900)
+		setTimeout(() => {
+			heartAnimId.value = null
+		}, 900)
 	}
 	toggleFavorite(id)
+}
+
+const handleImageLoad = (e: Event) => {
+	const img = e.target as HTMLImageElement
+	img.style.aspectRatio = `${img.naturalWidth}/${img.naturalHeight}`
+}
+
+const handleRetry = () => {
+	discoveryStore.hasMore = true
+	discoveryStore.fetchDiscovery(selectedCategory, true)
+}
+
+const handleUseSelectedVideoPrompt = () => {
+	if (selectedVideo.value) {
+		useExample(selectedVideo.value.prompt)
+		selectedVideo.value = null
+	}
 }
 
 const useExample = (example: string | { prompt: string; model?: string; config?: Record<string, any> }) => {
@@ -651,9 +671,7 @@ const useExample = (example: string | { prompt: string; model?: string; config?:
 	if (typeof example !== 'string') {
 		// Match and select the model if provided
 		if (example.model) {
-			const match = modelStore.models.find((m: any) =>
-				m.model === example.model || m.display_name === example.model || `${m.provider}:${m.model}` === example.model
-			)
+			const match = modelStore.models.find((m: any) => m.model === example.model || m.display_name === example.model || `${m.provider}:${m.model}` === example.model)
 			if (match) {
 				modelStore.selectModel(`${match.provider}:${match.model}`, 'video_generation')
 			}
