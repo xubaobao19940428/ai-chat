@@ -382,6 +382,7 @@ import { useImageDiscoveryStore } from '~/stores/discovery'
 import { useModelStore } from '@/stores/models'
 import UnifiedInput from '~/components/UnifiedInput.vue'
 import { useFavorite } from '~/composables/useFavorite'
+import { encodeId } from '~/utils/sqids'
 
 const router = useRouter()
 const conversationStore = useConversationStore()
@@ -829,7 +830,7 @@ const handleUnifiedSend = async (payload: { content: string; params: Record<stri
 
 		chatStore.setPendingMessage(payload.content)
 
-		router.push(`/chat/${conversationId}`)
+		router.push(`/chat/${encodeId(conversationId)}`)
 	} catch (e) {
 		console.error('Failed to start chat:', e)
 		chatStore.setLoading(false)
@@ -887,7 +888,7 @@ const generateImage = async () => {
 
 		uploadedImages.value = []
 
-		router.push(`/chat/${conversationId}`)
+		router.push(`/chat/${encodeId(conversationId)}`)
 	} catch (e) {
 		console.error('Failed to start chat:', e)
 		chatStore.setLoading(false)

@@ -191,6 +191,7 @@ import { ChevronLeft, ChevronRight, Camera, Globe, Lock, X, Check, UserCircle } 
 import { createCharacter } from '~/api/character'
 import { uploadFile } from '~/utils/api'
 import { useUIStore } from '~/stores/ui'
+import { encodeId } from '~/utils/sqids'
 
 definePageMeta({ hideTopBar: true })
 
@@ -299,7 +300,7 @@ const handleSubmit = async () => {
 		if (res?.data?.id) {
 			uiStore.showToast(t('character_create.create_success'), 'success')
 			// Navigate to the newly created character
-			router.push(`/character/${res.data.id}`)
+			router.push(`/character/${encodeId(res.data.id)}`)
 		} else {
 			const msg = res?.message || t('character_create.create_failed')
 			uiStore.showToast(msg, 'error')

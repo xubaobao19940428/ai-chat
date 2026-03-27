@@ -164,6 +164,7 @@ import { useModelStore } from '~/stores/models'
 import { useUIStore } from '~/stores/ui'
 import { useUserStore } from '~/stores/user'
 import { useKeyboardOffset } from '~/composables/useKeyboardOffset'
+import { encodeId, decodeId } from '~/utils/sqids'
 
 definePageMeta({ hideTopBar: true })
 const { keyboardHeight } = useKeyboardOffset()
@@ -248,7 +249,7 @@ watch(
 	() => route.query.conv,
 	(newConvId) => {
 		if (newConvId) {
-			loadExistingConversation(String(newConvId))
+			loadExistingConversation(String(decodeId(newConvId as string)))
 		} else {
 			conversationId.value = null
 			welcomeMessage.value = character.value?.welcome || ''
@@ -258,7 +259,7 @@ watch(
 
 onMounted(async () => {
 	modelStore.setActiveCapability('chat')
-	const id = Number(route.params.id)
+	const id = decodeId(route.params.id as string)
 	if (!id) {
 		isLoadingCharacter.value = false
 		return
@@ -268,7 +269,7 @@ onMounted(async () => {
 		character.value = res.data
 
 		if (route.query.conv) {
-			await loadExistingConversation(String(route.query.conv))
+			await loadExistingConversation(String(decodeId(route.query.conv as string)))
 		} else if (character.value?.welcome) {
 			welcomeMessage.value = character.value.welcome
 		}
@@ -287,7 +288,7 @@ const ensureConversation = async () => {
 	const id = await conversationStore.createConversation({ character_id: character.value.id, capability: 'chat' })
 	conversationId.value = id
 	conversationStore.currentConversationId = id
-	router.replace({ query: { ...route.query, conv: id } })
+	router.replace({ query: { ...route.query, conv: encodeId(id) } })
 	return id
 }
 

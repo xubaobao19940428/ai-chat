@@ -95,6 +95,7 @@ import { Dialog, DialogPanel, TransitionRoot, TransitionChild } from '@headlessu
 import { useUIStore } from '../stores/ui'
 import { useConversationStore } from '../stores/conversation'
 import { Search, X, Plus } from 'lucide-vue-next'
+import { encodeId } from '../utils/sqids'
 
 const uiStore = useUIStore()
 const conversationStore = useConversationStore()
@@ -145,7 +146,7 @@ const formatTime = (timestamp: number) => {
 
 const handleConversationClick = (id: number | string) => {
     uiStore.closeSearchModal()
-    router.push(`/chat/${id}`)
+    router.push(`/chat/${encodeId(id)}`)
 }
 
 const handleNewTask = () => {

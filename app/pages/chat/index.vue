@@ -13,6 +13,7 @@ import { onMounted } from 'vue'
 import { useConversationStore } from '../../stores/conversation'
 import { useChatStore } from '../../stores/chat'
 import { useModelStore } from '../../stores/models'
+import { encodeId } from '../../utils/sqids'
 
 const router = useRouter()
 const conversationStore = useConversationStore()
@@ -43,7 +44,7 @@ const handleWelcomeSendMessage = async (content: string, model: string, options?
 	chatStore.setPendingMessage(content)
 
 	// 4. Navigate to the new conversation page
-	router.push(`/chat/${conversationId}`)
+	router.push(`/chat/${encodeId(conversationId)}`)
 }
 
 onMounted(() => {

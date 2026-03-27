@@ -335,6 +335,7 @@ import { useRouter } from 'vue-router'
 import { useConversationStore } from '@/stores/conversation'
 import { useChatStore } from '@/stores/chat'
 import { useVideoDiscoveryStore } from '~/stores/discovery'
+import { encodeId } from '~/utils/sqids'
 
 const router = useRouter()
 const conversationStore = useConversationStore()
@@ -774,7 +775,7 @@ const handleUnifiedSend = async (payload: { content: string; params: Record<stri
 
 		chatStore.setPendingMessage(payload.content)
 
-		router.push(`/chat/${conversationId}`)
+		router.push(`/chat/${encodeId(conversationId)}`)
 	} catch (e) {
 		console.error('Failed to start chat:', e)
 		chatStore.setLoading(false)
@@ -831,7 +832,7 @@ const generateVideo = async () => {
 
 		removeAttachedImage()
 
-		router.push(`/chat/${conversationId}`)
+		router.push(`/chat/${encodeId(conversationId)}`)
 	} catch (e) {
 		console.error('Failed to start chat:', e)
 		chatStore.setLoading(false)

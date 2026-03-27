@@ -556,6 +556,7 @@ import ConfirmDialog from '../../components/ConfirmDialog.vue'
 import UnifiedInput from '../../components/UnifiedInput.vue'
 import { Copy, Check, Pencil, ArrowUp, X, Share2, RefreshCw, Download, Expand, TriangleAlert } from 'lucide-vue-next'
 import { fetchChatStream, generateImageStream, generateVideoStream } from '../../utils/api'
+import { decodeId } from '../../utils/sqids'
 import { generateConversationTitle, generateFollowUpQuestions } from '../../api/conversation'
 import { useKeyboardOffset } from '~/composables/useKeyboardOffset'
 import { useI18n } from 'vue-i18n'
@@ -705,7 +706,7 @@ const stopGeneration = () => {
 	abortController.value = null
 }
 
-const currentConversationId = computed(() => route.params.id as string)
+const currentConversationId = computed(() => decodeId(route.params.id as string))
 const currentConversation = computed(() => conversationStore.currentConversation)
 
 // Filter out derivative messages from the main list — they are shown inline below their parent assistant message

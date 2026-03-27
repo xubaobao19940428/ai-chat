@@ -32,6 +32,7 @@ import { useUserStore } from '../stores/user'
 import { useUIStore } from '../stores/ui'
 import { useConversationStore } from '../stores/conversation'
 import ModelSelector from './ModelSelector.vue'
+import { decodeId } from '../utils/sqids'
 
 const userStore = useUserStore()
 const uiStore = useUIStore()
@@ -48,7 +49,7 @@ const currentCapability = computed(() => {
 	if (route.name === 'video-generation') return 'video_generation'
 	if (route.name === 'chat-id') {
 		const conv = conversationStore.currentConversation
-		if (!conv || String(conv.id) !== String(route.params.id)) return undefined
+		if (!conv || String(conv.id) !== String(decodeId(route.params.id as string))) return undefined
 		const cap = conv.capability
 		if (cap === 'image' || cap === 'image_generation') return 'image_generation'
 		if (cap === 'video' || cap === 'video_generation') return 'video_generation'

@@ -253,6 +253,7 @@ import { useUserStore } from '../stores/user'
 import { useProjectStore } from '../stores/projects'
 import { useDiscoveryStore } from '../stores/discovery'
 import ProjectModal from './ProjectModal.vue'
+import { encodeId } from '../utils/sqids'
 
 const router = useRouter()
 const conversationStore = useConversationStore()
@@ -343,9 +344,9 @@ const handleNewChat = () => {
 const handleSelectConversation = (id: number | string) => {
 	const conversation = conversationStore.conversations.find(c => String(c.id) === String(id))
 	if (conversation?.characterId && conversation.characterId > 1) {
-		router.push(`/character/${conversation.characterId}?conv=${id}`)
+		router.push(`/character/${encodeId(conversation.characterId)}?conv=${encodeId(id)}`)
 	} else {
-		router.push(`/chat/${id}`)
+		router.push(`/chat/${encodeId(id)}`)
 	}
 	uiStore.closeMobileMenu()
 }

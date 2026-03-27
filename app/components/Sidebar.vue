@@ -579,6 +579,7 @@ import { useModelStore } from '../stores/models'
 import ProjectModal from './ProjectModal.vue'
 import ConfirmDialog from './ConfirmDialog.vue'
 import Tooltip from './Tooltip.vue'
+import { encodeId } from '../utils/sqids'
 
 const router = useRouter()
 const route = useRoute()
@@ -870,7 +871,7 @@ const selectProject = async (id: string | number | null) => {
 	if (id !== null) {
 		const firstConv = sortedConversations.value[0]
 		if (firstConv) {
-			router.push(`/chat/${firstConv.id}`)
+			router.push(`/chat/${encodeId(firstConv.id)}`)
 		} else {
 			router.push('/chat')
 		}
@@ -880,9 +881,9 @@ const selectProject = async (id: string | number | null) => {
 const handleSelectConversation = (id: string) => {
 	const conversation = conversationStore.conversations.find((c) => String(c.id) === id)
 	if (conversation?.characterId && conversation.characterId > 1) {
-		router.push(`/character/${conversation.characterId}?conv=${id}`)
+		router.push(`/character/${encodeId(conversation.characterId)}?conv=${encodeId(id)}`)
 	} else {
-		router.push(`/chat/${id}`)
+		router.push(`/chat/${encodeId(id)}`)
 	}
 }
 
@@ -1027,7 +1028,7 @@ const handleDeleteConversation = (id: string) => {
 		if (wasActive) {
 			const nextId = conversationStore.currentConversationId
 			if (nextId) {
-				router.push(`/chat/${nextId}`)
+				router.push(`/chat/${encodeId(nextId)}`)
 			} else {
 				router.push('/chat')
 			}

@@ -42,6 +42,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useConversationStore } from '../stores/conversation'
 import type { Bot } from '../utils/bots'
+import { encodeId } from '../utils/sqids'
 // import { useConversationStore } from '@/store/conversation' -> auto imported
 
 const router = useRouter()
@@ -64,7 +65,7 @@ const handleBotClick = (bot: Bot) => {
 	} else {
 		// Chat
 		conversationStore.createConversation({ character_id: Number(bot.id) }).then((id) => {
-			router.push(`/chat/${id}`)
+			router.push(`/chat/${encodeId(id)}`)
 		})
 	}
 }
