@@ -43,6 +43,23 @@
 				</div>
 			</div>
 
+			<!-- Search Button -->
+			<div @click="uiStore.openSearchModal()"
+				:class="['flex items-center rounded-[10px] clickable cursor-pointer transition-colors w-full h-[36px] shrink-0 hover:bg-[var(--bg-hover)]', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[9px] pe-[2px] gap-[12px]']">
+				<Tooltip :text="$t('common.search')" position="right" :disabled="!uiStore.sidebarCollapsed" fullWidth>
+					<div
+						:class="['flex items-center', uiStore.sidebarCollapsed ? 'justify-center' : 'w-full gap-[12px]']">
+						<div class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
+							<Search :size="18" />
+						</div>
+						<div v-if="!uiStore.sidebarCollapsed"
+							class="flex-1 min-w-0 flex items-center text-[14px] font-medium text-[var(--text-primary)]">
+							<span class="truncate">{{ $t('common.search') }}</span>
+						</div>
+					</div>
+				</Tooltip>
+			</div>
+
 			<!-- Main Nav Items (Draggable) -->
 			<div v-for="(item, index) in sidebarNavItems" :key="item.id" draggable="true"
 				@dragstart="handleDragStart($event, 'main', index)"
@@ -75,13 +92,12 @@
 
 			<!-- Empty Main Drop Zone: allows dragging items back from More when main is empty -->
 			<div v-if="sidebarNavItems.length === 0 && draggingItem?.source === 'more' && !uiStore.sidebarCollapsed"
-				@dragover.prevent="handleDragOver($event, 'main', 0)"
-				@drop="handleDrop($event, 'main', 0)"
-				@dragenter="draggingOverZone = 'empty-main'"
-				@dragleave="draggingOverZone = null"
+				@dragover.prevent="handleDragOver($event, 'main', 0)" @drop="handleDrop($event, 'main', 0)"
+				@dragenter="draggingOverZone = 'empty-main'" @dragleave="draggingOverZone = null"
 				:class="['mx-1 p-3 border-2 border-dashed rounded-xl flex items-center justify-center gap-2 transition-all duration-300',
 					draggingOverZone === 'empty-main' ? 'bg-[var(--bg-hover)] border-[var(--text-tertiary)] scale-[1.02] shadow-sm' : 'bg-[var(--bg-sidebar)] border-[var(--border-main)] animate-pulse-subtle']">
-				<span class="text-[12px] font-medium text-[var(--text-tertiary)] opacity-80">{{ $t('common.drag_here') }}</span>
+				<span class="text-[12px] font-medium text-[var(--text-tertiary)] opacity-80">{{ $t('common.drag_here')
+				}}</span>
 			</div>
 
 			<!-- More Menu (Accordion + Hover Popover) -->
@@ -222,7 +238,9 @@
 					<template v-else>
 						<div @click="selectProject(null)"
 							:class="['w-full flex items-center rounded-[10px] h-[36px] transition-colors clickable transition-all relative', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px] pe-[8px] gap-[8px]', 'hover:bg-[var(--bg-hover)]', conversationStore.isGroupSwitching ? 'opacity-50 pointer-events-none' : '']">
-							<div v-if="isProjectActive(null)" class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-full bg-[var(--text-primary)]"></div>
+							<div v-if="isProjectActive(null)"
+								class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-full bg-[var(--text-primary)]">
+							</div>
 							<div
 								class="shrink-0 size-[18px] flex items-center justify-center text-[var(--text-primary)]">
 								<AlignJustify :size="16" />
@@ -234,7 +252,9 @@
 						</div>
 						<div v-for="group in projectStore.projects" :key="group.id" @click="selectProject(group.id)"
 							:class="['w-full group flex items-center rounded-[10px] h-[36px] transition-colors clickable relative transition-all', uiStore.sidebarCollapsed ? 'justify-center ps-0' : 'ps-[10px] pe-[8px] gap-[8px]', 'hover:bg-[var(--bg-hover)]', conversationStore.isGroupSwitching ? 'opacity-50 pointer-events-none' : '']">
-							<div v-if="isProjectActive(group.id)" class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-full bg-[var(--text-primary)]"></div>
+							<div v-if="isProjectActive(group.id)"
+								class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-full bg-[var(--text-primary)]">
+							</div>
 							<div class="shrink-0 size-[18px] flex items-center justify-center opacity-80"
 								:style="{ color: getProjectColor(group.color) }">
 								<component :is="getProjectIcon(group.icon)" :size="16" />
@@ -327,7 +347,7 @@
 							<div v-if="!uiStore.sidebarCollapsed"
 								class="flex-1 min-w-0 flex items-center text-[14px] text-[var(--text-primary)] font-medium overflow-hidden">
 								<span class="truncate">{{ conversation.title || $t('chat.new_conversation_default')
-									}}</span>
+								}}</span>
 							</div>
 							<div v-if="!uiStore.sidebarCollapsed" class="shrink-0 flex items-center">
 								<!-- Conversation Action Menu -->
@@ -484,6 +504,7 @@ import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import {
 	PanelLeft,
 	SquarePen,
+	Search,
 	Library,
 	LayoutGrid,
 	ChevronRight,

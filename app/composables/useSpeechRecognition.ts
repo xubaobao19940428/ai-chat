@@ -24,8 +24,11 @@ export function useSpeechRecognition(options?: SpeechRecognitionOptions) {
 
 	// Map short locale codes to BCP 47 tags for Web Speech API
 	const LOCALE_MAP: Record<string, string> = {
-		zh: 'zh-CN', en: 'en-US', ja: 'ja-JP', ko: 'ko-KR',
-		es: 'es-ES', fr: 'fr-FR', de: 'de-DE', pt: 'pt-BR',
+		'zh-CN': 'zh-CN', 'zh-TW': 'zh-TW', en: 'en-US', ja: 'ja-JP', ko: 'ko-KR',
+		es: 'es-ES', fr: 'fr-FR', de: 'de-DE', pt: 'pt-BR', it: 'it-IT',
+		nl: 'nl-NL', pl: 'pl-PL', ru: 'ru-RU', tr: 'tr-TR', id: 'id-ID',
+		th: 'th-TH', vi: 'vi-VN', ms: 'ms-MY', hi: 'hi-IN', ar: 'ar-SA',
+		nb: 'nb-NO', da: 'da-DK',
 	}
 
 	function resolveLang(): string {

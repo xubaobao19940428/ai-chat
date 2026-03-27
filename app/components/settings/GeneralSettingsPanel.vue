@@ -12,7 +12,7 @@
 							<ChevronDown :size="15" class="text-[var(--text-tertiary)] shrink-0" />
 						</ListboxButton>
 						<transition enter-active-class="transition duration-100 ease-out" enter-from-class="opacity-0 -translate-y-1" enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-75 ease-in" leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 -translate-y-1">
-							<ListboxOptions class="absolute z-50 mt-1 w-full bg-[var(--background-white-main)] border border-[var(--border-main)] rounded-lg shadow-[var(--shadow-L)] overflow-hidden outline-none p-1">
+							<ListboxOptions class="absolute z-50 mt-1 w-full max-h-[320px] overflow-y-auto bg-[var(--background-white-main)] border border-[var(--border-main)] rounded-lg shadow-[var(--shadow-L)] outline-none p-1">
 								<ListboxOption v-for="lang in languages" :key="lang.value" :value="lang.value" v-slot="{ active, selected }">
 									<li :class="['flex items-center justify-between gap-2 px-3 py-2 rounded-md text-sm cursor-pointer select-none transition-colors', active ? 'bg-[var(--fill-tsp-gray-main)]' : '']">
 										<span :class="selected ? 'font-medium text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'">{{ lang.label }}</span>
@@ -105,13 +105,27 @@ const { locale, setLocale } = useI18n()
 
 const languages = [
 	{ value: 'en', label: 'English' },
-	{ value: 'zh', label: '简体中文' },
+	{ value: 'zh-CN', label: '简体中文' },
+	{ value: 'zh-TW', label: '繁體中文' },
 	{ value: 'ja', label: '日本語' },
 	{ value: 'ko', label: '한국어' },
 	{ value: 'es', label: 'Español' },
+	{ value: 'pt', label: 'Português' },
 	{ value: 'fr', label: 'Français' },
 	{ value: 'de', label: 'Deutsch' },
-	{ value: 'pt', label: 'Português' },
+	{ value: 'it', label: 'Italiano' },
+	{ value: 'nl', label: 'Nederlands' },
+	{ value: 'pl', label: 'Polski' },
+	{ value: 'ru', label: 'Русский' },
+	{ value: 'tr', label: 'Türkçe' },
+	{ value: 'id', label: 'Bahasa Indonesia' },
+	{ value: 'th', label: 'ไทย' },
+	{ value: 'vi', label: 'Tiếng Việt' },
+	{ value: 'ms', label: 'Bahasa Melayu' },
+	{ value: 'hi', label: 'हिन्दी' },
+	{ value: 'ar', label: 'العربية' },
+	{ value: 'nb', label: 'Norsk bokmål' },
+	{ value: 'da', label: 'Dansk' },
 ]
 
 const currentLanguageLabel = computed(() => languages.find(l => l.value === locale.value)?.label ?? 'English')

@@ -23,7 +23,7 @@
 		<!-- Main Chat Area -->
 		<div class="flex-1 overflow-y-auto px-4 pb-48 pt-6 custom-scrollbar relative z-10" ref="messagesContainer"
 			@scroll="onMessagesScroll">
-			<div class="max-w-full md:max-w-[900px] mx-auto py-6">
+			<div class="max-w-full md:max-w-[840px] mx-auto py-6">
 				<!-- Initial Loading State: Skeleton -->
 				<div v-if="conversationStore.isLoading && (!currentConversation?.messages || currentConversation.messages.length === 0)"
 					class="space-y-6 animate-pulse">
@@ -105,7 +105,7 @@
 						<!-- Left: Prompt Card -->
 						<div class="w-[420px] shrink-0">
 							<div
-								class="bg-[var(--background-gray-subtle,#f4f4f5)] dark:bg-[var(--background-gray-subtle)] rounded-2xl px-4 py-4 text-[13.5px] text-[var(--text-primary)] leading-relaxed tracking-tight whitespace-pre-wrap break-words flex flex-col gap-3 min-h-[90px] max-h-[300px] overflow-y-auto custom-scrollbar">
+								class="bg-[var(--background-gray-subtle,#f4f4f5)] dark:bg-[var(--background-gray-subtle)] rounded-2xl px-4 py-4 text-[13.5px] text-[var(--text-primary)] leading-relaxed tracking-tight whitespace-pre-wrap break-words flex flex-col gap-3 h-[200px] overflow-y-auto custom-scrollbar">
 								<span>{{ group.userMsg.content }}</span>
 								<div class="flex justify-end mt-auto">
 									<span class="text-[12px] text-[var(--text-tertiary)] flex items-center gap-1">
@@ -125,7 +125,7 @@
 						<div class="flex-1 min-w-0 flex flex-col gap-2">
 							<!-- Loading state with progress -->
 							<div v-if="group.isLoading">
-								<div class="w-[200px]">
+								<div class="w-[280px]">
 									<div
 										class="relative rounded-xl bg-black/[0.03] dark:bg-white/[0.03] overflow-hidden flex items-center justify-center py-12 px-6">
 										<!-- Scan line animation -->
@@ -159,7 +159,7 @@
 
 							<!-- Images grid -->
 							<div v-else-if="group.images.length > 0">
-								<div class="grid gap-1 w-[200px]"
+								<div class="grid gap-1 w-[280px]"
 									:class="group.images.length === 4 ? 'grid-cols-2' : group.images.length === 3 ? 'grid-cols-3' : group.images.length === 2 ? 'grid-cols-2' : 'grid-cols-1'">
 									<div v-for="(url, idx) in group.images" :key="idx"
 										class="relative rounded-xl overflow-hidden group/img bg-[var(--background-gray-subtle,#f4f4f5)]"

@@ -29,7 +29,7 @@
 			<main class="flex-1 flex flex-col h-full bg-[var(--bg-main)] relative overflow-hidden">
 				<!-- Messages -->
 				<div class="flex-1 overflow-y-auto custom-scrollbar px-4 pb-36 pt-6" ref="scrollContainer">
-					<div class="max-w-full md:max-w-[900px] mx-auto w-full">
+					<div class="max-w-full md:max-w-[840px] mx-auto w-full">
 						<div v-if="!conversationId"
 							class="flex flex-col items-center pt-12 pb-16 animate-in fade-in slide-in-from-bottom-6 duration-700">
 							<!-- Character Profile Section (Centered) -->
