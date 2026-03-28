@@ -379,7 +379,7 @@
 										$t('chat.thinking') }}</span>
 								</div>
 								<div v-else class="relative inline-block w-full">
-									<MarkdownContent :content="message.content" />
+									<MarkdownContent :content="message.content" :streaming="chatStore.isLoading && String(chatStore.loadingConversationId) === String(currentConversationId) && currentConversation?.messages[currentConversation.messages.length - 1]?.id === message.id" />
 									<span
 										v-if="chatStore.isLoading && String(chatStore.loadingConversationId) === String(currentConversationId) && currentConversation?.messages[currentConversation.messages.length - 1]?.id === message.id"
 										class="inline-block w-1.5 h-4 bg-[var(--text-primary)] dark:bg-white ml-1 animate-pulse align-middle"></span>

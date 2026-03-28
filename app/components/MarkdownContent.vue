@@ -3,19 +3,59 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUpdated, nextTick, watch } from 'vue'
+import { computed, ref, onMounted, onUpdated, onUnmounted, nextTick, watch } from 'vue'
 import { renderMarkdown } from '../utils/markdown'
 
-const props = defineProps<{
-	content: string
-}>()
+const props = withDefaults(
+	defineProps<{
+		content: string
+		streaming?: boolean
+	}>(),
+	{ streaming: false }
+)
 
 const markdownRef = ref<HTMLElement | null>(null)
 
-// Use computed to memoize the rendering result
+// --- Throttled rendering during streaming ---
+const RENDER_THROTTLE_MS = 120
+let renderTimer: ReturnType<typeof setTimeout> | null = null
+const throttledHtml = ref('')
+
+// Immediate render for non-streaming; throttled for streaming
 const renderedContent = computed(() => {
-	return renderMarkdown(props.content)
+	if (!props.streaming) {
+		// Not streaming — render synchronously (computed cache handles dedup)
+		return renderMarkdown(props.content)
+	}
+	// During streaming, return the throttled snapshot
+	return throttledHtml.value
 })
+
+watch(
+	() => props.content,
+	(content) => {
+		if (!props.streaming) return
+		if (renderTimer) return // already scheduled
+		renderTimer = setTimeout(() => {
+			throttledHtml.value = renderMarkdown(content)
+			renderTimer = null
+		}, RENDER_THROTTLE_MS)
+	}
+)
+
+// When streaming ends, do a final full render
+watch(
+	() => props.streaming,
+	(streaming, prev) => {
+		if (prev && !streaming) {
+			if (renderTimer) {
+				clearTimeout(renderTimer)
+				renderTimer = null
+			}
+			throttledHtml.value = renderMarkdown(props.content)
+		}
+	}
+)
 
 // --- Code block collapse for long blocks ---
 const CODE_COLLAPSE_THRESHOLD = 15
@@ -149,74 +189,71 @@ onMounted(() => {
 	initCodeCollapse()
 })
 
+// --- Mermaid theme config (single source of truth) ---
+const getMermaidConfig = (isDark: boolean) => ({
+	startOnLoad: false,
+	theme: isDark ? 'dark' : 'default',
+	securityLevel: 'loose',
+	fontFamily: 'Inter, system-ui, sans-serif',
+	themeVariables: {
+		primaryColor: isDark ? '#312e81' : '#f5f3ff',
+		primaryTextColor: isDark ? '#e0e7ff' : '#4338ca',
+		primaryBorderColor: isDark ? '#4338ca' : '#a5b4fc',
+		lineColor: isDark ? '#6366f1' : '#6366f1',
+		secondaryColor: isDark ? '#1e1b4b' : '#f8fafc',
+		tertiaryColor: isDark ? '#1e1b4b' : '#f8fafc',
+		fontSize: '14px',
+		mainBkg: isDark ? '#1e1b4b' : '#f5f3ff',
+		nodeBorder: isDark ? '#4338ca' : '#8b5cf6',
+		clusterBkg: isDark ? '#111827' : '#f8fafc',
+		edgeLabelBackground: isDark ? '#1f2937' : '#ffffff',
+		borderRadius: '8px',
+	},
+	flowchart: {
+		padding: 20,
+		useMaxWidth: true,
+		htmlLabels: true,
+		curve: 'basis',
+	},
+})
+
 const initMermaid = async () => {
 	if (typeof window === 'undefined') return
+	// Skip mermaid during streaming — wait for final content
+	if (props.streaming) return
 
 	if (!mermaid) {
 		try {
 			const m = await import('mermaid')
 			mermaid = m.default
-			mermaid.initialize({
-				startOnLoad: false,
-				theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
-				securityLevel: 'loose',
-				fontFamily: 'inherit',
-			})
+			mermaid.initialize(getMermaidConfig(document.documentElement.classList.contains('dark')))
 		} catch (e) {
 			console.error('Failed to load mermaid', e)
 		}
 	}
 
 	if (mermaid && markdownRef.value) {
-		const isDark = document.documentElement.classList.contains('dark')
 		const mermaidElements = markdownRef.value.querySelectorAll('.mermaid:not([data-processed="true"])')
+		if (mermaidElements.length === 0) return
+
+		// Initialize once per render pass (not per element)
+		const isDark = document.documentElement.classList.contains('dark')
+		mermaid.initialize(getMermaidConfig(isDark))
 
 		for (const el of Array.from(mermaidElements)) {
 			try {
 				const content = (el.textContent || '').trim()
 
-				// Basic heuristic: Don't render if it looks like partial/streaming content
-				// (e.g. doesn't have at least one arrow or node definition, or is too short)
 				if (content.length < 10 || (!content.includes('-->') && !content.includes('->') && !content.includes(':'))) {
 					continue
 				}
 
 				const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`
-
-				// Re-initialize for each render to ensure theme is current
-				mermaid.initialize({
-					startOnLoad: false,
-					theme: isDark ? 'dark' : 'default',
-					securityLevel: 'loose',
-					fontFamily: 'Inter, system-ui, sans-serif',
-					themeVariables: {
-						primaryColor: isDark ? '#312e81' : '#f5f3ff',
-						primaryTextColor: isDark ? '#e0e7ff' : '#4338ca',
-						primaryBorderColor: isDark ? '#4338ca' : '#a5b4fc',
-						lineColor: isDark ? '#6366f1' : '#6366f1',
-						secondaryColor: isDark ? '#1e1b4b' : '#f8fafc',
-						tertiaryColor: isDark ? '#1e1b4b' : '#f8fafc',
-						fontSize: '14px',
-						mainBkg: isDark ? '#1e1b4b' : '#f5f3ff',
-						nodeBorder: isDark ? '#4338ca' : '#8b5cf6',
-						clusterBkg: isDark ? '#111827' : '#f8fafc',
-						edgeLabelBackground: isDark ? '#1f2937' : '#ffffff',
-						borderRadius: '8px',
-					},
-					flowchart: {
-						padding: 20,
-						useMaxWidth: true,
-						htmlLabels: true,
-						curve: 'basis',
-					},
-				})
-
 				const { svg } = await mermaid.render(id, content)
 				el.innerHTML = svg
 				el.setAttribute('data-processed', 'true')
 				el.classList.add('rendered')
 			} catch (e) {
-				// During streaming, errors are expected. We don't mark as processed so it can retry.
 				console.debug('Mermaid waiting for complete syntax...')
 			}
 		}
@@ -224,29 +261,32 @@ const initMermaid = async () => {
 }
 
 // Watch for dark mode changes
+let darkModeObserver: MutationObserver | null = null
 if (typeof window !== 'undefined') {
-	const observer = new MutationObserver((mutations) => {
+	darkModeObserver = new MutationObserver((mutations) => {
 		mutations.forEach((mutation) => {
 			if (mutation.attributeName === 'class' && mermaid) {
 				const isDark = document.documentElement.classList.contains('dark')
-				mermaid.initialize({
-					theme: isDark ? 'dark' : 'default',
-					fontFamily: 'inherit',
-				})
-				// Important: for Mermaid to re-render existing ones, it's easier to just trigger initMermaid
+				mermaid.initialize(getMermaidConfig(isDark))
 				initMermaid()
 			}
 		})
 	})
 
 	onMounted(() => {
-		observer.observe(document.documentElement, { attributes: true })
+		darkModeObserver!.observe(document.documentElement, { attributes: true })
 		initMermaid()
+	})
+
+	onUnmounted(() => {
+		darkModeObserver!.disconnect()
 	})
 }
 
 let mermaidDebounceTimer: ReturnType<typeof setTimeout> | null = null
 onUpdated(() => {
+	// Skip heavy post-processing during streaming
+	if (props.streaming) return
 	if (mermaidDebounceTimer) clearTimeout(mermaidDebounceTimer)
 	mermaidDebounceTimer = setTimeout(() => {
 		nextTick(() => {
@@ -254,6 +294,11 @@ onUpdated(() => {
 			initCodeCollapse()
 		})
 	}, 300)
+})
+
+onUnmounted(() => {
+	if (renderTimer) clearTimeout(renderTimer)
+	if (mermaidDebounceTimer) clearTimeout(mermaidDebounceTimer)
 })
 
 </script>

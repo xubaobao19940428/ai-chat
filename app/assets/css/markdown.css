@@ -76,13 +76,37 @@
     margin-bottom: 0;
   }
 
+  /* 顶层有序列表项作为小标题 — 加粗加深 */
+  > ol > li {
+    font-weight: 700;
+    font-size: 1.05em;
+    color: var(--text-primary);
+  }
+  /* 子列表恢复正常字重 */
+  > ol > li > ul,
+  > ol > li > ol,
+  > ol > li > p ~ ul,
+  > ol > li > p ~ ol {
+    font-weight: 400;
+    font-size: 0.952em; /* 还原：1 / 1.05 ≈ 0.952 */
+  }
+
   /* 多级列表 marker 样式（与 MixU 一致） */
   ul > li > ul                  { list-style-type: circle; }
   ul > li > ul > li > ul        { list-style-type: square; }
 
   /* ── Strong & em ──────────────────────────────────────────── */
-  strong {
-    font-weight: 600;
+  strong,
+  :where(strong) {
+    font-weight: 700 !important;
+    color: var(--text-primary);
+  }
+
+  /* 列表项中的 strong 作为小标题，加大字重和颜色对比 */
+  li > strong:first-child,
+  li > p:first-child > strong:first-child {
+    font-weight: 800 !important;
+    font-size: 1.02em;
     color: var(--text-primary);
   }
 

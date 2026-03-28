@@ -16,8 +16,62 @@
 					<UnifiedInput ref="unifiedInputRef" :capability="currentCapability" :is-loading="props.isLoading" :allow-model-switch="true" @send="handleUnifiedSend" />
 				</div>
 
+				<!-- Style Recommendations for Image/Video Models -->
+				<div v-if="isMediaModel && !activeTool" class="mt-6 w-full animate-fade-in-up" style="animation-delay: 0.4s; animation-fill-mode: forwards">
+					<div class="flex items-center justify-between mb-4">
+						<h3 class="text-[15px] font-semibold text-[var(--text-primary)]">
+							{{ currentCapability === 'image_generation' ? $t('chat.try_style_image') : $t('chat.try_style_video') }}
+						</h3>
+						<NuxtLink :to="currentCapability === 'image_generation' ? '/image-generation' : '/video-generation'"
+							class="text-[13px] text-[var(--text-primary)] hover:opacity-70 transition-opacity flex items-center gap-1">
+							{{ $t('chat.view_more') }}
+							<span class="text-[11px]">&rarr;</span>
+						</NuxtLink>
+					</div>
+					<!-- Loading skeleton -->
+					<div v-if="isStyleLoading" class="grid grid-cols-3 sm:grid-cols-5 gap-3">
+						<div v-for="i in 5" :key="i" class="rounded-2xl overflow-hidden bg-[var(--bg-hover)] animate-pulse"
+							style="aspect-ratio: 3/4"></div>
+					</div>
+					<!-- Style cards -->
+					<div v-else-if="styleRecommendations.length > 0" class="grid grid-cols-3 sm:grid-cols-5 gap-3">
+						<div v-for="item in styleRecommendations" :key="item.id"
+							class="group relative cursor-pointer rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--border-light)] transition-all duration-300 shadow-sm hover:shadow-md"
+							@click="applyStylePrompt(item)"
+							@mouseenter="hoveredStyleId = item.id" @mouseleave="hoveredStyleId = null">
+							<img :src="item.related_data?.thumbnail || item.cover"
+								:alt="item.title" loading="lazy"
+								class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105 bg-[#f0eeeb] dark:bg-[#2c2c2c]"
+								style="aspect-ratio: 3/4" />
+							<!-- Hover Video (PC Only, video model) -->
+							<video v-if="isVideoModel && hoveredStyleId === item.id && item.related_data?.assets?.[0]"
+								:src="item.related_data.assets[0]" autoplay muted loop playsinline
+								class="absolute inset-0 w-full h-full object-cover hidden md:block z-0" />
+							<!-- Hover overlay -->
+							<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 pointer-events-none">
+								<!-- Top Right: Favorite -->
+								<div class="absolute top-2.5 right-2.5 pointer-events-auto transform -translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 delay-75"
+									:class="isStyleFavorited(Number(item.related_id || item.id)) ? '!opacity-100 !translate-y-0' : ''">
+									<button @click.stop="handleStyleFavorite(Number(item.related_id || item.id))"
+										class="outline-none size-8 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors">
+										<Heart :size="16"
+											:class="['!stroke-transparent drop-shadow-md', isStyleFavorited(Number(item.related_id || item.id)) ? 'fill-red-500' : 'fill-white/80']" />
+									</button>
+								</div>
+								<!-- Bottom Center: Use prompt -->
+								<div class="absolute inset-x-0 bottom-0 p-3 flex justify-center">
+									<span class="shrink-0 px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-75 pointer-events-auto cursor-pointer hover:bg-white/90 inline-flex items-center gap-1"
+										@click.stop="applyStylePrompt(item)">
+										<Sparkles :size="12" />{{ $t('common.use_prompt') }}
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
 				<!-- Suggestions / Home View -->
-				<div v-if="!activeTool" class="mt-8 flex flex-wrap justify-center gap-2 animate-fade-in-up" style="animation-delay: 0.4s; animation-fill-mode: forwards">
+				<div v-if="!activeTool && !isMediaModel" class="mt-8 flex flex-wrap justify-center gap-2 animate-fade-in-up" style="animation-delay: 0.4s; animation-fill-mode: forwards">
 					<!-- Create slides -->
 					<Tooltip text="Generate a presentation">
 						<button @click="handleToolSelect('slides')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
@@ -95,7 +149,7 @@
 					</div>
 				</div>
 
-				<div v-if="!activeTool" class="mt-20 flex gap-3 overflow-x-auto pb-4 scrollbar-none animate-fade-in-up" style="animation-delay: 0.5s; animation-fill-mode: forwards">
+				<div v-if="!activeTool && !isMediaModel" class="mt-20 flex gap-3 overflow-x-auto pb-4 scrollbar-none animate-fade-in-up" style="animation-delay: 0.5s; animation-fill-mode: forwards">
 					<div class="flex-shrink-0 w-full sm:w-[calc(100%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
 						<div class="w-10 h-10 rounded-lg bg-[var(--function-success-tsp)] flex items-center justify-center mb-2">
 							<Globe :size="24" class="text-[var(--function-success)]" />
@@ -120,6 +174,9 @@ import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import { Plus, Globe, X, Mic, ArrowUp, Cable, Smartphone, Calendar, Search, Table, BarChart3, Video, Volume2, MessageSquare, ArrowUpRight, Signal, Newspaper, BarChart2, Cake, SlidersHorizontal, Presentation, Puzzle, Mail, MessageCircle, FileText, Briefcase, Building2, Cloud, User, Link, Image, Code, ShoppingBag, Sparkles, Paintbrush, Loader2, Square, Clock, Check, Palette, Gem, Monitor, LayoutGrid } from 'lucide-vue-next'
 import { uploadFile, generateImageStream, generateVideoStream } from '../utils/api'
+import { getDiscoveryItems, type DiscoveryItem } from '../api/discovery'
+import { useFavorite } from '~/composables/useFavorite'
+import { Heart } from 'lucide-vue-next'
 import ModelSelector from './ModelSelector.vue'
 import UnifiedInput from './UnifiedInput.vue'
 import SamplePrompts from './SamplePrompts.vue'
@@ -420,6 +477,70 @@ const isVideoModel = computed(() => {
 	return cap === 'video_generation' || cap === 'video'
 })
 const isMediaModel = computed(() => isImageModel.value || isVideoModel.value)
+
+const hoveredStyleId = ref<number | null>(null)
+
+// --- Style recommendations for image/video models ---
+const IMAGE_ALL_CATEGORY_ID = 35
+const VIDEO_ALL_CATEGORY_ID = 46
+const STYLE_PAGE_SIZE = 5
+const STYLE_MAX_PAGE = 100
+
+const styleRecommendations = ref<DiscoveryItem[]>([])
+const isStyleLoading = ref(false)
+
+const fetchStyleRecommendations = async () => {
+	const categoryId = isImageModel.value ? IMAGE_ALL_CATEGORY_ID : VIDEO_ALL_CATEGORY_ID
+	const randomPage = Math.floor(Math.random() * STYLE_MAX_PAGE) + 1
+	isStyleLoading.value = true
+	try {
+		const res: any = await getDiscoveryItems(categoryId, { page: randomPage, page_size: STYLE_PAGE_SIZE })
+		const list = res.data?.list || []
+		if (list.length > 0) {
+			styleRecommendations.value = list
+		} else {
+			const fallback: any = await getDiscoveryItems(categoryId, { page: 1, page_size: STYLE_PAGE_SIZE })
+			styleRecommendations.value = fallback.data?.list || []
+		}
+	} catch (error) {
+		console.error('Failed to fetch style recommendations:', error)
+	} finally {
+		isStyleLoading.value = false
+	}
+}
+
+const applyStylePrompt = (item: DiscoveryItem) => {
+	const prompt = item.related_data?.prompt || item.title || ''
+	if (!prompt) return
+	unifiedInputRef.value?.setContent(prompt)
+
+	const model = item.related_data?.model
+	if (model) {
+		const capability = currentCapability.value
+		const match = modelStore.models.find((m: any) =>
+			m.model === model || m.display_name === model || `${m.provider}:${m.model}` === model
+		)
+		if (match) {
+			modelStore.selectModel(`${match.provider}:${match.model}`, capability)
+		}
+	}
+}
+
+watch(isMediaModel, (val) => {
+	if (val) {
+		fetchStyleRecommendations()
+	} else {
+		styleRecommendations.value = []
+	}
+}, { immediate: true })
+
+// Favorite for style recommendations
+const styleFavoriteType = computed(() => isImageModel.value ? 'prompt_image' : 'prompt_video')
+const { isFavorited: isStyleFavorited, toggleFavorite: toggleStyleFavorite } = useFavorite(styleFavoriteType.value)
+
+const handleStyleFavorite = (id: number) => {
+	toggleStyleFavorite(id)
+}
 
 const modelInputFields = computed(() => modelStore.selectedModel?.model_input?.fields || {})
 
