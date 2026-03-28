@@ -530,7 +530,9 @@
 				<Volume2 v-if="field.key === 'audio_enabled'" :size="18" />
 				<ToggleRight v-else-if="getParamValue(field.key, field.default)" :size="18" />
 				<ToggleLeft v-else :size="18" />
-
+				<!-- Active indicator dot -->
+				<span v-if="getParamValue(field.key, field.default)"
+					class="absolute top-1.5 right-1.5 w-[6px] h-[6px] rounded-full bg-[var(--text-primary)]" />
 			</button>
 		</Tooltip>
 		<Transition enter-active-class="transition duration-150 ease-out"

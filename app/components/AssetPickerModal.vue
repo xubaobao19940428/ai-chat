@@ -22,7 +22,7 @@
               <div>
                 <h3 class="text-[15px] font-bold text-[var(--text-primary)]">Select asset</h3>
                 <p class="text-[12px] text-[var(--text-tertiary)] mt-0.5">
-                  {{ multiple ? 'Select one or more images' : 'Select an image' }}
+                  {{ multiple ? `Select one or more ${fileType === 'video' ? 'videos' : 'images'}` : `Select ${fileType === 'video' ? 'a video' : 'an image'}` }}
                 </p>
               </div>
               <button @click="$emit('close')"
@@ -33,18 +33,19 @@
 
             <!-- Body -->
             <div class="flex-1 overflow-y-auto p-5 custom-scrollbar">
-              <!-- Loading -->
-              <div v-if="isLoading" class="flex items-center justify-center py-20">
+              <!-- Loading (initial only) -->
+              <div v-if="isLoading && files.length === 0" class="flex items-center justify-center py-20">
                 <Loader2 :size="28" class="animate-spin text-[var(--text-tertiary)]" />
               </div>
 
               <!-- Empty -->
               <div v-else-if="files.length === 0" class="flex flex-col items-center justify-center py-20 gap-3">
                 <div class="size-16 rounded-2xl bg-[var(--fill-tsp-gray-main)] flex items-center justify-center">
-                  <ImageIcon :size="28" class="text-[var(--text-tertiary)]" />
+                  <VideoIcon v-if="fileType === 'video'" :size="28" class="text-[var(--text-tertiary)]" />
+                  <ImageIcon v-else :size="28" class="text-[var(--text-tertiary)]" />
                 </div>
-                <p class="text-[14px] font-medium text-[var(--text-primary)]">No images yet</p>
-                <p class="text-[12px] text-[var(--text-tertiary)]">Upload images first to use them here</p>
+                <p class="text-[14px] font-medium text-[var(--text-primary)]">{{ fileType === 'video' ? 'No videos yet' : 'No images yet' }}</p>
+                <p class="text-[12px] text-[var(--text-tertiary)]">{{ fileType === 'video' ? 'Upload videos first to use them here' : 'Upload images first to use them here' }}</p>
               </div>
 
               <!-- Grid -->
@@ -55,7 +56,13 @@
                   :class="isSelected(file)
                     ? 'border-[var(--text-primary)] shadow-md scale-[0.97]'
                     : 'border-transparent hover:border-[var(--border-main)] hover:scale-[0.98]'">
-                  <img :src="file.file_url" :alt="file.file_name"
+                  <!-- Video thumbnail -->
+                  <template v-if="fileType === 'video'">
+                    <video :src="file.file_url" class="w-full h-full object-cover" muted preload="metadata" />
+                    <div class="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/60 text-white text-[9px] font-bold pointer-events-none">VIDEO</div>
+                  </template>
+                  <!-- Image thumbnail -->
+                  <img v-else :src="file.file_url" :alt="file.file_name"
                     class="w-full h-full object-cover" />
                   <!-- Overlay on hover / selected -->
                   <div class="absolute inset-0 transition-opacity duration-150"
@@ -75,10 +82,11 @@
               </div>
 
               <!-- Load more -->
-              <div v-if="hasMore && !isLoading" class="flex justify-center mt-4">
-                <button @click="loadMore"
-                  class="px-5 py-2 rounded-full border border-[var(--border-main)] text-[13px] font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-all">
-                  Load more
+              <div v-if="hasMore" class="flex justify-center mt-4">
+                <button @click="loadMore" :disabled="isLoadingMore"
+                  class="px-5 py-2 rounded-full border border-[var(--border-main)] text-[13px] font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2">
+                  <Loader2 v-if="isLoadingMore" :size="14" class="animate-spin" />
+                  {{ isLoadingMore ? 'Loading...' : 'Load more' }}
                 </button>
               </div>
             </div>
@@ -111,7 +119,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { X, Loader2, Check, Image as ImageIcon } from 'lucide-vue-next'
+import { X, Loader2, Check, Image as ImageIcon, Video as VideoIcon } from 'lucide-vue-next'
 import { getFiles, type UserFile } from '@/utils/api'
 
 const props = withDefaults(defineProps<{
@@ -130,6 +138,7 @@ const emit = defineEmits<{
 
 const files = ref<UserFile[]>([])
 const isLoading = ref(false)
+const isLoadingMore = ref(false)
 const page = ref(1)
 const hasMore = ref(false)
 const selectedFiles = ref<UserFile[]>([])
@@ -140,7 +149,9 @@ const fetchFiles = async (reset = false) => {
     files.value = []
     selectedFiles.value = []
   }
-  isLoading.value = true
+  const loading = reset || files.value.length === 0
+  if (loading) isLoading.value = true
+  else isLoadingMore.value = true
   try {
     const res: any = await getFiles({ file_type: props.fileType, page: page.value, page_size: 24 })
     if (res.data?.list) {
@@ -151,10 +162,12 @@ const fetchFiles = async (reset = false) => {
     console.error('Failed to fetch files:', e)
   } finally {
     isLoading.value = false
+    isLoadingMore.value = false
   }
 }
 
 const loadMore = async () => {
+  if (isLoadingMore.value) return
   page.value++
   await fetchFiles()
 }

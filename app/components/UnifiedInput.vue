@@ -152,8 +152,8 @@
 
 			<!-- Asset Picker Modal -->
 			<AssetPickerModal :show="isAssetPickerOpen"
-				:multiple="fields.supportsMultipleImages.value"
-				file-type="image" @close="isAssetPickerOpen = false" @select="onAssetsSelected" />
+				:multiple="assetPickerMultiple"
+				:file-type="assetPickerFileType" @close="isAssetPickerOpen = false" @select="onAssetsSelected" />
 		</div>
 	</div>
 </template>
@@ -331,6 +331,22 @@ function triggerParamUpload(paramKey: string) {
 	const accept = isVideo ? 'video/mp4,video/*' : 'image/png,image/jpeg,image/*'
 	fileUpload.triggerFileUpload(accept, isMulti)
 }
+
+/** Derive file type for AssetPickerModal based on current target param */
+const assetPickerFileType = computed(() => {
+	const p = mediaTargetParam.value
+	if (p === 'video' || p === 'input_videos') return 'video'
+	return 'image'
+})
+
+/** Derive multiple selection for AssetPickerModal */
+const assetPickerMultiple = computed(() => {
+	const p = mediaTargetParam.value
+	if (p === 'input_images' || p === 'input_videos') return true
+	if (p) return false
+	// Default: use field capability
+	return fields.supportsMultipleImages.value
+})
 
 function selectAssetAndClose() {
 	fields.closeDropdown()

@@ -1,11 +1,10 @@
 <template>
 	<div class="flex-1 flex flex-col h-full bg-[var(--background-gray-main)] transition-colors relative overflow-hidden">
 		<!-- Header: Mobile only -->
-		<header class="lg:hidden bg-[var(--bg-main)] border-b border-[var(--border-main)] px-4 shrink-0 z-10">
+		<header class="lg:hidden bg-[var(--bg-main)] px-4 shrink-0 z-10">
 			<div class="flex items-center justify-between gap-3 py-2">
 				<div class="flex items-center gap-3">
-					<button @click="uiStore.openMobileMenu()"
-						class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
+					<button @click="uiStore.openMobileMenu()" class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
 						<Menu :size="20" />
 					</button>
 				</div>
@@ -17,22 +16,16 @@
 			<div class="flex flex-col items-center px-4 pt-[18vh]">
 				<div class="w-full max-w-full sm:max-w-[768px] sm:min-w-[390px] mx-auto">
 					<!-- Title -->
-					<div class="flex flex-col items-center gap-4 mb-8 animate-fade-in-up"
-						style="animation-delay: 0.1s; animation-fill-mode: forwards">
+					<div class="flex flex-col items-center gap-4 mb-8 animate-fade-in-up" style="animation-delay: 0.1s; animation-fill-mode: forwards">
 						<div class="size-14 rounded-2xl flex items-center justify-center">
 							<img src="/nanobanana-color.png" alt="Nano Banana" class="w-16 h-16 object-contain" />
 						</div>
-						<h1 class="text-[var(--text-primary)] text-center font-serif text-[32px] tracking-tight">
-							Nano Banana
-						</h1>
+						<h1 class="text-[var(--text-primary)] text-center font-serif text-[32px] tracking-tight">Nano Banana</h1>
 					</div>
 
 					<!-- Input Area -->
-					<div class="flex flex-col gap-1 w-full animate-fade-in-up"
-						style="animation-delay: 0.2s; animation-fill-mode: forwards">
-						<UnifiedInput ref="unifiedInputRef" capability="image_generation" :is-loading="isLoading"
-							:show-model-selector="true" :allow-model-switch="false" provider="google"
-							placeholder-text="Describe an image to generate with Nano Banana..." @send="handleSend" />
+					<div class="flex flex-col gap-1 w-full animate-fade-in-up" style="animation-delay: 0.2s; animation-fill-mode: forwards">
+						<UnifiedInput ref="unifiedInputRef" capability="image_generation" :is-loading="isLoading" :show-model-selector="true" :allow-model-switch="false" provider="google" placeholder-text="Describe an image to generate with Nano Banana..." @send="handleSend" />
 					</div>
 
 					<!-- TODO: Prompt Gallery Section - hidden until API is ready -->
@@ -76,10 +69,7 @@ onMounted(async () => {
 		const googleModels = res.data || []
 		if (googleModels.length > 0) {
 			// Prefer "nano-banana" model if available
-			const nanoBanana = googleModels.find((m: any) =>
-				m.model?.toLowerCase().includes('nano') ||
-				m.display_name?.toLowerCase().includes('nano')
-			) || googleModels[0]
+			const nanoBanana = googleModels.find((m: any) => m.model?.toLowerCase().includes('nano') || m.display_name?.toLowerCase().includes('nano')) || googleModels[0]
 			modelStore.selectModel(`${nanoBanana.provider}:${nanoBanana.model}`, 'image_generation')
 		}
 	} catch (e) {
