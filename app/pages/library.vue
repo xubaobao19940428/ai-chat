@@ -12,14 +12,6 @@
 				</div>
 			</div>
 			<div class="flex items-center gap-3">
-				<div
-					class="bg-[var(--fill-tsp-gray-main)] p-1 rounded-xl border border-[var(--border-main)] flex items-center">
-					<button v-for="s in sources" :key="s.id"
-						@click="assetStore.filters.source = s.id as any"
-						class="source-tab" :class="sourceTabClass(s.id)">
-						{{ s.label }}
-					</button>
-				</div>
 				<button @click="triggerUpload" class="upload-btn">
 					<UploadCloud :size="16" />
 					Upload
@@ -52,14 +44,6 @@
 
 		<!-- Filter Bar -->
 		<div class="border-b border-[var(--border-main)]/50 bg-[var(--bg-main)]/50 backdrop-blur-sm shrink-0 z-10">
-			<!-- Mobile: Source chips -->
-			<div class="sm:hidden flex items-center gap-2 px-4 pt-2 pb-1 overflow-x-auto no-scrollbar">
-				<button v-for="s in sources" :key="s.id"
-					@click="assetStore.filters.source = s.id as any"
-					class="filter-chip" :class="filterChipClass(assetStore.filters.source, s.id)">
-					{{ s.label }}
-				</button>
-			</div>
 			<!-- Type chips -->
 			<div class="flex items-center gap-2 px-4 sm:px-6 py-2 overflow-x-auto no-scrollbar">
 				<button v-for="t in types" :key="t.id"
@@ -113,7 +97,7 @@
 
 <script setup lang="ts">
 definePageMeta({ hideTopBar: true })
-import { ref, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { Search, UploadCloud, Download, Trash2, X, Menu } from 'lucide-vue-next'
 import { useAssetStore } from '@/stores/assets'
 import AssetsGrid from '@/components/AssetsGrid.vue'
@@ -128,12 +112,6 @@ const fileInput = ref<HTMLInputElement | null>(null)
 assetStore.items = []
 assetStore.isLoading = true
 
-const sources = [
-	{ id: 'all', label: 'All Sources' },
-	{ id: 'ai', label: 'AI Generated' },
-	{ id: 'local', label: 'Local Upload' },
-]
-
 const types = [
 	{ id: 'all', label: 'All Types' },
 	{ id: 'image', label: 'Images' },
@@ -143,17 +121,17 @@ const types = [
 	{ id: 'document', label: 'Documents' },
 ]
 
-const sourceTabClass = (id: string) =>
-	assetStore.filters.source === id
-		? 'bg-white text-[var(--text-primary)] shadow-sm dark:bg-[var(--bg-hover)]'
-		: 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'
-
 const filterChipClass = (current: string, id: string) =>
 	current === id
 		? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm'
 		: 'bg-[var(--bg-main)] text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]'
 
 onMounted(() => {
+	assetStore.fetchAssets(true)
+})
+
+// Re-fetch when type filter changes
+watch(() => assetStore.filters.type, () => {
 	assetStore.fetchAssets(true)
 })
 
@@ -231,10 +209,6 @@ const handleBatchDelete = async () => {
 	@apply flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-[13px];
 	@apply bg-[var(--text-primary)] text-[var(--bg-main)];
 	@apply hover:opacity-90 transition-all shadow-sm;
-}
-
-.source-tab {
-	@apply px-3 py-1.5 text-[12px] font-bold rounded-lg transition-all;
 }
 
 .filter-chip {

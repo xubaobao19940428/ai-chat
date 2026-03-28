@@ -338,9 +338,9 @@
 										v-else-if="conversation.capability === 'image' || conversation.capability === 'image_generation'"
 										:size="15"
 										class="text-[var(--text-primary)] opacity-60 group-hover:opacity-100 transition-opacity" />
-									<Play
+									<Clapperboard
 										v-else-if="conversation.capability === 'video' || conversation.capability === 'video_generation'"
-										:size="15" fill="currentColor"
+										:size="15"
 										class="text-[var(--text-primary)] opacity-60 group-hover:opacity-100 transition-opacity" />
 									<MessageSquare v-else :size="16"
 										class="text-[var(--text-primary)] opacity-60 group-hover:opacity-100 transition-opacity" />
@@ -533,6 +533,7 @@ import {
 	Shapes,
 	Bot,
 	Play,
+	Clapperboard,
 	Compass,
 	DollarSign,
 	Book,

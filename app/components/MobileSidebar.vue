@@ -176,9 +176,9 @@
 																v-else-if="conversation.capability === 'image' || conversation.capability === 'image_generation'"
 																:size="15"
 																class="text-[var(--text-primary)] opacity-60" />
-															<Play
+															<Clapperboard
 																v-else-if="conversation.capability === 'video' || conversation.capability === 'video_generation'"
-																:size="15" fill="currentColor"
+																:size="15"
 																class="text-[var(--text-primary)] opacity-60" />
 															<MessageSquare v-else :size="16"
 																class="text-[var(--text-primary)] opacity-60" />
@@ -246,7 +246,7 @@
 <script setup lang="ts">
 import { ref, markRaw, computed, onMounted } from 'vue'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { X, SquarePen, Search, Library, AlignJustify, Folder, MessageSquare, Settings2, Sun, Moon, LogOut, Bot, Compass, BookOpen, Image, Video, ChevronUp, Plus, DollarSign, Book, GraduationCap, Pencil, PenTool, Code, Terminal, Music, Coffee, Paintbrush, Palette, Stethoscope, Asterisk, Flower, Briefcase, BarChart, CircleDot, Dumbbell, Notebook, Scale, Globe, Plane, Earth, Wrench, PawPrint, FlaskConical, Brain, Heart, Sprout, Sparkles, Play, Banana } from 'lucide-vue-next'
+import { X, SquarePen, Search, Library, AlignJustify, Folder, MessageSquare, Settings2, Sun, Moon, LogOut, Bot, Compass, BookOpen, Image, Video, ChevronUp, Plus, DollarSign, Book, GraduationCap, Pencil, PenTool, Code, Terminal, Music, Coffee, Paintbrush, Palette, Stethoscope, Asterisk, Flower, Briefcase, BarChart, CircleDot, Dumbbell, Notebook, Scale, Globe, Plane, Earth, Wrench, PawPrint, FlaskConical, Brain, Heart, Sprout, Sparkles, Play, Clapperboard, Banana } from 'lucide-vue-next'
 import { useConversationStore } from '../stores/conversation'
 import { useUIStore } from '../stores/ui'
 import { useUserStore } from '../stores/user'

@@ -111,7 +111,7 @@ import { useProjectStore } from '../stores/projects'
 import type { ProjectGroup } from '../utils/api'
 import {
 	Folder, DollarSign, Book, GraduationCap, Pencil, PenTool,
-	Code, Terminal, Music, Coffee, Paintbrush, Palette,
+	Code, Clapperboard, Music, Coffee, Paintbrush, Palette,
 	Stethoscope, Asterisk, Flower, Briefcase, BarChart, CircleDot,
 	Dumbbell, Notebook, Scale, Globe, Plane, Earth,
 	Wrench, PawPrint, FlaskConical, Brain, Heart, Sprout,
@@ -150,7 +150,7 @@ const colorPresets = [
 
 const iconMap: Record<string, any> = {
 	Folder, DollarSign, Book, GraduationCap, Pencil, PenTool,
-	Code, Terminal, Music, Coffee, Paintbrush, Palette,
+	Code, Clapperboard, Music, Coffee, Paintbrush, Palette,
 	Stethoscope, Asterisk, Flower, Briefcase, BarChart, CircleDot,
 	Dumbbell, Notebook, Scale, Globe, Plane, Earth,
 	Wrench, PawPrint, FlaskConical, Brain, Heart, Sprout,
