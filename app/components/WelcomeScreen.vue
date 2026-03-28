@@ -24,25 +24,30 @@
 				<!-- Quick Action Chips (Chat mode only) -->
 				<div v-if="!isMediaModel && !activeTool" class="mt-4 animate-fade-in-up"
 					style="animation-delay: 0.4s; animation-fill-mode: forwards">
-					<!-- Chip buttons grid (hide when a chip is active) -->
-					<div v-if="!activeChip" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-						<button v-for="chip in allQuickChips" :key="chip.key"
-							@click="handleQuickChipClick(chip)"
-							class="quick-chip-card group">
-							<component :is="chip.icon" :size="16"
-								class="shrink-0 text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
-							<span class="flex-1 text-left truncate">{{ $t(chip.key) }}</span>
-							<ArrowUpRight :size="14"
-								class="shrink-0 text-[var(--text-disable)] group-hover:text-[var(--text-tertiary)] transition-colors" />
-						</button>
-					</div>
+					<!-- Chips / Sub-items with cross-fade transition -->
+					<Transition mode="out-in"
+						enter-active-class="transition-all duration-250 ease-out"
+						enter-from-class="opacity-0 translate-y-2"
+						enter-to-class="opacity-100 translate-y-0"
+						leave-active-class="transition-all duration-150 ease-in"
+						leave-from-class="opacity-100 translate-y-0"
+						leave-to-class="opacity-0 -translate-y-1">
 
-					<!-- Expanded sub-items grid -->
-					<Transition enter-active-class="transition duration-200 ease-out"
-						enter-from-class="opacity-0 -translate-y-2" enter-to-class="opacity-100 translate-y-0"
-						leave-active-class="transition duration-150 ease-in"
-						leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 -translate-y-2">
-						<div v-if="activeChip" class="mt-4 flex flex-col divide-y divide-[var(--border-main)]">
+						<!-- Chip buttons grid -->
+						<div v-if="!activeChip" key="chips" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+							<button v-for="chip in allQuickChips" :key="chip.key"
+								@click="handleQuickChipClick(chip)"
+								class="quick-chip-card group">
+								<component :is="chip.icon" :size="16"
+									class="shrink-0 text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
+								<span class="flex-1 text-left truncate">{{ $t(chip.key) }}</span>
+								<ArrowUpRight :size="14"
+									class="shrink-0 text-[var(--text-disable)] group-hover:text-[var(--text-tertiary)] transition-colors" />
+							</button>
+						</div>
+
+						<!-- Expanded sub-items list -->
+						<div v-else key="subs" class="flex flex-col divide-y divide-[var(--border-main)]">
 							<button v-for="(sub, idx) in activeChip.subs" :key="idx"
 								@click="handleSubClick(sub)"
 								class="flex items-center justify-between py-3.5 px-1 group cursor-pointer transition-colors hover:bg-[var(--fill-tsp-white-light)]">
