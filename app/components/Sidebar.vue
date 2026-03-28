@@ -1055,14 +1055,30 @@ const loadSidebarLayout = () => {
 	if (!raw) return
 	try {
 		const { main, more } = JSON.parse(raw)
+		const savedIds = new Set<string>()
+
 		if (Array.isArray(main)) {
 			const filtered = main.filter((id: string) => id !== 'search')
 			const items = filtered.map(getNavItemDef).filter(Boolean)
 			sidebarNavItems.value = items
+			filtered.forEach((id: string) => savedIds.add(id))
 		}
 		if (Array.isArray(more)) {
 			const filtered = more.filter((id: string) => id !== 'search')
 			moreItems.value = filtered.map(getMoreItemDef).filter(Boolean)
+			filtered.forEach((id: string) => savedIds.add(id))
+		}
+
+		// Append new items not present in saved layout to moreItems
+		for (const id of Object.keys(MORE_DEFS)) {
+			if (!savedIds.has(id)) {
+				moreItems.value.push(MORE_DEFS[id])
+			}
+		}
+		for (const id of Object.keys(NAV_DEFS)) {
+			if (!savedIds.has(id) && !MORE_DEFS[id]) {
+				moreItems.value.push(getMoreItemDef(id) || { id, name: NAV_DEFS[id].label, icon: NAV_DEFS[id].icon })
+			}
 		}
 	} catch { }
 }
