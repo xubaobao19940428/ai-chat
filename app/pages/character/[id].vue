@@ -24,7 +24,7 @@
 
 		<!-- Character Detail -->
 		<div v-else class="flex-1 overflow-y-auto custom-scrollbar px-4 pb-48 pt-6">
-			<div class="max-w-full md:max-w-[640px] mx-auto w-full">
+			<div class="max-w-full md:max-w-[840px] mx-auto w-full">
 				<!-- Character Profile Section -->
 				<div class="flex flex-col items-center pt-12 pb-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
 					<!-- Avatar -->
@@ -68,7 +68,7 @@
 		<!-- Floating Input -->
 		<div v-if="character" class="absolute left-0 right-0 z-50 px-4 pointer-events-none"
 			:style="{ bottom: keyboardHeight > 0 ? `${keyboardHeight + 8}px` : '12px' }">
-			<div class="max-w-[640px] mx-auto relative pointer-events-auto">
+			<div class="max-w-[840px] mx-auto relative pointer-events-auto">
 				<!-- Suggested Questions above input -->
 				<div v-if="displayedQuestions.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full px-1 mb-4">
 					<button v-for="(q, idx) in displayedQuestions" :key="idx" @click="handleSendMessage(q)"

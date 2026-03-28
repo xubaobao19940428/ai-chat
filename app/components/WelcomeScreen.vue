@@ -2,27 +2,73 @@
 	<div class="flex-1 flex flex-col h-full bg-[var(--background-gray-main)] relative overflow-hidden">
 		<!-- Main Content Centered -->
 		<div class="flex-1 flex flex-col items-center px-4 pt-[18vh]">
-			<div id="chat-home-view-container" class="w-full max-w-full sm:max-w-[768px] sm:min-w-[390px] mx-auto">
+			<div id="chat-home-view-container" class="w-full max-w-full sm:max-w-[840px] sm:min-w-[390px] mx-auto">
 				<div class="relative w-full flex flex-col items-center gap-[40px]">
 					<!-- Title using conditional text -->
-					<h1 class="text-[var(--text-primary)] text-center w-full font-serif text-[36px] mb-[34px] tracking-tight animate-fade-in-up" style="animation-delay: 0.2s; animation-fill-mode: forwards">
-						<span v-if="activeTool && activeTool !== 'website'" class="opacity-0">{{ $t('chat.welcome_title') }}</span>
+					<h1 class="text-[var(--text-primary)] text-center w-full font-serif text-[36px] mb-[34px] tracking-tight animate-fade-in-up"
+						style="animation-delay: 0.2s; animation-fill-mode: forwards">
+						<span v-if="activeTool && activeTool !== 'website'" class="opacity-0">{{
+							$t('chat.welcome_title') }}</span>
 						<span v-else>{{ $t('chat.welcome_title') }}</span>
 					</h1>
 				</div>
 
 				<!-- Input Card Area -->
-				<div class="flex flex-col gap-1 w-full animate-fade-in-up" style="animation-delay: 0.3s; animation-fill-mode: forwards">
-					<UnifiedInput ref="unifiedInputRef" :capability="currentCapability" :is-loading="props.isLoading" :allow-model-switch="true" @send="handleUnifiedSend" />
+				<div class="flex flex-col gap-1 w-full animate-fade-in-up"
+					style="animation-delay: 0.3s; animation-fill-mode: forwards">
+					<UnifiedInput ref="unifiedInputRef" :capability="currentCapability" :is-loading="props.isLoading"
+						:allow-model-switch="true" :active-tag="activeChip ? $t(activeChip.key) : undefined"
+						:active-tag-icon="activeChip?.icon" @send="handleUnifiedSend" @clear-tag="clearActiveChip" />
+				</div>
+
+				<!-- Quick Action Chips (Chat mode only) -->
+				<div v-if="!isMediaModel && !activeTool" class="mt-4 animate-fade-in-up"
+					style="animation-delay: 0.4s; animation-fill-mode: forwards">
+					<!-- Chip buttons row (hide when a chip is active) -->
+					<div v-if="!activeChip" class="flex flex-wrap justify-center gap-2">
+						<button v-for="chip in visibleQuickChips" :key="chip.key"
+							@click="handleQuickChipClick(chip)"
+							class="quick-chip group">
+							<component :is="chip.icon" :size="16"
+								class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
+							<span>{{ $t(chip.key) }}</span>
+						</button>
+						<button v-if="!showAllChips" @click="showAllChips = true" class="quick-chip">
+							<span>{{ $t('chat.quick_see_more') }}</span>
+						</button>
+					</div>
+
+					<!-- Expanded sub-items grid -->
+					<Transition enter-active-class="transition duration-200 ease-out"
+						enter-from-class="opacity-0 -translate-y-2" enter-to-class="opacity-100 translate-y-0"
+						leave-active-class="transition duration-150 ease-in"
+						leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 -translate-y-2">
+						<div v-if="activeChip" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+							<button v-for="(sub, idx) in activeChip.subs" :key="idx"
+								@click="handleSubClick(sub)"
+								class="quick-sub-card group">
+								<component :is="sub.icon" :size="18"
+									class="shrink-0 text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
+								<span class="flex-1 text-left text-[13px] text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors truncate">
+									{{ sub.text }}
+								</span>
+								<ArrowUpRight :size="14"
+									class="shrink-0 text-[var(--text-disable)] group-hover:text-[var(--text-tertiary)] transition-colors" />
+							</button>
+						</div>
+					</Transition>
 				</div>
 
 				<!-- Style Recommendations for Image/Video Models -->
-				<div v-if="isMediaModel && !activeTool" class="mt-6 w-full animate-fade-in-up" style="animation-delay: 0.4s; animation-fill-mode: forwards">
+				<div v-if="isMediaModel && !activeTool" class="mt-6 w-full animate-fade-in-up"
+					style="animation-delay: 0.4s; animation-fill-mode: forwards">
 					<div class="flex items-center justify-between mb-4">
 						<h3 class="text-[15px] font-semibold text-[var(--text-primary)]">
-							{{ currentCapability === 'image_generation' ? $t('chat.try_style_image') : $t('chat.try_style_video') }}
+							{{ currentCapability === 'image_generation' ? $t('chat.try_style_image') :
+								$t('chat.try_style_video') }}
 						</h3>
-						<NuxtLink :to="currentCapability === 'image_generation' ? '/image-generation' : '/video-generation'"
+						<NuxtLink
+							:to="currentCapability === 'image_generation' ? '/image-generation' : '/video-generation'"
 							class="text-[13px] text-[var(--text-primary)] hover:opacity-70 transition-opacity flex items-center gap-1">
 							{{ $t('chat.view_more') }}
 							<span class="text-[11px]">&rarr;</span>
@@ -30,17 +76,17 @@
 					</div>
 					<!-- Loading skeleton -->
 					<div v-if="isStyleLoading" class="grid grid-cols-3 sm:grid-cols-5 gap-3">
-						<div v-for="i in 5" :key="i" class="rounded-2xl overflow-hidden bg-[var(--bg-hover)] animate-pulse"
+						<div v-for="i in 5" :key="i"
+							class="rounded-2xl overflow-hidden bg-[var(--bg-hover)] animate-pulse"
 							style="aspect-ratio: 3/4"></div>
 					</div>
 					<!-- Style cards -->
 					<div v-else-if="styleRecommendations.length > 0" class="grid grid-cols-3 sm:grid-cols-5 gap-3">
 						<div v-for="item in styleRecommendations" :key="item.id"
 							class="group relative cursor-pointer rounded-2xl overflow-hidden bg-white dark:bg-[var(--background-card)] border border-[var(--border-main)] hover:border-[var(--border-light)] transition-all duration-300 shadow-sm hover:shadow-md"
-							@click="applyStylePrompt(item)"
-							@mouseenter="hoveredStyleId = item.id" @mouseleave="hoveredStyleId = null">
-							<img :src="item.related_data?.thumbnail || item.cover"
-								:alt="item.title" loading="lazy"
+							@click="applyStylePrompt(item)" @mouseenter="hoveredStyleId = item.id"
+							@mouseleave="hoveredStyleId = null">
+							<img :src="item.related_data?.thumbnail || item.cover" :alt="item.title" loading="lazy"
 								class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105 bg-[#f0eeeb] dark:bg-[#2c2c2c]"
 								style="aspect-ratio: 3/4" />
 							<!-- Hover Video (PC Only, video model) -->
@@ -48,7 +94,8 @@
 								:src="item.related_data.assets[0]" autoplay muted loop playsinline
 								class="absolute inset-0 w-full h-full object-cover hidden md:block z-0" />
 							<!-- Hover overlay -->
-							<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 pointer-events-none">
+							<div
+								class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 pointer-events-none">
 								<!-- Top Right: Favorite -->
 								<div class="absolute top-2.5 right-2.5 pointer-events-auto transform -translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 delay-75"
 									:class="isStyleFavorited(Number(item.related_id || item.id)) ? '!opacity-100 !translate-y-0' : ''">
@@ -60,7 +107,8 @@
 								</div>
 								<!-- Bottom Center: Use prompt -->
 								<div class="absolute inset-x-0 bottom-0 p-3 flex justify-center">
-									<span class="shrink-0 px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-75 pointer-events-auto cursor-pointer hover:bg-white/90 inline-flex items-center gap-1"
+									<span
+										class="shrink-0 px-4 py-1.5 rounded-full bg-white text-[11px] font-bold text-black uppercase tracking-wider shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-75 pointer-events-auto cursor-pointer hover:bg-white/90 inline-flex items-center gap-1"
 										@click.stop="applyStylePrompt(item)">
 										<Sparkles :size="12" />{{ $t('common.use_prompt') }}
 									</span>
@@ -70,93 +118,44 @@
 					</div>
 				</div>
 
-				<!-- Suggestions / Home View -->
-				<div v-if="!activeTool && !isMediaModel" class="mt-8 flex flex-wrap justify-center gap-2 animate-fade-in-up" style="animation-delay: 0.4s; animation-fill-mode: forwards">
-					<!-- Create slides -->
-					<Tooltip text="Generate a presentation">
-						<button @click="handleToolSelect('slides')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="18" height="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors">
-								<path d="M6.99976 5.9974V4.26406C6.99976 3.38041 7.7161 2.66406 8.59976 2.66406H15.3998C16.2834 2.66406 16.9998 3.38041 16.9998 4.26406V5.9974" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-								<path d="M5.00024 10V8C5.00024 6.89543 5.89567 6 7.00024 6H17.0002C18.1048 6 19.0002 6.89543 19.0002 8V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-								<path d="M19 10H5C3.89543 10 3 10.8954 3 12V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V12C21 10.8954 20.1046 10 19 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-							</svg>
-							<span class="text-[var(--text-primary)] text-[14px]">Create slides</span>
-						</button>
-					</Tooltip>
-
-					<!-- Build website -->
-					<Tooltip text="Create a web page">
-						<button @click="handleToolSelect('website')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" fill="none" width="18" height="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors">
-								<path d="M15 1.5H3C2.17157 1.5 1.5 2.33947 1.5 3.375V14.625C1.5 15.6605 2.17157 16.5 3 16.5H15C15.8284 16.5 16.5 15.6605 16.5 14.625V3.375C16.5 2.33947 15.8284 1.5 15 1.5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-								<path d="M2 5H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-								<path d="M7 9L5.5 10.5L7 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-								<path d="M11 9L12.5 10.5L11 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-							</svg>
-							<span class="text-[var(--text-primary)] text-[14px]">Build website</span>
-						</button>
-					</Tooltip>
-
-					<!-- Develop apps -->
-					<Tooltip text="Build a mobile app">
-						<button @click="handleToolSelect('app')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
-							<Smartphone :size="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
-							<span class="text-[var(--text-primary)] text-[14px]">Develop apps</span>
-						</button>
-					</Tooltip>
-
-					<!-- Design -->
-					<Tooltip text="Create images or designs">
-						<button @click="handleToolSelect('design')" class="h-10 px-[14px] py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center gap-2 clickable hover:bg-[var(--fill-tsp-white-light)] transition-colors group">
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" width="18" height="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors">
-								<path d="M3.457 8.86C3.98 8.58 4.576 8.465 5.166 8.524c.59.06 1.15.293 1.608.67.458.378.793.882.965 1.45.17.568.169 1.174-.004 1.741-.173.568-.511 1.071-.97 1.447-.46.375-1.02.606-1.61.663-2.323.224-2.583.27-2.816 1.396" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
-								<path d="M13.348 1.275c.5 0 .983.2 1.337.554.354.354.553.835.553 1.336 0 .502-.2 1.982-.553 2.337l-7.351 7.35-1.895-.99" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
-							</svg>
-							<span class="text-[var(--text-primary)] text-[14px]">Design</span>
-						</button>
-					</Tooltip>
-
-					<div class="relative" ref="moreMenuRef">
-						<Tooltip text="Explore more tools">
-							<button @click.stop="isMoreMenuOpen = !isMoreMenuOpen" class="h-10 px-[14px] text-sm py-[7px] rounded-full border border-[var(--border-main)] flex justify-center items-center clickable hover:bg-[var(--fill-tsp-white-light)] text-[var(--text-primary)] transition-colors" :class="{ 'bg-[var(--fill-tsp-white-light)]': isMoreMenuOpen }">More</button>
-						</Tooltip>
-
-						<!-- More Dropdown Menu -->
-						<div v-if="isMoreMenuOpen" class="absolute bottom-full mb-2 right-0 w-[220px] bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[var(--border-main)] py-2 z-50 animate-slide-up">
-							<div v-for="item in moreMenuItems" :key="item.name" class="flex items-center gap-3 px-4 py-[10px] hover:bg-[var(--fill-tsp-white-light)] cursor-pointer group transition-colors" @click="handleToolSelect(item.id || item.name)">
-								<component :is="item.icon" :size="18" class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
-								<span class="text-[14px] text-[var(--text-primary)] font-normal flex-1">{{ item.name }}</span>
-								<ArrowUpRight v-if="item.name === 'Playbook'" :size="14" class="text-[var(--text-tertiary)]" />
-							</div>
-						</div>
-					</div>
-				</div>
 
 				<!-- Expanded Tool View -->
 				<div v-if="activeTool && currentTool" class="mt-8 flex flex-col gap-8 w-full animate-fade-in-up">
 					<!-- Website Layout -->
 					<div v-if="activeTool === 'website'" class="flex flex-col gap-6 w-full">
-						<ToolChips title="What would you like to build?" :chips="currentTool.chips || []" :links="currentTool.links || []" @select="handlePromptSelect" @link-click="handleLinkClick" />
+						<ToolChips title="What would you like to build?" :chips="currentTool.chips || []"
+							:links="currentTool.links || []" @select="handlePromptSelect"
+							@link-click="handleLinkClick" />
 
 						<ToolIntegrations v-if="currentTool.showIntegrations" />
 					</div>
 
 					<!-- Default Tool Layout (Slides, App, Design) -->
 					<div v-else class="flex flex-col gap-8 w-full">
-						<SamplePrompts v-if="currentTool.prompts && currentTool.prompts.length" :prompts="currentTool.prompts" :title="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? '' : 'Sample prompts'" :layout="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? 'list' : 'grid'" @select="handlePromptSelect" />
+						<SamplePrompts v-if="currentTool.prompts && currentTool.prompts.length"
+							:prompts="currentTool.prompts"
+							:title="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? '' : 'Sample prompts'"
+							:layout="activeTool === 'app' || activeTool === 'design' || activeTool === 'research' || activeTool === 'spreadsheet' ? 'list' : 'grid'"
+							@select="handlePromptSelect" />
 
-						<TemplateSelector v-if="currentTool.templates && currentTool.templates.length" :templates="currentTool.templates" />
+						<TemplateSelector v-if="currentTool.templates && currentTool.templates.length"
+							:templates="currentTool.templates" />
 					</div>
 				</div>
 
-				<div v-if="!activeTool && !isMediaModel" class="mt-20 flex gap-3 overflow-x-auto pb-4 scrollbar-none animate-fade-in-up" style="animation-delay: 0.5s; animation-fill-mode: forwards">
-					<div class="flex-shrink-0 w-full sm:w-[calc(100%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
-						<div class="w-10 h-10 rounded-lg bg-[var(--function-success-tsp)] flex items-center justify-center mb-2">
+				<!-- <div v-if="!activeTool && !isMediaModel"
+					class="mt-20 flex gap-3 overflow-x-auto pb-4 scrollbar-none animate-fade-in-up"
+					style="animation-delay: 0.5s; animation-fill-mode: forwards">
+					<div
+						class="flex-shrink-0 w-full sm:w-[calc(100%-8px)] min-h-[92px] p-4 rounded-[12px] border border-[var(--border-main)] hover:bg-[var(--fill-tsp-white-light)] clickable transition-colors">
+						<div
+							class="w-10 h-10 rounded-lg bg-[var(--function-success-tsp)] flex items-center justify-center mb-2">
 							<Globe :size="24" class="text-[var(--function-success)]" />
 						</div>
-						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">{{ $t('chat.explore_community') }}</p>
+						<p class="text-[var(--text-primary)] text-sm font-medium leading-tight">{{
+							$t('chat.explore_community') }}</p>
 					</div>
-				</div>
+				</div> -->
 			</div>
 		</div>
 	</div>
@@ -172,7 +171,7 @@ import { useModelStore } from '../stores/models'
 import { useEditor, EditorContent as TiptapEditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
-import { Plus, Globe, X, Mic, ArrowUp, Cable, Smartphone, Calendar, Search, Table, BarChart3, Video, Volume2, MessageSquare, ArrowUpRight, Signal, Newspaper, BarChart2, Cake, SlidersHorizontal, Presentation, Puzzle, Mail, MessageCircle, FileText, Briefcase, Building2, Cloud, User, Link, Image, Code, ShoppingBag, Sparkles, Paintbrush, Loader2, Square, Clock, Check, Palette, Gem, Monitor, LayoutGrid } from 'lucide-vue-next'
+import { Plus, Globe, X, Mic, ArrowUp, Cable, Smartphone, Calendar, Search, Table, BarChart3, Video, Volume2, MessageSquare, ArrowUpRight, Signal, Newspaper, BarChart2, Cake, SlidersHorizontal, Presentation, Puzzle, Mail, MessageCircle, FileText, Briefcase, Building2, Cloud, User, Link, Image, Code, ShoppingBag, Sparkles, Paintbrush, Loader2, Square, Clock, Check, Palette, Gem, Monitor, LayoutGrid, Pencil, BookOpen, ScanSearch, AlignLeft, TrendingUp, Brain, Type, Languages, ImagePlus, Lightbulb } from 'lucide-vue-next'
 import { uploadFile, generateImageStream, generateVideoStream } from '../utils/api'
 import { getDiscoveryItems, type DiscoveryItem } from '../api/discovery'
 import { useFavorite } from '~/composables/useFavorite'
@@ -283,6 +282,195 @@ function handleUnifiedSend(payload: { content: string; params: Record<string, an
 	activeTool.value = null
 }
 const showConnectBanner = ref(true)
+
+// --- Quick Action Chips ---
+const QUICK_CHIPS_INITIAL = 4
+
+interface QuickChipSub {
+	icon: any
+	text: string
+	prompt: string
+}
+
+interface QuickChip {
+	key: string
+	icon: any
+	prompt: string
+	subs: QuickChipSub[]
+}
+
+const allQuickChips: QuickChip[] = [
+	{
+		key: 'chat.quick_help_write', icon: markRaw(Pencil), prompt: 'Help me write ',
+		subs: [
+			{ icon: markRaw(FileText), text: 'Write a professional email', prompt: 'Help me write a professional email about ' },
+			{ icon: markRaw(Pencil), text: 'Write a blog post', prompt: 'Help me write a blog post about ' },
+			{ icon: markRaw(Briefcase), text: 'Write a cover letter', prompt: 'Help me write a cover letter for ' },
+			{ icon: markRaw(FileText), text: 'Write a product description', prompt: 'Help me write a product description for ' },
+			{ icon: markRaw(MessageCircle), text: 'Write a social media post', prompt: 'Help me write a social media post about ' },
+			{ icon: markRaw(Pencil), text: 'Write a poem or story', prompt: 'Help me write a creative piece about ' },
+			{ icon: markRaw(FileText), text: 'Write a business proposal', prompt: 'Help me write a business proposal for ' },
+			{ icon: markRaw(Pencil), text: 'Write a speech', prompt: 'Help me write a speech about ' },
+			{ icon: markRaw(FileText), text: 'Write a resume summary', prompt: 'Help me write a resume summary for ' },
+		],
+	},
+	{
+		key: 'chat.quick_learn', icon: markRaw(BookOpen), prompt: 'Learn about ',
+		subs: [
+			{ icon: markRaw(Lightbulb), text: 'Time management strategies', prompt: 'Learn about time management strategies' },
+			{ icon: markRaw(TrendingUp), text: 'Stock trading basics', prompt: 'Learn about stock trading basics' },
+			{ icon: markRaw(Briefcase), text: 'Negotiation skills for deals', prompt: 'Learn about negotiation skills for business deals' },
+			{ icon: markRaw(MessageCircle), text: 'Handling difficult conversations', prompt: 'Learn about handling difficult conversations' },
+			{ icon: markRaw(BookOpen), text: 'Machine learning fundamentals', prompt: 'Learn about machine learning fundamentals' },
+			{ icon: markRaw(Globe), text: 'World history highlights', prompt: 'Learn about world history highlights' },
+			{ icon: markRaw(Code), text: 'Web development roadmap', prompt: 'Learn about web development roadmap' },
+			{ icon: markRaw(Brain), text: 'Psychology of habits', prompt: 'Learn about the psychology of habits' },
+			{ icon: markRaw(BarChart2), text: 'Personal finance planning', prompt: 'Learn about personal finance planning' },
+		],
+	},
+	{
+		key: 'chat.quick_analyze_image', icon: markRaw(ScanSearch), prompt: 'Analyze Image ',
+		subs: [
+			{ icon: markRaw(ScanSearch), text: 'Describe image contents', prompt: 'Describe what you see in this image in detail' },
+			{ icon: markRaw(FileText), text: 'Extract text from image', prompt: 'Extract and organize all text from this image' },
+			{ icon: markRaw(Search), text: 'Identify objects in image', prompt: 'Identify and list all objects in this image' },
+			{ icon: markRaw(TrendingUp), text: 'Analyze chart or graph', prompt: 'Analyze this chart and explain the key insights' },
+			{ icon: markRaw(Paintbrush), text: 'Get design feedback', prompt: 'Provide design feedback on this image' },
+			{ icon: markRaw(ScanSearch), text: 'Compare two images', prompt: 'Compare these images and highlight the differences' },
+			{ icon: markRaw(Code), text: 'Convert UI to code', prompt: 'Convert this UI design image to HTML/CSS code' },
+			{ icon: markRaw(FileText), text: 'Analyze document scan', prompt: 'Analyze this scanned document and extract key info' },
+			{ icon: markRaw(Palette), text: 'Extract color palette', prompt: 'Extract the color palette from this image' },
+		],
+	},
+	{
+		key: 'chat.quick_summarize', icon: markRaw(AlignLeft), prompt: 'Summarize ',
+		subs: [
+			{ icon: markRaw(FileText), text: 'Article into bullet points', prompt: 'Summarize this article in bullet points: ' },
+			{ icon: markRaw(AlignLeft), text: 'Meeting notes concisely', prompt: 'Create concise meeting notes from: ' },
+			{ icon: markRaw(Lightbulb), text: 'Key takeaways from a report', prompt: 'Extract the key takeaways from this report: ' },
+			{ icon: markRaw(BookOpen), text: 'Book into chapter summaries', prompt: 'Summarize this book chapter by chapter: ' },
+			{ icon: markRaw(Briefcase), text: 'Executive summary for a doc', prompt: 'Create an executive summary of: ' },
+			{ icon: markRaw(AlignLeft), text: 'Simplify complex text', prompt: 'Simplify this text for a general audience: ' },
+			{ icon: markRaw(FileText), text: 'Extract action items', prompt: 'Extract all action items from: ' },
+			{ icon: markRaw(MessageCircle), text: 'Summarize a conversation', prompt: 'Summarize this conversation thread: ' },
+			{ icon: markRaw(AlignLeft), text: 'Condense into one paragraph', prompt: 'Condense this into one paragraph: ' },
+		],
+	},
+	{
+		key: 'chat.quick_analyze_data', icon: markRaw(TrendingUp), prompt: 'Analyze Data ',
+		subs: [
+			{ icon: markRaw(TrendingUp), text: 'Find trends and patterns', prompt: 'Identify the key trends in this data: ' },
+			{ icon: markRaw(FileText), text: 'Generate analysis report', prompt: 'Generate a data analysis report for: ' },
+			{ icon: markRaw(BarChart2), text: 'Calculate key statistics', prompt: 'Calculate key statistics for: ' },
+			{ icon: markRaw(BarChart3), text: 'Suggest best visualizations', prompt: 'Suggest the best chart types for this data: ' },
+			{ icon: markRaw(Search), text: 'Spot anomalies and outliers', prompt: 'Identify anomalies or outliers in: ' },
+			{ icon: markRaw(TrendingUp), text: 'Forecast future trends', prompt: 'Make predictions based on this data: ' },
+			{ icon: markRaw(Table), text: 'Clean and organize data', prompt: 'Clean and organize this dataset: ' },
+			{ icon: markRaw(BarChart2), text: 'Compare datasets', prompt: 'Compare these two datasets and highlight differences: ' },
+			{ icon: markRaw(FileText), text: 'Create pivot table summary', prompt: 'Create a pivot table summary for: ' },
+		],
+	},
+	{
+		key: 'chat.quick_brainstorm', icon: markRaw(Brain), prompt: 'Brainstorm ',
+		subs: [
+			{ icon: markRaw(Lightbulb), text: 'Startup ideas in tech', prompt: 'Brainstorm innovative startup ideas in tech' },
+			{ icon: markRaw(Brain), text: 'Marketing campaign concepts', prompt: 'Brainstorm marketing campaign concepts for ' },
+			{ icon: markRaw(Sparkles), text: 'Creative product features', prompt: 'Brainstorm creative product features for ' },
+			{ icon: markRaw(MessageCircle), text: 'Content ideas for a blog', prompt: 'Brainstorm content ideas for a blog about ' },
+			{ icon: markRaw(Lightbulb), text: 'Solutions to a problem', prompt: 'Brainstorm creative solutions for ' },
+			{ icon: markRaw(Brain), text: 'Team building activities', prompt: 'Brainstorm team building activity ideas' },
+			{ icon: markRaw(Sparkles), text: 'Brand naming ideas', prompt: 'Brainstorm brand name ideas for ' },
+			{ icon: markRaw(Lightbulb), text: 'Monetization strategies', prompt: 'Brainstorm monetization strategies for ' },
+			{ icon: markRaw(Brain), text: 'Workshop topic ideas', prompt: 'Brainstorm workshop topic ideas for ' },
+		],
+	},
+	{
+		key: 'chat.quick_improve_writing', icon: markRaw(Type), prompt: 'Improve writing ',
+		subs: [
+			{ icon: markRaw(Briefcase), text: 'Make it more formal', prompt: 'Rewrite this in a more formal tone: ' },
+			{ icon: markRaw(AlignLeft), text: 'Make it more concise', prompt: 'Make this more concise without losing meaning: ' },
+			{ icon: markRaw(Check), text: 'Fix grammar and spelling', prompt: 'Fix grammar and spelling errors in: ' },
+			{ icon: markRaw(Type), text: 'Make it more persuasive', prompt: 'Rewrite this to be more persuasive: ' },
+			{ icon: markRaw(Lightbulb), text: 'Simplify the language', prompt: 'Simplify the language in: ' },
+			{ icon: markRaw(Pencil), text: 'Add more detail', prompt: 'Expand this with more detail and examples: ' },
+			{ icon: markRaw(MessageCircle), text: 'Make it more casual', prompt: 'Rewrite this in a more casual tone: ' },
+			{ icon: markRaw(Type), text: 'Improve readability', prompt: 'Improve the readability of: ' },
+			{ icon: markRaw(Sparkles), text: 'Make it more engaging', prompt: 'Rewrite this to be more engaging: ' },
+		],
+	},
+	{
+		key: 'chat.quick_translate', icon: markRaw(Languages), prompt: 'Translate ',
+		subs: [
+			{ icon: markRaw(Languages), text: 'text by maintaining the length', prompt: 'Translate text by maintaining the length: ' },
+			{ icon: markRaw(Languages), text: 'text in a natural and local way', prompt: 'Translate text in a natural and local way: ' },
+			{ icon: markRaw(Languages), text: 'text while keeping the original meaning intact', prompt: 'Translate text while keeping the original meaning intact: ' },
+			{ icon: markRaw(Languages), text: 'text into multiple languages', prompt: 'Translate text into multiple languages: ' },
+			{ icon: markRaw(Languages), text: 'text to English', prompt: 'Translate this to English: ' },
+			{ icon: markRaw(Languages), text: 'text to Chinese', prompt: 'Translate this to Chinese: ' },
+			{ icon: markRaw(Languages), text: 'text to Japanese', prompt: 'Translate this to Japanese: ' },
+			{ icon: markRaw(Languages), text: 'text to Spanish', prompt: 'Translate this to Spanish: ' },
+			{ icon: markRaw(Languages), text: 'text to French', prompt: 'Translate this to French: ' },
+		],
+	},
+	{
+		key: 'chat.quick_generate_images', icon: markRaw(ImagePlus), prompt: 'Generate Images ',
+		subs: [
+			{ icon: markRaw(Gem), text: 'Logo design', prompt: 'Generate a logo design for ' },
+			{ icon: markRaw(Monitor), text: 'Social media graphic', prompt: 'Generate a social media graphic for ' },
+			{ icon: markRaw(ShoppingBag), text: 'Product mockup', prompt: 'Generate a product mockup for ' },
+			{ icon: markRaw(Paintbrush), text: 'Digital illustration', prompt: 'Generate an illustration of ' },
+			{ icon: markRaw(ImagePlus), text: 'Website hero image', prompt: 'Generate a hero image for a website about ' },
+			{ icon: markRaw(LayoutGrid), text: 'Icon set design', prompt: 'Generate a set of icons for ' },
+			{ icon: markRaw(Palette), text: 'Poster design', prompt: 'Generate a poster design for ' },
+			{ icon: markRaw(Image), text: 'Background wallpaper', prompt: 'Generate a background wallpaper with ' },
+			{ icon: markRaw(Sparkles), text: 'Character concept art', prompt: 'Generate character concept art for ' },
+		],
+	},
+	{
+		key: 'chat.quick_generate_ideas', icon: markRaw(Lightbulb), prompt: 'Generate Ideas ',
+		subs: [
+			{ icon: markRaw(Lightbulb), text: 'Side project ideas', prompt: 'Generate side project ideas for a developer' },
+			{ icon: markRaw(Smartphone), text: 'App feature concepts', prompt: 'Generate app feature ideas for ' },
+			{ icon: markRaw(Cake), text: 'Gift ideas for someone', prompt: 'Generate gift ideas for ' },
+			{ icon: markRaw(Sparkles), text: 'Creative project names', prompt: 'Generate creative project names for ' },
+			{ icon: markRaw(Presentation), text: 'Workshop topic ideas', prompt: 'Generate workshop topic ideas for ' },
+			{ icon: markRaw(Brain), text: 'Research topic ideas', prompt: 'Generate research topic ideas in ' },
+			{ icon: markRaw(Code), text: 'Open source project ideas', prompt: 'Generate open source project ideas for ' },
+			{ icon: markRaw(Briefcase), text: 'Business model ideas', prompt: 'Generate business model ideas for ' },
+			{ icon: markRaw(Pencil), text: 'Creative writing prompts', prompt: 'Generate creative writing prompts about ' },
+		],
+	},
+]
+
+const showAllChips = ref(false)
+const activeChip = ref<QuickChip | null>(null)
+
+const visibleQuickChips = computed(() =>
+	showAllChips.value ? allQuickChips : allQuickChips.slice(0, QUICK_CHIPS_INITIAL)
+)
+
+const handleQuickChipClick = (chip: QuickChip) => {
+	if (activeChip.value?.key === chip.key) {
+		activeChip.value = null
+		unifiedInputRef.value?.setContent('')
+	} else {
+		activeChip.value = chip
+		unifiedInputRef.value?.setContent(chip.prompt)
+		unifiedInputRef.value?.focus()
+	}
+}
+
+const handleSubClick = (sub: QuickChipSub) => {
+	unifiedInputRef.value?.setContent(sub.prompt)
+	unifiedInputRef.value?.focus()
+	activeChip.value = null
+}
+
+const clearActiveChip = () => {
+	activeChip.value = null
+	unifiedInputRef.value?.setContent('')
+	unifiedInputRef.value?.focus()
+}
 
 const isMoreMenuOpen = ref(false)
 const moreMenuRef = ref<HTMLElement | null>(null)
@@ -545,7 +733,7 @@ const handleStyleFavorite = (id: number) => {
 const modelInputFields = computed(() => modelStore.selectedModel?.model_input?.fields || {})
 
 const dynamicSelectFields = computed(() => {
-	const result: Array<{ key: string; options: string[]; [k: string]: any }> = []
+	const result: Array<{ key: string; options: string[];[k: string]: any }> = []
 	for (const [key, field] of Object.entries(modelInputFields.value)) {
 		if ((field as any).type === 'select') {
 			result.push({ key, ...(field as any) })
@@ -555,7 +743,7 @@ const dynamicSelectFields = computed(() => {
 })
 
 const dynamicNumberFields = computed(() => {
-	const result: Array<{ key: string; min: number; max: number; [k: string]: any }> = []
+	const result: Array<{ key: string; min: number; max: number;[k: string]: any }> = []
 	for (const [key, field] of Object.entries(modelInputFields.value)) {
 		if ((field as any).type === 'number') {
 			result.push({ key, ...(field as any) })
@@ -756,7 +944,7 @@ function handleToolSelect(toolId: string) {
 function handlePromptSelect(text: string) {
 	unifiedInputRef.value?.setContent(text)
 	unifiedInputRef.value?.focus()
-	nextTick(() => {})
+	nextTick(() => { })
 }
 
 // Set up key handler when editor is ready
@@ -834,6 +1022,22 @@ onBeforeUnmount(() => {
 	&::-webkit-scrollbar {
 		display: none;
 	}
+}
+
+.quick-chip {
+	@apply h-10 px-4 rounded-full border border-[var(--border-main)] flex items-center gap-2;
+	@apply text-[14px] text-[var(--text-primary)] transition-all cursor-pointer;
+	@apply hover:bg-[var(--fill-tsp-white-light)];
+}
+
+.quick-chip-active {
+	@apply bg-[var(--fill-tsp-white-light)] border-[var(--text-tertiary)];
+}
+
+.quick-sub-card {
+	@apply flex items-center gap-3 px-4 py-3.5 rounded-xl border border-[var(--border-main)];
+	@apply transition-all cursor-pointer;
+	@apply hover:bg-[var(--fill-tsp-white-light)] hover:border-[var(--text-tertiary)] hover:shadow-sm;
 }
 </style>
 

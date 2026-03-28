@@ -1,21 +1,26 @@
 <template>
 	<div class="flex-1 flex flex-col h-full bg-[var(--background-gray-main)] transition-colors relative overflow-hidden">
 		<!-- Header: Desktop -->
-		<header class="hidden lg:flex bg-[var(--bg-main)] border-b border-[var(--border-main)] px-6 py-3 items-center justify-between gap-6 shrink-0 z-10">
+		<header
+			class="hidden lg:flex bg-[var(--bg-main)] border-b border-[var(--border-main)] px-6 py-3 items-center justify-between gap-6 shrink-0 z-10">
 			<div class="flex items-center gap-6 flex-1">
 				<h1 class="text-xl font-bold text-[var(--text-primary)] tracking-tight">Library</h1>
 				<div class="relative flex-1 max-w-md">
 					<Search class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)]" :size="16" />
-					<input v-model="assetStore.filters.search" type="text" placeholder="Search assets..." class="w-full h-9 ps-10 pe-4 rounded-xl bg-[var(--fill-tsp-gray-main)] border border-transparent focus:border-[var(--text-tertiary)] focus:bg-[var(--bg-main)] text-[14px] transition-all outline-none" />
+					<input v-model="assetStore.filters.search" type="text" placeholder="Search assets..."
+						class="search-input" />
 				</div>
 			</div>
 			<div class="flex items-center gap-3">
-				<div class="bg-[var(--fill-tsp-gray-main)] p-1 rounded-xl border border-[var(--border-main)] flex items-center">
-					<button v-for="s in sources" :key="s.id" @click="assetStore.filters.source = s.id as any" class="px-3 py-1.5 text-[12px] font-bold rounded-lg transition-all" :class="assetStore.filters.source === s.id ? 'bg-white text-[var(--text-primary)] shadow-sm dark:bg-[var(--bg-hover)]' : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'">
+				<div
+					class="bg-[var(--fill-tsp-gray-main)] p-1 rounded-xl border border-[var(--border-main)] flex items-center">
+					<button v-for="s in sources" :key="s.id"
+						@click="assetStore.filters.source = s.id as any"
+						class="source-tab" :class="sourceTabClass(s.id)">
 						{{ s.label }}
 					</button>
 				</div>
-				<button @click="triggerUpload" class="flex items-center gap-2 px-4 py-2 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-xl font-bold text-[13px] hover:opacity-90 transition-all shadow-sm">
+				<button @click="triggerUpload" class="upload-btn">
 					<UploadCloud :size="16" />
 					Upload
 				</button>
@@ -26,41 +31,40 @@
 		<header class="lg:hidden bg-[var(--bg-main)] border-b border-[var(--border-main)] px-4 shrink-0 z-10">
 			<div class="flex items-center justify-between gap-3 py-2">
 				<div class="flex items-center gap-3">
-					<button @click="uiStore.openMobileMenu()" class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
+					<button @click="uiStore.openMobileMenu()"
+						class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
 						<Menu :size="20" />
 					</button>
 					<h1 class="text-xl font-bold text-[var(--text-primary)] tracking-tight">Library</h1>
 				</div>
-				<button @click="triggerUpload" class="flex items-center gap-2 px-3 py-2 bg-[var(--text-primary)] text-[var(--bg-main)] rounded-xl font-bold text-[13px] hover:opacity-90 transition-all shadow-sm">
+				<button @click="triggerUpload" class="upload-btn">
 					<UploadCloud :size="16" />
 				</button>
 			</div>
 			<div class="pb-2.5">
 				<div class="relative">
 					<Search class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)]" :size="16" />
-					<input v-model="assetStore.filters.search" type="text" placeholder="Search assets..." class="w-full h-9 ps-10 pe-4 rounded-xl bg-[var(--fill-tsp-gray-main)] border border-transparent focus:border-[var(--text-tertiary)] focus:bg-[var(--bg-main)] text-[14px] transition-all outline-none" />
+					<input v-model="assetStore.filters.search" type="text" placeholder="Search assets..."
+						class="search-input" />
 				</div>
 			</div>
 		</header>
 
 		<!-- Filter Bar -->
 		<div class="border-b border-[var(--border-main)]/50 bg-[var(--bg-main)]/50 backdrop-blur-sm shrink-0 z-10">
-			<!-- Mobile: Row 1 — Source -->
+			<!-- Mobile: Source chips -->
 			<div class="sm:hidden flex items-center gap-2 px-4 pt-2 pb-1 overflow-x-auto no-scrollbar">
-				<button v-for="s in sources" :key="s.id" @click="assetStore.filters.source = s.id as any" class="px-3 py-1.5 text-[12px] font-bold rounded-full border transition-all whitespace-nowrap" :class="assetStore.filters.source === s.id ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)]' : 'bg-[var(--bg-main)] text-[var(--text-secondary)] border-[var(--border-main)]'">
+				<button v-for="s in sources" :key="s.id"
+					@click="assetStore.filters.source = s.id as any"
+					class="filter-chip" :class="filterChipClass(assetStore.filters.source, s.id)">
 					{{ s.label }}
 				</button>
 			</div>
-			<!-- Mobile: Row 2 — Type / Desktop: single row with source toggle in header -->
+			<!-- Type chips -->
 			<div class="flex items-center gap-2 px-4 sm:px-6 py-2 overflow-x-auto no-scrollbar">
-				<!-- Source toggle desktop -->
-				<!-- <div class="md:hidden sm:flex bg-[var(--fill-tsp-gray-main)] p-1 rounded-xl border border-[var(--border-main)] items-center shrink-0 mr-2">
-					<button v-for="s in sources" :key="s.id" @click="assetStore.filters.source = s.id as any" class="px-3 py-1.5 text-[12px] font-bold rounded-lg transition-all" :class="assetStore.filters.source === s.id ? 'bg-white text-[var(--text-primary)] shadow-sm dark:bg-[var(--bg-hover)]' : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'">
-						{{ s.label }}
-					</button>
-				</div> -->
-				<!-- Type chips -->
-				<button v-for="t in types" :key="t.id" @click="assetStore.filters.type = t.id as any" :class="['px-3 sm:px-4 py-1.5 text-[12px] font-bold rounded-full border transition-all whitespace-nowrap', assetStore.filters.type === t.id ? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm' : 'bg-[var(--bg-main)] text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]']">
+				<button v-for="t in types" :key="t.id"
+					@click="assetStore.filters.type = t.id as any"
+					class="filter-chip" :class="filterChipClass(assetStore.filters.type, t.id)">
 					{{ t.label }}
 				</button>
 			</div>
@@ -72,19 +76,28 @@
 		</main>
 
 		<!-- Batch Action Bar -->
-		<Transition enter-active-class="transition duration-300 ease-out" enter-from-class="translate-y-20 opacity-0" enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-200 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-20 opacity-0">
-			<div v-if="assetStore.selectedIds.size > 0" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] sm:w-auto">
-				<div class="bg-black/90 dark:bg-white/90 backdrop-blur-xl border border-white/20 text-white dark:text-black rounded-[20px] px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-4 sm:gap-8 shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
+		<Transition enter-active-class="transition duration-300 ease-out"
+			enter-from-class="translate-y-20 opacity-0" enter-to-class="translate-y-0 opacity-100"
+			leave-active-class="transition duration-200 ease-in"
+			leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-20 opacity-0">
+			<div v-if="assetStore.selectedIds.size > 0"
+				class="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] sm:w-auto">
+				<div class="batch-bar">
 					<div class="flex items-center gap-2 sm:gap-3">
-						<span class="text-[13px] sm:text-[14px] font-bold">{{ assetStore.selectedIds.size }} selected</span>
-						<button @click="assetStore.clearSelection" class="text-[11px] font-bold uppercase tracking-wider opacity-60 hover:opacity-100">Clear</button>
+						<span class="text-[13px] sm:text-[14px] font-bold">
+							{{ assetStore.selectedIds.size }} selected
+						</span>
+						<button @click="assetStore.clearSelection"
+							class="text-[11px] font-bold uppercase tracking-wider opacity-60 hover:opacity-100">
+							Clear
+						</button>
 					</div>
 					<div class="flex items-center gap-2 sm:gap-4">
-						<button @click="handleBatchDownload" class="flex items-center gap-1.5 hover:bg-white/10 dark:hover:bg-black/10 px-3 py-2 rounded-xl transition-all font-bold text-[13px]">
+						<button @click="handleBatchDownload" class="batch-action">
 							<Download :size="16" />
 							<span class="hidden sm:inline">Download</span>
 						</button>
-						<button @click="handleBatchDelete" class="flex items-center gap-1.5 text-red-400 hover:bg-red-500/10 px-3 py-2 rounded-xl transition-all font-bold text-[13px]">
+						<button @click="handleBatchDelete" class="batch-action text-red-400 hover:bg-red-500/10">
 							<Trash2 :size="16" />
 							<span class="hidden sm:inline">Delete</span>
 						</button>
@@ -111,7 +124,7 @@ const assetStore = useAssetStore()
 const uiStore = useUIStore()
 const fileInput = ref<HTMLInputElement | null>(null)
 
-// 同步重置，确保首帧就显示骨架屏而非空态
+// Reset synchronously so skeleton shows on first frame
 assetStore.items = []
 assetStore.isLoading = true
 
@@ -130,12 +143,21 @@ const types = [
 	{ id: 'document', label: 'Documents' },
 ]
 
+const sourceTabClass = (id: string) =>
+	assetStore.filters.source === id
+		? 'bg-white text-[var(--text-primary)] shadow-sm dark:bg-[var(--bg-hover)]'
+		: 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'
+
+const filterChipClass = (current: string, id: string) =>
+	current === id
+		? 'bg-[var(--text-primary)] text-white border-[var(--text-primary)] shadow-sm'
+		: 'bg-[var(--bg-main)] text-[var(--text-secondary)] border-[var(--border-main)] hover:border-[var(--text-tertiary)] hover:bg-[var(--bg-hover)]'
+
 onMounted(() => {
 	assetStore.fetchAssets(true)
 })
 
 const handlePreview = (asset: any) => {
-	// We'll implement a simple lightbox/preview later if needed
 	window.open(asset.url, '_blank')
 }
 
@@ -184,26 +206,49 @@ const handleBatchDelete = async () => {
 <style scoped lang="scss">
 .no-scrollbar {
 	scrollbar-width: none;
-	&::-webkit-scrollbar {
-		display: none;
-	}
+	&::-webkit-scrollbar { display: none; }
 }
 
 .custom-scrollbar {
 	scrollbar-width: thin;
 	scrollbar-color: var(--border-light) transparent;
-	&::-webkit-scrollbar {
-		width: 4px;
-	}
-	&::-webkit-scrollbar-track {
-		background: transparent;
-	}
+	&::-webkit-scrollbar { width: 4px; }
+	&::-webkit-scrollbar-track { background: transparent; }
 	&::-webkit-scrollbar-thumb {
 		background: var(--border-light);
 		border-radius: 10px;
-		&:hover {
-			background: var(--text-tertiary);
-		}
+		&:hover { background: var(--text-tertiary); }
 	}
+}
+
+.search-input {
+	@apply w-full h-9 ps-10 pe-4 rounded-xl text-[14px] transition-all outline-none;
+	@apply bg-[var(--fill-tsp-gray-main)] border border-transparent;
+	@apply focus:border-[var(--text-tertiary)] focus:bg-[var(--bg-main)];
+}
+
+.upload-btn {
+	@apply flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-[13px];
+	@apply bg-[var(--text-primary)] text-[var(--bg-main)];
+	@apply hover:opacity-90 transition-all shadow-sm;
+}
+
+.source-tab {
+	@apply px-3 py-1.5 text-[12px] font-bold rounded-lg transition-all;
+}
+
+.filter-chip {
+	@apply px-3 sm:px-4 py-1.5 text-[12px] font-bold rounded-full border transition-all whitespace-nowrap;
+}
+
+.batch-bar {
+	@apply flex items-center justify-between gap-4 sm:gap-8 px-4 sm:px-6 py-3 sm:py-4;
+	@apply bg-black/90 dark:bg-white/90 backdrop-blur-xl text-white dark:text-black;
+	@apply border border-white/20 rounded-[20px] shadow-[0_20px_50px_rgba(0,0,0,0.3)];
+}
+
+.batch-action {
+	@apply flex items-center gap-1.5 px-3 py-2 rounded-xl transition-all font-bold text-[13px];
+	@apply hover:bg-white/10 dark:hover:bg-black/10;
 }
 </style>

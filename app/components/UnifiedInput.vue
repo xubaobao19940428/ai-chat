@@ -96,6 +96,18 @@
 							@update:web-search="(v: boolean) => isWebSearchEnabled = v"
 						/>
 					</template>
+
+					<!-- Active Tag -->
+					<span v-if="props.activeTag"
+						class="active-tag group/tag" @click="emit('clear-tag')">
+						<span class="active-tag-icon">
+							<component :is="props.activeTagIcon" v-if="props.activeTagIcon" :size="14" />
+						</span>
+						<span class="active-tag-close">
+							<X :size="14" stroke-width="2.5" />
+						</span>
+						<span class="active-tag-text">{{ props.activeTag }}</span>
+					</span>
 				</div>
 
 				<!-- Voice: Cancel / Confirm buttons -->
@@ -177,6 +189,8 @@ const props = withDefaults(defineProps<{
 	placeholderText?: string
 	allowModelSwitch?: boolean
 	provider?: string
+	activeTag?: string
+	activeTagIcon?: any
 }>(), {
 	isLoading: false,
 	floating: false,
@@ -189,6 +203,7 @@ const emit = defineEmits<{
 	stop: []
 	'select-question': [question: string]
 	'update:params': [params: Record<string, any>]
+	'clear-tag': []
 }>()
 
 // --- Stores ---
@@ -499,6 +514,44 @@ defineExpose({
 	border-radius: 9999px; transition: transform 0.15s;
 }
 .unified-send-btn:active { transform: scale(0.9); }
+
+/* === Active Tag === */
+.active-tag {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	height: 34px;
+	padding: 0 0.75rem;
+	border-radius: 9999px;
+	background: #0081f214;
+	border: 1px solid #0081f2;
+	transition: all 0.15s;
+	cursor: pointer;
+}
+.active-tag:hover {
+	background: #0081f224;
+}
+.active-tag-icon {
+	display: flex;
+	align-items: center;
+	color: #0081f2;
+}
+.active-tag:hover .active-tag-icon {
+	display: none;
+}
+.active-tag-close {
+	display: none;
+	align-items: center;
+	color: #0081f2;
+}
+.active-tag:hover .active-tag-close {
+	display: flex;
+}
+.active-tag-text {
+	font-size: 13px;
+	font-weight: 700;
+	color: #0081f2;
+}
 
 /* === Scrollbar === */
 .custom-scrollbar::-webkit-scrollbar {
