@@ -24,17 +24,16 @@
 				<!-- Quick Action Chips (Chat mode only) -->
 				<div v-if="!isMediaModel && !activeTool" class="mt-4 animate-fade-in-up"
 					style="animation-delay: 0.4s; animation-fill-mode: forwards">
-					<!-- Chip buttons row (hide when a chip is active) -->
-					<div v-if="!activeChip" class="flex flex-wrap justify-center gap-2">
-						<button v-for="chip in visibleQuickChips" :key="chip.key"
+					<!-- Chip buttons grid (hide when a chip is active) -->
+					<div v-if="!activeChip" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+						<button v-for="chip in allQuickChips" :key="chip.key"
 							@click="handleQuickChipClick(chip)"
-							class="quick-chip group">
+							class="quick-chip-card group">
 							<component :is="chip.icon" :size="16"
-								class="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
-							<span>{{ $t(chip.key) }}</span>
-						</button>
-						<button v-if="!showAllChips" @click="showAllChips = true" class="quick-chip">
-							<span>{{ $t('chat.quick_see_more') }}</span>
+								class="shrink-0 text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
+							<span class="flex-1 text-left truncate">{{ $t(chip.key) }}</span>
+							<ArrowUpRight :size="14"
+								class="shrink-0 text-[var(--text-disable)] group-hover:text-[var(--text-tertiary)] transition-colors" />
 						</button>
 					</div>
 
@@ -43,14 +42,13 @@
 						enter-from-class="opacity-0 -translate-y-2" enter-to-class="opacity-100 translate-y-0"
 						leave-active-class="transition duration-150 ease-in"
 						leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 -translate-y-2">
-						<div v-if="activeChip" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+						<div v-if="activeChip" class="mt-4 flex flex-col divide-y divide-[var(--border-main)]">
 							<button v-for="(sub, idx) in activeChip.subs" :key="idx"
 								@click="handleSubClick(sub)"
-								class="quick-sub-card group">
-								<component :is="sub.icon" :size="18"
-									class="shrink-0 text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors" />
-								<span class="flex-1 text-left text-[13px] text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors truncate">
-									{{ sub.text }}
+								class="flex items-center justify-between py-3.5 px-1 group cursor-pointer transition-colors hover:bg-[var(--fill-tsp-white-light)]">
+								<span class="text-[14px] transition-colors">
+									<span class="text-[var(--text-primary)] font-medium">{{ getSubPrefix(sub.text) }}</span>
+									<span class="text-[var(--text-tertiary)]">{{ getSubSuffix(sub.text) }}</span>
 								</span>
 								<ArrowUpRight :size="14"
 									class="shrink-0 text-[var(--text-disable)] group-hover:text-[var(--text-tertiary)] transition-colors" />
@@ -284,7 +282,7 @@ function handleUnifiedSend(payload: { content: string; params: Record<string, an
 const showConnectBanner = ref(true)
 
 // --- Quick Action Chips ---
-const QUICK_CHIPS_INITIAL = 4
+const QUICK_CHIPS_INITIAL = 9
 
 interface QuickChipSub {
 	icon: any
@@ -303,141 +301,82 @@ const allQuickChips: QuickChip[] = [
 	{
 		key: 'chat.quick_help_write', icon: markRaw(Pencil), prompt: 'Help me write ',
 		subs: [
-			{ icon: markRaw(FileText), text: 'Write a professional email', prompt: 'Help me write a professional email about ' },
-			{ icon: markRaw(Pencil), text: 'Write a blog post', prompt: 'Help me write a blog post about ' },
-			{ icon: markRaw(Briefcase), text: 'Write a cover letter', prompt: 'Help me write a cover letter for ' },
-			{ icon: markRaw(FileText), text: 'Write a product description', prompt: 'Help me write a product description for ' },
-			{ icon: markRaw(MessageCircle), text: 'Write a social media post', prompt: 'Help me write a social media post about ' },
-			{ icon: markRaw(Pencil), text: 'Write a poem or story', prompt: 'Help me write a creative piece about ' },
-			{ icon: markRaw(FileText), text: 'Write a business proposal', prompt: 'Help me write a business proposal for ' },
-			{ icon: markRaw(Pencil), text: 'Write a speech', prompt: 'Help me write a speech about ' },
-			{ icon: markRaw(FileText), text: 'Write a resume summary', prompt: 'Help me write a resume summary for ' },
+			{ icon: markRaw(FileText), text: 'Help me write an essay', prompt: 'Help me write an essay about ' },
+			{ icon: markRaw(Briefcase), text: 'Help me write a cover letter', prompt: 'Help me write a cover letter for ' },
+			{ icon: markRaw(BookOpen), text: 'Help me write a bedtime story', prompt: 'Help me write a bedtime story about ' },
+			{ icon: markRaw(Pencil), text: 'Help me write a poem', prompt: 'Help me write a poem about ' },
 		],
 	},
 	{
 		key: 'chat.quick_learn', icon: markRaw(BookOpen), prompt: 'Learn about ',
 		subs: [
-			{ icon: markRaw(Lightbulb), text: 'Time management strategies', prompt: 'Learn about time management strategies' },
-			{ icon: markRaw(TrendingUp), text: 'Stock trading basics', prompt: 'Learn about stock trading basics' },
-			{ icon: markRaw(Briefcase), text: 'Negotiation skills for deals', prompt: 'Learn about negotiation skills for business deals' },
-			{ icon: markRaw(MessageCircle), text: 'Handling difficult conversations', prompt: 'Learn about handling difficult conversations' },
-			{ icon: markRaw(BookOpen), text: 'Machine learning fundamentals', prompt: 'Learn about machine learning fundamentals' },
-			{ icon: markRaw(Globe), text: 'World history highlights', prompt: 'Learn about world history highlights' },
-			{ icon: markRaw(Code), text: 'Web development roadmap', prompt: 'Learn about web development roadmap' },
-			{ icon: markRaw(Brain), text: 'Psychology of habits', prompt: 'Learn about the psychology of habits' },
-			{ icon: markRaw(BarChart2), text: 'Personal finance planning', prompt: 'Learn about personal finance planning' },
+			{ icon: markRaw(Lightbulb), text: 'Learn about time management', prompt: 'Learn about time management' },
+			{ icon: markRaw(TrendingUp), text: 'Learn about stock trading', prompt: 'Learn about stock trading' },
+			{ icon: markRaw(Briefcase), text: 'Learn about negotiation skills for business deals', prompt: 'Learn about negotiation skills for business deals' },
+			{ icon: markRaw(MessageCircle), text: 'Learn about handling difficult conversations', prompt: 'Learn about handling difficult conversations' },
 		],
 	},
 	{
 		key: 'chat.quick_analyze_image', icon: markRaw(ScanSearch), prompt: 'Analyze Image ',
 		subs: [
-			{ icon: markRaw(ScanSearch), text: 'Describe image contents', prompt: 'Describe what you see in this image in detail' },
-			{ icon: markRaw(FileText), text: 'Extract text from image', prompt: 'Extract and organize all text from this image' },
-			{ icon: markRaw(Search), text: 'Identify objects in image', prompt: 'Identify and list all objects in this image' },
-			{ icon: markRaw(TrendingUp), text: 'Analyze chart or graph', prompt: 'Analyze this chart and explain the key insights' },
-			{ icon: markRaw(Paintbrush), text: 'Get design feedback', prompt: 'Provide design feedback on this image' },
-			{ icon: markRaw(ScanSearch), text: 'Compare two images', prompt: 'Compare these images and highlight the differences' },
-			{ icon: markRaw(Code), text: 'Convert UI to code', prompt: 'Convert this UI design image to HTML/CSS code' },
-			{ icon: markRaw(FileText), text: 'Analyze document scan', prompt: 'Analyze this scanned document and extract key info' },
-			{ icon: markRaw(Palette), text: 'Extract color palette', prompt: 'Extract the color palette from this image' },
+			{ icon: markRaw(Globe), text: 'Help me understand where this picture was taken', prompt: 'Help me understand where this picture was taken' },
+			{ icon: markRaw(Search), text: 'Help me identify the plant in this image', prompt: 'Help me identify the plant in this image' },
+			{ icon: markRaw(Lightbulb), text: 'Help me understand the calories in the foods in this image', prompt: 'Help me understand the calories in the foods in this image' },
+			{ icon: markRaw(Palette), text: 'Help me find the color codes used in this image', prompt: 'Help me find the color codes used in this image' },
 		],
 	},
 	{
 		key: 'chat.quick_summarize', icon: markRaw(AlignLeft), prompt: 'Summarize ',
 		subs: [
-			{ icon: markRaw(FileText), text: 'Article into bullet points', prompt: 'Summarize this article in bullet points: ' },
-			{ icon: markRaw(AlignLeft), text: 'Meeting notes concisely', prompt: 'Create concise meeting notes from: ' },
-			{ icon: markRaw(Lightbulb), text: 'Key takeaways from a report', prompt: 'Extract the key takeaways from this report: ' },
-			{ icon: markRaw(BookOpen), text: 'Book into chapter summaries', prompt: 'Summarize this book chapter by chapter: ' },
-			{ icon: markRaw(Briefcase), text: 'Executive summary for a doc', prompt: 'Create an executive summary of: ' },
-			{ icon: markRaw(AlignLeft), text: 'Simplify complex text', prompt: 'Simplify this text for a general audience: ' },
-			{ icon: markRaw(FileText), text: 'Extract action items', prompt: 'Extract all action items from: ' },
-			{ icon: markRaw(MessageCircle), text: 'Summarize a conversation', prompt: 'Summarize this conversation thread: ' },
-			{ icon: markRaw(AlignLeft), text: 'Condense into one paragraph', prompt: 'Condense this into one paragraph: ' },
+			{ icon: markRaw(AlignLeft), text: 'Summarize text in a few sentences', prompt: 'Summarize text in a few sentences: ' },
+			{ icon: markRaw(Lightbulb), text: 'Summarize text by highlighting the key points', prompt: 'Summarize text by highlighting the key points: ' },
+			{ icon: markRaw(FileText), text: 'Summarize text and provide the main takeaway', prompt: 'Summarize text and provide the main takeaway: ' },
+			{ icon: markRaw(AlignLeft), text: 'Summarize text by condensing the most important information', prompt: 'Summarize text by condensing the most important information: ' },
 		],
 	},
 	{
 		key: 'chat.quick_analyze_data', icon: markRaw(TrendingUp), prompt: 'Analyze Data ',
 		subs: [
-			{ icon: markRaw(TrendingUp), text: 'Find trends and patterns', prompt: 'Identify the key trends in this data: ' },
-			{ icon: markRaw(FileText), text: 'Generate analysis report', prompt: 'Generate a data analysis report for: ' },
-			{ icon: markRaw(BarChart2), text: 'Calculate key statistics', prompt: 'Calculate key statistics for: ' },
-			{ icon: markRaw(BarChart3), text: 'Suggest best visualizations', prompt: 'Suggest the best chart types for this data: ' },
-			{ icon: markRaw(Search), text: 'Spot anomalies and outliers', prompt: 'Identify anomalies or outliers in: ' },
-			{ icon: markRaw(TrendingUp), text: 'Forecast future trends', prompt: 'Make predictions based on this data: ' },
-			{ icon: markRaw(Table), text: 'Clean and organize data', prompt: 'Clean and organize this dataset: ' },
-			{ icon: markRaw(BarChart2), text: 'Compare datasets', prompt: 'Compare these two datasets and highlight differences: ' },
-			{ icon: markRaw(FileText), text: 'Create pivot table summary', prompt: 'Create a pivot table summary for: ' },
+			{ icon: markRaw(Search), text: 'Help me find patterns in my data', prompt: 'Help me find patterns in my data: ' },
+			{ icon: markRaw(TrendingUp), text: 'Help me understand trends in my data', prompt: 'Help me understand trends in my data: ' },
+			{ icon: markRaw(FileText), text: 'Help me summarize key insights from my data', prompt: 'Help me summarize key insights from my data: ' },
+			{ icon: markRaw(BarChart3), text: 'Help me create a bar chart', prompt: 'Help me create a bar chart from my data: ' },
 		],
 	},
 	{
 		key: 'chat.quick_brainstorm', icon: markRaw(Brain), prompt: 'Brainstorm ',
 		subs: [
-			{ icon: markRaw(Lightbulb), text: 'Startup ideas in tech', prompt: 'Brainstorm innovative startup ideas in tech' },
-			{ icon: markRaw(Brain), text: 'Marketing campaign concepts', prompt: 'Brainstorm marketing campaign concepts for ' },
-			{ icon: markRaw(Sparkles), text: 'Creative product features', prompt: 'Brainstorm creative product features for ' },
-			{ icon: markRaw(MessageCircle), text: 'Content ideas for a blog', prompt: 'Brainstorm content ideas for a blog about ' },
-			{ icon: markRaw(Lightbulb), text: 'Solutions to a problem', prompt: 'Brainstorm creative solutions for ' },
-			{ icon: markRaw(Brain), text: 'Team building activities', prompt: 'Brainstorm team building activity ideas' },
-			{ icon: markRaw(Sparkles), text: 'Brand naming ideas', prompt: 'Brainstorm brand name ideas for ' },
-			{ icon: markRaw(Lightbulb), text: 'Monetization strategies', prompt: 'Brainstorm monetization strategies for ' },
-			{ icon: markRaw(Brain), text: 'Workshop topic ideas', prompt: 'Brainstorm workshop topic ideas for ' },
+			{ icon: markRaw(Lightbulb), text: 'Brainstorm ideas for a new product or service', prompt: 'Brainstorm ideas for a new product or service' },
+			{ icon: markRaw(Brain), text: 'Brainstorm fun team-building activities', prompt: 'Brainstorm fun team-building activities' },
+			{ icon: markRaw(Sparkles), text: 'Brainstorm ways to improve your productivity', prompt: 'Brainstorm ways to improve your productivity' },
+			{ icon: markRaw(Heart), text: 'Brainstorm unique gift ideas for a loved one', prompt: 'Brainstorm unique gift ideas for a loved one' },
 		],
 	},
 	{
 		key: 'chat.quick_improve_writing', icon: markRaw(Type), prompt: 'Improve writing ',
 		subs: [
-			{ icon: markRaw(Briefcase), text: 'Make it more formal', prompt: 'Rewrite this in a more formal tone: ' },
-			{ icon: markRaw(AlignLeft), text: 'Make it more concise', prompt: 'Make this more concise without losing meaning: ' },
-			{ icon: markRaw(Check), text: 'Fix grammar and spelling', prompt: 'Fix grammar and spelling errors in: ' },
-			{ icon: markRaw(Type), text: 'Make it more persuasive', prompt: 'Rewrite this to be more persuasive: ' },
-			{ icon: markRaw(Lightbulb), text: 'Simplify the language', prompt: 'Simplify the language in: ' },
-			{ icon: markRaw(Pencil), text: 'Add more detail', prompt: 'Expand this with more detail and examples: ' },
-			{ icon: markRaw(MessageCircle), text: 'Make it more casual', prompt: 'Rewrite this in a more casual tone: ' },
-			{ icon: markRaw(Type), text: 'Improve readability', prompt: 'Improve the readability of: ' },
-			{ icon: markRaw(Sparkles), text: 'Make it more engaging', prompt: 'Rewrite this to be more engaging: ' },
+			{ icon: markRaw(AlignLeft), text: 'Improve writing by making it clearer and more concise', prompt: 'Improve writing by making it clearer and more concise: ' },
+			{ icon: markRaw(Sparkles), text: 'Improve writing by adding more engaging details', prompt: 'Improve writing by adding more engaging details: ' },
+			{ icon: markRaw(Type), text: 'Improve writing to enhance the flow and readability', prompt: 'Improve writing to enhance the flow and readability: ' },
+			{ icon: markRaw(Pencil), text: 'Improve writing by simplifying complex sentences', prompt: 'Improve writing by simplifying complex sentences: ' },
 		],
 	},
 	{
 		key: 'chat.quick_translate', icon: markRaw(Languages), prompt: 'Translate ',
 		subs: [
-			{ icon: markRaw(Languages), text: 'text by maintaining the length', prompt: 'Translate text by maintaining the length: ' },
-			{ icon: markRaw(Languages), text: 'text in a natural and local way', prompt: 'Translate text in a natural and local way: ' },
-			{ icon: markRaw(Languages), text: 'text while keeping the original meaning intact', prompt: 'Translate text while keeping the original meaning intact: ' },
-			{ icon: markRaw(Languages), text: 'text into multiple languages', prompt: 'Translate text into multiple languages: ' },
-			{ icon: markRaw(Languages), text: 'text to English', prompt: 'Translate this to English: ' },
-			{ icon: markRaw(Languages), text: 'text to Chinese', prompt: 'Translate this to Chinese: ' },
-			{ icon: markRaw(Languages), text: 'text to Japanese', prompt: 'Translate this to Japanese: ' },
-			{ icon: markRaw(Languages), text: 'text to Spanish', prompt: 'Translate this to Spanish: ' },
-			{ icon: markRaw(Languages), text: 'text to French', prompt: 'Translate this to French: ' },
-		],
-	},
-	{
-		key: 'chat.quick_generate_images', icon: markRaw(ImagePlus), prompt: 'Generate Images ',
-		subs: [
-			{ icon: markRaw(Gem), text: 'Logo design', prompt: 'Generate a logo design for ' },
-			{ icon: markRaw(Monitor), text: 'Social media graphic', prompt: 'Generate a social media graphic for ' },
-			{ icon: markRaw(ShoppingBag), text: 'Product mockup', prompt: 'Generate a product mockup for ' },
-			{ icon: markRaw(Paintbrush), text: 'Digital illustration', prompt: 'Generate an illustration of ' },
-			{ icon: markRaw(ImagePlus), text: 'Website hero image', prompt: 'Generate a hero image for a website about ' },
-			{ icon: markRaw(LayoutGrid), text: 'Icon set design', prompt: 'Generate a set of icons for ' },
-			{ icon: markRaw(Palette), text: 'Poster design', prompt: 'Generate a poster design for ' },
-			{ icon: markRaw(Image), text: 'Background wallpaper', prompt: 'Generate a background wallpaper with ' },
-			{ icon: markRaw(Sparkles), text: 'Character concept art', prompt: 'Generate character concept art for ' },
+			{ icon: markRaw(Languages), text: 'Translate text by maintaining the length', prompt: 'Translate text by maintaining the length: ' },
+			{ icon: markRaw(Languages), text: 'Translate text in a natural and local way', prompt: 'Translate text in a natural and local way: ' },
+			{ icon: markRaw(Languages), text: 'Translate text while keeping the original meaning intact', prompt: 'Translate text while keeping the original meaning intact: ' },
+			{ icon: markRaw(Languages), text: 'Translate text into multiple languages', prompt: 'Translate text into multiple languages: ' },
 		],
 	},
 	{
 		key: 'chat.quick_generate_ideas', icon: markRaw(Lightbulb), prompt: 'Generate Ideas ',
 		subs: [
-			{ icon: markRaw(Lightbulb), text: 'Side project ideas', prompt: 'Generate side project ideas for a developer' },
-			{ icon: markRaw(Smartphone), text: 'App feature concepts', prompt: 'Generate app feature ideas for ' },
-			{ icon: markRaw(Cake), text: 'Gift ideas for someone', prompt: 'Generate gift ideas for ' },
-			{ icon: markRaw(Sparkles), text: 'Creative project names', prompt: 'Generate creative project names for ' },
-			{ icon: markRaw(Presentation), text: 'Workshop topic ideas', prompt: 'Generate workshop topic ideas for ' },
-			{ icon: markRaw(Brain), text: 'Research topic ideas', prompt: 'Generate research topic ideas in ' },
-			{ icon: markRaw(Code), text: 'Open source project ideas', prompt: 'Generate open source project ideas for ' },
-			{ icon: markRaw(Briefcase), text: 'Business model ideas', prompt: 'Generate business model ideas for ' },
-			{ icon: markRaw(Pencil), text: 'Creative writing prompts', prompt: 'Generate creative writing prompts about ' },
+			{ icon: markRaw(Briefcase), text: 'Generate ideas for an innovative business model', prompt: 'Generate ideas for an innovative business model' },
+			{ icon: markRaw(Sparkles), text: 'Generate ideas for a creative marketing campaign', prompt: 'Generate ideas for a creative marketing campaign' },
+			{ icon: markRaw(Mic), text: 'Generate ideas for a podcast episode', prompt: 'Generate ideas for a podcast episode' },
+			{ icon: markRaw(Lightbulb), text: 'Generate ideas for a unique bucket list', prompt: 'Generate ideas for a unique bucket list' },
 		],
 	},
 ]
@@ -464,6 +403,24 @@ const handleSubClick = (sub: QuickChipSub) => {
 	unifiedInputRef.value?.setContent(sub.prompt)
 	unifiedInputRef.value?.focus()
 	activeChip.value = null
+}
+
+const getSubPrefix = (text: string): string => {
+	if (!activeChip.value) return text
+	const prefix = activeChip.value.prompt.trim()
+	if (text.toLowerCase().startsWith(prefix.toLowerCase())) {
+		return text.slice(0, prefix.length)
+	}
+	return text
+}
+
+const getSubSuffix = (text: string): string => {
+	if (!activeChip.value) return ''
+	const prefix = activeChip.value.prompt.trim()
+	if (text.toLowerCase().startsWith(prefix.toLowerCase())) {
+		return text.slice(prefix.length)
+	}
+	return ''
 }
 
 const clearActiveChip = () => {
@@ -1024,14 +981,11 @@ onBeforeUnmount(() => {
 	}
 }
 
-.quick-chip {
-	@apply h-10 px-4 rounded-full border border-[var(--border-main)] flex items-center gap-2;
-	@apply text-[14px] text-[var(--text-primary)] transition-all cursor-pointer;
-	@apply hover:bg-[var(--fill-tsp-white-light)];
-}
-
-.quick-chip-active {
-	@apply bg-[var(--fill-tsp-white-light)] border-[var(--text-tertiary)];
+.quick-chip-card {
+	@apply flex items-center gap-3 px-4 py-3.5 rounded-xl border border-[var(--border-main)];
+	@apply text-[13px] text-[var(--text-secondary)] transition-all cursor-pointer;
+	@apply hover:bg-[var(--fill-tsp-white-light)] hover:border-[var(--text-tertiary)] hover:shadow-sm;
+	@apply hover:text-[var(--text-primary)];
 }
 
 .quick-sub-card {
