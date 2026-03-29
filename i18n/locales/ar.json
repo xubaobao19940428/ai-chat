@@ -44,6 +44,21 @@
 		"image_generation_failed_desc": "تعذر توليد الصورة. قد يكون ذلك بسبب قيود المحتوى أو مشكلة مؤقتة. يرجى المحاولة مرة أخرى.",
 		"drag_drop_title": "أسقط الملفات هنا للرفع",
 		"drag_drop_subtitle": "يدعم الصور والملفات",
+		"try_style_image": "جرب نمطًا على صورة",
+		"try_style_video": "جرب نمطًا على فيديو",
+		"view_more": "عرض المزيد",
+		"start_chat": "بدء الدردشة",
+		"quick_help_write": "ساعدني في الكتابة",
+		"quick_learn": "تعلم عن",
+		"quick_analyze_image": "تحليل الصورة",
+		"quick_summarize": "تلخيص النص",
+		"quick_analyze_data": "تحليل البيانات",
+		"quick_brainstorm": "عصف ذهني",
+		"quick_improve_writing": "تحسين الكتابة",
+		"quick_translate": "ترجمة",
+		"quick_generate_images": "إنشاء صور",
+		"quick_generate_ideas": "إنشاء أفكار",
+		"quick_see_more": "+ عرض المزيد",
 		"loading_messages": "جارٍ تحميل الرسائل...",
 		"thinking": "جارٍ التفكير",
 		"discard_changes": "تجاهل التغييرات؟",
@@ -409,7 +424,8 @@
 		"saving": "جارٍ الحفظ...",
 		"creating": "جارٍ الإنشاء...",
 		"save": "حفظ",
-		"create": "إنشاء"
+		"create": "إنشاء",
+		"desc_placeholder": "مثال: \"التركيز على أفضل ممارسات بايثون\" أو \"الحفاظ على نبرة احترافية\" أو \"توفير مصادر دائمًا للاستنتاجات\"."
 	},
 	"image_generation": {
 		"categories": {
@@ -426,7 +442,9 @@
 			"ui": "UI / واجهة",
 			"uncategorized": "غير مصنف",
 			"favorites": "المفضلة"
-		}
+		},
+		"empty_state": "لم يتم العثور على صور",
+		"empty_state_subtitle": "تحقق من اتصالك أو جرب فئة أخرى"
 	},
 	"video_generation": {
 		"categories": {
@@ -440,7 +458,9 @@
 			"healing": "نمط حياة واسترخاء",
 			"uncategorized": "غير مصنف",
 			"favorites": "المفضلة"
-		}
+		},
+		"empty_state": "لم يتم العثور على مقاطع فيديو",
+		"empty_state_subtitle": "تحقق من اتصالك أو جرب فئة أخرى"
 	},
 	"explore": {
 		"title": "اكتشف روبوتات AI",
@@ -491,5 +511,94 @@
 		"create_failed": "فشل الإنشاء، يرجى المحاولة مرة أخرى",
 		"name_required": "يرجى إدخال اسم الشخصية",
 		"prompt_required": "يرجى إدخال أمر الشخصية"
+	},
+	"library": {
+		"title": "المكتبة",
+		"search_placeholder": "البحث عن الأصول...",
+		"upload": "رفع",
+		"source_all": "جميع المصادر",
+		"source_ai": "مُنشأ بالذكاء الاصطناعي",
+		"source_local": "رفع محلي",
+		"type_all": "جميع الأنواع",
+		"type_image": "صور",
+		"type_video": "فيديو",
+		"type_audio": "صوت",
+		"type_3d": "أصول ثلاثية الأبعاد",
+		"type_document": "مستندات",
+		"selected": "{count} محدد",
+		"clear": "مسح",
+		"download": "تحميل",
+		"delete": "حذف",
+		"uploading": "جاري رفع {count} ملفات...",
+		"upload_complete": "اكتمل الرفع",
+		"upload_failed": "فشل الرفع",
+		"downloading": "جاري تحميل {count} عناصر",
+		"deleted": "تم الحذف بنجاح",
+		"confirm_delete": "هل أنت متأكد من حذف {count} عناصر؟"
+	},
+	"params": {
+		"add_file": "إضافة ملف",
+		"file_count": "{count} ملف(ات)",
+		"attach_desc": "إرفاق ملفات لتعزيز محادثتك.\nارفع أو اختر من الأصول.",
+		"upload_file": "رفع ملف",
+		"select_from_assets": "اختيار من الأصول",
+		"web_search": "بحث الويب",
+		"enable_web_search": "تفعيل بحث الويب",
+		"web_search_desc": "تفعيل بحث الويب والوصول للمعلومات الفورية.",
+		"model_params": "معايير النموذج",
+		"parameters": "المعايير",
+		"reset": "إعادة تعيين",
+		"image_prompt": "صورة موجهة",
+		"prompt_images_count": "{count} صورة موجهة",
+		"image_prompt_desc": "الصور الموجهة تطبق الأسلوب والمحتوى على التوليد.\nارفع أو اختر من الأصول.",
+		"upload": "رفع",
+		"select_asset": "اختيار",
+		"style": "نمط",
+		"outputs": "مخرجات",
+		"duration": "المدة",
+		"reference": "مرجع",
+		"ref_image_desc": "ارفع صورة مرجعية لتوجيه التوليد.",
+		"images": "صور",
+		"ref_images_count": "{count} صور",
+		"ref_images_desc": "ارفع عدة صور مرجعية.",
+		"start_frame": "إطار البداية",
+		"start_frame_desc": "إطار البداية يحدد بداية الفيديو.",
+		"end_frame": "إطار النهاية",
+		"end_frame_desc": "إطار النهاية يحدد نهاية الفيديو.",
+		"video": "فيديو",
+		"video_ready": "فيديو ✓",
+		"ref_video_desc": "ارفع فيديو مرجعي.",
+		"videos": "فيديوهات",
+		"videos_count": "{count} فيديوهات",
+		"ref_videos_desc": "ارفع عدة فيديوهات مرجعية.",
+		"dynamic": {
+			"audio_enabled_desc": "إنشاء صوت",
+			"aspect_ratio_label": "نسبة العرض إلى الارتفاع",
+			"resolution_label": "الوضوح"
+		}
+	},
+	"asset_picker": {
+		"title": "تحديد أصل",
+		"select_multiple": "حدد {type} أو أكثر",
+		"select_single": "حدد {type}",
+		"video": "فيديو",
+		"image": "صورة",
+		"videos": "فيديوهات",
+		"images": "صور",
+		"no_videos": "لا توجد فيديوهات بعد",
+		"no_images": "لا توجد صور بعد",
+		"upload_videos_first": "ارفع فيديوهات أولاً لاستخدامها هنا",
+		"upload_images_first": "ارفع صور أولاً لاستخدامها هنا",
+		"video_label": "فيديو",
+		"loading": "جار التحميل...",
+		"load_more": "تحميل المزيد",
+		"selected_count": "تم تحديد {count}",
+		"no_selection": "بدون تحديد",
+		"confirm": "تأكيد"
+	},
+	"assets_grid": {
+		"no_assets": "لم يتم العثور على أصول",
+		"no_assets_desc": "حاول تعديل فلاتر البحث أو ارفع/قم بإنشاء شيء جديد.",
+		"retry": "إعادة المحاولة"
 	}
 }

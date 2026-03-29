@@ -20,9 +20,9 @@
             <!-- Header -->
             <div class="flex items-center justify-between px-6 py-4 border-b border-[var(--border-main)] shrink-0">
               <div>
-                <h3 class="text-[15px] font-bold text-[var(--text-primary)]">Select asset</h3>
+                <h3 class="text-[15px] font-bold text-[var(--text-primary)]">{{ $t('asset_picker.title') }}</h3>
                 <p class="text-[12px] text-[var(--text-tertiary)] mt-0.5">
-                  {{ multiple ? `Select one or more ${fileType === 'video' ? 'videos' : 'images'}` : `Select ${fileType === 'video' ? 'a video' : 'an image'}` }}
+                  {{ multiple ? $t('asset_picker.select_multiple', { type: fileType === 'video' ? $t('asset_picker.videos') : $t('asset_picker.images') }) : $t('asset_picker.select_single', { type: fileType === 'video' ? $t('asset_picker.video') : $t('asset_picker.image') }) }}
                 </p>
               </div>
               <button @click="$emit('close')"
@@ -44,8 +44,8 @@
                   <VideoIcon v-if="fileType === 'video'" :size="28" class="text-[var(--text-tertiary)]" />
                   <ImageIcon v-else :size="28" class="text-[var(--text-tertiary)]" />
                 </div>
-                <p class="text-[14px] font-medium text-[var(--text-primary)]">{{ fileType === 'video' ? 'No videos yet' : 'No images yet' }}</p>
-                <p class="text-[12px] text-[var(--text-tertiary)]">{{ fileType === 'video' ? 'Upload videos first to use them here' : 'Upload images first to use them here' }}</p>
+                <p class="text-[14px] font-medium text-[var(--text-primary)]">{{ fileType === 'video' ? $t('asset_picker.no_videos') : $t('asset_picker.no_images') }}</p>
+                <p class="text-[12px] text-[var(--text-tertiary)]">{{ fileType === 'video' ? $t('asset_picker.upload_videos_first') : $t('asset_picker.upload_images_first') }}</p>
               </div>
 
               <!-- Grid -->
@@ -59,7 +59,7 @@
                   <!-- Video thumbnail -->
                   <template v-if="fileType === 'video'">
                     <video :src="file.file_url" class="w-full h-full object-cover" muted preload="metadata" />
-                    <div class="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/60 text-white text-[9px] font-bold pointer-events-none">VIDEO</div>
+                    <div class="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/60 text-white text-[9px] font-bold pointer-events-none">{{ $t('asset_picker.video_label') }}</div>
                   </template>
                   <!-- Image thumbnail -->
                   <img v-else :src="file.file_url" :alt="file.file_name"
@@ -86,7 +86,7 @@
                 <button @click="loadMore" :disabled="isLoadingMore"
                   class="px-5 py-2 rounded-full border border-[var(--border-main)] text-[13px] font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2">
                   <Loader2 v-if="isLoadingMore" :size="14" class="animate-spin" />
-                  {{ isLoadingMore ? 'Loading...' : 'Load more' }}
+                  {{ isLoadingMore ? $t('asset_picker.loading') : $t('asset_picker.load_more') }}
                 </button>
               </div>
             </div>
@@ -95,18 +95,18 @@
             <div class="px-6 py-4 border-t border-[var(--border-main)] flex items-center justify-between shrink-0">
               <span class="text-[13px] text-[var(--text-tertiary)]">
                 <template v-if="selectedFiles.length > 0">
-                  {{ selectedFiles.length }} selected
+                  {{ $t('asset_picker.selected_count', { count: selectedFiles.length }) }}
                 </template>
-                <template v-else>No selection</template>
+                <template v-else>{{ $t('asset_picker.no_selection') }}</template>
               </span>
               <div class="flex items-center gap-2">
                 <button @click="$emit('close')"
                   class="px-5 py-2 rounded-full border border-[var(--border-main)] text-[13px] font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-all">
-                  Cancel
+                  {{ $t('common.cancel') }}
                 </button>
                 <button @click="confirm" :disabled="selectedFiles.length === 0"
                   class="px-5 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[13px] font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none">
-                  Confirm
+                  {{ $t('asset_picker.confirm') }}
                 </button>
               </div>
             </div>

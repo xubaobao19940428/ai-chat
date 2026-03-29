@@ -44,6 +44,21 @@
 		"image_generation_failed_desc": "ไม่สามารถสร้างรูปภาพได้ อาจเกิดจากข้อจำกัดด้านเนื้อหาหรือปัญหาชั่วคราว กรุณาลองอีกครั้ง",
 		"drag_drop_title": "วางไฟล์ที่นี่เพื่ออัปโหลด",
 		"drag_drop_subtitle": "รองรับรูปภาพและไฟล์",
+		"try_style_image": "ลองสไตล์บนรูปภาพ",
+		"try_style_video": "ลองสไตล์บนวิดีโอ",
+		"view_more": "ดูเพิ่มเติม",
+		"start_chat": "เริ่มแชท",
+		"quick_help_write": "ช่วยเขียน",
+		"quick_learn": "เรียนรู้เกี่ยวกับ",
+		"quick_analyze_image": "วิเคราะห์รูปภาพ",
+		"quick_summarize": "สรุปข้อความ",
+		"quick_analyze_data": "วิเคราะห์ข้อมูล",
+		"quick_brainstorm": "ระดมความคิด",
+		"quick_improve_writing": "ปรับปรุงการเขียน",
+		"quick_translate": "แปลภาษา",
+		"quick_generate_images": "สร้างรูปภาพ",
+		"quick_generate_ideas": "สร้างไอเดีย",
+		"quick_see_more": "+ ดูเพิ่มเติม",
 		"loading_messages": "กำลังโหลดข้อความ...",
 		"thinking": "กำลังคิด",
 		"discard_changes": "ยกเลิกการเปลี่ยนแปลง?",
@@ -164,7 +179,18 @@
 			"nickname": "ชื่อเล่น",
 			"nickname_placeholder": "MixU ควรเรียกคุณว่าอะไร?",
 			"occupation": "อาชีพ",
-			"occupation_placeholders": ["วิศวกรซอฟต์แวร์", "ผู้จัดการผลิตภัณฑ์", "นักออกแบบ UI", "นักวิทยาศาสตร์ข้อมูล", "นักเขียนอิสระ", "นักศึกษา", "ผู้ประกอบการ", "ฝ่ายการตลาด", "ครูมัธยมปลาย", "นักพัฒนา Full-Stack"],
+			"occupation_placeholders": [
+				"วิศวกรซอฟต์แวร์",
+				"ผู้จัดการผลิตภัณฑ์",
+				"นักออกแบบ UI",
+				"นักวิทยาศาสตร์ข้อมูล",
+				"นักเขียนอิสระ",
+				"นักศึกษา",
+				"ผู้ประกอบการ",
+				"ฝ่ายการตลาด",
+				"ครูมัธยมปลาย",
+				"นักพัฒนา Full-Stack"
+			],
 			"your_details": "รายละเอียดของคุณ",
 			"your_details_placeholder": "ความสนใจ ค่านิยม หรือการตั้งค่าที่ต้องการให้จดจำ",
 			"memory": "ความทรงจำ",
@@ -187,35 +213,95 @@
 			"connector_search": "ค้นหาตัวเชื่อมต่อ",
 			"connector_search_desc": "ให้ MixU ค้นหาแหล่งที่เชื่อมต่อโดยอัตโนมัติเพื่อหาคำตอบ",
 			"style_tones": {
-				"default": { "title": "ค่าเริ่มต้น", "desc": "สไตล์และโทนที่ตั้งไว้ล่วงหน้า" },
-				"professional": { "title": "มืออาชีพและน่าเชื่อถือ", "desc": "ประณีตบรรจง" },
-				"friendly": { "title": "เป็นมิตรและเข้าถึงง่าย", "desc": "อบอุ่นและพูดคุยเก่ง" },
-				"direct": { "title": "ตรงไปตรงมาและมองโลกในแง่ดี", "desc": "ตรงประเด็นและมองโลกในแง่ดี" },
-				"creative": { "title": "จินตนาการสูง", "desc": "แฟนตาซีสนุกสนาน" },
-				"practical": { "title": "มีประสิทธิภาพและเน้นปฏิบัติ", "desc": "กระชับและตรงประเด็น" },
-				"tech": { "title": "สายเทค", "desc": "นักสำรวจผู้หลงใหล" },
-				"sarcastic": { "title": "เสียดสีแสบสัน", "desc": "แหลมคมและมีไหวพริบ" }
+				"default": {
+					"title": "ค่าเริ่มต้น",
+					"desc": "สไตล์และโทนที่ตั้งไว้ล่วงหน้า"
+				},
+				"professional": {
+					"title": "มืออาชีพและน่าเชื่อถือ",
+					"desc": "ประณีตบรรจง"
+				},
+				"friendly": {
+					"title": "เป็นมิตรและเข้าถึงง่าย",
+					"desc": "อบอุ่นและพูดคุยเก่ง"
+				},
+				"direct": {
+					"title": "ตรงไปตรงมาและมองโลกในแง่ดี",
+					"desc": "ตรงประเด็นและมองโลกในแง่ดี"
+				},
+				"creative": {
+					"title": "จินตนาการสูง",
+					"desc": "แฟนตาซีสนุกสนาน"
+				},
+				"practical": {
+					"title": "มีประสิทธิภาพและเน้นปฏิบัติ",
+					"desc": "กระชับและตรงประเด็น"
+				},
+				"tech": {
+					"title": "สายเทค",
+					"desc": "นักสำรวจผู้หลงใหล"
+				},
+				"sarcastic": {
+					"title": "เสียดสีแสบสัน",
+					"desc": "แหลมคมและมีไหวพริบ"
+				}
 			},
 			"characteristics_options": {
 				"gentle": {
-					"increase": { "title": "เพิ่ม", "desc": "เป็นมิตรมากขึ้น ใกล้ชิดมากขึ้น" },
-					"default": { "title": "ค่าเริ่มต้น", "desc": "" },
-					"decrease": { "title": "ลด", "desc": "เป็นมืออาชีพมากขึ้น เน้นข้อเท็จจริง" }
+					"increase": {
+						"title": "เพิ่ม",
+						"desc": "เป็นมิตรมากขึ้น ใกล้ชิดมากขึ้น"
+					},
+					"default": {
+						"title": "ค่าเริ่มต้น",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "ลด",
+						"desc": "เป็นมืออาชีพมากขึ้น เน้นข้อเท็จจริง"
+					}
 				},
 				"passionate": {
-					"increase": { "title": "เพิ่ม", "desc": "มีพลังมากขึ้น" },
-					"default": { "title": "ค่าเริ่มต้น", "desc": "" },
-					"decrease": { "title": "ลด", "desc": "เย็นลงและเป็นกลาง" }
+					"increase": {
+						"title": "เพิ่ม",
+						"desc": "มีพลังมากขึ้น"
+					},
+					"default": {
+						"title": "ค่าเริ่มต้น",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "ลด",
+						"desc": "เย็นลงและเป็นกลาง"
+					}
 				},
 				"titles_lists": {
-					"increase": { "title": "เพิ่ม", "desc": "ใช้รูปแบบที่ชัดเจนและโครงสร้างรายการ" },
-					"default": { "title": "ค่าเริ่มต้น", "desc": "" },
-					"decrease": { "title": "ลด", "desc": "ใช้ข้อความย่อหน้ามากขึ้น ลดโครงสร้างรายการ" }
+					"increase": {
+						"title": "เพิ่ม",
+						"desc": "ใช้รูปแบบที่ชัดเจนและโครงสร้างรายการ"
+					},
+					"default": {
+						"title": "ค่าเริ่มต้น",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "ลด",
+						"desc": "ใช้ข้อความย่อหน้ามากขึ้น ลดโครงสร้างรายการ"
+					}
 				},
 				"emojis": {
-					"increase": { "title": "เพิ่ม", "desc": "ใช้อิโมจิมากขึ้น" },
-					"default": { "title": "ค่าเริ่มต้น", "desc": "" },
-					"decrease": { "title": "ลด", "desc": "ใช้อิโมจิให้น้อยที่สุด" }
+					"increase": {
+						"title": "เพิ่ม",
+						"desc": "ใช้อิโมจิมากขึ้น"
+					},
+					"default": {
+						"title": "ค่าเริ่มต้น",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "ลด",
+						"desc": "ใช้อิโมจิให้น้อยที่สุด"
+					}
 				}
 			}
 		},
@@ -338,7 +424,8 @@
 		"saving": "กำลังบันทึก...",
 		"creating": "กำลังสร้าง...",
 		"save": "บันทึก",
-		"create": "สร้าง"
+		"create": "สร้าง",
+		"desc_placeholder": "เช่น \"เน้นแนวทางปฏิบัติที่ดีที่สุดของ Python\", \"รักษาโทนเสียงอย่างมืออาชีพ\" หรือ \"ให้อ้างอิงเสมอ\""
 	},
 	"image_generation": {
 		"categories": {
@@ -355,7 +442,9 @@
 			"ui": "UI / อินเทอร์เฟซ",
 			"uncategorized": "ไม่มีหมวดหมู่",
 			"favorites": "รายการโปรด"
-		}
+		},
+		"empty_state": "ไม่พบรูปภาพ",
+		"empty_state_subtitle": "ตรวจสอบการเชื่อมต่อของคุณ หรือลองหมวดหมู่อื่น"
 	},
 	"video_generation": {
 		"categories": {
@@ -369,7 +458,9 @@
 			"healing": "ไลฟ์สไตล์และฮีลใจ",
 			"uncategorized": "ไม่มีหมวดหมู่",
 			"favorites": "รายการโปรด"
-		}
+		},
+		"empty_state": "ไม่พบวิดีโอ",
+		"empty_state_subtitle": "ตรวจสอบการเชื่อมต่อของคุณ หรือลองหมวดหมู่อื่น"
 	},
 	"explore": {
 		"title": "ค้นพบบอท AI",
@@ -420,5 +511,94 @@
 		"create_failed": "สร้างไม่สำเร็จ กรุณาลองอีกครั้ง",
 		"name_required": "กรุณากรอกชื่อตัวละคร",
 		"prompt_required": "กรุณากรอกพรอมต์ตัวละคร"
+	},
+	"library": {
+		"title": "ไลบรารี",
+		"search_placeholder": "ค้นหาทรัพยากร...",
+		"upload": "อัปโหลด",
+		"source_all": "แหล่งทั้งหมด",
+		"source_ai": "สร้างโดย AI",
+		"source_local": "อัปโหลดในเครื่อง",
+		"type_all": "ทุกประเภท",
+		"type_image": "รูปภาพ",
+		"type_video": "วิดีโอ",
+		"type_audio": "เสียง",
+		"type_3d": "สินทรัพย์ 3D",
+		"type_document": "เอกสาร",
+		"selected": "เลือก {count} รายการ",
+		"clear": "ล้าง",
+		"download": "ดาวน์โหลด",
+		"delete": "ลบ",
+		"uploading": "กำลังอัปโหลด {count} ไฟล์...",
+		"upload_complete": "อัปโหลดเสร็จสิ้น",
+		"upload_failed": "อัปโหลดล้มเหลว",
+		"downloading": "กำลังดาวน์โหลด {count} รายการ",
+		"deleted": "ลบสำเร็จ",
+		"confirm_delete": "คุณแน่ใจหรือว่าต้องการลบ {count} รายการ?"
+	},
+	"params": {
+		"add_file": "Add file",
+		"file_count": "{count} file | {count} files",
+		"attach_desc": "Attach files to enhance your conversation.\nUpload or select from assets.",
+		"upload_file": "Upload file",
+		"select_from_assets": "Select from assets",
+		"web_search": "Web Search",
+		"enable_web_search": "Enable Web Search",
+		"web_search_desc": "Enable web search and real-time information access.",
+		"model_params": "Model Parameters",
+		"parameters": "Parameters",
+		"reset": "Reset",
+		"image_prompt": "Image prompt",
+		"prompt_images_count": "{count} prompt image | {count} prompt images",
+		"image_prompt_desc": "Image prompts apply style and content to your generation.\nUpload or select from assets.",
+		"upload": "Upload",
+		"select_asset": "Select asset",
+		"style": "Style",
+		"outputs": "Outputs",
+		"duration": "Duration",
+		"reference": "Reference",
+		"ref_image_desc": "Upload a reference image to guide generation.",
+		"images": "Images",
+		"ref_images_count": "{count} images",
+		"ref_images_desc": "Upload multiple reference images.",
+		"start_frame": "Start frame",
+		"start_frame_desc": "Start frame anchors the opening of your video.",
+		"end_frame": "End frame",
+		"end_frame_desc": "End frame anchors the ending of your video.",
+		"video": "Video",
+		"video_ready": "Video ✓",
+		"ref_video_desc": "Upload a reference video.",
+		"videos": "Videos",
+		"videos_count": "{count} videos",
+		"ref_videos_desc": "Upload multiple reference videos.",
+		"dynamic": {
+			"audio_enabled_desc": "สร้างเสียงหรือไม่",
+			"aspect_ratio_label": "อัตราส่วนภาพ",
+			"resolution_label": "ความละเอียด"
+		}
+	},
+	"asset_picker": {
+		"title": "เลือกแอสเซ็ต",
+		"select_multiple": "เลือก {type} ตั้งแต่หนึ่งรายการขึ้นไป",
+		"select_single": "เลือก {type}",
+		"video": "วิดีโอ",
+		"image": "รูปภาพ",
+		"videos": "วิดีโอ",
+		"images": "รูปภาพ",
+		"no_videos": "ยังไม่มีวิดีโอ",
+		"no_images": "ยังไม่มีรูปภาพ",
+		"upload_videos_first": "อัปโหลดวิดีโอก่อนเพื่อนำมาใช้ที่นี่",
+		"upload_images_first": "อัปโหลดรูปภาพก่อนเพื่อนำมาใช้ที่นี่",
+		"video_label": "วิดีโอ",
+		"loading": "กำลังโหลด...",
+		"load_more": "โหลดเพิ่ม",
+		"selected_count": "เลือกแล้ว {count} รายการ",
+		"no_selection": "ไม่ได้เลือก",
+		"confirm": "ยืนยัน"
+	},
+	"assets_grid": {
+		"no_assets": "ไม่พบแอสเซ็ต",
+		"no_assets_desc": "ลองปรับฟิลเตอร์ หรืออัปโหลด/สร้างใหม่",
+		"retry": "ลองใหม่"
 	}
 }

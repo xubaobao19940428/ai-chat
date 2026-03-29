@@ -15,8 +15,8 @@
 			</template>
 			<ImagePlus v-else :size="14" class="text-[var(--text-secondary)]" />
 			<span class="unified-pill-text">
-				{{ mediaFiles.length > 0 ? `${mediaFiles.length} prompt image${mediaFiles.length > 1 ? 's' : ''}` :
-					'Image prompt'
+				{{ mediaFiles.length > 0 ? $t('params.prompt_images_count', { count: mediaFiles.length }) :
+					$t('params.image_prompt')
 				}}
 			</span>
 		</button>
@@ -30,17 +30,16 @@
 				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[280px]">
 				<div class="unified-popover flex flex-col gap-4">
 					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
-						Image prompts apply style and content to your generation.
-						Upload or select from assets.
+						{{ $t('params.image_prompt_desc') }}
 					</p>
 					<div class="flex flex-col gap-2">
 						<button @click="$emit('trigger-upload')" class="unified-upload-btn-primary">
 							<Plus :size="14" stroke-width="3" />
-							Upload
+							{{ $t('params.upload') }}
 						</button>
 						<button @click="$emit('select-asset')" class="unified-upload-btn-secondary">
 							<ImagePlus :size="14" />
-							Select asset
+							{{ $t('params.select_asset') }}
 						</button>
 					</div>
 				</div>
@@ -113,7 +112,7 @@
 				<Palette :size="14" class="text-[var(--text-secondary)]" />
 				<span class="unified-pill-text">
 					{{ getParamValue(field.key, field.default) === 'No Style' || !getParamValue(field.key,
-						field.default) ? 'Style' : getParamValue(field.key, field.default) }}
+						field.default) ? $t('params.style') : getParamValue(field.key, field.default) }}
 				</span>
 			</button>
 			<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1 opacity-0"
@@ -157,7 +156,7 @@
 					<div class="unified-popover p-3.5">
 						<p
 							class="text-[10px] font-bold text-[var(--text-tertiary)] mb-2.5 px-1 uppercase tracking-widest text-center">
-							{{ field.label || field.key.replace(/_/g, ' ') }}</p>
+							{{ $te('params.dynamic.' + field.key + '_label') ? $t('params.dynamic.' + field.key + '_label') : (field.label || field.key.replace(/_/g, ' ')) }}</p>
 						<div class="flex flex-col gap-1 max-h-[220px] overflow-y-auto custom-scrollbar">
 							<button v-for="opt in field.options" :key="opt"
 								@click="fields.setParamAndClose(field.key, opt)"
@@ -187,7 +186,7 @@
 		<button @mouseenter="fields.openDropdown(field.key)" class="unified-pill"
 			:class="fields.activeDropdown.value === field.key ? 'unified-pill-active' : ''">
 			<Monitor :size="14" class="text-[var(--text-secondary)]" />
-			<span class="unified-pill-text">{{ getParamValue(field.key, field.default) }} Outputs</span>
+			<span class="unified-pill-text">{{ getParamValue(field.key, field.default) }} {{ $t('params.outputs') }}</span>
 		</button>
 		<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1 opacity-0"
 			enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-100 ease-in"
@@ -198,7 +197,7 @@
 				<div class="unified-popover p-3">
 					<p
 						class="text-[11px] font-bold text-[var(--text-tertiary)] mb-2 px-1 uppercase tracking-widest text-center">
-						{{ field.label || 'Outputs' }}</p>
+						{{ field.label || $t('params.outputs') }}</p>
 					<div class="flex flex-wrap gap-1.5 justify-center">
 						<button v-for="n in field.max - field.min + 1" :key="n"
 							@click="fields.setParamAndClose(field.key, n + field.min - 1)"
@@ -214,7 +213,7 @@
 
 	<!-- Dynamic Boolean Fields (audio_enabled, etc.) -->
 	<div v-for="field in fields.dynamicBooleanFields.value" :key="field.key" class="relative" @mouseleave="fields.scheduleCloseDropdown()">
-		<Tooltip :text="field.description || field.key">
+		<Tooltip :text="$te('params.dynamic.' + field.key + '_desc') ? $t('params.dynamic.' + field.key + '_desc') : (field.description || field.key)">
 			<button @mouseenter="fields.openDropdown(field.key)"
 				class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors relative"
 				:class="{ 'text-[var(--text-primary)]': getParamValue(field.key, field.default), 'bg-[var(--bg-hover)]': true }">
@@ -233,11 +232,11 @@
 			<div v-if="fields.activeDropdown.value === field.key"
 				@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 				class="absolute bottom-full left-0 mb-3 z-50 w-[280px] max-w-[calc(100vw-2rem)] bg-[var(--bg-main)] rounded-2xl shadow-lg border border-[var(--border-light)] p-4 cursor-default">
-				<div class="text-[14px] font-semibold text-[var(--text-primary)] mb-3">{{ field.description || field.key }}</div>
+				<div class="text-[14px] font-semibold text-[var(--text-primary)] mb-3">{{ $te('params.dynamic.' + field.key + '_desc') ? $t('params.dynamic.' + field.key + '_desc') : (field.description || field.key) }}</div>
 				<div class="h-[1px] bg-[var(--border-light)] -mx-4 mb-3"></div>
 				<div class="flex items-start justify-between">
 					<div class="pr-4">
-						<div class="text-[13px] font-medium text-[var(--text-primary)]">{{ field.description || field.key }}</div>
+						<div class="text-[13px] font-medium text-[var(--text-primary)]">{{ $te('params.dynamic.' + field.key + '_desc') ? $t('params.dynamic.' + field.key + '_desc') : (field.description || field.key) }}</div>
 					</div>
 					<Switch :model-value="!!getParamValue(field.key, field.default)"
 						@update:model-value="fields.setParam(field.key, $event)"

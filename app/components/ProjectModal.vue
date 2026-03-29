@@ -80,7 +80,7 @@
 									<label for="projectDesc"
 										class="block text-sm font-bold text-[var(--text-primary)] mb-2">{{ $t('project.instructions') }}</label>
 									<textarea id="projectDesc" v-model="projectDesc" rows="3"
-										placeholder="e.g. &quot;Focus on Python best practices&quot;, &quot;Maintain a professional tone&quot;, or &quot;Always provide sources for important conclusions&quot;."
+										:placeholder="$t('project.desc_placeholder')"
 										class="block w-full rounded-[10px] border border-[var(--border-main)] bg-[var(--fill-tsp-white-main)] py-2 px-3 text-[var(--text-primary)] placeholder:text-[var(--text-disable)] focus:border-[var(--border-blue)] outline-none sm:text-sm transition-all resize-none font-medium custom-scrollbar"></textarea>
 								</div>
 							</div>

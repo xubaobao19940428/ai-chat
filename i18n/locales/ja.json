@@ -40,9 +40,30 @@
 		"retry": "再試行",
 		"scroll_to_bottom": "一番下にスクロール",
 		"connection_failed": "接続に失敗しました。再試行してください。",
+		"image_generation_failed_title": "生成に失敗しました",
+		"image_generation_failed_desc": "画像を生成できませんでした。コンテンツの制限または一時的な問題が原因の可能性があります。もう一度お試しください。",
 		"drag_drop_title": "ファイルをここにドロップしてアップロード",
 		"drag_drop_subtitle": "画像とファイルに対応",
+		"try_style_image": "画像スタイルを試す",
+		"try_style_video": "動画スタイルを試す",
+		"view_more": "もっと見る",
+		"start_chat": "チャットを開始",
+		"quick_help_write": "文章作成を手伝う",
+		"quick_learn": "学ぶ",
+		"quick_analyze_image": "画像を分析",
+		"quick_summarize": "テキストを要約",
+		"quick_analyze_data": "データを分析",
+		"quick_brainstorm": "ブレインストーミング",
+		"quick_improve_writing": "文章を改善",
+		"quick_translate": "翻訳",
+		"quick_generate_images": "画像を生成",
+		"quick_generate_ideas": "アイデアを生成",
+		"quick_see_more": "+ もっと見る",
 		"loading_messages": "メッセージを読み込み中...",
+		"thinking": "考え中",
+		"discard_changes": "変更を破棄しますか？",
+		"discard_changes_message": "未保存の編集があります。本当に破棄しますか？",
+		"discard": "破棄",
 		"reuse_params": "パラメータを再利用",
 		"download_all": "すべてダウンロード",
 		"generating_video": "動画を生成中...",
@@ -143,7 +164,18 @@
 			"nickname": "ニックネーム",
 			"nickname_placeholder": "MixUにどう呼ばれたいですか？",
 			"occupation": "職業",
-			"occupation_placeholders": ["ソフトウェアエンジニア", "プロダクトマネージャー", "UIデザイナー", "データサイエンティスト", "フリーランスライター", "大学生", "起業家", "マーケティング", "高校教師", "フルスタック開発者"],
+			"occupation_placeholders": [
+				"ソフトウェアエンジニア",
+				"プロダクトマネージャー",
+				"UIデザイナー",
+				"データサイエンティスト",
+				"フリーランスライター",
+				"大学生",
+				"起業家",
+				"マーケティング",
+				"高校教師",
+				"フルスタック開発者"
+			],
 			"your_details": "あなたの詳細",
 			"your_details_placeholder": "覚えておくべき興味、価値観、好み",
 			"memory": "メモリ",
@@ -201,24 +233,60 @@
 			},
 			"characteristics_options": {
 				"gentle": {
-					"increase": { "title": "強化", "desc": "より親しみやすく" },
-					"default": { "title": "デフォルト", "desc": "" },
-					"decrease": { "title": "抑制", "desc": "よりプロフェッショナルで事実重視" }
+					"increase": {
+						"title": "強化",
+						"desc": "より親しみやすく"
+					},
+					"default": {
+						"title": "デフォルト",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "抑制",
+						"desc": "よりプロフェッショナルで事実重視"
+					}
 				},
 				"passionate": {
-					"increase": { "title": "強化", "desc": "よりエネルギッシュに" },
-					"default": { "title": "デフォルト", "desc": "" },
-					"decrease": { "title": "抑制", "desc": "よりクールで中立的に" }
+					"increase": {
+						"title": "強化",
+						"desc": "よりエネルギッシュに"
+					},
+					"default": {
+						"title": "デフォルト",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "抑制",
+						"desc": "よりクールで中立的に"
+					}
 				},
 				"titles_lists": {
-					"increase": { "title": "強化", "desc": "明確なフォーマットとリスト構造を使用" },
-					"default": { "title": "デフォルト", "desc": "" },
-					"decrease": { "title": "抑制", "desc": "段落テキストを多く、リスト構造を少なく" }
+					"increase": {
+						"title": "強化",
+						"desc": "明確なフォーマットとリスト構造を使用"
+					},
+					"default": {
+						"title": "デフォルト",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "抑制",
+						"desc": "段落テキストを多く、リスト構造を少なく"
+					}
 				},
 				"emojis": {
-					"increase": { "title": "強化", "desc": "絵文字をもっと使う" },
-					"default": { "title": "デフォルト", "desc": "" },
-					"decrease": { "title": "抑制", "desc": "絵文字をできるだけ少なく" }
+					"increase": {
+						"title": "強化",
+						"desc": "絵文字をもっと使う"
+					},
+					"default": {
+						"title": "デフォルト",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "抑制",
+						"desc": "絵文字をできるだけ少なく"
+					}
 				}
 			}
 		},
@@ -341,7 +409,8 @@
 		"saving": "保存中...",
 		"creating": "作成中...",
 		"save": "保存",
-		"create": "作成"
+		"create": "作成",
+		"desc_placeholder": "例: 「Pythonのベストプラクティスに集中する」、「専門的なトーンを維持する」、または「重要な結論には必ず情報源を提供する」。"
 	},
 	"image_generation": {
 		"categories": {
@@ -358,7 +427,9 @@
 			"ui": "UI/インターフェース",
 			"uncategorized": "未分類",
 			"favorites": "お気に入り"
-		}
+		},
+		"empty_state": "画像が見つかりません",
+		"empty_state_subtitle": "接続を確認するか、別のカテゴリをお試しください"
 	},
 	"video_generation": {
 		"categories": {
@@ -372,7 +443,9 @@
 			"healing": "癒し・日常",
 			"uncategorized": "未分類",
 			"favorites": "お気に入り"
-		}
+		},
+		"empty_state": "動画が見つかりません",
+		"empty_state_subtitle": "接続を確認するか、別のカテゴリをお試しください"
 	},
 	"explore": {
 		"title": "AIボットを探索",
@@ -423,5 +496,94 @@
 		"create_failed": "作成に失敗しました。もう一度お試しください",
 		"name_required": "キャラクター名を入力してください",
 		"prompt_required": "キャラクタープロンプトを入力してください"
+	},
+	"library": {
+		"title": "ライブラリ",
+		"search_placeholder": "素材を検索...",
+		"upload": "アップロード",
+		"source_all": "すべてのソース",
+		"source_ai": "AI生成",
+		"source_local": "ローカルアップロード",
+		"type_all": "すべてのタイプ",
+		"type_image": "画像",
+		"type_video": "動画",
+		"type_audio": "オーディオ",
+		"type_3d": "3Dアセット",
+		"type_document": "ドキュメント",
+		"selected": "{count}件選択中",
+		"clear": "クリア",
+		"download": "ダウンロード",
+		"delete": "削除",
+		"uploading": "{count}個のファイルをアップロード中...",
+		"upload_complete": "アップロード完了",
+		"upload_failed": "アップロード失敗",
+		"downloading": "{count}件をダウンロード中",
+		"deleted": "削除しました",
+		"confirm_delete": "{count}件のアイテムを削除しますか？"
+	},
+	"params": {
+		"add_file": "ファイル追加",
+		"file_count": "{count} ファイル",
+		"attach_desc": "会話を強化するためにファイルを添付。\nアップロードまたはアセットから選択。",
+		"upload_file": "ファイルをアップロード",
+		"select_from_assets": "アセットから選択",
+		"web_search": "ウェブ検索",
+		"enable_web_search": "ウェブ検索を有効にする",
+		"web_search_desc": "ウェブ検索とリアルタイム情報へのアクセスを有効にします。",
+		"model_params": "モデルパラメータ",
+		"parameters": "パラメータ",
+		"reset": "リセット",
+		"image_prompt": "画像プロンプト",
+		"prompt_images_count": "{count} 枚のプロンプト画像",
+		"image_prompt_desc": "画像プロンプトはスタイルとコンテンツを生成に適用します。\nアップロードまたはアセットから選択。",
+		"upload": "アップロード",
+		"select_asset": "アセット選択",
+		"style": "スタイル",
+		"outputs": "出力数",
+		"duration": "長さ",
+		"reference": "参照画像",
+		"ref_image_desc": "生成を導くための参照画像をアップロード。",
+		"images": "画像",
+		"ref_images_count": "{count} 枚の画像",
+		"ref_images_desc": "複数の参照画像をアップロード。",
+		"start_frame": "開始フレーム",
+		"start_frame_desc": "開始フレームは動画の冒頭を決定します。",
+		"end_frame": "終了フレーム",
+		"end_frame_desc": "終了フレームは動画の末尾を決定します。",
+		"video": "動画",
+		"video_ready": "動画 ✓",
+		"ref_video_desc": "参照動画をアップロード。",
+		"videos": "動画",
+		"videos_count": "{count} 本の動画",
+		"ref_videos_desc": "複数の参照動画をアップロード。",
+		"dynamic": {
+			"audio_enabled_desc": "音声を生成するかどうか",
+			"aspect_ratio_label": "アスペクト比",
+			"resolution_label": "解像度"
+		}
+	},
+	"asset_picker": {
+		"title": "アセットの選択",
+		"select_multiple": "{type}を1つ以上選択",
+		"select_single": "{type}を選択",
+		"video": "動画",
+		"image": "画像",
+		"videos": "動画",
+		"images": "画像",
+		"no_videos": "動画がありません",
+		"no_images": "画像がありません",
+		"upload_videos_first": "ここで使用するには、まず動画をアップロードしてください",
+		"upload_images_first": "ここで使用するには、まず画像をアップロードしてください",
+		"video_label": "動画",
+		"loading": "読み込み中...",
+		"load_more": "さらに読み込む",
+		"selected_count": "{count} 選択済み",
+		"no_selection": "選択なし",
+		"confirm": "確認"
+	},
+	"assets_grid": {
+		"no_assets": "アセットが見つかりません",
+		"no_assets_desc": "フィルターを調整するか、新しくアップロード/生成してください。",
+		"retry": "再試行"
 	}
 }

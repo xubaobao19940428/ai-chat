@@ -44,6 +44,21 @@
 		"image_generation_failed_desc": "Tidak dapat menjana gambar. Ini mungkin disebabkan oleh sekatan kandungan atau masalah sementara. Sila cuba lagi.",
 		"drag_drop_title": "Lepaskan fail di sini untuk memuat naik",
 		"drag_drop_subtitle": "Menyokong gambar dan fail",
+		"try_style_image": "Cuba gaya pada imej",
+		"try_style_video": "Cuba gaya pada video",
+		"view_more": "Lihat lagi",
+		"start_chat": "Mulakan Sembang",
+		"quick_help_write": "Bantu saya menulis",
+		"quick_learn": "Belajar tentang",
+		"quick_analyze_image": "Analisis Imej",
+		"quick_summarize": "Ringkaskan teks",
+		"quick_analyze_data": "Analisis Data",
+		"quick_brainstorm": "Sumbangsaran",
+		"quick_improve_writing": "Perbaiki penulisan",
+		"quick_translate": "Terjemah",
+		"quick_generate_images": "Jana Imej",
+		"quick_generate_ideas": "Jana Idea",
+		"quick_see_more": "+ Lihat Lagi",
 		"loading_messages": "Memuatkan mesej...",
 		"thinking": "Sedang berfikir",
 		"discard_changes": "Buang perubahan?",
@@ -409,7 +424,8 @@
 		"saving": "Menyimpan...",
 		"creating": "Mencipta...",
 		"save": "Simpan",
-		"create": "Cipta"
+		"create": "Cipta",
+		"desc_placeholder": "cth. \"Fokus pada amalan terbaik Python\", \"Kekalkan nada profesional\" atau \"Sentiasa sediakan sumber\"."
 	},
 	"image_generation": {
 		"categories": {
@@ -426,7 +442,9 @@
 			"ui": "UI / Antara Muka",
 			"uncategorized": "Tidak Dikategorikan",
 			"favorites": "Kegemaran"
-		}
+		},
+		"empty_state": "Tiada imej ditemui",
+		"empty_state_subtitle": "Periksa sambungan anda atau cuba kategori lain"
 	},
 	"video_generation": {
 		"categories": {
@@ -440,7 +458,9 @@
 			"healing": "Gaya Hidup & Penyembuhan",
 			"uncategorized": "Tidak Dikategorikan",
 			"favorites": "Kegemaran"
-		}
+		},
+		"empty_state": "Tiada video ditemui",
+		"empty_state_subtitle": "Periksa sambungan anda atau cuba kategori lain"
 	},
 	"explore": {
 		"title": "Terokai Bot AI",
@@ -491,5 +511,94 @@
 		"create_failed": "Penciptaan gagal, sila cuba lagi",
 		"name_required": "Sila masukkan nama watak",
 		"prompt_required": "Sila masukkan arahan watak"
+	},
+	"library": {
+		"title": "Perpustakaan",
+		"search_placeholder": "Cari aset...",
+		"upload": "Muat naik",
+		"source_all": "Semua Sumber",
+		"source_ai": "Dijana AI",
+		"source_local": "Muat Naik Tempatan",
+		"type_all": "Semua Jenis",
+		"type_image": "Imej",
+		"type_video": "Video",
+		"type_audio": "Audio",
+		"type_3d": "Aset 3D",
+		"type_document": "Dokumen",
+		"selected": "{count} dipilih",
+		"clear": "Kosongkan",
+		"download": "Muat turun",
+		"delete": "Padam",
+		"uploading": "Memuat naik {count} fail...",
+		"upload_complete": "Muat naik selesai",
+		"upload_failed": "Muat naik gagal",
+		"downloading": "Memuat turun {count} item",
+		"deleted": "Berjaya dipadam",
+		"confirm_delete": "Adakah anda pasti mahu memadamkan {count} item?"
+	},
+	"params": {
+		"add_file": "Add file",
+		"file_count": "{count} file | {count} files",
+		"attach_desc": "Attach files to enhance your conversation.\nUpload or select from assets.",
+		"upload_file": "Upload file",
+		"select_from_assets": "Select from assets",
+		"web_search": "Web Search",
+		"enable_web_search": "Enable Web Search",
+		"web_search_desc": "Enable web search and real-time information access.",
+		"model_params": "Model Parameters",
+		"parameters": "Parameters",
+		"reset": "Reset",
+		"image_prompt": "Image prompt",
+		"prompt_images_count": "{count} prompt image | {count} prompt images",
+		"image_prompt_desc": "Image prompts apply style and content to your generation.\nUpload or select from assets.",
+		"upload": "Upload",
+		"select_asset": "Select asset",
+		"style": "Style",
+		"outputs": "Outputs",
+		"duration": "Duration",
+		"reference": "Reference",
+		"ref_image_desc": "Upload a reference image to guide generation.",
+		"images": "Images",
+		"ref_images_count": "{count} images",
+		"ref_images_desc": "Upload multiple reference images.",
+		"start_frame": "Start frame",
+		"start_frame_desc": "Start frame anchors the opening of your video.",
+		"end_frame": "End frame",
+		"end_frame_desc": "End frame anchors the ending of your video.",
+		"video": "Video",
+		"video_ready": "Video ✓",
+		"ref_video_desc": "Upload a reference video.",
+		"videos": "Videos",
+		"videos_count": "{count} videos",
+		"ref_videos_desc": "Upload multiple reference videos.",
+		"dynamic": {
+			"audio_enabled_desc": "Sama ada untuk menjana audio",
+			"aspect_ratio_label": "Nisbah Aspek",
+			"resolution_label": "Resolusi"
+		}
+	},
+	"asset_picker": {
+		"title": "Pilih aset",
+		"select_multiple": "Pilih satu atau lebih {type}",
+		"select_single": "Pilih satu {type}",
+		"video": "video",
+		"image": "imej",
+		"videos": "video",
+		"images": "imej",
+		"no_videos": "Tiada video lagi",
+		"no_images": "Tiada imej lagi",
+		"upload_videos_first": "Muat naik video dahulu untuk menggunakannya di sini",
+		"upload_images_first": "Muat naik imej dahulu untuk menggunakannya di sini",
+		"video_label": "VIDEO",
+		"loading": "Memuatkan...",
+		"load_more": "Muat lagi",
+		"selected_count": "{count} dipilih",
+		"no_selection": "Tiada pilihan",
+		"confirm": "Sahkan"
+	},
+	"assets_grid": {
+		"no_assets": "Tiada aset ditemui",
+		"no_assets_desc": "Cuba laraskan penapis anda atau muat naik/jana sesuatu yang baharu.",
+		"retry": "Cuba lagi"
 	}
 }

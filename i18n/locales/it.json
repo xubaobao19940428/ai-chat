@@ -44,6 +44,21 @@
 		"image_generation_failed_desc": "Impossibile generare l'immagine. Potrebbe essere dovuto a restrizioni sui contenuti o a un problema temporaneo. Riprova.",
 		"drag_drop_title": "Trascina i file qui per caricarli",
 		"drag_drop_subtitle": "Supporta immagini e file",
+		"try_style_image": "Prova uno stile su un'immagine",
+		"try_style_video": "Prova uno stile su un video",
+		"view_more": "Vedi altro",
+		"start_chat": "Inizia chat",
+		"quick_help_write": "Aiutami a scrivere",
+		"quick_learn": "Impara su",
+		"quick_analyze_image": "Analizza immagine",
+		"quick_summarize": "Riassumi testo",
+		"quick_analyze_data": "Analizza dati",
+		"quick_brainstorm": "Brainstorming",
+		"quick_improve_writing": "Migliora la scrittura",
+		"quick_translate": "Traduci",
+		"quick_generate_images": "Genera immagini",
+		"quick_generate_ideas": "Genera idee",
+		"quick_see_more": "+ Vedi altro",
 		"loading_messages": "Caricamento messaggi...",
 		"thinking": "Sto pensando",
 		"discard_changes": "Annullare le modifiche?",
@@ -164,7 +179,18 @@
 			"nickname": "Soprannome",
 			"nickname_placeholder": "Come dovrebbe chiamarti MixU?",
 			"occupation": "Professione",
-			"occupation_placeholders": ["Ingegnere Software", "Product Manager", "Designer UI", "Data Scientist", "Scrittore Freelance", "Studente Universitario", "Imprenditore", "Marketing Operations", "Insegnante di Liceo", "Sviluppatore Full-Stack"],
+			"occupation_placeholders": [
+				"Ingegnere Software",
+				"Product Manager",
+				"Designer UI",
+				"Data Scientist",
+				"Scrittore Freelance",
+				"Studente Universitario",
+				"Imprenditore",
+				"Marketing Operations",
+				"Insegnante di Liceo",
+				"Sviluppatore Full-Stack"
+			],
 			"your_details": "I tuoi dettagli",
 			"your_details_placeholder": "Interessi, valori o preferenze da ricordare",
 			"memory": "Memoria",
@@ -187,35 +213,95 @@
 			"connector_search": "Ricerca connettori",
 			"connector_search_desc": "Consenti a MixU di cercare automaticamente risposte nelle fonti collegate.",
 			"style_tones": {
-				"default": { "title": "Predefinito", "desc": "Stile e tono preimpostati" },
-				"professional": { "title": "Professionale e Affidabile", "desc": "Accuratamente elaborato" },
-				"friendly": { "title": "Amichevole e Accessibile", "desc": "Caloroso e loquace" },
-				"direct": { "title": "Diretto e Ottimista", "desc": "Schietto e positivo" },
-				"creative": { "title": "Fantasioso", "desc": "Fantasia divertente" },
-				"practical": { "title": "Efficiente e Pratico", "desc": "Conciso e diretto" },
-				"tech": { "title": "Appassionato di Tecnologia", "desc": "Esploratore appassionato" },
-				"sarcastic": { "title": "Sarcastico e Pungente", "desc": "Acuto e arguto" }
+				"default": {
+					"title": "Predefinito",
+					"desc": "Stile e tono preimpostati"
+				},
+				"professional": {
+					"title": "Professionale e Affidabile",
+					"desc": "Accuratamente elaborato"
+				},
+				"friendly": {
+					"title": "Amichevole e Accessibile",
+					"desc": "Caloroso e loquace"
+				},
+				"direct": {
+					"title": "Diretto e Ottimista",
+					"desc": "Schietto e positivo"
+				},
+				"creative": {
+					"title": "Fantasioso",
+					"desc": "Fantasia divertente"
+				},
+				"practical": {
+					"title": "Efficiente e Pratico",
+					"desc": "Conciso e diretto"
+				},
+				"tech": {
+					"title": "Appassionato di Tecnologia",
+					"desc": "Esploratore appassionato"
+				},
+				"sarcastic": {
+					"title": "Sarcastico e Pungente",
+					"desc": "Acuto e arguto"
+				}
 			},
 			"characteristics_options": {
 				"gentle": {
-					"increase": { "title": "Aumenta", "desc": "Più amichevole, più vicino" },
-					"default": { "title": "Predefinito", "desc": "" },
-					"decrease": { "title": "Riduci", "desc": "Più professionale, altamente fattuale" }
+					"increase": {
+						"title": "Aumenta",
+						"desc": "Più amichevole, più vicino"
+					},
+					"default": {
+						"title": "Predefinito",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "Riduci",
+						"desc": "Più professionale, altamente fattuale"
+					}
 				},
 				"passionate": {
-					"increase": { "title": "Aumenta", "desc": "Più energico" },
-					"default": { "title": "Predefinito", "desc": "" },
-					"decrease": { "title": "Riduci", "desc": "Più freddo e neutrale" }
+					"increase": {
+						"title": "Aumenta",
+						"desc": "Più energico"
+					},
+					"default": {
+						"title": "Predefinito",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "Riduci",
+						"desc": "Più freddo e neutrale"
+					}
 				},
 				"titles_lists": {
-					"increase": { "title": "Aumenta", "desc": "Usa formati chiari e strutture a lista" },
-					"default": { "title": "Predefinito", "desc": "" },
-					"decrease": { "title": "Riduci", "desc": "Più testo in paragrafi, meno strutture a lista" }
+					"increase": {
+						"title": "Aumenta",
+						"desc": "Usa formati chiari e strutture a lista"
+					},
+					"default": {
+						"title": "Predefinito",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "Riduci",
+						"desc": "Più testo in paragrafi, meno strutture a lista"
+					}
 				},
 				"emojis": {
-					"increase": { "title": "Aumenta", "desc": "Usa più emoji" },
-					"default": { "title": "Predefinito", "desc": "" },
-					"decrease": { "title": "Riduci", "desc": "Usa il minor numero possibile di emoji" }
+					"increase": {
+						"title": "Aumenta",
+						"desc": "Usa più emoji"
+					},
+					"default": {
+						"title": "Predefinito",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "Riduci",
+						"desc": "Usa il minor numero possibile di emoji"
+					}
 				}
 			}
 		},
@@ -318,7 +404,9 @@
 		"description": "Inserisci un nuovo titolo",
 		"placeholder": "Inserisci titolo..."
 	},
-	"confirm": { "delete": "Elimina" },
+	"confirm": {
+		"delete": "Elimina"
+	},
 	"payment": {
 		"upgrade_plan": "Aggiorna Piano",
 		"payment_method": "Metodo di Pagamento",
@@ -336,25 +424,43 @@
 		"saving": "Salvataggio...",
 		"creating": "Creazione...",
 		"save": "Salva",
-		"create": "Crea"
+		"create": "Crea",
+		"desc_placeholder": "es. \"Concentrati sulle best practice Python\", \"Mantieni un tono professionale\" o \"Fornisci sempre le fonti\"."
 	},
 	"image_generation": {
 		"categories": {
-			"all": "Tutti", "portrait": "Ritratto / Avatar", "brand": "Brand / Commerciale",
-			"poster": "Poster e Pubblicità", "illustration": "Illustrazione e Cartoon",
-			"product": "Prodotto / Artigianato", "architecture": "Architettura / Spazio",
-			"film": "Film e Storyboard", "lifestyle": "Stile di Vita / Natura",
-			"scifi": "Fantascienza / Futuro", "ui": "UI / Interfaccia",
-			"uncategorized": "Senza categoria", "favorites": "Preferiti"
-		}
+			"all": "Tutti",
+			"portrait": "Ritratto / Avatar",
+			"brand": "Brand / Commerciale",
+			"poster": "Poster e Pubblicità",
+			"illustration": "Illustrazione e Cartoon",
+			"product": "Prodotto / Artigianato",
+			"architecture": "Architettura / Spazio",
+			"film": "Film e Storyboard",
+			"lifestyle": "Stile di Vita / Natura",
+			"scifi": "Fantascienza / Futuro",
+			"ui": "UI / Interfaccia",
+			"uncategorized": "Senza categoria",
+			"favorites": "Preferiti"
+		},
+		"empty_state": "Nessuna immagine trovata",
+		"empty_state_subtitle": "Controlla la tua connessione o prova una categoria diversa"
 	},
 	"video_generation": {
 		"categories": {
-			"all": "Tutti", "drama": "Cortometraggio", "dance": "Danza e Cosplay",
-			"advertising": "Pubblicità", "chinese_fantasy": "Fantasy Cinese",
-			"scifi_action": "Fantascienza e Azione", "anime_game": "Anime e Gaming",
-			"healing": "Stile di Vita e Relax", "uncategorized": "Senza categoria", "favorites": "Preferiti"
-		}
+			"all": "Tutti",
+			"drama": "Cortometraggio",
+			"dance": "Danza e Cosplay",
+			"advertising": "Pubblicità",
+			"chinese_fantasy": "Fantasy Cinese",
+			"scifi_action": "Fantascienza e Azione",
+			"anime_game": "Anime e Gaming",
+			"healing": "Stile di Vita e Relax",
+			"uncategorized": "Senza categoria",
+			"favorites": "Preferiti"
+		},
+		"empty_state": "Nessun video trovato",
+		"empty_state_subtitle": "Controlla la tua connessione o prova una categoria diversa"
 	},
 	"explore": {
 		"title": "Scopri i Bot AI",
@@ -362,9 +468,17 @@
 		"create_bot": "Crea Bot AI",
 		"search_placeholder": "Cerca bot",
 		"tags": {
-			"all": "Tutti", "work": "Lavoro", "study": "Studio", "creative": "Creativo",
-			"tech": "Tecnologia", "life": "Vita", "emotion": "Emozione", "business": "Business",
-			"tools": "Strumenti", "uncategorized": "Senza categoria", "favorites": "Preferiti"
+			"all": "Tutti",
+			"work": "Lavoro",
+			"study": "Studio",
+			"creative": "Creativo",
+			"tech": "Tecnologia",
+			"life": "Vita",
+			"emotion": "Emozione",
+			"business": "Business",
+			"tools": "Strumenti",
+			"uncategorized": "Senza categoria",
+			"favorites": "Preferiti"
 		},
 		"official_badge": "Ufficiale",
 		"by_author": "Di",
@@ -397,5 +511,94 @@
 		"create_failed": "Creazione non riuscita, riprova",
 		"name_required": "Inserisci un nome per il personaggio",
 		"prompt_required": "Inserisci un prompt per il personaggio"
+	},
+	"library": {
+		"title": "Libreria",
+		"search_placeholder": "Cerca risorse...",
+		"upload": "Carica",
+		"source_all": "Tutte le fonti",
+		"source_ai": "Generato da IA",
+		"source_local": "Upload locale",
+		"type_all": "Tutti i tipi",
+		"type_image": "Immagini",
+		"type_video": "Video",
+		"type_audio": "Audio",
+		"type_3d": "Asset 3D",
+		"type_document": "Documenti",
+		"selected": "{count} selezionato/i",
+		"clear": "Cancella",
+		"download": "Scarica",
+		"delete": "Elimina",
+		"uploading": "Caricamento di {count} file...",
+		"upload_complete": "Caricamento completato",
+		"upload_failed": "Caricamento fallito",
+		"downloading": "Download di {count} elementi",
+		"deleted": "Eliminato con successo",
+		"confirm_delete": "Sei sicuro di voler eliminare {count} elementi?"
+	},
+	"params": {
+		"add_file": "Add file",
+		"file_count": "{count} file | {count} files",
+		"attach_desc": "Attach files to enhance your conversation.\nUpload or select from assets.",
+		"upload_file": "Upload file",
+		"select_from_assets": "Select from assets",
+		"web_search": "Web Search",
+		"enable_web_search": "Enable Web Search",
+		"web_search_desc": "Enable web search and real-time information access.",
+		"model_params": "Model Parameters",
+		"parameters": "Parameters",
+		"reset": "Reset",
+		"image_prompt": "Image prompt",
+		"prompt_images_count": "{count} prompt image | {count} prompt images",
+		"image_prompt_desc": "Image prompts apply style and content to your generation.\nUpload or select from assets.",
+		"upload": "Upload",
+		"select_asset": "Select asset",
+		"style": "Style",
+		"outputs": "Outputs",
+		"duration": "Duration",
+		"reference": "Reference",
+		"ref_image_desc": "Upload a reference image to guide generation.",
+		"images": "Images",
+		"ref_images_count": "{count} images",
+		"ref_images_desc": "Upload multiple reference images.",
+		"start_frame": "Start frame",
+		"start_frame_desc": "Start frame anchors the opening of your video.",
+		"end_frame": "End frame",
+		"end_frame_desc": "End frame anchors the ending of your video.",
+		"video": "Video",
+		"video_ready": "Video ✓",
+		"ref_video_desc": "Upload a reference video.",
+		"videos": "Videos",
+		"videos_count": "{count} videos",
+		"ref_videos_desc": "Upload multiple reference videos.",
+		"dynamic": {
+			"audio_enabled_desc": "Se generare audio",
+			"aspect_ratio_label": "Proporzioni",
+			"resolution_label": "Risoluzione"
+		}
+	},
+	"asset_picker": {
+		"title": "Seleziona risorsa",
+		"select_multiple": "Seleziona uno o più {type}",
+		"select_single": "Seleziona un {type}",
+		"video": "video",
+		"image": "immagine",
+		"videos": "video",
+		"images": "immagini",
+		"no_videos": "Ancora nessun video",
+		"no_images": "Ancora nessuna immagine",
+		"upload_videos_first": "Carica prima i video per usarli qui",
+		"upload_images_first": "Carica prima le immagini per usarle qui",
+		"video_label": "VIDEO",
+		"loading": "Caricamento...",
+		"load_more": "Carica altro",
+		"selected_count": "{count} selezionati",
+		"no_selection": "Nessuna selezione",
+		"confirm": "Conferma"
+	},
+	"assets_grid": {
+		"no_assets": "Nessuna risorsa trovata",
+		"no_assets_desc": "Prova a regolare i filtri o carica/genera qualcosa di nuovo.",
+		"retry": "Riprova"
 	}
 }

@@ -179,7 +179,18 @@
 			"nickname": "昵称",
 			"nickname_placeholder": "MixU 应该怎么称呼你？",
 			"occupation": "职业",
-			"occupation_placeholders": ["软件工程师", "产品经理", "UI 设计师", "数据科学家", "自由撰稿人", "大学生", "创业者", "市场运营", "高中教师", "全栈开发者"],
+			"occupation_placeholders": [
+				"软件工程师",
+				"产品经理",
+				"UI 设计师",
+				"数据科学家",
+				"自由撰稿人",
+				"大学生",
+				"创业者",
+				"市场运营",
+				"高中教师",
+				"全栈开发者"
+			],
 			"your_details": "你的详情",
 			"your_details_placeholder": "需要记住的兴趣、价值观或偏好",
 			"memory": "记忆",
@@ -237,24 +248,60 @@
 			},
 			"characteristics_options": {
 				"gentle": {
-					"increase": { "title": "增强", "desc": "更友好、更亲近" },
-					"default": { "title": "默认", "desc": "" },
-					"decrease": { "title": "减弱", "desc": "更专业，事实性更强" }
+					"increase": {
+						"title": "增强",
+						"desc": "更友好、更亲近"
+					},
+					"default": {
+						"title": "默认",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "减弱",
+						"desc": "更专业，事实性更强"
+					}
 				},
 				"passionate": {
-					"increase": { "title": "增强", "desc": "更加活力充沛" },
-					"default": { "title": "默认", "desc": "" },
-					"decrease": { "title": "减弱", "desc": "更加冷静中立" }
+					"increase": {
+						"title": "增强",
+						"desc": "更加活力充沛"
+					},
+					"default": {
+						"title": "默认",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "减弱",
+						"desc": "更加冷静中立"
+					}
 				},
 				"titles_lists": {
-					"increase": { "title": "增强", "desc": "采用清晰格式与列表结构" },
-					"default": { "title": "默认", "desc": "" },
-					"decrease": { "title": "减弱", "desc": "更多段落文本，而非列表结构" }
+					"increase": {
+						"title": "增强",
+						"desc": "采用清晰格式与列表结构"
+					},
+					"default": {
+						"title": "默认",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "减弱",
+						"desc": "更多段落文本，而非列表结构"
+					}
 				},
 				"emojis": {
-					"increase": { "title": "增强", "desc": "使用更多表情符号" },
-					"default": { "title": "默认", "desc": "" },
-					"decrease": { "title": "减弱", "desc": "尽量少用表情符号" }
+					"increase": {
+						"title": "增强",
+						"desc": "使用更多表情符号"
+					},
+					"default": {
+						"title": "默认",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "减弱",
+						"desc": "尽量少用表情符号"
+					}
 				}
 			}
 		},
@@ -377,7 +424,8 @@
 		"saving": "保存中...",
 		"creating": "创建中...",
 		"save": "保存",
-		"create": "创建"
+		"create": "创建",
+		"desc_placeholder": "例如：“遵循 Python 最佳实践”、“保持专业语调”或“重要结论必须提供来源”。"
 	},
 	"image_generation": {
 		"empty_state": "暂无图片",
@@ -472,5 +520,94 @@
 		"cat_art": "艺术风格",
 		"cat_product": "产品",
 		"cat_creative": "创意玩法"
+	},
+	"library": {
+		"title": "素材库",
+		"search_placeholder": "搜索素材...",
+		"upload": "上传",
+		"source_all": "全部来源",
+		"source_ai": "AI 生成",
+		"source_local": "本地上传",
+		"type_all": "全部类型",
+		"type_image": "图片",
+		"type_video": "视频",
+		"type_audio": "音频",
+		"type_3d": "3D 素材",
+		"type_document": "文档",
+		"selected": "已选 {count} 项",
+		"clear": "清除",
+		"download": "下载",
+		"delete": "删除",
+		"uploading": "正在上传 {count} 个文件...",
+		"upload_complete": "上传完成",
+		"upload_failed": "上传失败",
+		"downloading": "正在下载 {count} 项",
+		"deleted": "删除成功",
+		"confirm_delete": "确定要删除 {count} 项吗？"
+	},
+	"params": {
+		"add_file": "添加文件",
+		"file_count": "{count} 个文件",
+		"attach_desc": "附加文件以增强对话。\n上传或从素材库选择。",
+		"upload_file": "上传文件",
+		"select_from_assets": "从素材库选择",
+		"web_search": "网页搜索",
+		"enable_web_search": "启用网页搜索",
+		"web_search_desc": "启用网页搜索和实时信息访问。",
+		"model_params": "模型参数",
+		"parameters": "参数",
+		"reset": "重置",
+		"image_prompt": "图片提示",
+		"prompt_images_count": "{count} 张提示图",
+		"image_prompt_desc": "图片提示将样式和内容应用到您的生成中。\n上传或从素材库选择。",
+		"upload": "上传",
+		"select_asset": "选择素材",
+		"style": "风格",
+		"outputs": "输出数量",
+		"duration": "时长",
+		"reference": "参考图",
+		"ref_image_desc": "上传参考图以引导生成。",
+		"images": "图片",
+		"ref_images_count": "{count} 张图片",
+		"ref_images_desc": "上传多张参考图片。",
+		"start_frame": "起始帧",
+		"start_frame_desc": "起始帧决定视频的开头。",
+		"end_frame": "结束帧",
+		"end_frame_desc": "结束帧决定视频的结尾。",
+		"video": "视频",
+		"video_ready": "视频 ✓",
+		"ref_video_desc": "上传参考视频。",
+		"videos": "视频",
+		"videos_count": "{count} 个视频",
+		"ref_videos_desc": "上传多个参考视频。",
+		"dynamic": {
+			"audio_enabled_desc": "是否生成音频",
+			"aspect_ratio_label": "比例",
+			"resolution_label": "分辨率"
+		}
+	},
+	"asset_picker": {
+		"title": "选择素材",
+		"select_multiple": "选择一个或多个{type}",
+		"select_single": "选择一个{type}",
+		"video": "视频",
+		"image": "图片",
+		"videos": "视频",
+		"images": "图片",
+		"no_videos": "暂无视频",
+		"no_images": "暂无图片",
+		"upload_videos_first": "请先上传视频才能在此使用",
+		"upload_images_first": "请先上传图片才能在此使用",
+		"video_label": "视频",
+		"loading": "加载中...",
+		"load_more": "加载更多",
+		"selected_count": "已选择 {count} 项",
+		"no_selection": "未选择",
+		"confirm": "确定"
+	},
+	"assets_grid": {
+		"no_assets": "未找到素材",
+		"no_assets_desc": "请尝试调整筛选条件或上传/生成新内容。",
+		"retry": "重试"
 	}
 }

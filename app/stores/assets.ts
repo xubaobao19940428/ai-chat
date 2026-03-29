@@ -20,6 +20,7 @@ export const useAssetStore = defineStore('assets', {
     isLoading: false,
     filters: {
       type: 'all' as AssetType | 'all',
+      source: 'all' as 'all' | 'ai' | 'local',
       search: '',
     },
     page: 1,
@@ -60,6 +61,7 @@ export const useAssetStore = defineStore('assets', {
           page: this.page,
           page_size: this.pageSize,
           ...(fileType ? { file_type: fileType } : {}),
+          ...(this.filters.source !== 'all' ? { source: this.filters.source } : {}),
         })
 
         const list: UserFile[] = res.data?.list || []

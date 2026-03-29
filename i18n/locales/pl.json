@@ -44,6 +44,21 @@
 		"image_generation_failed_desc": "Nie można wygenerować obrazu. Może to być spowodowane ograniczeniami treści lub tymczasowym problemem. Spróbuj ponownie.",
 		"drag_drop_title": "Upuść pliki tutaj, aby przesłać",
 		"drag_drop_subtitle": "Obsługuje obrazy i pliki",
+		"try_style_image": "Wypróbuj styl na obrazie",
+		"try_style_video": "Wypróbuj styl na wideo",
+		"view_more": "Zobacz więcej",
+		"start_chat": "Rozpocznij czat",
+		"quick_help_write": "Pomóż mi pisać",
+		"quick_learn": "Dowiedz się o",
+		"quick_analyze_image": "Analizuj obraz",
+		"quick_summarize": "Podsumuj tekst",
+		"quick_analyze_data": "Analizuj dane",
+		"quick_brainstorm": "Burza mózgów",
+		"quick_improve_writing": "Popraw pisanie",
+		"quick_translate": "Przetłumacz",
+		"quick_generate_images": "Generuj obrazy",
+		"quick_generate_ideas": "Generuj pomysły",
+		"quick_see_more": "+ Zobacz więcej",
 		"loading_messages": "Ładowanie wiadomości...",
 		"thinking": "Myślę",
 		"discard_changes": "Odrzucić zmiany?",
@@ -409,7 +424,8 @@
 		"saving": "Zapisywanie...",
 		"creating": "Tworzenie...",
 		"save": "Zapisz",
-		"create": "Utwórz"
+		"create": "Utwórz",
+		"desc_placeholder": "np. \"Skup się na najlepszych praktykach Python\", \"Utrzymaj profesjonalny ton\" lub \"Zawsze podawaj źródła\"."
 	},
 	"image_generation": {
 		"categories": {
@@ -426,7 +442,9 @@
 			"ui": "UI / Interfejs",
 			"uncategorized": "Bez kategorii",
 			"favorites": "Ulubione"
-		}
+		},
+		"empty_state": "Nie znaleziono obrazów",
+		"empty_state_subtitle": "Sprawdź połączenie lub spróbuj innej kategorii"
 	},
 	"video_generation": {
 		"categories": {
@@ -440,7 +458,9 @@
 			"healing": "Styl życia i relaks",
 			"uncategorized": "Bez kategorii",
 			"favorites": "Ulubione"
-		}
+		},
+		"empty_state": "Nie znaleziono wideo",
+		"empty_state_subtitle": "Sprawdź połączenie lub spróbuj innej kategorii"
 	},
 	"explore": {
 		"title": "Odkryj boty AI",
@@ -491,5 +511,94 @@
 		"create_failed": "Tworzenie nie powiodło się, spróbuj ponownie",
 		"name_required": "Wprowadź nazwę postaci",
 		"prompt_required": "Wprowadź prompt postaci"
+	},
+	"library": {
+		"title": "Biblioteka",
+		"search_placeholder": "Szukaj zasobów...",
+		"upload": "Prześlij",
+		"source_all": "Wszystkie źródła",
+		"source_ai": "Wygenerowane przez AI",
+		"source_local": "Lokalny upload",
+		"type_all": "Wszystkie typy",
+		"type_image": "Obrazy",
+		"type_video": "Filmy",
+		"type_audio": "Audio",
+		"type_3d": "Zasoby 3D",
+		"type_document": "Dokumenty",
+		"selected": "{count} wybrano",
+		"clear": "Wyczyść",
+		"download": "Pobierz",
+		"delete": "Usuń",
+		"uploading": "Przesyłanie {count} plików...",
+		"upload_complete": "Przesyłanie zakończone",
+		"upload_failed": "Przesyłanie nie powiodło się",
+		"downloading": "Pobieranie {count} elementów",
+		"deleted": "Usunięto pomyślnie",
+		"confirm_delete": "Czy na pewno chcesz usunąć {count} elementów?"
+	},
+	"params": {
+		"add_file": "Add file",
+		"file_count": "{count} file | {count} files",
+		"attach_desc": "Attach files to enhance your conversation.\nUpload or select from assets.",
+		"upload_file": "Upload file",
+		"select_from_assets": "Select from assets",
+		"web_search": "Web Search",
+		"enable_web_search": "Enable Web Search",
+		"web_search_desc": "Enable web search and real-time information access.",
+		"model_params": "Model Parameters",
+		"parameters": "Parameters",
+		"reset": "Reset",
+		"image_prompt": "Image prompt",
+		"prompt_images_count": "{count} prompt image | {count} prompt images",
+		"image_prompt_desc": "Image prompts apply style and content to your generation.\nUpload or select from assets.",
+		"upload": "Upload",
+		"select_asset": "Select asset",
+		"style": "Style",
+		"outputs": "Outputs",
+		"duration": "Duration",
+		"reference": "Reference",
+		"ref_image_desc": "Upload a reference image to guide generation.",
+		"images": "Images",
+		"ref_images_count": "{count} images",
+		"ref_images_desc": "Upload multiple reference images.",
+		"start_frame": "Start frame",
+		"start_frame_desc": "Start frame anchors the opening of your video.",
+		"end_frame": "End frame",
+		"end_frame_desc": "End frame anchors the ending of your video.",
+		"video": "Video",
+		"video_ready": "Video ✓",
+		"ref_video_desc": "Upload a reference video.",
+		"videos": "Videos",
+		"videos_count": "{count} videos",
+		"ref_videos_desc": "Upload multiple reference videos.",
+		"dynamic": {
+			"audio_enabled_desc": "Czy generować dźwięk",
+			"aspect_ratio_label": "Proporcje",
+			"resolution_label": "Rozdzielczość"
+		}
+	},
+	"asset_picker": {
+		"title": "Wybierz zasób",
+		"select_multiple": "Wybierz jeden lub więcej {type}",
+		"select_single": "Wybierz jeden {type}",
+		"video": "wideo",
+		"image": "obraz",
+		"videos": "wideo",
+		"images": "obrazy",
+		"no_videos": "Brak wideo",
+		"no_images": "Brak obrazów",
+		"upload_videos_first": "Najpierw prześlij wideo, aby ich tu użyć",
+		"upload_images_first": "Najpierw prześlij obrazy, aby ich tu użyć",
+		"video_label": "WIDEO",
+		"loading": "Ładowanie...",
+		"load_more": "Więcej",
+		"selected_count": "Wybrano: {count}",
+		"no_selection": "Brak wyboru",
+		"confirm": "Potwierdź"
+	},
+	"assets_grid": {
+		"no_assets": "Nie znaleziono zasobów",
+		"no_assets_desc": "Spróbuj zmienić filtry lub prześlij/wygeneruj coś nowego.",
+		"retry": "Ponów"
 	}
 }

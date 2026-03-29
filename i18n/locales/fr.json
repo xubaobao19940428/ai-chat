@@ -40,9 +40,30 @@
 		"retry": "Réessayer",
 		"scroll_to_bottom": "Défiler vers le bas",
 		"connection_failed": "Connexion échouée. Veuillez réessayer.",
+		"image_generation_failed_title": "Échec de la génération",
+		"image_generation_failed_desc": "Impossible de générer l'image. Cela peut être dû à des restrictions de contenu ou à un problème temporaire. Veuillez réessayer.",
 		"drag_drop_title": "Déposez les fichiers ici pour les télécharger",
 		"drag_drop_subtitle": "Supporte les images et les fichiers",
+		"try_style_image": "Essayer un style sur une image",
+		"try_style_video": "Essayer un style sur une vidéo",
+		"view_more": "Voir plus",
+		"start_chat": "Démarrer le chat",
+		"quick_help_write": "Aide à l'écriture",
+		"quick_learn": "Apprendre sur",
+		"quick_analyze_image": "Analyser l'image",
+		"quick_summarize": "Résumer le texte",
+		"quick_analyze_data": "Analyser les données",
+		"quick_brainstorm": "Brainstorming",
+		"quick_improve_writing": "Améliorer l'écriture",
+		"quick_translate": "Traduire",
+		"quick_generate_images": "Générer des images",
+		"quick_generate_ideas": "Générer des idées",
+		"quick_see_more": "+ Voir plus",
 		"loading_messages": "Chargement des messages...",
+		"thinking": "Réflexion",
+		"discard_changes": "Abandonner les modifications ?",
+		"discard_changes_message": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir les abandonner ?",
+		"discard": "Abandonner",
 		"reuse_params": "Réutiliser les paramètres",
 		"download_all": "Tout télécharger",
 		"generating_video": "Génération de la vidéo...",
@@ -143,7 +164,18 @@
 			"nickname": "Surnom",
 			"nickname_placeholder": "Comment MixU doit-il vous appeler ?",
 			"occupation": "Occupation",
-			"occupation_placeholders": ["Ingénieur logiciel", "Chef de produit", "Designer UI", "Data Scientist", "Rédacteur indépendant", "Étudiant", "Entrepreneur", "Marketing", "Professeur", "Développeur Full-Stack"],
+			"occupation_placeholders": [
+				"Ingénieur logiciel",
+				"Chef de produit",
+				"Designer UI",
+				"Data Scientist",
+				"Rédacteur indépendant",
+				"Étudiant",
+				"Entrepreneur",
+				"Marketing",
+				"Professeur",
+				"Développeur Full-Stack"
+			],
 			"your_details": "Vos détails",
 			"your_details_placeholder": "Intérêts, valeurs ou préférences à mémoriser",
 			"memory": "Mémoire",
@@ -201,24 +233,60 @@
 			},
 			"characteristics_options": {
 				"gentle": {
-					"increase": { "title": "Renforcer", "desc": "Plus amical, plus proche" },
-					"default": { "title": "Par défaut", "desc": "" },
-					"decrease": { "title": "Réduire", "desc": "Plus professionnel, plus factuel" }
+					"increase": {
+						"title": "Renforcer",
+						"desc": "Plus amical, plus proche"
+					},
+					"default": {
+						"title": "Par défaut",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "Réduire",
+						"desc": "Plus professionnel, plus factuel"
+					}
 				},
 				"passionate": {
-					"increase": { "title": "Renforcer", "desc": "Plus énergique" },
-					"default": { "title": "Par défaut", "desc": "" },
-					"decrease": { "title": "Réduire", "desc": "Plus calme et neutre" }
+					"increase": {
+						"title": "Renforcer",
+						"desc": "Plus énergique"
+					},
+					"default": {
+						"title": "Par défaut",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "Réduire",
+						"desc": "Plus calme et neutre"
+					}
 				},
 				"titles_lists": {
-					"increase": { "title": "Renforcer", "desc": "Utiliser des formats clairs et des structures de liste" },
-					"default": { "title": "Par défaut", "desc": "" },
-					"decrease": { "title": "Réduire", "desc": "Plus de texte continu, moins de listes" }
+					"increase": {
+						"title": "Renforcer",
+						"desc": "Utiliser des formats clairs et des structures de liste"
+					},
+					"default": {
+						"title": "Par défaut",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "Réduire",
+						"desc": "Plus de texte continu, moins de listes"
+					}
 				},
 				"emojis": {
-					"increase": { "title": "Renforcer", "desc": "Utiliser plus d'emojis" },
-					"default": { "title": "Par défaut", "desc": "" },
-					"decrease": { "title": "Réduire", "desc": "Utiliser aussi peu d'emojis que possible" }
+					"increase": {
+						"title": "Renforcer",
+						"desc": "Utiliser plus d'emojis"
+					},
+					"default": {
+						"title": "Par défaut",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "Réduire",
+						"desc": "Utiliser aussi peu d'emojis que possible"
+					}
 				}
 			}
 		},
@@ -341,7 +409,8 @@
 		"saving": "Enregistrement...",
 		"creating": "Création...",
 		"save": "Enregistrer",
-		"create": "Créer"
+		"create": "Créer",
+		"desc_placeholder": "ex : \"Se concentrer sur les bonnes pratiques Python\", \"Garder un ton professionnel\" ou \"Toujours citer les sources\"."
 	},
 	"image_generation": {
 		"categories": {
@@ -358,7 +427,9 @@
 			"ui": "UI / Interface",
 			"uncategorized": "Non classé",
 			"favorites": "Favoris"
-		}
+		},
+		"empty_state": "Aucune image trouvée",
+		"empty_state_subtitle": "Vérifiez votre connexion ou essayez une autre catégorie"
 	},
 	"video_generation": {
 		"categories": {
@@ -372,7 +443,9 @@
 			"healing": "Bien-être & Quotidien",
 			"uncategorized": "Non classé",
 			"favorites": "Favoris"
-		}
+		},
+		"empty_state": "Aucune vidéo trouvée",
+		"empty_state_subtitle": "Vérifiez votre connexion ou essayez une autre catégorie"
 	},
 	"explore": {
 		"title": "Découvrir les Bots IA",
@@ -423,5 +496,94 @@
 		"create_failed": "Échec de la création, veuillez réessayer",
 		"name_required": "Veuillez entrer un nom de personnage",
 		"prompt_required": "Veuillez entrer un prompt de personnage"
+	},
+	"library": {
+		"title": "Bibliothèque",
+		"search_placeholder": "Rechercher des assets...",
+		"upload": "Télécharger",
+		"source_all": "Toutes les sources",
+		"source_ai": "Généré par IA",
+		"source_local": "Upload local",
+		"type_all": "Tous les types",
+		"type_image": "Images",
+		"type_video": "Vidéos",
+		"type_audio": "Audio",
+		"type_3d": "Assets 3D",
+		"type_document": "Documents",
+		"selected": "{count} sélectionné(s)",
+		"clear": "Effacer",
+		"download": "Télécharger",
+		"delete": "Supprimer",
+		"uploading": "Téléchargement de {count} fichiers...",
+		"upload_complete": "Téléchargement terminé",
+		"upload_failed": "Échec du téléchargement",
+		"downloading": "Téléchargement de {count} éléments",
+		"deleted": "Supprimé avec succès",
+		"confirm_delete": "Êtes-vous sûr de vouloir supprimer {count} éléments ?"
+	},
+	"params": {
+		"add_file": "Ajouter un fichier",
+		"file_count": "{count} fichier(s)",
+		"attach_desc": "Joignez des fichiers pour enrichir votre conversation.\nTéléchargez ou sélectionnez dans les assets.",
+		"upload_file": "Télécharger un fichier",
+		"select_from_assets": "Sélectionner dans les assets",
+		"web_search": "Recherche web",
+		"enable_web_search": "Activer la recherche web",
+		"web_search_desc": "Activer la recherche web et l'accès aux informations en temps réel.",
+		"model_params": "Paramètres du modèle",
+		"parameters": "Paramètres",
+		"reset": "Réinitialiser",
+		"image_prompt": "Image de référence",
+		"prompt_images_count": "{count} image(s) de référence",
+		"image_prompt_desc": "Les images de référence appliquent le style et le contenu à votre génération.\nTéléchargez ou sélectionnez dans les assets.",
+		"upload": "Télécharger",
+		"select_asset": "Sélectionner",
+		"style": "Style",
+		"outputs": "Sorties",
+		"duration": "Durée",
+		"reference": "Référence",
+		"ref_image_desc": "Téléchargez une image de référence.",
+		"images": "Images",
+		"ref_images_count": "{count} images",
+		"ref_images_desc": "Téléchargez plusieurs images de référence.",
+		"start_frame": "Image de début",
+		"start_frame_desc": "L'image de début détermine le début de votre vidéo.",
+		"end_frame": "Image de fin",
+		"end_frame_desc": "L'image de fin détermine la fin de votre vidéo.",
+		"video": "Vidéo",
+		"video_ready": "Vidéo ✓",
+		"ref_video_desc": "Téléchargez une vidéo de référence.",
+		"videos": "Vidéos",
+		"videos_count": "{count} vidéos",
+		"ref_videos_desc": "Téléchargez plusieurs vidéos de référence.",
+		"dynamic": {
+			"audio_enabled_desc": "Générer de l'audio",
+			"aspect_ratio_label": "Format d'image",
+			"resolution_label": "Résolution"
+		}
+	},
+	"asset_picker": {
+		"title": "Sélectionner un asset",
+		"select_multiple": "Sélectionnez un ou plusieurs {type}",
+		"select_single": "Sélectionnez un {type}",
+		"video": "vidéo",
+		"image": "image",
+		"videos": "vidéos",
+		"images": "images",
+		"no_videos": "Aucune vidéo pour le moment",
+		"no_images": "Aucune image pour le moment",
+		"upload_videos_first": "Téléchargez d'abord des vidéos pour les utiliser ici",
+		"upload_images_first": "Téléchargez d'abord des images pour les utiliser ici",
+		"video_label": "VIDÉO",
+		"loading": "Chargement...",
+		"load_more": "Charger plus",
+		"selected_count": "{count} sélectionné(s)",
+		"no_selection": "Aucune sélection",
+		"confirm": "Confirmer"
+	},
+	"assets_grid": {
+		"no_assets": "Aucun asset trouvé",
+		"no_assets_desc": "Essayez d'ajuster vos filtres ou de télécharger/générer quelque chose de nouveau.",
+		"retry": "Réessayer"
 	}
 }

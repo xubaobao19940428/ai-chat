@@ -44,6 +44,21 @@
 		"image_generation_failed_desc": "Không thể tạo hình ảnh. Điều này có thể do hạn chế nội dung hoặc sự cố tạm thời. Vui lòng thử lại.",
 		"drag_drop_title": "Thả tệp vào đây để tải lên",
 		"drag_drop_subtitle": "Hỗ trợ hình ảnh và tệp",
+		"try_style_image": "Thử phong cách trên ảnh",
+		"try_style_video": "Thử phong cách trên video",
+		"view_more": "Xem thêm",
+		"start_chat": "Bắt đầu trò chuyện",
+		"quick_help_write": "Giúp tôi viết",
+		"quick_learn": "Tìm hiểu về",
+		"quick_analyze_image": "Phân tích hình ảnh",
+		"quick_summarize": "Tóm tắt văn bản",
+		"quick_analyze_data": "Phân tích dữ liệu",
+		"quick_brainstorm": "Động não",
+		"quick_improve_writing": "Cải thiện bài viết",
+		"quick_translate": "Dịch",
+		"quick_generate_images": "Tạo hình ảnh",
+		"quick_generate_ideas": "Tạo ý tưởng",
+		"quick_see_more": "+ Xem thêm",
 		"loading_messages": "Đang tải tin nhắn...",
 		"thinking": "Đang suy nghĩ",
 		"discard_changes": "Hủy thay đổi?",
@@ -409,7 +424,8 @@
 		"saving": "Đang lưu...",
 		"creating": "Đang tạo...",
 		"save": "Lưu",
-		"create": "Tạo"
+		"create": "Tạo",
+		"desc_placeholder": "VD: \"Tập trung vào best practice Python\", \"Giữ giọng điệu chuyên nghiệp\" hoặc \"Luôn trích dẫn nguồn\"."
 	},
 	"image_generation": {
 		"categories": {
@@ -426,7 +442,9 @@
 			"ui": "UI / Giao diện",
 			"uncategorized": "Chưa phân loại",
 			"favorites": "Yêu thích"
-		}
+		},
+		"empty_state": "Không tìm thấy hình ảnh",
+		"empty_state_subtitle": "Kiểm tra kết nối của bạn hoặc thử một danh mục khác"
 	},
 	"video_generation": {
 		"categories": {
@@ -440,7 +458,9 @@
 			"healing": "Phong cách sống & Chữa lành",
 			"uncategorized": "Chưa phân loại",
 			"favorites": "Yêu thích"
-		}
+		},
+		"empty_state": "Không tìm thấy video",
+		"empty_state_subtitle": "Kiểm tra kết nối của bạn hoặc thử một danh mục khác"
 	},
 	"explore": {
 		"title": "Khám phá Bot AI",
@@ -491,5 +511,94 @@
 		"create_failed": "Tạo thất bại, vui lòng thử lại",
 		"name_required": "Vui lòng nhập tên nhân vật",
 		"prompt_required": "Vui lòng nhập lời nhắc nhân vật"
+	},
+	"library": {
+		"title": "Thư viện",
+		"search_placeholder": "Tìm kiếm tài nguyên...",
+		"upload": "Tải lên",
+		"source_all": "Tất cả nguồn",
+		"source_ai": "AI tạo",
+		"source_local": "Tải lên cục bộ",
+		"type_all": "Tất cả loại",
+		"type_image": "Hình ảnh",
+		"type_video": "Video",
+		"type_audio": "Âm thanh",
+		"type_3d": "Tài sản 3D",
+		"type_document": "Tài liệu",
+		"selected": "Đã chọn {count}",
+		"clear": "Xóa",
+		"download": "Tải xuống",
+		"delete": "Xóa",
+		"uploading": "Đang tải lên {count} tệp...",
+		"upload_complete": "Tải lên hoàn tất",
+		"upload_failed": "Tải lên thất bại",
+		"downloading": "Đang tải xuống {count} mục",
+		"deleted": "Đã xóa thành công",
+		"confirm_delete": "Bạn có chắc muốn xóa {count} mục không?"
+	},
+	"params": {
+		"add_file": "Add file",
+		"file_count": "{count} file | {count} files",
+		"attach_desc": "Attach files to enhance your conversation.\nUpload or select from assets.",
+		"upload_file": "Upload file",
+		"select_from_assets": "Select from assets",
+		"web_search": "Web Search",
+		"enable_web_search": "Enable Web Search",
+		"web_search_desc": "Enable web search and real-time information access.",
+		"model_params": "Model Parameters",
+		"parameters": "Parameters",
+		"reset": "Reset",
+		"image_prompt": "Image prompt",
+		"prompt_images_count": "{count} prompt image | {count} prompt images",
+		"image_prompt_desc": "Image prompts apply style and content to your generation.\nUpload or select from assets.",
+		"upload": "Upload",
+		"select_asset": "Select asset",
+		"style": "Style",
+		"outputs": "Outputs",
+		"duration": "Duration",
+		"reference": "Reference",
+		"ref_image_desc": "Upload a reference image to guide generation.",
+		"images": "Images",
+		"ref_images_count": "{count} images",
+		"ref_images_desc": "Upload multiple reference images.",
+		"start_frame": "Start frame",
+		"start_frame_desc": "Start frame anchors the opening of your video.",
+		"end_frame": "End frame",
+		"end_frame_desc": "End frame anchors the ending of your video.",
+		"video": "Video",
+		"video_ready": "Video ✓",
+		"ref_video_desc": "Upload a reference video.",
+		"videos": "Videos",
+		"videos_count": "{count} videos",
+		"ref_videos_desc": "Upload multiple reference videos.",
+		"dynamic": {
+			"audio_enabled_desc": "Có tạo âm thanh không",
+			"aspect_ratio_label": "Tỷ lệ khung hình",
+			"resolution_label": "Độ phân giải"
+		}
+	},
+	"asset_picker": {
+		"title": "Chọn nội dung",
+		"select_multiple": "Chọn một hoặc nhiều {type}",
+		"select_single": "Chọn một {type}",
+		"video": "video",
+		"image": "hình ảnh",
+		"videos": "video",
+		"images": "hình ảnh",
+		"no_videos": "Chưa có video nào",
+		"no_images": "Chưa có hình ảnh nào",
+		"upload_videos_first": "Tải video lên trước để sử dụng ở đây",
+		"upload_images_first": "Tải hình ảnh lên trước để sử dụng ở đây",
+		"video_label": "VIDEO",
+		"loading": "Đang tải...",
+		"load_more": "Tải thêm",
+		"selected_count": "Đã chọn {count}",
+		"no_selection": "Chưa chọn",
+		"confirm": "Xác nhận"
+	},
+	"assets_grid": {
+		"no_assets": "Không tìm thấy nội dung",
+		"no_assets_desc": "Thử điều chỉnh bộ lọc hoặc tải lên/tạo mới.",
+		"retry": "Thử lại"
 	}
 }

@@ -44,6 +44,21 @@
 		"image_generation_failed_desc": "छवि जनरेट करने में असमर्थ। यह सामग्री प्रतिबंधों या अस्थायी समस्या के कारण हो सकता है। कृपया पुनः प्रयास करें।",
 		"drag_drop_title": "अपलोड करने के लिए फ़ाइलें यहाँ छोड़ें",
 		"drag_drop_subtitle": "छवियों और फ़ाइलों का समर्थन करता है",
+		"try_style_image": "एक छवि पर शैली आज़माएं",
+		"try_style_video": "एक वीडियो पर शैली आज़माएं",
+		"view_more": "और देखें",
+		"start_chat": "चैट शुरू करें",
+		"quick_help_write": "लिखने में मदद करें",
+		"quick_learn": "सीखें",
+		"quick_analyze_image": "छवि विश्लेषण",
+		"quick_summarize": "पाठ सारांश",
+		"quick_analyze_data": "डेटा विश्लेषण",
+		"quick_brainstorm": "विचार-मंथन",
+		"quick_improve_writing": "लेखन सुधारें",
+		"quick_translate": "अनुवाद",
+		"quick_generate_images": "छवियां बनाएं",
+		"quick_generate_ideas": "विचार बनाएं",
+		"quick_see_more": "+ और देखें",
 		"loading_messages": "संदेश लोड हो रहे हैं...",
 		"thinking": "सोच रहा है",
 		"discard_changes": "बदलाव रद्द करें?",
@@ -409,7 +424,8 @@
 		"saving": "सहेजा जा रहा है...",
 		"creating": "बनाया जा रहा है...",
 		"save": "सहेजें",
-		"create": "बनाएँ"
+		"create": "बनाएँ",
+		"desc_placeholder": "उदा. \"पायथन सर्वोत्तम प्रथाओं पर ध्यान दें\", \"एक पेशेवर स्वर बनाए रखें\" या \"हमेशा स्रोत प्रदान करें\"।"
 	},
 	"image_generation": {
 		"categories": {
@@ -426,7 +442,9 @@
 			"ui": "UI / इंटरफ़ेस",
 			"uncategorized": "अवर्गीकृत",
 			"favorites": "पसंदीदा"
-		}
+		},
+		"empty_state": "कोई चित्र नहीं मिला",
+		"empty_state_subtitle": "अपना कनेक्शन जांचें या एक अलग श्रेणी का प्रयास करें"
 	},
 	"video_generation": {
 		"categories": {
@@ -440,7 +458,9 @@
 			"healing": "जीवनशैली और हीलिंग",
 			"uncategorized": "अवर्गीकृत",
 			"favorites": "पसंदीदा"
-		}
+		},
+		"empty_state": "कोई वीडियो नहीं मिला",
+		"empty_state_subtitle": "अपना कनेक्शन जांचें या एक अलग श्रेणी का प्रयास करें"
 	},
 	"explore": {
 		"title": "AI बॉट्स खोजें",
@@ -491,5 +511,94 @@
 		"create_failed": "बनाने में विफल, कृपया पुनः प्रयास करें",
 		"name_required": "कृपया कैरेक्टर का नाम दर्ज करें",
 		"prompt_required": "कृपया कैरेक्टर प्रॉम्प्ट दर्ज करें"
+	},
+	"library": {
+		"title": "लाइब्रेरी",
+		"search_placeholder": "एसेट खोजें...",
+		"upload": "अपलोड",
+		"source_all": "सभी स्रोत",
+		"source_ai": "AI जनित",
+		"source_local": "स्थानीय अपलोड",
+		"type_all": "सभी प्रकार",
+		"type_image": "चित्र",
+		"type_video": "वीडियो",
+		"type_audio": "ऑडियो",
+		"type_3d": "3D एसेट",
+		"type_document": "दस्तावेज़",
+		"selected": "{count} चयनित",
+		"clear": "साफ़ करें",
+		"download": "डाउनलोड",
+		"delete": "हटाएं",
+		"uploading": "{count} फ़ाइलें अपलोड हो रही हैं...",
+		"upload_complete": "अपलोड पूरा",
+		"upload_failed": "अपलोड विफल",
+		"downloading": "{count} आइटम डाउनलोड हो रहे हैं",
+		"deleted": "सफलतापूर्वक हटाया गया",
+		"confirm_delete": "क्या आप {count} आइटम हटाना चाहते हैं?"
+	},
+	"params": {
+		"add_file": "Add file",
+		"file_count": "{count} file | {count} files",
+		"attach_desc": "Attach files to enhance your conversation.\nUpload or select from assets.",
+		"upload_file": "Upload file",
+		"select_from_assets": "Select from assets",
+		"web_search": "Web Search",
+		"enable_web_search": "Enable Web Search",
+		"web_search_desc": "Enable web search and real-time information access.",
+		"model_params": "Model Parameters",
+		"parameters": "Parameters",
+		"reset": "Reset",
+		"image_prompt": "Image prompt",
+		"prompt_images_count": "{count} prompt image | {count} prompt images",
+		"image_prompt_desc": "Image prompts apply style and content to your generation.\nUpload or select from assets.",
+		"upload": "Upload",
+		"select_asset": "Select asset",
+		"style": "Style",
+		"outputs": "Outputs",
+		"duration": "Duration",
+		"reference": "Reference",
+		"ref_image_desc": "Upload a reference image to guide generation.",
+		"images": "Images",
+		"ref_images_count": "{count} images",
+		"ref_images_desc": "Upload multiple reference images.",
+		"start_frame": "Start frame",
+		"start_frame_desc": "Start frame anchors the opening of your video.",
+		"end_frame": "End frame",
+		"end_frame_desc": "End frame anchors the ending of your video.",
+		"video": "Video",
+		"video_ready": "Video ✓",
+		"ref_video_desc": "Upload a reference video.",
+		"videos": "Videos",
+		"videos_count": "{count} videos",
+		"ref_videos_desc": "Upload multiple reference videos.",
+		"dynamic": {
+			"audio_enabled_desc": "क्या ऑडियो जनरेट करना है",
+			"aspect_ratio_label": "पहलू अनुपात",
+			"resolution_label": "रिज़ॉल्यूशन"
+		}
+	},
+	"asset_picker": {
+		"title": "एसेट चुनें",
+		"select_multiple": "एक या अधिक {type} चुनें",
+		"select_single": "एक {type} चुनें",
+		"video": "वीडियो",
+		"image": "छवि",
+		"videos": "वीडियो",
+		"images": "छवियां",
+		"no_videos": "अभी तक कोई वीडियो नहीं",
+		"no_images": "अभी तक कोई छवियां नहीं",
+		"upload_videos_first": "यहां उपयोग करने के लिए पहले वीडियो अपलोड करें",
+		"upload_images_first": "यहां उपयोग करने के लिए पहले छवि अपलोड करें",
+		"video_label": "वीडियो",
+		"loading": "लोड हो रहा है...",
+		"load_more": "और लोड करें",
+		"selected_count": "{count} चयनित",
+		"no_selection": "कोई चयन नहीं",
+		"confirm": "पुष्टि करें"
+	},
+	"assets_grid": {
+		"no_assets": "कोई एसेट नहीं मिला",
+		"no_assets_desc": "अपने फ़िल्टर समायोजित करने का प्रयास करें या कुछ नया अपलोड/जनरेट करें।",
+		"retry": "पुनः प्रयास करें"
 	}
 }

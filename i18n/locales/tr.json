@@ -44,6 +44,21 @@
 		"image_generation_failed_desc": "Görsel oluşturulamadı. Bu, içerik kısıtlamalarından veya geçici bir sorundan kaynaklanıyor olabilir. Lütfen tekrar deneyin.",
 		"drag_drop_title": "Yüklemek için dosyaları buraya bırakın",
 		"drag_drop_subtitle": "Görseller ve dosyalar desteklenir",
+		"try_style_image": "Bir görselde stil dene",
+		"try_style_video": "Bir videoda stil dene",
+		"view_more": "Daha fazla göster",
+		"start_chat": "Sohbet Başlat",
+		"quick_help_write": "Yazmama yardım et",
+		"quick_learn": "Hakkında öğren",
+		"quick_analyze_image": "Görsel Analiz Et",
+		"quick_summarize": "Metni Özetle",
+		"quick_analyze_data": "Veri Analiz Et",
+		"quick_brainstorm": "Beyin Fırtınası",
+		"quick_improve_writing": "Yazımı Geliştir",
+		"quick_translate": "Çevir",
+		"quick_generate_images": "Görsel Oluştur",
+		"quick_generate_ideas": "Fikir Üret",
+		"quick_see_more": "+ Daha Fazla",
 		"loading_messages": "Mesajlar yükleniyor...",
 		"thinking": "Düşünüyor",
 		"discard_changes": "Değişiklikler iptal edilsin mi?",
@@ -164,7 +179,18 @@
 			"nickname": "Takma ad",
 			"nickname_placeholder": "MixU size nasıl hitap etsin?",
 			"occupation": "Meslek",
-			"occupation_placeholders": ["Yazılım Mühendisi", "Ürün Yöneticisi", "UI Tasarımcısı", "Veri Bilimci", "Serbest Yazar", "Üniversite Öğrencisi", "Girişimci", "Pazarlama Uzmanı", "Lise Öğretmeni", "Full-Stack Geliştirici"],
+			"occupation_placeholders": [
+				"Yazılım Mühendisi",
+				"Ürün Yöneticisi",
+				"UI Tasarımcısı",
+				"Veri Bilimci",
+				"Serbest Yazar",
+				"Üniversite Öğrencisi",
+				"Girişimci",
+				"Pazarlama Uzmanı",
+				"Lise Öğretmeni",
+				"Full-Stack Geliştirici"
+			],
 			"your_details": "Bilgileriniz",
 			"your_details_placeholder": "Hatırlanacak ilgi alanları, değerler veya tercihler",
 			"memory": "Hafıza",
@@ -187,35 +213,95 @@
 			"connector_search": "Bağlayıcı araması",
 			"connector_search_desc": "MixU'nun bağlı kaynaklarda otomatik olarak yanıt aramasına izin verin.",
 			"style_tones": {
-				"default": { "title": "Varsayılan", "desc": "Önceden ayarlanmış stil ve ton" },
-				"professional": { "title": "Profesyonel ve Güvenilir", "desc": "İncelikle hazırlanmış" },
-				"friendly": { "title": "Samimi ve Yakın", "desc": "Sıcak ve konuşkan" },
-				"direct": { "title": "Doğrudan ve İyimser", "desc": "Açık sözlü ve iyimser" },
-				"creative": { "title": "Yaratıcı", "desc": "Eğlenceli hayal gücü" },
-				"practical": { "title": "Verimli ve Pratik", "desc": "Kısa ve öz" },
-				"tech": { "title": "Teknoloji Meraklısı", "desc": "Tutkulu kaşif" },
-				"sarcastic": { "title": "İğneleyici Şakacı", "desc": "Keskin ve espritüel" }
+				"default": {
+					"title": "Varsayılan",
+					"desc": "Önceden ayarlanmış stil ve ton"
+				},
+				"professional": {
+					"title": "Profesyonel ve Güvenilir",
+					"desc": "İncelikle hazırlanmış"
+				},
+				"friendly": {
+					"title": "Samimi ve Yakın",
+					"desc": "Sıcak ve konuşkan"
+				},
+				"direct": {
+					"title": "Doğrudan ve İyimser",
+					"desc": "Açık sözlü ve iyimser"
+				},
+				"creative": {
+					"title": "Yaratıcı",
+					"desc": "Eğlenceli hayal gücü"
+				},
+				"practical": {
+					"title": "Verimli ve Pratik",
+					"desc": "Kısa ve öz"
+				},
+				"tech": {
+					"title": "Teknoloji Meraklısı",
+					"desc": "Tutkulu kaşif"
+				},
+				"sarcastic": {
+					"title": "İğneleyici Şakacı",
+					"desc": "Keskin ve espritüel"
+				}
 			},
 			"characteristics_options": {
 				"gentle": {
-					"increase": { "title": "Artır", "desc": "Daha samimi, daha yakın" },
-					"default": { "title": "Varsayılan", "desc": "" },
-					"decrease": { "title": "Azalt", "desc": "Daha profesyonel, tamamen olgusal" }
+					"increase": {
+						"title": "Artır",
+						"desc": "Daha samimi, daha yakın"
+					},
+					"default": {
+						"title": "Varsayılan",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "Azalt",
+						"desc": "Daha profesyonel, tamamen olgusal"
+					}
 				},
 				"passionate": {
-					"increase": { "title": "Artır", "desc": "Daha enerjik" },
-					"default": { "title": "Varsayılan", "desc": "" },
-					"decrease": { "title": "Azalt", "desc": "Daha sakin ve tarafsız" }
+					"increase": {
+						"title": "Artır",
+						"desc": "Daha enerjik"
+					},
+					"default": {
+						"title": "Varsayılan",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "Azalt",
+						"desc": "Daha sakin ve tarafsız"
+					}
 				},
 				"titles_lists": {
-					"increase": { "title": "Artır", "desc": "Net formatlar ve liste yapıları kullan" },
-					"default": { "title": "Varsayılan", "desc": "" },
-					"decrease": { "title": "Azalt", "desc": "Daha çok paragraf metin, daha az liste yapısı" }
+					"increase": {
+						"title": "Artır",
+						"desc": "Net formatlar ve liste yapıları kullan"
+					},
+					"default": {
+						"title": "Varsayılan",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "Azalt",
+						"desc": "Daha çok paragraf metin, daha az liste yapısı"
+					}
 				},
 				"emojis": {
-					"increase": { "title": "Artır", "desc": "Daha fazla emoji kullan" },
-					"default": { "title": "Varsayılan", "desc": "" },
-					"decrease": { "title": "Azalt", "desc": "Mümkün olduğunca az emoji kullan" }
+					"increase": {
+						"title": "Artır",
+						"desc": "Daha fazla emoji kullan"
+					},
+					"default": {
+						"title": "Varsayılan",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "Azalt",
+						"desc": "Mümkün olduğunca az emoji kullan"
+					}
 				}
 			}
 		},
@@ -318,7 +404,9 @@
 		"description": "Lütfen yeni bir başlık girin",
 		"placeholder": "Başlık girin..."
 	},
-	"confirm": { "delete": "Sil" },
+	"confirm": {
+		"delete": "Sil"
+	},
 	"payment": {
 		"upgrade_plan": "Planı Yükselt",
 		"payment_method": "Ödeme Yöntemi",
@@ -336,25 +424,43 @@
 		"saving": "Kaydediliyor...",
 		"creating": "Oluşturuluyor...",
 		"save": "Kaydet",
-		"create": "Oluştur"
+		"create": "Oluştur",
+		"desc_placeholder": "örn. \"Python en iyi uygulamalarına odaklan\", \"Profesyonel bir ton kullan\" veya \"Daima kaynak belirt\"."
 	},
 	"image_generation": {
 		"categories": {
-			"all": "Tümü", "portrait": "Portre / Avatar", "brand": "Marka / Ticari",
-			"poster": "Poster ve Reklam", "illustration": "İllüstrasyon ve Çizgi Film",
-			"product": "Ürün / El Sanatı", "architecture": "Mimari / Mekan",
-			"film": "Film ve Storyboard", "lifestyle": "Yaşam Tarzı / Doğa",
-			"scifi": "Bilim Kurgu / Gelecek", "ui": "UI / Arayüz",
-			"uncategorized": "Kategorisiz", "favorites": "Favoriler"
-		}
+			"all": "Tümü",
+			"portrait": "Portre / Avatar",
+			"brand": "Marka / Ticari",
+			"poster": "Poster ve Reklam",
+			"illustration": "İllüstrasyon ve Çizgi Film",
+			"product": "Ürün / El Sanatı",
+			"architecture": "Mimari / Mekan",
+			"film": "Film ve Storyboard",
+			"lifestyle": "Yaşam Tarzı / Doğa",
+			"scifi": "Bilim Kurgu / Gelecek",
+			"ui": "UI / Arayüz",
+			"uncategorized": "Kategorisiz",
+			"favorites": "Favoriler"
+		},
+		"empty_state": "Görsel bulunamadı",
+		"empty_state_subtitle": "Bağlantınızı kontrol edin veya farklı bir kategori deneyin"
 	},
 	"video_generation": {
 		"categories": {
-			"all": "Tümü", "drama": "Kısa Dizi", "dance": "Dans ve Cosplay",
-			"advertising": "Reklam", "chinese_fantasy": "Çin Fantezisi",
-			"scifi_action": "Bilim Kurgu Aksiyon", "anime_game": "Anime ve Oyun",
-			"healing": "Yaşam Tarzı ve Huzur", "uncategorized": "Kategorisiz", "favorites": "Favoriler"
-		}
+			"all": "Tümü",
+			"drama": "Kısa Dizi",
+			"dance": "Dans ve Cosplay",
+			"advertising": "Reklam",
+			"chinese_fantasy": "Çin Fantezisi",
+			"scifi_action": "Bilim Kurgu Aksiyon",
+			"anime_game": "Anime ve Oyun",
+			"healing": "Yaşam Tarzı ve Huzur",
+			"uncategorized": "Kategorisiz",
+			"favorites": "Favoriler"
+		},
+		"empty_state": "Video bulunamadı",
+		"empty_state_subtitle": "Bağlantınızı kontrol edin veya farklı bir kategori deneyin"
 	},
 	"explore": {
 		"title": "AI Botlarını Keşfet",
@@ -362,9 +468,17 @@
 		"create_bot": "AI Bot Oluştur",
 		"search_placeholder": "Bot ara",
 		"tags": {
-			"all": "Tümü", "work": "İş", "study": "Eğitim", "creative": "Yaratıcı",
-			"tech": "Teknoloji", "life": "Yaşam", "emotion": "Duygu", "business": "İş Dünyası",
-			"tools": "Araçlar", "uncategorized": "Kategorisiz", "favorites": "Favoriler"
+			"all": "Tümü",
+			"work": "İş",
+			"study": "Eğitim",
+			"creative": "Yaratıcı",
+			"tech": "Teknoloji",
+			"life": "Yaşam",
+			"emotion": "Duygu",
+			"business": "İş Dünyası",
+			"tools": "Araçlar",
+			"uncategorized": "Kategorisiz",
+			"favorites": "Favoriler"
 		},
 		"official_badge": "Resmi",
 		"by_author": "Yapımcı",
@@ -397,5 +511,94 @@
 		"create_failed": "Oluşturma başarısız, lütfen tekrar deneyin",
 		"name_required": "Lütfen bir karakter adı girin",
 		"prompt_required": "Lütfen bir karakter promptu girin"
+	},
+	"library": {
+		"title": "Kütüphane",
+		"search_placeholder": "Varlıkları ara...",
+		"upload": "Yükle",
+		"source_all": "Tüm Kaynaklar",
+		"source_ai": "AI Üretimi",
+		"source_local": "Yerel Yükleme",
+		"type_all": "Tüm Türler",
+		"type_image": "Görseller",
+		"type_video": "Videolar",
+		"type_audio": "Ses",
+		"type_3d": "3D Varlıklar",
+		"type_document": "Belgeler",
+		"selected": "{count} seçili",
+		"clear": "Temizle",
+		"download": "İndir",
+		"delete": "Sil",
+		"uploading": "{count} dosya yükleniyor...",
+		"upload_complete": "Yükleme tamamlandı",
+		"upload_failed": "Yükleme başarısız",
+		"downloading": "{count} öğe indiriliyor",
+		"deleted": "Başarıyla silindi",
+		"confirm_delete": "{count} öğeyi silmek istediğinizden emin misiniz?"
+	},
+	"params": {
+		"add_file": "Add file",
+		"file_count": "{count} file | {count} files",
+		"attach_desc": "Attach files to enhance your conversation.\nUpload or select from assets.",
+		"upload_file": "Upload file",
+		"select_from_assets": "Select from assets",
+		"web_search": "Web Search",
+		"enable_web_search": "Enable Web Search",
+		"web_search_desc": "Enable web search and real-time information access.",
+		"model_params": "Model Parameters",
+		"parameters": "Parameters",
+		"reset": "Reset",
+		"image_prompt": "Image prompt",
+		"prompt_images_count": "{count} prompt image | {count} prompt images",
+		"image_prompt_desc": "Image prompts apply style and content to your generation.\nUpload or select from assets.",
+		"upload": "Upload",
+		"select_asset": "Select asset",
+		"style": "Style",
+		"outputs": "Outputs",
+		"duration": "Duration",
+		"reference": "Reference",
+		"ref_image_desc": "Upload a reference image to guide generation.",
+		"images": "Images",
+		"ref_images_count": "{count} images",
+		"ref_images_desc": "Upload multiple reference images.",
+		"start_frame": "Start frame",
+		"start_frame_desc": "Start frame anchors the opening of your video.",
+		"end_frame": "End frame",
+		"end_frame_desc": "End frame anchors the ending of your video.",
+		"video": "Video",
+		"video_ready": "Video ✓",
+		"ref_video_desc": "Upload a reference video.",
+		"videos": "Videos",
+		"videos_count": "{count} videos",
+		"ref_videos_desc": "Upload multiple reference videos.",
+		"dynamic": {
+			"audio_enabled_desc": "Ses oluşturulsun mu",
+			"aspect_ratio_label": "En Boy Oranı",
+			"resolution_label": "Çözünürlük"
+		}
+	},
+	"asset_picker": {
+		"title": "Varlık seç",
+		"select_multiple": "Bir veya daha fazla {type} seçin",
+		"select_single": "Bir {type} seçin",
+		"video": "video",
+		"image": "görsel",
+		"videos": "videolar",
+		"images": "görseller",
+		"no_videos": "Henüz video yok",
+		"no_images": "Henüz görsel yok",
+		"upload_videos_first": "Burada kullanmak için önce video yükleyin",
+		"upload_images_first": "Burada kullanmak için önce görsel yükleyin",
+		"video_label": "VİDEO",
+		"loading": "Yükleniyor...",
+		"load_more": "Daha fazla",
+		"selected_count": "{count} seçildi",
+		"no_selection": "Seçim yok",
+		"confirm": "Onayla"
+	},
+	"assets_grid": {
+		"no_assets": "Varlık bulunamadı",
+		"no_assets_desc": "Filtrelerinizi ayarlamayı veya yeni bir şey yüklemeyi/oluşturmayı deneyin.",
+		"retry": "Yeniden Dene"
 	}
 }

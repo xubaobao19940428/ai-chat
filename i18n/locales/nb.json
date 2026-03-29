@@ -44,6 +44,21 @@
 		"image_generation_failed_desc": "Kunne ikke generere bilde. Dette kan skyldes innholdsbegrensninger eller et midlertidig problem. Prøv igjen.",
 		"drag_drop_title": "Slipp filer her for å laste opp",
 		"drag_drop_subtitle": "Støtter bilder og filer",
+		"try_style_image": "Prøv en stil på et bilde",
+		"try_style_video": "Prøv en stil på en video",
+		"view_more": "Se mer",
+		"start_chat": "Start chat",
+		"quick_help_write": "Hjelp meg å skrive",
+		"quick_learn": "Lær om",
+		"quick_analyze_image": "Analyser bilde",
+		"quick_summarize": "Oppsummer tekst",
+		"quick_analyze_data": "Analyser data",
+		"quick_brainstorm": "Idédugnad",
+		"quick_improve_writing": "Forbedre skriving",
+		"quick_translate": "Oversett",
+		"quick_generate_images": "Generer bilder",
+		"quick_generate_ideas": "Generer ideer",
+		"quick_see_more": "+ Se mer",
 		"loading_messages": "Laster meldinger...",
 		"thinking": "Tenker",
 		"discard_changes": "Forkaste endringer?",
@@ -409,7 +424,8 @@
 		"saving": "Lagrer...",
 		"creating": "Oppretter...",
 		"save": "Lagre",
-		"create": "Opprett"
+		"create": "Opprett",
+		"desc_placeholder": "f.eks. \"Fokus på Python best practices\", \"Hold en profesjonell tone\" eller \"Alltid oppgi kilder\"."
 	},
 	"image_generation": {
 		"categories": {
@@ -426,7 +442,9 @@
 			"ui": "UI / Grensesnitt",
 			"uncategorized": "Ukategorisert",
 			"favorites": "Favoritter"
-		}
+		},
+		"empty_state": "Ingen bilder funnet",
+		"empty_state_subtitle": "Sjekk tilkoblingen din eller prøv en annen kategori"
 	},
 	"video_generation": {
 		"categories": {
@@ -440,7 +458,9 @@
 			"healing": "Livsstil og avslapning",
 			"uncategorized": "Ukategorisert",
 			"favorites": "Favoritter"
-		}
+		},
+		"empty_state": "Ingen videoer funnet",
+		"empty_state_subtitle": "Sjekk tilkoblingen din eller prøv en annen kategori"
 	},
 	"explore": {
 		"title": "Oppdag AI-roboter",
@@ -491,5 +511,94 @@
 		"create_failed": "Opprettelse mislyktes, prøv igjen",
 		"name_required": "Vennligst skriv inn et karakternavn",
 		"prompt_required": "Vennligst skriv inn en karakter-prompt"
+	},
+	"library": {
+		"title": "Bibliotek",
+		"search_placeholder": "Søk etter ressurser...",
+		"upload": "Last opp",
+		"source_all": "Alle kilder",
+		"source_ai": "AI-generert",
+		"source_local": "Lokal opplasting",
+		"type_all": "Alle typer",
+		"type_image": "Bilder",
+		"type_video": "Videoer",
+		"type_audio": "Lyd",
+		"type_3d": "3D-ressurser",
+		"type_document": "Dokumenter",
+		"selected": "{count} valgt",
+		"clear": "Tøm",
+		"download": "Last ned",
+		"delete": "Slett",
+		"uploading": "Laster opp {count} filer...",
+		"upload_complete": "Opplasting fullført",
+		"upload_failed": "Opplasting mislyktes",
+		"downloading": "Laster ned {count} elementer",
+		"deleted": "Slettet",
+		"confirm_delete": "Er du sikker på at du vil slette {count} elementer?"
+	},
+	"params": {
+		"add_file": "Add file",
+		"file_count": "{count} file | {count} files",
+		"attach_desc": "Attach files to enhance your conversation.\nUpload or select from assets.",
+		"upload_file": "Upload file",
+		"select_from_assets": "Select from assets",
+		"web_search": "Web Search",
+		"enable_web_search": "Enable Web Search",
+		"web_search_desc": "Enable web search and real-time information access.",
+		"model_params": "Model Parameters",
+		"parameters": "Parameters",
+		"reset": "Reset",
+		"image_prompt": "Image prompt",
+		"prompt_images_count": "{count} prompt image | {count} prompt images",
+		"image_prompt_desc": "Image prompts apply style and content to your generation.\nUpload or select from assets.",
+		"upload": "Upload",
+		"select_asset": "Select asset",
+		"style": "Style",
+		"outputs": "Outputs",
+		"duration": "Duration",
+		"reference": "Reference",
+		"ref_image_desc": "Upload a reference image to guide generation.",
+		"images": "Images",
+		"ref_images_count": "{count} images",
+		"ref_images_desc": "Upload multiple reference images.",
+		"start_frame": "Start frame",
+		"start_frame_desc": "Start frame anchors the opening of your video.",
+		"end_frame": "End frame",
+		"end_frame_desc": "End frame anchors the ending of your video.",
+		"video": "Video",
+		"video_ready": "Video ✓",
+		"ref_video_desc": "Upload a reference video.",
+		"videos": "Videos",
+		"videos_count": "{count} videos",
+		"ref_videos_desc": "Upload multiple reference videos.",
+		"dynamic": {
+			"audio_enabled_desc": "Om lyd skal genereres",
+			"aspect_ratio_label": "Størrelsesforhold",
+			"resolution_label": "Oppløsning"
+		}
+	},
+	"asset_picker": {
+		"title": "Velg ressurs",
+		"select_multiple": "Velg en eller flere {type}",
+		"select_single": "Velg en {type}",
+		"video": "video",
+		"image": "bilde",
+		"videos": "videoer",
+		"images": "bilder",
+		"no_videos": "Ingen videoer ennå",
+		"no_images": "Ingen bilder ennå",
+		"upload_videos_first": "Last opp videoer først for å bruke dem her",
+		"upload_images_first": "Last opp bilder først for å bruke dem her",
+		"video_label": "VIDEO",
+		"loading": "Laster...",
+		"load_more": "Last inn mer",
+		"selected_count": "{count} valgt",
+		"no_selection": "Ingen valgt",
+		"confirm": "Bekreft"
+	},
+	"assets_grid": {
+		"no_assets": "Ingen ressurser funnet",
+		"no_assets_desc": "Prøv å justere filtrene dine eller last opp/generer noe nytt.",
+		"retry": "Prøv igjen"
 	}
 }

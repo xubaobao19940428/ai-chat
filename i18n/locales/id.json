@@ -44,6 +44,21 @@
 		"image_generation_failed_desc": "Tidak dapat membuat gambar. Ini mungkin karena pembatasan konten atau masalah sementara. Silakan coba lagi.",
 		"drag_drop_title": "Lepaskan file di sini untuk mengunggah",
 		"drag_drop_subtitle": "Mendukung gambar dan file",
+		"try_style_image": "Coba gaya pada gambar",
+		"try_style_video": "Coba gaya pada video",
+		"view_more": "Lihat lebih banyak",
+		"start_chat": "Mulai Obrolan",
+		"quick_help_write": "Bantu saya menulis",
+		"quick_learn": "Pelajari tentang",
+		"quick_analyze_image": "Analisis Gambar",
+		"quick_summarize": "Ringkas teks",
+		"quick_analyze_data": "Analisis Data",
+		"quick_brainstorm": "Brainstorming",
+		"quick_improve_writing": "Perbaiki tulisan",
+		"quick_translate": "Terjemahkan",
+		"quick_generate_images": "Buat Gambar",
+		"quick_generate_ideas": "Buat Ide",
+		"quick_see_more": "+ Lihat Lainnya",
 		"loading_messages": "Memuat pesan...",
 		"thinking": "Berpikir",
 		"discard_changes": "Buang perubahan?",
@@ -164,7 +179,18 @@
 			"nickname": "Nama panggilan",
 			"nickname_placeholder": "Apa panggilan dari MixU untuk Anda?",
 			"occupation": "Pekerjaan",
-			"occupation_placeholders": ["Software Engineer", "Product Manager", "Desainer UI", "Data Scientist", "Penulis Lepas", "Mahasiswa", "Pengusaha", "Marketing Ops", "Guru SMA", "Full-Stack Developer"],
+			"occupation_placeholders": [
+				"Software Engineer",
+				"Product Manager",
+				"Desainer UI",
+				"Data Scientist",
+				"Penulis Lepas",
+				"Mahasiswa",
+				"Pengusaha",
+				"Marketing Ops",
+				"Guru SMA",
+				"Full-Stack Developer"
+			],
 			"your_details": "Detail Anda",
 			"your_details_placeholder": "Minat, nilai, atau preferensi yang perlu diingat",
 			"memory": "Memori",
@@ -187,35 +213,95 @@
 			"connector_search": "Pencarian konektor",
 			"connector_search_desc": "Biarkan MixU secara otomatis mencari sumber terhubung untuk jawaban.",
 			"style_tones": {
-				"default": { "title": "Default", "desc": "Gaya dan nada bawaan" },
-				"professional": { "title": "Profesional & Andal", "desc": "Dirancang dengan cermat" },
-				"friendly": { "title": "Ramah & Mudah Didekati", "desc": "Hangat dan komunikatif" },
-				"direct": { "title": "Langsung & Optimis", "desc": "Lugas dan optimis" },
-				"creative": { "title": "Imajinatif", "desc": "Fantasi yang menyenangkan" },
-				"practical": { "title": "Efisien & Praktis", "desc": "Ringkas dan langsung" },
-				"tech": { "title": "Geek Teknologi", "desc": "Penjelajah yang antusias" },
-				"sarcastic": { "title": "Sindiran Pedas", "desc": "Tajam dan cerdas" }
+				"default": {
+					"title": "Default",
+					"desc": "Gaya dan nada bawaan"
+				},
+				"professional": {
+					"title": "Profesional & Andal",
+					"desc": "Dirancang dengan cermat"
+				},
+				"friendly": {
+					"title": "Ramah & Mudah Didekati",
+					"desc": "Hangat dan komunikatif"
+				},
+				"direct": {
+					"title": "Langsung & Optimis",
+					"desc": "Lugas dan optimis"
+				},
+				"creative": {
+					"title": "Imajinatif",
+					"desc": "Fantasi yang menyenangkan"
+				},
+				"practical": {
+					"title": "Efisien & Praktis",
+					"desc": "Ringkas dan langsung"
+				},
+				"tech": {
+					"title": "Geek Teknologi",
+					"desc": "Penjelajah yang antusias"
+				},
+				"sarcastic": {
+					"title": "Sindiran Pedas",
+					"desc": "Tajam dan cerdas"
+				}
 			},
 			"characteristics_options": {
 				"gentle": {
-					"increase": { "title": "Tingkatkan", "desc": "Lebih ramah, lebih dekat" },
-					"default": { "title": "Default", "desc": "" },
-					"decrease": { "title": "Kurangi", "desc": "Lebih profesional, sangat faktual" }
+					"increase": {
+						"title": "Tingkatkan",
+						"desc": "Lebih ramah, lebih dekat"
+					},
+					"default": {
+						"title": "Default",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "Kurangi",
+						"desc": "Lebih profesional, sangat faktual"
+					}
 				},
 				"passionate": {
-					"increase": { "title": "Tingkatkan", "desc": "Lebih bersemangat" },
-					"default": { "title": "Default", "desc": "" },
-					"decrease": { "title": "Kurangi", "desc": "Lebih tenang dan netral" }
+					"increase": {
+						"title": "Tingkatkan",
+						"desc": "Lebih bersemangat"
+					},
+					"default": {
+						"title": "Default",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "Kurangi",
+						"desc": "Lebih tenang dan netral"
+					}
 				},
 				"titles_lists": {
-					"increase": { "title": "Tingkatkan", "desc": "Gunakan format jelas dan struktur daftar" },
-					"default": { "title": "Default", "desc": "" },
-					"decrease": { "title": "Kurangi", "desc": "Lebih banyak teks paragraf, lebih sedikit struktur daftar" }
+					"increase": {
+						"title": "Tingkatkan",
+						"desc": "Gunakan format jelas dan struktur daftar"
+					},
+					"default": {
+						"title": "Default",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "Kurangi",
+						"desc": "Lebih banyak teks paragraf, lebih sedikit struktur daftar"
+					}
 				},
 				"emojis": {
-					"increase": { "title": "Tingkatkan", "desc": "Gunakan lebih banyak emoji" },
-					"default": { "title": "Default", "desc": "" },
-					"decrease": { "title": "Kurangi", "desc": "Gunakan sesedikit mungkin emoji" }
+					"increase": {
+						"title": "Tingkatkan",
+						"desc": "Gunakan lebih banyak emoji"
+					},
+					"default": {
+						"title": "Default",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "Kurangi",
+						"desc": "Gunakan sesedikit mungkin emoji"
+					}
 				}
 			}
 		},
@@ -338,7 +424,8 @@
 		"saving": "Menyimpan...",
 		"creating": "Membuat...",
 		"save": "Simpan",
-		"create": "Buat"
+		"create": "Buat",
+		"desc_placeholder": "mis. \"Fokus pada praktik terbaik Python\", \"Pertahankan nada profesional\", atau \"Selalu berikan sumber\"."
 	},
 	"image_generation": {
 		"categories": {
@@ -355,7 +442,9 @@
 			"ui": "UI / Antarmuka",
 			"uncategorized": "Tidak Berkategori",
 			"favorites": "Favorit"
-		}
+		},
+		"empty_state": "Tidak ada gambar ditemukan",
+		"empty_state_subtitle": "Periksa koneksi Anda atau coba kategori lain"
 	},
 	"video_generation": {
 		"categories": {
@@ -369,7 +458,9 @@
 			"healing": "Gaya Hidup & Healing",
 			"uncategorized": "Tidak Berkategori",
 			"favorites": "Favorit"
-		}
+		},
+		"empty_state": "Tidak ada video ditemukan",
+		"empty_state_subtitle": "Periksa koneksi Anda atau coba kategori lain"
 	},
 	"explore": {
 		"title": "Temukan Bot AI",
@@ -420,5 +511,94 @@
 		"create_failed": "Pembuatan gagal, silakan coba lagi",
 		"name_required": "Silakan masukkan nama karakter",
 		"prompt_required": "Silakan masukkan prompt karakter"
+	},
+	"library": {
+		"title": "Perpustakaan",
+		"search_placeholder": "Cari aset...",
+		"upload": "Unggah",
+		"source_all": "Semua Sumber",
+		"source_ai": "Dibuat AI",
+		"source_local": "Unggahan Lokal",
+		"type_all": "Semua Jenis",
+		"type_image": "Gambar",
+		"type_video": "Video",
+		"type_audio": "Audio",
+		"type_3d": "Aset 3D",
+		"type_document": "Dokumen",
+		"selected": "{count} dipilih",
+		"clear": "Hapus",
+		"download": "Unduh",
+		"delete": "Hapus",
+		"uploading": "Mengunggah {count} file...",
+		"upload_complete": "Unggahan selesai",
+		"upload_failed": "Unggahan gagal",
+		"downloading": "Mengunduh {count} item",
+		"deleted": "Berhasil dihapus",
+		"confirm_delete": "Apakah Anda yakin ingin menghapus {count} item?"
+	},
+	"params": {
+		"add_file": "Add file",
+		"file_count": "{count} file | {count} files",
+		"attach_desc": "Attach files to enhance your conversation.\nUpload or select from assets.",
+		"upload_file": "Upload file",
+		"select_from_assets": "Select from assets",
+		"web_search": "Web Search",
+		"enable_web_search": "Enable Web Search",
+		"web_search_desc": "Enable web search and real-time information access.",
+		"model_params": "Model Parameters",
+		"parameters": "Parameters",
+		"reset": "Reset",
+		"image_prompt": "Image prompt",
+		"prompt_images_count": "{count} prompt image | {count} prompt images",
+		"image_prompt_desc": "Image prompts apply style and content to your generation.\nUpload or select from assets.",
+		"upload": "Upload",
+		"select_asset": "Select asset",
+		"style": "Style",
+		"outputs": "Outputs",
+		"duration": "Duration",
+		"reference": "Reference",
+		"ref_image_desc": "Upload a reference image to guide generation.",
+		"images": "Images",
+		"ref_images_count": "{count} images",
+		"ref_images_desc": "Upload multiple reference images.",
+		"start_frame": "Start frame",
+		"start_frame_desc": "Start frame anchors the opening of your video.",
+		"end_frame": "End frame",
+		"end_frame_desc": "End frame anchors the ending of your video.",
+		"video": "Video",
+		"video_ready": "Video ✓",
+		"ref_video_desc": "Upload a reference video.",
+		"videos": "Videos",
+		"videos_count": "{count} videos",
+		"ref_videos_desc": "Upload multiple reference videos.",
+		"dynamic": {
+			"audio_enabled_desc": "Apakah akan menghasilkan audio",
+			"aspect_ratio_label": "Rasio Aspek",
+			"resolution_label": "Resolusi"
+		}
+	},
+	"asset_picker": {
+		"title": "Pilih aset",
+		"select_multiple": "Pilih satu atau lebih {type}",
+		"select_single": "Pilih {type}",
+		"video": "video",
+		"image": "gambar",
+		"videos": "video",
+		"images": "gambar",
+		"no_videos": "Belum ada video",
+		"no_images": "Belum ada gambar",
+		"upload_videos_first": "Unggah video terlebih dahulu untuk menggunakannya di sini",
+		"upload_images_first": "Unggah gambar terlebih dahulu untuk menggunakannya di sini",
+		"video_label": "VIDEO",
+		"loading": "Memuat...",
+		"load_more": "Muat lebih banyak",
+		"selected_count": "{count} terpilih",
+		"no_selection": "Tidak ada pilihan",
+		"confirm": "Konfirmasi"
+	},
+	"assets_grid": {
+		"no_assets": "Tidak ada aset ditemukan",
+		"no_assets_desc": "Coba sesuaikan filter Anda atau unggah/buat yang baru.",
+		"retry": "Coba lagi"
 	}
 }

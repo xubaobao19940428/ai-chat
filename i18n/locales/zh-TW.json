@@ -44,6 +44,21 @@
 		"image_generation_failed_desc": "無法產生圖片。這可能是由於內容限制或暫時性問題，請再試一次。",
 		"drag_drop_title": "拖放檔案至此上傳",
 		"drag_drop_subtitle": "支援圖片與檔案",
+		"try_style_image": "試試圖片風格",
+		"try_style_video": "試試影片風格",
+		"view_more": "查看更多",
+		"start_chat": "開始聊天",
+		"quick_help_write": "幫我寫作",
+		"quick_learn": "學習了解",
+		"quick_analyze_image": "分析圖片",
+		"quick_summarize": "摘要文字",
+		"quick_analyze_data": "分析資料",
+		"quick_brainstorm": "腦力激盪",
+		"quick_improve_writing": "改善寫作",
+		"quick_translate": "翻譯",
+		"quick_generate_images": "生成圖片",
+		"quick_generate_ideas": "生成創意",
+		"quick_see_more": "+ 查看更多",
 		"loading_messages": "載入訊息中...",
 		"thinking": "思考中",
 		"discard_changes": "捨棄變更？",
@@ -164,7 +179,18 @@
 			"nickname": "暱稱",
 			"nickname_placeholder": "MixU 該怎麼稱呼你？",
 			"occupation": "職業",
-			"occupation_placeholders": ["軟體工程師", "產品經理", "UI 設計師", "資料科學家", "自由撰稿人", "大學生", "創業者", "行銷營運", "高中老師", "全端開發工程師"],
+			"occupation_placeholders": [
+				"軟體工程師",
+				"產品經理",
+				"UI 設計師",
+				"資料科學家",
+				"自由撰稿人",
+				"大學生",
+				"創業者",
+				"行銷營運",
+				"高中老師",
+				"全端開發工程師"
+			],
 			"your_details": "你的詳細資訊",
 			"your_details_placeholder": "興趣、價值觀或需要記住的偏好",
 			"memory": "記憶",
@@ -187,35 +213,95 @@
 			"connector_search": "連接器搜尋",
 			"connector_search_desc": "讓 MixU 自動搜尋已連接的來源以取得答案。",
 			"style_tones": {
-				"default": { "title": "預設", "desc": "預設風格與語氣" },
-				"professional": { "title": "專業可靠", "desc": "精雕細琢" },
-				"friendly": { "title": "友善親切", "desc": "溫暖健談" },
-				"direct": { "title": "直接樂觀", "desc": "開門見山，積極向上" },
-				"creative": { "title": "富有想像力", "desc": "趣味幻想" },
-				"practical": { "title": "高效務實", "desc": "簡潔明瞭" },
-				"tech": { "title": "科技極客", "desc": "熱情探索者" },
-				"sarcastic": { "title": "毒舌吐槽", "desc": "犀利機智" }
+				"default": {
+					"title": "預設",
+					"desc": "預設風格與語氣"
+				},
+				"professional": {
+					"title": "專業可靠",
+					"desc": "精雕細琢"
+				},
+				"friendly": {
+					"title": "友善親切",
+					"desc": "溫暖健談"
+				},
+				"direct": {
+					"title": "直接樂觀",
+					"desc": "開門見山，積極向上"
+				},
+				"creative": {
+					"title": "富有想像力",
+					"desc": "趣味幻想"
+				},
+				"practical": {
+					"title": "高效務實",
+					"desc": "簡潔明瞭"
+				},
+				"tech": {
+					"title": "科技極客",
+					"desc": "熱情探索者"
+				},
+				"sarcastic": {
+					"title": "毒舌吐槽",
+					"desc": "犀利機智"
+				}
 			},
 			"characteristics_options": {
 				"gentle": {
-					"increase": { "title": "增強", "desc": "更友善、更親近" },
-					"default": { "title": "預設", "desc": "" },
-					"decrease": { "title": "降低", "desc": "更專業、更注重事實" }
+					"increase": {
+						"title": "增強",
+						"desc": "更友善、更親近"
+					},
+					"default": {
+						"title": "預設",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "降低",
+						"desc": "更專業、更注重事實"
+					}
 				},
 				"passionate": {
-					"increase": { "title": "增強", "desc": "更有活力" },
-					"default": { "title": "預設", "desc": "" },
-					"decrease": { "title": "降低", "desc": "更冷靜中性" }
+					"increase": {
+						"title": "增強",
+						"desc": "更有活力"
+					},
+					"default": {
+						"title": "預設",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "降低",
+						"desc": "更冷靜中性"
+					}
 				},
 				"titles_lists": {
-					"increase": { "title": "增強", "desc": "使用清晰格式與列表結構" },
-					"default": { "title": "預設", "desc": "" },
-					"decrease": { "title": "降低", "desc": "更多段落文字，減少列表結構" }
+					"increase": {
+						"title": "增強",
+						"desc": "使用清晰格式與列表結構"
+					},
+					"default": {
+						"title": "預設",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "降低",
+						"desc": "更多段落文字，減少列表結構"
+					}
 				},
 				"emojis": {
-					"increase": { "title": "增強", "desc": "使用更多表情符號" },
-					"default": { "title": "預設", "desc": "" },
-					"decrease": { "title": "降低", "desc": "盡量少用表情符號" }
+					"increase": {
+						"title": "增強",
+						"desc": "使用更多表情符號"
+					},
+					"default": {
+						"title": "預設",
+						"desc": ""
+					},
+					"decrease": {
+						"title": "降低",
+						"desc": "盡量少用表情符號"
+					}
 				}
 			}
 		},
@@ -338,7 +424,8 @@
 		"saving": "儲存中...",
 		"creating": "建立中...",
 		"save": "儲存",
-		"create": "建立"
+		"create": "建立",
+		"desc_placeholder": "例如：「遵守 Python 最佳實踐」、「保持專業語調」或「重要結論必須提供來源」。"
 	},
 	"image_generation": {
 		"categories": {
@@ -355,7 +442,9 @@
 			"ui": "UI / 介面",
 			"uncategorized": "未分類",
 			"favorites": "收藏"
-		}
+		},
+		"empty_state": "暫無圖片",
+		"empty_state_subtitle": "請檢查網路連線或嘗試其他分類"
 	},
 	"video_generation": {
 		"categories": {
@@ -369,7 +458,9 @@
 			"healing": "生活與療癒",
 			"uncategorized": "未分類",
 			"favorites": "收藏"
-		}
+		},
+		"empty_state": "暫無影片",
+		"empty_state_subtitle": "請檢查網路連線或嘗試其他分類"
 	},
 	"explore": {
 		"title": "探索 AI 機器人",
@@ -420,5 +511,94 @@
 		"create_failed": "建立失敗，請重試",
 		"name_required": "請輸入角色名稱",
 		"prompt_required": "請輸入角色提示詞"
+	},
+	"library": {
+		"title": "素材庫",
+		"search_placeholder": "搜尋素材...",
+		"upload": "上傳",
+		"source_all": "全部來源",
+		"source_ai": "AI 生成",
+		"source_local": "本地上傳",
+		"type_all": "全部類型",
+		"type_image": "圖片",
+		"type_video": "影片",
+		"type_audio": "音訊",
+		"type_3d": "3D 素材",
+		"type_document": "文件",
+		"selected": "已選 {count} 項",
+		"clear": "清除",
+		"download": "下載",
+		"delete": "刪除",
+		"uploading": "正在上傳 {count} 個檔案...",
+		"upload_complete": "上傳完成",
+		"upload_failed": "上傳失敗",
+		"downloading": "正在下載 {count} 項",
+		"deleted": "刪除成功",
+		"confirm_delete": "確定要刪除 {count} 項嗎？"
+	},
+	"params": {
+		"add_file": "新增檔案",
+		"file_count": "{count} 個檔案",
+		"attach_desc": "附加檔案以增強對話。\n上傳或從素材庫選擇。",
+		"upload_file": "上傳檔案",
+		"select_from_assets": "從素材庫選擇",
+		"web_search": "網頁搜尋",
+		"enable_web_search": "啟用網頁搜尋",
+		"web_search_desc": "啟用網頁搜尋和即時資訊存取。",
+		"model_params": "模型參數",
+		"parameters": "參數",
+		"reset": "重置",
+		"image_prompt": "圖片提示",
+		"prompt_images_count": "{count} 張提示圖",
+		"image_prompt_desc": "圖片提示將樣式和內容應用到您的生成中。\n上傳或從素材庫選擇。",
+		"upload": "上傳",
+		"select_asset": "選擇素材",
+		"style": "風格",
+		"outputs": "輸出數量",
+		"duration": "時長",
+		"reference": "參考圖",
+		"ref_image_desc": "上傳參考圖以引導生成。",
+		"images": "圖片",
+		"ref_images_count": "{count} 張圖片",
+		"ref_images_desc": "上傳多張參考圖片。",
+		"start_frame": "起始幀",
+		"start_frame_desc": "起始幀決定影片的開頭。",
+		"end_frame": "結束幀",
+		"end_frame_desc": "結束幀決定影片的結尾。",
+		"video": "影片",
+		"video_ready": "影片 ✓",
+		"ref_video_desc": "上傳參考影片。",
+		"videos": "影片",
+		"videos_count": "{count} 個影片",
+		"ref_videos_desc": "上傳多個參考影片。",
+		"dynamic": {
+			"audio_enabled_desc": "是否生成音訊",
+			"aspect_ratio_label": "比例",
+			"resolution_label": "解析度"
+		}
+	},
+	"asset_picker": {
+		"title": "選擇素材",
+		"select_multiple": "選擇一個或多個{type}",
+		"select_single": "選擇一個{type}",
+		"video": "影片",
+		"image": "圖片",
+		"videos": "影片",
+		"images": "圖片",
+		"no_videos": "暫無影片",
+		"no_images": "暫無圖片",
+		"upload_videos_first": "請先上傳影片才能在此使用",
+		"upload_images_first": "請先上傳圖片才能在此使用",
+		"video_label": "影片",
+		"loading": "載入中...",
+		"load_more": "載入更多",
+		"selected_count": "已選擇 {count} 項",
+		"no_selection": "未選擇",
+		"confirm": "確定"
+	},
+	"assets_grid": {
+		"no_assets": "未找到素材",
+		"no_assets_desc": "請嘗試調整篩選條件或上傳/生成新內容。",
+		"retry": "重試"
 	}
 }

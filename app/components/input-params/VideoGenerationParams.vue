@@ -8,7 +8,7 @@
 				<img :src="refImageFile.url" class="w-4 h-4 rounded-sm object-cover shrink-0" />
 			</template>
 			<ImagePlus v-else :size="14" class="text-[var(--text-secondary)]" />
-			<span class="unified-pill-text">Reference</span>
+			<span class="unified-pill-text">{{ $t('params.reference') }}</span>
 			<button v-if="refImageFile" @click.stop="$emit('remove-media', 'image')"
 				class="ml-0.5 -mr-1 w-4 h-4 rounded-full flex items-center justify-center hover:bg-[var(--bg-hover)] transition-colors">
 				<X :size="10" class="text-[var(--text-tertiary)]" />
@@ -24,16 +24,16 @@
 				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[250px]">
 				<div class="unified-popover flex flex-col gap-4">
 					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
-						Upload a reference image to guide generation.
+						{{ $t('params.ref_image_desc') }}
 					</p>
 					<div class="flex flex-col gap-2">
 						<button @click="$emit('trigger-upload', 'image')" class="unified-upload-btn-primary">
 							<Plus :size="14" stroke-width="3" />
-							Upload
+							{{ $t('params.upload') }}
 						</button>
 						<button @click="$emit('select-asset', 'image')" class="unified-upload-btn-secondary">
 							<ImagePlus :size="14" />
-							Select asset
+							{{ $t('params.select_asset') }}
 						</button>
 					</div>
 				</div>
@@ -57,7 +57,7 @@
 			</template>
 			<Images v-else :size="14" class="text-[var(--text-secondary)]" />
 			<span class="unified-pill-text">
-				{{ refImagesFiles.length > 0 ? `${refImagesFiles.length} images` : 'Images' }}
+				{{ refImagesFiles.length > 0 ? $t('params.ref_images_count', { count: refImagesFiles.length }) : $t('params.images') }}
 			</span>
 			<button v-if="refImagesFiles.length > 0" @click.stop="$emit('remove-media', 'input_images')"
 				class="ml-0.5 -mr-1 w-4 h-4 rounded-full flex items-center justify-center hover:bg-[var(--bg-hover)] transition-colors">
@@ -74,16 +74,16 @@
 				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[250px]">
 				<div class="unified-popover flex flex-col gap-4">
 					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
-						Upload multiple reference images.
+						{{ $t('params.ref_images_desc') }}
 					</p>
 					<div class="flex flex-col gap-2">
 						<button @click="$emit('trigger-upload', 'input_images')" class="unified-upload-btn-primary">
 							<Plus :size="14" stroke-width="3" />
-							Upload
+							{{ $t('params.upload') }}
 						</button>
 						<button @click="$emit('select-asset', 'input_images')" class="unified-upload-btn-secondary">
 							<ImagePlus :size="14" />
-							Select asset
+							{{ $t('params.select_asset') }}
 						</button>
 					</div>
 				</div>
@@ -100,7 +100,7 @@
 				<img :src="startFrameFile.url" class="w-4 h-4 rounded-sm object-cover shrink-0" />
 			</template>
 			<ImagePlus v-else :size="14" class="text-[var(--text-secondary)]" />
-			<span class="unified-pill-text">Start frame</span>
+			<span class="unified-pill-text">{{ $t('params.start_frame') }}</span>
 			<button v-if="startFrameFile" @click.stop="$emit('remove-media', 'init_image')"
 				class="ml-0.5 -mr-1 w-4 h-4 rounded-full flex items-center justify-center hover:bg-[var(--bg-hover)] transition-colors">
 				<X :size="10" class="text-[var(--text-tertiary)]" />
@@ -116,16 +116,16 @@
 				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[250px]">
 				<div class="unified-popover flex flex-col gap-4">
 					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
-						Start frame anchors the opening of your video.
+						{{ $t('params.start_frame_desc') }}
 					</p>
 					<div class="flex flex-col gap-2">
 						<button @click="$emit('trigger-upload', 'init_image')" class="unified-upload-btn-primary">
 							<Plus :size="14" stroke-width="3" />
-							Upload
+							{{ $t('params.upload') }}
 						</button>
 						<button @click="$emit('select-asset', 'init_image')" class="unified-upload-btn-secondary">
 							<ImagePlus :size="14" />
-							Select asset
+							{{ $t('params.select_asset') }}
 						</button>
 					</div>
 				</div>
@@ -142,7 +142,7 @@
 				<img :src="endFrameFile.url" class="w-4 h-4 rounded-sm object-cover shrink-0" />
 			</template>
 			<ImagePlus v-else :size="14" class="text-[var(--text-secondary)]" />
-			<span class="unified-pill-text">End frame</span>
+			<span class="unified-pill-text">{{ $t('params.end_frame') }}</span>
 			<button v-if="endFrameFile" @click.stop="$emit('remove-media', 'end_image')"
 				class="ml-0.5 -mr-1 w-4 h-4 rounded-full flex items-center justify-center hover:bg-[var(--bg-hover)] transition-colors">
 				<X :size="10" class="text-[var(--text-tertiary)]" />
@@ -158,16 +158,16 @@
 				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[250px]">
 				<div class="unified-popover flex flex-col gap-4">
 					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
-						End frame anchors the ending of your video.
+						{{ $t('params.end_frame_desc') }}
 					</p>
 					<div class="flex flex-col gap-2">
 						<button @click="$emit('trigger-upload', 'end_image')" class="unified-upload-btn-primary">
 							<Plus :size="14" stroke-width="3" />
-							Upload
+							{{ $t('params.upload') }}
 						</button>
 						<button @click="$emit('select-asset', 'end_image')" class="unified-upload-btn-secondary">
 							<ImagePlus :size="14" />
-							Select asset
+							{{ $t('params.select_asset') }}
 						</button>
 					</div>
 				</div>
@@ -184,7 +184,7 @@
 				<Video :size="14" class="text-green-500" />
 			</template>
 			<Video v-else :size="14" class="text-[var(--text-secondary)]" />
-			<span class="unified-pill-text">{{ refVideoFile ? 'Video ✓' : 'Video' }}</span>
+			<span class="unified-pill-text">{{ refVideoFile ? $t('params.video_ready') : $t('params.video') }}</span>
 			<button v-if="refVideoFile" @click.stop="$emit('remove-media', 'video')"
 				class="ml-0.5 -mr-1 w-4 h-4 rounded-full flex items-center justify-center hover:bg-[var(--bg-hover)] transition-colors">
 				<X :size="10" class="text-[var(--text-tertiary)]" />
@@ -200,16 +200,16 @@
 				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[250px]">
 				<div class="unified-popover flex flex-col gap-4">
 					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
-						Upload a reference video.
+						{{ $t('params.ref_video_desc') }}
 					</p>
 					<div class="flex flex-col gap-2">
 						<button @click="$emit('trigger-upload', 'video')" class="unified-upload-btn-primary">
 							<Plus :size="14" stroke-width="3" />
-							Upload
+							{{ $t('params.upload') }}
 						</button>
 						<button @click="$emit('select-asset', 'video')" class="unified-upload-btn-secondary">
 							<Video :size="14" />
-							Select asset
+							{{ $t('params.select_asset') }}
 						</button>
 					</div>
 				</div>
@@ -227,7 +227,7 @@
 			</template>
 			<Video v-else :size="14" class="text-[var(--text-secondary)]" />
 			<span class="unified-pill-text">
-				{{ refVideosFiles.length > 0 ? `${refVideosFiles.length} videos` : 'Videos' }}
+				{{ refVideosFiles.length > 0 ? $t('params.videos_count', { count: refVideosFiles.length }) : $t('params.videos') }}
 			</span>
 			<button v-if="refVideosFiles.length > 0" @click.stop="$emit('remove-media', 'input_videos')"
 				class="ml-0.5 -mr-1 w-4 h-4 rounded-full flex items-center justify-center hover:bg-[var(--bg-hover)] transition-colors">
@@ -244,16 +244,16 @@
 				class="absolute bottom-full left-0 mb-2 pb-2 z-[60] min-w-[250px]">
 				<div class="unified-popover flex flex-col gap-4">
 					<p class="text-[13px] font-medium text-[var(--text-primary)] text-center leading-snug px-1">
-						Upload multiple reference videos.
+						{{ $t('params.ref_videos_desc') }}
 					</p>
 					<div class="flex flex-col gap-2">
 						<button @click="$emit('trigger-upload', 'input_videos')" class="unified-upload-btn-primary">
 							<Plus :size="14" stroke-width="3" />
-							Upload
+							{{ $t('params.upload') }}
 						</button>
 						<button @click="$emit('select-asset', 'input_videos')" class="unified-upload-btn-secondary">
 							<Video :size="14" />
-							Select asset
+							{{ $t('params.select_asset') }}
 						</button>
 					</div>
 				</div>
@@ -335,7 +335,7 @@
 					class="absolute bottom-full left-0 mb-2 z-[60]"
 					:class="isDurationSelect(field) ? 'min-w-[170px]' : 'min-w-[220px]'">
 					<div class="unified-popover p-3.5">
-						<p class="text-[10px] font-bold text-[var(--text-tertiary)] mb-2.5 px-1 uppercase tracking-widest text-center">Duration</p>
+						<p class="text-[10px] font-bold text-[var(--text-tertiary)] mb-2.5 px-1 uppercase tracking-widest text-center">{{ $t('params.duration') }}</p>
 
 						<!-- Select-type: discrete button grid -->
 						<template v-if="isDurationSelect(field)">
@@ -391,7 +391,7 @@
 				:class="fields.activeDropdown.value === field.key ? 'unified-pill-active' : ''">
 				<Palette :size="14" class="text-[var(--text-secondary)]" />
 				<span class="unified-pill-text">
-					{{ getParamValue(field.key, field.default) === 'No Style' || !getParamValue(field.key, field.default) ? 'Style' : getParamValue(field.key, field.default) }}
+					{{ getParamValue(field.key, field.default) === 'No Style' || !getParamValue(field.key, field.default) ? $t('params.style') : getParamValue(field.key, field.default) }}
 				</span>
 			</button>
 			<Transition enter-active-class="transition duration-150 ease-out" enter-from-class="translate-y-1 opacity-0"
@@ -431,7 +431,7 @@
 					class="absolute bottom-full left-0 mb-2 z-[60] min-w-[170px]">
 					<div class="unified-popover p-3.5">
 						<p class="text-[10px] font-bold text-[var(--text-tertiary)] mb-2.5 px-1 uppercase tracking-widest text-center">
-							{{ field.label || field.key.replace(/_/g, ' ') }}</p>
+							{{ $te('params.dynamic.' + field.key + '_label') ? $t('params.dynamic.' + field.key + '_label') : (field.label || field.key.replace(/_/g, ' ')) }}</p>
 						<div class="flex flex-col gap-1 max-h-[220px] overflow-y-auto custom-scrollbar">
 							<button v-for="opt in field.options" :key="opt"
 								@click="fields.setParamAndClose(field.key, opt)"
@@ -460,7 +460,7 @@
 			<Clock v-if="field.key === 'duration'" :size="14" class="text-[var(--text-secondary)]" />
 			<Monitor v-else :size="14" class="text-[var(--text-secondary)]" />
 			<span class="unified-pill-text">
-				{{ getParamValue(field.key, field.default) }}{{ field.key === 'duration' ? 's' : ` ${field.label || field.key.replace(/_/g, ' ')}` }}
+				{{ getParamValue(field.key, field.default) }}{{ field.key === 'duration' ? 's' : ` ${$te('params.dynamic.' + field.key + '_label') ? $t('params.dynamic.' + field.key + '_label') : (field.label || field.key.replace(/_/g, ' '))}` }}
 			</span>
 		</button>
 		<Transition enter-active-class="transition duration-150 ease-out"
@@ -473,7 +473,7 @@
 				:class="field.key === 'duration' || field.max - field.min > 10 ? 'min-w-[220px]' : 'min-w-[170px]'">
 				<div class="unified-popover p-3.5">
 					<p class="text-[10px] font-bold text-[var(--text-tertiary)] mb-2.5 px-1 uppercase tracking-widest text-center">
-						{{ field.key === 'duration' ? 'Duration' : (field.label || field.key.replace(/_/g, ' ')) }}
+						{{ field.key === 'duration' ? $t('params.duration') : ($te('params.dynamic.' + field.key + '_label') ? $t('params.dynamic.' + field.key + '_label') : (field.label || field.key.replace(/_/g, ' '))) }}
 					</p>
 
 					<!-- Slider UI for duration or large ranges (>10) -->
@@ -523,7 +523,7 @@
 
 	<!-- Dynamic Boolean Fields (audio_enabled, etc.) -->
 	<div v-for="field in fields.dynamicBooleanFields.value" :key="field.key" class="relative" @mouseleave="fields.scheduleCloseDropdown()">
-		<Tooltip :text="field.description || field.key">
+		<Tooltip :text="$te('params.dynamic.' + field.key + '_desc') ? $t('params.dynamic.' + field.key + '_desc') : (field.description || field.key)">
 			<button @mouseenter="fields.openDropdown(field.key)"
 				class="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-full transition-colors relative"
 				:class="{ 'text-[var(--text-primary)]': getParamValue(field.key, field.default), 'bg-[var(--bg-hover)]': true }">
@@ -542,11 +542,11 @@
 			<div v-if="fields.activeDropdown.value === field.key"
 				@mouseenter="fields.cancelCloseDropdown()" @mouseleave="fields.scheduleCloseDropdown()"
 				class="absolute bottom-full left-0 mb-3 z-50 w-[280px] max-w-[calc(100vw-2rem)] bg-[var(--bg-main)] rounded-2xl shadow-lg border border-[var(--border-light)] p-4 cursor-default">
-				<div class="text-[14px] font-semibold text-[var(--text-primary)] mb-3">{{ field.description || field.key }}</div>
+				<div class="text-[14px] font-semibold text-[var(--text-primary)] mb-3">{{ $te('params.dynamic.' + field.key + '_desc') ? $t('params.dynamic.' + field.key + '_desc') : (field.description || field.key) }}</div>
 				<div class="h-[1px] bg-[var(--border-light)] -mx-4 mb-3"></div>
 				<div class="flex items-start justify-between">
 					<div class="pr-4">
-						<div class="text-[13px] font-medium text-[var(--text-primary)]">{{ field.description || field.key }}</div>
+						<div class="text-[13px] font-medium text-[var(--text-primary)]">{{ $te('params.dynamic.' + field.key + '_desc') ? $t('params.dynamic.' + field.key + '_desc') : (field.description || field.key) }}</div>
 					</div>
 					<Switch :model-value="!!getParamValue(field.key, field.default)"
 						@update:model-value="fields.setParam(field.key, $event)"

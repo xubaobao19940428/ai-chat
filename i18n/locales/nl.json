@@ -44,6 +44,21 @@
 		"image_generation_failed_desc": "Kan afbeelding niet genereren. Dit kan te wijten zijn aan inhoudsbeperkingen of een tijdelijk probleem. Probeer het opnieuw.",
 		"drag_drop_title": "Sleep bestanden hierheen om te uploaden",
 		"drag_drop_subtitle": "Ondersteunt afbeeldingen en bestanden",
+		"try_style_image": "Probeer een stijl op een afbeelding",
+		"try_style_video": "Probeer een stijl op een video",
+		"view_more": "Meer bekijken",
+		"start_chat": "Chat starten",
+		"quick_help_write": "Help me schrijven",
+		"quick_learn": "Leren over",
+		"quick_analyze_image": "Afbeelding analyseren",
+		"quick_summarize": "Tekst samenvatten",
+		"quick_analyze_data": "Data analyseren",
+		"quick_brainstorm": "Brainstormen",
+		"quick_improve_writing": "Schrijven verbeteren",
+		"quick_translate": "Vertalen",
+		"quick_generate_images": "Afbeeldingen genereren",
+		"quick_generate_ideas": "Ideeën genereren",
+		"quick_see_more": "+ Meer bekijken",
 		"loading_messages": "Berichten laden...",
 		"thinking": "Nadenken",
 		"discard_changes": "Wijzigingen verwerpen?",
@@ -409,7 +424,8 @@
 		"saving": "Opslaan...",
 		"creating": "Aanmaken...",
 		"save": "Opslaan",
-		"create": "Aanmaken"
+		"create": "Aanmaken",
+		"desc_placeholder": "bijv. \"Focus op Python best practices\", \"Houd een professionele toon aan\" of \"Vermeld altijd bronnen\"."
 	},
 	"image_generation": {
 		"categories": {
@@ -426,7 +442,9 @@
 			"ui": "UI / Interface",
 			"uncategorized": "Niet gecategoriseerd",
 			"favorites": "Favorieten"
-		}
+		},
+		"empty_state": "Geen afbeeldingen gevonden",
+		"empty_state_subtitle": "Controleer je verbinding of probeer een andere categorie"
 	},
 	"video_generation": {
 		"categories": {
@@ -440,7 +458,9 @@
 			"healing": "Levensstijl & Ontspanning",
 			"uncategorized": "Niet gecategoriseerd",
 			"favorites": "Favorieten"
-		}
+		},
+		"empty_state": "Geen video's gevonden",
+		"empty_state_subtitle": "Controleer je verbinding of probeer een andere categorie"
 	},
 	"explore": {
 		"title": "Ontdek AI-bots",
@@ -491,5 +511,94 @@
 		"create_failed": "Aanmaken mislukt, probeer het opnieuw",
 		"name_required": "Voer een personagenaam in",
 		"prompt_required": "Voer een personage-prompt in"
+	},
+	"library": {
+		"title": "Bibliotheek",
+		"search_placeholder": "Zoek assets...",
+		"upload": "Uploaden",
+		"source_all": "Alle bronnen",
+		"source_ai": "AI-gegenereerd",
+		"source_local": "Lokale upload",
+		"type_all": "Alle types",
+		"type_image": "Afbeeldingen",
+		"type_video": "Video's",
+		"type_audio": "Audio",
+		"type_3d": "3D-assets",
+		"type_document": "Documenten",
+		"selected": "{count} geselecteerd",
+		"clear": "Wissen",
+		"download": "Downloaden",
+		"delete": "Verwijderen",
+		"uploading": "{count} bestanden uploaden...",
+		"upload_complete": "Upload voltooid",
+		"upload_failed": "Upload mislukt",
+		"downloading": "{count} items downloaden",
+		"deleted": "Succesvol verwijderd",
+		"confirm_delete": "Weet u zeker dat u {count} items wilt verwijderen?"
+	},
+	"params": {
+		"add_file": "Add file",
+		"file_count": "{count} file | {count} files",
+		"attach_desc": "Attach files to enhance your conversation.\nUpload or select from assets.",
+		"upload_file": "Upload file",
+		"select_from_assets": "Select from assets",
+		"web_search": "Web Search",
+		"enable_web_search": "Enable Web Search",
+		"web_search_desc": "Enable web search and real-time information access.",
+		"model_params": "Model Parameters",
+		"parameters": "Parameters",
+		"reset": "Reset",
+		"image_prompt": "Image prompt",
+		"prompt_images_count": "{count} prompt image | {count} prompt images",
+		"image_prompt_desc": "Image prompts apply style and content to your generation.\nUpload or select from assets.",
+		"upload": "Upload",
+		"select_asset": "Select asset",
+		"style": "Style",
+		"outputs": "Outputs",
+		"duration": "Duration",
+		"reference": "Reference",
+		"ref_image_desc": "Upload a reference image to guide generation.",
+		"images": "Images",
+		"ref_images_count": "{count} images",
+		"ref_images_desc": "Upload multiple reference images.",
+		"start_frame": "Start frame",
+		"start_frame_desc": "Start frame anchors the opening of your video.",
+		"end_frame": "End frame",
+		"end_frame_desc": "End frame anchors the ending of your video.",
+		"video": "Video",
+		"video_ready": "Video ✓",
+		"ref_video_desc": "Upload a reference video.",
+		"videos": "Videos",
+		"videos_count": "{count} videos",
+		"ref_videos_desc": "Upload multiple reference videos.",
+		"dynamic": {
+			"audio_enabled_desc": "Of er audio gegenereerd moet worden",
+			"aspect_ratio_label": "Beeldverhouding",
+			"resolution_label": "Resolutie"
+		}
+	},
+	"asset_picker": {
+		"title": "Selecteer item",
+		"select_multiple": "Selecteer een of meer {type}",
+		"select_single": "Selecteer een {type}",
+		"video": "video",
+		"image": "afbeelding",
+		"videos": "video's",
+		"images": "afbeeldingen",
+		"no_videos": "Nog geen video's",
+		"no_images": "Nog geen afbeeldingen",
+		"upload_videos_first": "Upload eerst video's om ze hier te gebruiken",
+		"upload_images_first": "Upload eerst afbeeldingen om ze hier te gebruiken",
+		"video_label": "VIDEO",
+		"loading": "Bezig met laden...",
+		"load_more": "Meer laden",
+		"selected_count": "{count} geselecteerd",
+		"no_selection": "Niets geselecteerd",
+		"confirm": "Bevestigen"
+	},
+	"assets_grid": {
+		"no_assets": "Geen items gevonden",
+		"no_assets_desc": "Probeer je filters aan te passen of upload/genereer iets nieuws.",
+		"retry": "Opnieuw"
 	}
 }

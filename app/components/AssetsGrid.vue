@@ -16,12 +16,12 @@
 			<div class="size-20 rounded-3xl bg-[var(--fill-tsp-gray-main)] flex items-center justify-center text-[var(--text-tertiary)] mb-2">
 				<Library :size="32" />
 			</div>
-			<h3 class="text-lg font-semibold text-[var(--text-primary)]">No assets found</h3>
-			<p class="text-sm text-[var(--text-tertiary)]">Try adjusting your filters or upload/generate something new.</p>
+			<h3 class="text-lg font-semibold text-[var(--text-primary)]">{{ $t('assets_grid.no_assets') }}</h3>
+			<p class="text-sm text-[var(--text-tertiary)]">{{ $t('assets_grid.no_assets_desc') }}</p>
 			<button @click="assetStore.fetchAssets(true)"
 				class="mt-4 px-5 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-main)] text-[13px] font-semibold hover:opacity-90 transition-opacity flex items-center gap-2">
 				<RefreshCw :size="14" />
-				Retry
+				{{ $t('assets_grid.retry') }}
 			</button>
 		</div>
 
