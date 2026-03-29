@@ -156,7 +156,8 @@ jobs:
 
                   set +e
                   sshpass -e rsync -rLDvz --copy-unsafe-links --ignore-errors -e "ssh -o StrictHostKeyChecking=no" \
-                    --exclude 'node_modules' \
+                    --exclude '/node_modules' \
+                    --exclude '/.nuxt' \
                     --exclude '.git' \
                     --exclude '.github' \
                     --delete \
