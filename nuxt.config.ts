@@ -57,9 +57,9 @@ export default defineNuxtConfig({
     },
     runtimeConfig: {
         public: {
-            apiBase: '',
-            appId: '',
-            appKey: '',
+            apiBase: 'https://do.mixu.ai',
+            appId: '1',
+            appKey: '49f68a5c8493ec2c0bf489821c21fc3b',
         }
     },
     vite: {
