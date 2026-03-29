@@ -144,7 +144,7 @@ export const sendChatMessage = async (
     nonce
   }
 
-  const apiBase = (runtimeConfig.apiBase || 'https://ai-test.iappdaily.com').replace(/\/$/, '')
+  const apiBase = (runtimeConfig.apiBase).replace(/\/$/, '')
   const fullPath = `${apiBase}/v1/chat/completions`
 
   const secretKey = runtimeConfig.appKey
@@ -155,9 +155,14 @@ export const sendChatMessage = async (
   try {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'x-app-domain': 'ai-test.iappdaily.com',
-      'x-app-id': runtimeConfig.appId || '1'
+      'x-app-id': runtimeConfig.appId
     }
+    try {
+      const hostname = new URL(apiBase).hostname
+      if (!hostname.includes('mixu.ai')) {
+        headers['x-app-domain'] = hostname
+      }
+    } catch {}
 
     const token = localStorage.getItem('token')
     if (token) {

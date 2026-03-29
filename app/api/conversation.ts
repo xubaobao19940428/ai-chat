@@ -75,19 +75,23 @@ export const generateConversationTitle = async (
   const nonce = randomString(16)
   const allParams: Record<string, any> = { ...requestBody, timestamp, nonce }
 
-  const productionDomain = 'https://ai-test.iappdaily.com'
-  const fullPath = `${productionDomain}/v1/ai-assistant/generate-title`
-  const secretKey = runtimeConfig.appKey || '49f68a5c8493ec2c0bf489821c21fc3b'
+  const apiBase = runtimeConfig.apiBase.replace(/\/$/, '')
+  const fullPath = `${apiBase}/v1/ai-assistant/generate-title`
+  const secretKey = runtimeConfig.appKey
   const sign = generateSign(fullPath, allParams, secretKey)
 
-  const apiBase = runtimeConfig.apiBase || '/api'
   const url = `${apiBase}/v1/ai-assistant/generate-title?timestamp=${timestamp}&nonce=${nonce}&sign=${sign}`
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    'x-app-domain': 'ai-test.iappdaily.com',
-    'x-app-id': runtimeConfig.appId || '1',
+    'x-app-id': runtimeConfig.appId,
   }
+  try {
+    const hostname = new URL(apiBase).hostname
+    if (!hostname.includes('mixu.ai')) {
+      headers['x-app-domain'] = hostname
+    }
+  } catch {}
   const token = localStorage.getItem('token')
   if (token) headers['Authorization'] = token
 
@@ -136,19 +140,23 @@ export const generateFollowUpQuestions = async (
   const nonce = randomString(16)
   const allParams: Record<string, any> = { ...requestBody, timestamp, nonce }
 
-  const productionDomain = 'https://ai-test.iappdaily.com'
-  const fullPath = `${productionDomain}/v1/ai-assistant/generate-follow-up-questions`
-  const secretKey = runtimeConfig.appKey || '49f68a5c8493ec2c0bf489821c21fc3b'
+  const apiBase = runtimeConfig.apiBase.replace(/\/$/, '')
+  const fullPath = `${apiBase}/v1/ai-assistant/generate-follow-up-questions`
+  const secretKey = runtimeConfig.appKey
   const sign = generateSign(fullPath, allParams, secretKey)
 
-  const apiBase = runtimeConfig.apiBase || '/api'
   const url = `${apiBase}/v1/ai-assistant/generate-follow-up-questions?timestamp=${timestamp}&nonce=${nonce}&sign=${sign}`
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    'x-app-domain': 'ai-test.iappdaily.com',
-    'x-app-id': runtimeConfig.appId || '1',
+    'x-app-id': runtimeConfig.appId,
   }
+  try {
+    const hostname = new URL(apiBase).hostname
+    if (!hostname.includes('mixu.ai')) {
+      headers['x-app-domain'] = hostname
+    }
+  } catch {}
   const token = localStorage.getItem('token')
   if (token) headers['Authorization'] = token
 

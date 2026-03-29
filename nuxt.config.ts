@@ -57,9 +57,9 @@ export default defineNuxtConfig({
     },
     runtimeConfig: {
         public: {
-            apiBase: 'https://ai-test.iappdaily.com',
-            appId: '1',
-            appKey: '49f68a5c8493ec2c0bf489821c21fc3b',
+            apiBase: '',
+            appId: '',
+            appKey: '',
         }
     },
     vite: {

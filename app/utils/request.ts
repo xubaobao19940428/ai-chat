@@ -15,11 +15,9 @@ const handleAuthError = () => {
 
 // 创建axios实例
 const service: AxiosInstance = axios.create({
-  baseURL: 'https://ai-test.iappdaily.com',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
-    'x-app-domain': 'ai-test.iappdaily.com',
   },
 })
 
@@ -28,10 +26,16 @@ service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const runtimeConfig = useRuntimeConfig().public
     
-    // Dynamic config setup
-    config.baseURL = import.meta.client ? runtimeConfig.apiBase : 'https://ai-test.iappdaily.com'
+    // Dynamic config setup from env variables
+    config.baseURL = runtimeConfig.apiBase
     if (config.headers) {
-      config.headers['x-app-id'] = import.meta.client ? runtimeConfig.appId : '1'
+      config.headers['x-app-id'] = runtimeConfig.appId
+      try {
+        const hostname = new URL(runtimeConfig.apiBase).hostname
+        if (!hostname.includes('mixu.ai')) {
+          config.headers['x-app-domain'] = hostname
+        }
+      } catch {}
     }
 
     // Auth token
@@ -77,14 +81,14 @@ service.interceptors.request.use(
     }
 
     // Construct full path for signing
-    const productionDomain = 'https://ai-test.iappdaily.com'
+    const apiBase = runtimeConfig.apiBase.replace(/\/$/, '')
     let signingPath = baseUrl
     if (signingPath.startsWith('/api')) {
       signingPath = signingPath.substring(4)
     }
-    const fullPath = productionDomain.replace(/\/$/, '') + '/' + signingPath.replace(/^\//, '')
+    const fullPath = apiBase + '/' + signingPath.replace(/^\//, '')
 
-    const secretKey = runtimeConfig.appKey || '49f68a5c8493ec2c0bf489821c21fc3b'
+    const secretKey = runtimeConfig.appKey
     const sign = generateSign(fullPath, allParams, secretKey)
 
     // Update config
