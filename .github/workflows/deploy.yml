@@ -101,7 +101,15 @@ jobs:
               run: |
                   # 清理旧的构建缓存，确保完全重新构建
                   rm -rf .nuxt .output
-                  pnpm build
+                  # 直接使用 nuxt build（不用 --mode prod，环境变量已通过 env 注入）
+                  npx nuxt build
+                  # 验证构建产物
+                  if [ ! -f ".output/server/index.mjs" ]; then
+                    echo "❌ 构建失败：.output/server/index.mjs 不存在"
+                    ls -la .output/ 2>/dev/null || echo ".output 目录不存在"
+                    exit 1
+                  fi
+                  echo "✅ 构建成功，.output/server/index.mjs 已生成"
               env:
                   NUXT_PUBLIC_API_BASE: ${{ secrets.NUXT_PUBLIC_API_BASE || 'https://do.mixu.ai' }}
                   NUXT_PUBLIC_APP_ID: ${{ secrets.NUXT_PUBLIC_APP_ID || '1' }}
@@ -173,11 +181,22 @@ jobs:
                   sshpass -e ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "bash -l -c '
                     set -x
                     
-                    # 优先使用项目根目录的 pm2，如果没有则尝试 npx
+                    # 加载 Node.js 环境（兼容 nvm / fnm / 系统安装）
+                    export NVM_DIR=\"\$HOME/.nvm\"
+                    [ -s \"\$NVM_DIR/nvm.sh\" ] && source \"\$NVM_DIR/nvm.sh\"
+                    [ -s \"\$HOME/.fnm/fnm\" ] && eval \"\$(\$HOME/.fnm/fnm env)\"
+                    export PATH=\"\$HOME/.local/bin:\$HOME/.npm-global/bin:/usr/local/bin:\$PATH\"
+                    
+                    # 查找 pm2
                     if command -v pm2 &> /dev/null; then
                       PM2_CMD=\"pm2\"
-                    else
+                    elif [ -f \"\$HOME/.npm-global/bin/pm2\" ]; then
+                      PM2_CMD=\"\$HOME/.npm-global/bin/pm2\"
+                    elif command -v npx &> /dev/null; then
                       PM2_CMD=\"npx --yes pm2\"
+                    else
+                      echo \"错误：找不到 pm2 或 npx，请先在服务器上安装: npm install -g pm2\"
+                      exit 1
                     fi
                     
                     RELEASE_DIR=\"${{ env.DEPLOY_BASE }}/releases/$VERSION\"
