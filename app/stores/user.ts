@@ -154,6 +154,7 @@ export const useUserStore = defineStore('user', () => {
     token,
     userInfo,
     initialize,
+    setToken,
     login,
     register,
     sendCode,
@@ -164,4 +165,3 @@ export const useUserStore = defineStore('user', () => {
     fetchAccountRecords
   }
 })
-

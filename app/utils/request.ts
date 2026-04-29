@@ -32,8 +32,12 @@ service.interceptors.request.use(
       config.headers['x-app-id'] = runtimeConfig.appId
       try {
         const hostname = new URL(runtimeConfig.apiBase).hostname
-        if (!hostname.includes('mixu.ai')) {
+        // 本地开发 默认不传x-app-domain
+        if (!import.meta.dev && !hostname.includes('mixu.ai')) {
           config.headers['x-app-domain'] = hostname
+        }else if(import.meta.dev) {
+          // 开发环境 默认不传x-app-domain
+          config.headers['x-app-domain'] = 'mixu.ai'
         }
       } catch {}
     }

@@ -37,6 +37,14 @@ export const register = (data: RegisterParams) => {
   return request.post('/v1/sso/register', data)
 }
 
+export const getSocialLoginUrl = (provider: string) => {
+  return request.get(`/v1/sso/social/${provider}`)
+}
+
+export const socialLoginCallback = (provider: string, params: Record<string, any>) => {
+  return request.get(`/v1/sso/callback/${provider}`, { params })
+}
+
 export const getUserProfile = () => {
   return request.get('/v1/sso/profile')
 }

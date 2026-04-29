@@ -1,9 +1,10 @@
 <template>
-	<div class="flex-1 flex flex-col overflow-hidden bg-[var(--background-gray-main)] transition-colors">
+	<div class="flex h-full min-h-full flex-col overflow-hidden bg-[var(--background-gray-main)] transition-colors">
 		<!-- 欢迎界面 -->
-		<div class="flex-1 h-full overflow-hidden">
+		<div class="flex-1 min-h-0 overflow-hidden">
 			<WelcomeScreen mode="chat" :is-loading="chatStore.isLoading" @send-message="handleWelcomeSendMessage" />
 		</div>
+		<AppFooter />
 	</div>
 </template>
 

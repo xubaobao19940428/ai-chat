@@ -195,41 +195,43 @@
 
 									<!-- Bottom -->
 									<div
-										class="flex items-center justify-between p-[8px] border-t border-[var(--border-light)] shrink-0">
-										<div class="flex items-center gap-[4px]">
-											<div @click="uiStore.openSettingsModal()"
-												class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 transition-colors">
-												<Settings2 :size="18" class="text-[var(--icon-primary)]" />
-											</div>
-											<div @click="toggleTheme"
-												class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 transition-colors">
-												<Sun v-if="uiStore.currentTheme === 'dark'" :size="18"
-													class="text-[var(--icon-primary)]" />
-												<Moon v-else :size="18" class="text-[var(--icon-primary)]" />
-											</div>
-										</div>
-
-										<!-- User -->
-										<div v-if="userStore.token" class="flex items-center gap-2">
-											<div class="flex items-center gap-2 cursor-pointer"
-												@click="uiStore.openSettingsModal()">
-												<div
-													class="w-7 h-7 rounded-full bg-[var(--Button-primary-black)] text-[var(--text-onblack)] flex items-center justify-center text-xs font-bold shrink-0">
-													{{ userStore.userInfo?.nickname?.charAt(0)?.toUpperCase() || 'U' }}
+										class="flex flex-col gap-2 p-[8px] border-t border-[var(--border-light)] shrink-0">
+										<div class="flex items-center justify-between">
+											<div class="flex items-center gap-[4px]">
+												<div @click="uiStore.openSettingsModal()"
+													class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 transition-colors">
+													<Settings2 :size="18" class="text-[var(--icon-primary)]" />
 												</div>
-												<span
-													class="text-[13px] font-medium text-[var(--text-primary)] max-w-[100px] truncate">{{
-														userStore.userInfo?.nickname || 'User' }}</span>
+												<div @click="toggleTheme"
+													class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 transition-colors">
+													<Sun v-if="uiStore.currentTheme === 'dark'" :size="18"
+														class="text-[var(--icon-primary)]" />
+													<Moon v-else :size="18" class="text-[var(--icon-primary)]" />
+												</div>
 											</div>
-											<div @click="userStore.logout()"
-												class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 transition-colors">
-												<LogOut :size="16" class="text-[var(--icon-secondary)]" />
+
+											<!-- User -->
+											<div v-if="userStore.token" class="flex items-center gap-2">
+												<div class="flex items-center gap-2 cursor-pointer"
+													@click="uiStore.openSettingsModal()">
+													<div
+														class="w-7 h-7 rounded-full bg-[var(--Button-primary-black)] text-[var(--text-onblack)] flex items-center justify-center text-xs font-bold shrink-0">
+														{{ userStore.userInfo?.nickname?.charAt(0)?.toUpperCase() || 'U' }}
+													</div>
+													<span
+														class="text-[13px] font-medium text-[var(--text-primary)] max-w-[100px] truncate">{{
+															userStore.userInfo?.nickname || 'User' }}</span>
+												</div>
+												<div @click="userStore.logout()"
+													class="flex items-center justify-center cursor-pointer rounded-md hover:bg-[var(--fill-tsp-gray-main)] size-8 transition-colors">
+													<LogOut :size="16" class="text-[var(--icon-secondary)]" />
+												</div>
 											</div>
+											<button v-else @click="handleOpenLogin"
+												class="px-3 py-1.5 bg-[var(--Button-primary-black)] hover:opacity-90 text-[var(--text-onblack)] rounded-[8px] text-sm font-medium transition-opacity">
+												{{ $t('common.sign_in') }}
+											</button>
 										</div>
-										<button v-else @click="uiStore.openLoginModal()"
-											class="px-3 py-1.5 bg-[var(--Button-primary-black)] hover:opacity-90 text-[var(--text-onblack)] rounded-[8px] text-sm font-medium transition-opacity">
-											{{ $t('common.sign_in') }}
-										</button>
 									</div>
 								</div>
 							</DialogPanel>
@@ -349,6 +351,11 @@ const handleSelectConversation = (id: number | string) => {
 		router.push(`/chat/${encodeId(id)}`)
 	}
 	uiStore.closeMobileMenu()
+}
+
+const handleOpenLogin = () => {
+	uiStore.closeMobileMenu()
+	uiStore.openLoginModal()
 }
 
 const getConversationAvatar = (conversation: any) => {
