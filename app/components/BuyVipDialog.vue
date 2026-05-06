@@ -24,7 +24,7 @@
             leave-from="opacity-100 scale-100"
             leave-to="opacity-0 scale-95"
           >
-            <DialogPanel class="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-[var(--background-white-main)] border border-[var(--border-main)] p-6 text-left align-middle shadow-xl transition-all">
+            <DialogPanel class="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-[var(--background-white-main)] border border-[var(--border-main)] p-6 text-left align-middle shadow-xl transition-all">
               <DialogTitle as="h3" class="text-lg font-medium leading-6 text-[var(--text-primary)] flex justify-between items-center mb-6">
                 <span>{{ $t('payment.upgrade_plan') }}</span>
                 <button @click="closeModal" class="text-[var(--text-tertiary)] hover:text-[var(--text-primary)]">
@@ -39,32 +39,59 @@
 
               <div v-else class="flex flex-col gap-6">
                 <!-- Product Selection -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div
-                    v-for="product in products"
-                    :key="product.id"
-                    @click="selectProduct(product)"
-                    :class="[
-                      'relative cursor-pointer rounded-xl border-2 p-4 transition-all',
-                      selectedProduct?.id === product.id 
-                        ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/10' 
-                        : 'border-[var(--border-main)] hover:border-blue-400'
-                    ]"
-                  >
-                    <div class="flex justify-between items-start">
-                      <div>
-                        <h4 class="font-bold text-[var(--text-primary)]">{{ product.title }}</h4>
-                        <p class="text-sm text-[var(--text-secondary)] mt-1">{{ product.currency }} {{ product.price }}</p>
+                <div v-if="products.length" class="space-y-5">
+                  <div class="inline-flex rounded-lg border border-[var(--border-main)] bg-[var(--background-white-main)] p-1">
+                    <button
+                      v-for="tab in availableTabs"
+                      :key="tab.key"
+                      @click="activeTab = tab.key"
+                      :class="[
+                        'min-w-24 rounded-md px-4 py-2 text-sm font-medium transition-all',
+                        activeTab === tab.key
+                          ? 'bg-black text-white dark:bg-white dark:text-black'
+                          : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      ]"
+                    >
+                      {{ tab.label }}
+                    </button>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-3">
+                    <div
+                      v-for="product in activeProducts"
+                      :key="product.id"
+                      @click="selectProduct(product)"
+                      :class="[
+                        'relative cursor-pointer rounded-xl border-2 p-3 transition-all',
+                        selectedProduct?.id === product.id
+                          ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/10'
+                          : 'border-[var(--border-main)] hover:border-blue-400'
+                      ]"
+                    >
+                      <div class="flex justify-between items-start gap-4">
+                        <div class="min-w-0">
+                          <h4 class="truncate font-bold text-[var(--text-primary)]">{{ product.title }}</h4>
+                          <p class="text-sm text-[var(--text-secondary)] mt-1">{{ productSummary(product) }}</p>
+                        </div>
+                        <div v-if="selectedProduct?.id === product.id" class="text-blue-600 shrink-0">
+                          <CheckCircle :size="20" />
+                        </div>
                       </div>
-                      <div v-if="selectedProduct?.id === product.id" class="text-blue-600">
-                        <CheckCircle :size="24" />
+                      <div class="mt-3 flex items-end justify-between gap-2">
+                        <div class="text-xl font-bold text-[var(--text-primary)]">{{ formatPrice(product) }}</div>
+                        <div v-if="Number(product.discount) > 0" class="rounded-full bg-red-50 px-2 py-1 text-xs font-semibold text-red-600">
+                          -{{ Number(product.discount).toFixed(0) }}%
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
+                <div v-else class="py-10 text-center text-sm text-[var(--text-tertiary)]">
+                  No products available
+                </div>
 
                 <!-- Channel Selection -->
-                <div v-if="selectedProduct" class="space-y-3">
+                <div v-if="selectedProduct && payStore.payChannels.length" class="space-y-3">
                   <h4 class="text-sm font-medium text-[var(--text-secondary)]">{{ $t('payment.payment_method') }}</h4>
                   <div class="flex flex-wrap gap-3">
                     <button
@@ -87,7 +114,12 @@
                 <button
                   @click="handlePay"
                   :disabled="!isValid || processing"
-                  class="w-full mt-2 py-3 px-4 bg-black dark:bg-white text-white dark:text-black rounded-xl font-bold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity flex justify-center items-center gap-2"
+                  :class="[
+                    'w-full mt-2 py-3 px-4 rounded-xl font-bold transition-all flex justify-center items-center gap-2',
+                    isValid && !processing
+                      ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
+                      : 'bg-[var(--bg-hover)] text-[var(--text-tertiary)] cursor-not-allowed'
+                  ]"
                 >
                   <span v-if="processing" class="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent"></span>
                   <span>{{ processing ? $t('payment.processing') : $t('payment.pay_now') }}</span>
@@ -120,35 +152,71 @@ const selectedProduct = ref<Product | null>(null)
 const selectedChannelId = ref<number | null>(null)
 const processing = ref(false)
 const pollingTimer = ref<any>(null)
+const activeTab = ref<'subscriptions' | 'coins'>('subscriptions')
 
-const products = computed(() => {
-  // Sort by price usually makes sense, or use backend order
-  return [...payStore.products.subscriptions].sort((a, b) => a.price - b.price)
-})
+const subscriptionProducts = computed(() => payStore.products.subscriptions)
+const coinProducts = computed(() => payStore.products.coins)
+const products = computed(() => [...subscriptionProducts.value, ...coinProducts.value])
+const availableTabs = computed(() => [
+  ...(subscriptionProducts.value.length ? [{ key: 'subscriptions' as const, label: 'VIP' }] : []),
+  ...(coinProducts.value.length ? [{ key: 'coins' as const, label: 'Stars' }] : [])
+])
+const activeProducts = computed(() => (
+  activeTab.value === 'subscriptions' ? subscriptionProducts.value : coinProducts.value
+))
 
-const isValid = computed(() => selectedProduct.value && selectedChannelId.value)
+const isValid = computed(() => Boolean(selectedProduct.value))
+
+const formatPrice = (product: Product) => {
+  const currency = product.local_currency || product.currency || 'USD'
+  const amount = product.local_price > 0 ? product.local_price : Number(product.price)
+
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency,
+      maximumFractionDigits: Number.isInteger(amount) ? 0 : 2
+    }).format(amount)
+  } catch (_) {
+    return `${currency} ${amount}`
+  }
+}
+
+const productSummary = (product: Product) => {
+  const parts: string[] = []
+  const totalCoins = Number(product.coins || 0) + Number(product.reward_coins || 0)
+  const totalVipDays = Number(product.vip_days || 0) + Number(product.reward_vip_days || 0)
+
+  if (totalCoins > 0) parts.push(`${totalCoins} Stars`)
+  if (totalVipDays > 0) parts.push(`${totalVipDays} days VIP`)
+
+  return parts.join(' · ') || product.product_id
+}
 
 const closeModal = () => {
   stopPolling()
   emit('close')
 }
 
-const selectProduct = async (product: Product) => {
+const selectProduct = (product: Product) => {
   selectedProduct.value = product
-  selectedChannelId.value = null // Reset channel
-  await payStore.fetchChannels(product.id)
-  // Auto-select first channel if available
-  if (payStore.payChannels.length > 0) {
-    selectedChannelId.value = payStore.payChannels[0].id
-  }
+  selectedChannelId.value = null
+  payStore.payChannels = []
 }
 
 const handlePay = async () => {
-  if (!selectedProduct.value || !selectedChannelId.value) return
+  if (!selectedProduct.value) return
   
   processing.value = true
   try {
-    const { pay_link, trade_sn } = await payStore.createPayOrder(selectedProduct.value.id, selectedChannelId.value)
+    await payStore.fetchChannels(selectedProduct.value.id)
+    const channelId = payStore.payChannels[0]?.id
+    if (!channelId) {
+      throw new Error('No payment channel available')
+    }
+    selectedChannelId.value = channelId
+
+    const { pay_link, trade_sn } = await payStore.createPayOrder(selectedProduct.value.id, channelId)
     
     // Open payment link in new tab
     window.open(pay_link, '_blank')
@@ -192,12 +260,28 @@ const stopPolling = () => {
   }
 }
 
+const selectDefaultProduct = async () => {
+  const defaultProduct = products.value.find(product => Boolean(product.is_selected)) || products.value[0]
+  if (defaultProduct) {
+    activeTab.value = defaultProduct.type === 'INAPP' ? 'coins' : 'subscriptions'
+    await selectProduct(defaultProduct)
+  }
+}
+
+watch(activeTab, async () => {
+  const currentProductVisible = selectedProduct.value && activeProducts.value.some(product => product.id === selectedProduct.value?.id)
+  if (!currentProductVisible && activeProducts.value[0]) {
+    await selectProduct(activeProducts.value[0])
+  }
+})
+
 watch(() => props.isOpen, (val) => {
   if (val) {
-    payStore.fetchProducts()
+    payStore.fetchProducts().then(selectDefaultProduct)
   } else {
     selectedProduct.value = null
     selectedChannelId.value = null
+    activeTab.value = 'subscriptions'
     processing.value = false
     stopPolling()
   }

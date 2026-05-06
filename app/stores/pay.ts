@@ -6,22 +6,29 @@ import {
     createOrder,
     queryOrder,
     type Product,
+    type ProductsResponse,
     type PayChannel,
     type OrderStatus
 } from '~/utils/api'
 
 export const usePayStore = defineStore('pay', () => {
-    const products = ref<{ subscriptions: Product[], coins: Product[] }>({ subscriptions: [], coins: [] })
+    const products = ref<ProductsResponse>({ subscriptions: [], coins: [] })
     const payChannels = ref<PayChannel[]>([])
     const isLoading = ref(false)
+
+    const normalizeProducts = (data?: Partial<ProductsResponse>): ProductsResponse => ({
+        subscriptions: Array.isArray(data?.subscriptions) ? data.subscriptions : [],
+        coins: Array.isArray(data?.coins) ? data.coins : []
+    })
 
     const fetchProducts = async () => {
         isLoading.value = true
         try {
             const res: any = await getProducts()
-            products.value = res.data || { subscriptions: [], coins: [] }
+            products.value = normalizeProducts(res.data)
         } catch (error) {
             console.error('Fetch products failed:', error)
+            products.value = normalizeProducts()
         } finally {
             isLoading.value = false
         }
@@ -31,9 +38,10 @@ export const usePayStore = defineStore('pay', () => {
         isLoading.value = true
         try {
             const res: any = await getPayChannels({ pid })
-            payChannels.value = res.data.items || []
+            payChannels.value = Array.isArray(res.data?.items) ? res.data.items : []
         } catch (error) {
             console.error('Fetch pay channels failed:', error)
+            payChannels.value = []
         } finally {
             isLoading.value = false
         }

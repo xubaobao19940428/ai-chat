@@ -3,11 +3,26 @@ import request from '../utils/request'
 // Payment Types
 export interface Product {
   id: number
+  product_id: string
   title: string
-  price: number
+  type: 'SUBS' | 'INAPP' | string
+  price: string
+  original_price: string
+  discount: string
   currency: string
   local_price: number
+  local_original_price: number
   local_currency: string
+  coins: number
+  reward_coins: number
+  vip_days: number
+  reward_vip_days: number
+  is_selected: 0 | 1 | boolean
+}
+
+export interface ProductsResponse {
+  subscriptions: Product[]
+  coins: Product[]
 }
 
 export interface PayChannel {
