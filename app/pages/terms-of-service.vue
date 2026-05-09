@@ -6,6 +6,13 @@
 		</div>
 
 		<div>
+			<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Operator Information</h2>
+			<p>The Service is operated by {{ companyOperatorName }}.</p>
+			<p><strong>Registered Address:</strong> {{ companyInfo.registeredAddress }}</p>
+			<p><strong>Company Registration No.:</strong> {{ companyInfo.registrationNumber }}</p>
+		</div>
+
+		<div>
 			<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Core Service</h2>
 			<p>MixU's core value is to make multiple AI models and creative capabilities available through one account and one unified workspace. Model availability, features, generation speed, credit usage, and output quality may vary depending on providers, region, system load, and product configuration.</p>
 		</div>
@@ -102,13 +109,21 @@
 
 		<div>
 			<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Contact Us</h2>
-			<p>If you have questions about these Terms, your account, orders, content, or product usage, please contact us through the in-product support channel or official contact channel. Include your account, order number, task ID, or screenshots when possible so we can review the issue efficiently.</p>
+			<p>If you have questions about these Terms, your account, orders, content, or product usage, please contact us through {{ companyInfo.supportChannel }} or another official support entry made available in the Service. Include your account, order number, task ID, or screenshots when possible so we can review the issue efficiently.</p>
+			<p><strong>Operator:</strong> {{ companyOperatorName }}</p>
+			<p><strong>Registered Address:</strong> {{ companyInfo.registeredAddress }}</p>
+			<p><strong>Company Registration No.:</strong> {{ companyInfo.registrationNumber }}</p>
 		</div>
 	</LegalPageShell>
 </template>
 
 <script setup lang="ts">
+import { COMPANY_INFO, COMPANY_OPERATOR_NAME } from '@/utils/company'
+
 definePageMeta({
 	layout: 'legal',
 })
+
+const companyInfo = COMPANY_INFO
+const companyOperatorName = COMPANY_OPERATOR_NAME
 </script>

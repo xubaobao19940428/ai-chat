@@ -7,6 +7,13 @@
 		</div>
 
 		<div>
+			<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Operator Information</h2>
+			<p>This Privacy Policy is provided by {{ companyOperatorName }}, the operator of the Service.</p>
+			<p><strong>Registered Address:</strong> {{ companyInfo.registeredAddress }}</p>
+			<p><strong>Company Registration No.:</strong> {{ companyInfo.registrationNumber }}</p>
+		</div>
+
+		<div>
 			<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Quick Links</h2>
 			<ul class="list-disc space-y-1 pl-5">
 				<li>Definitions and Key Terms</li>
@@ -22,7 +29,7 @@
 			<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Definitions and Key Terms</h2>
 			<ul class="list-disc space-y-2 pl-5">
 				<li><strong>Cookie:</strong> A small piece of data stored on your device by your browser to remember preferences, support login sessions, perform analytics, and improve user experience.</li>
-				<li><strong>Company:</strong> Refers to MixU AI, also referred to as "we," "us," or "our."</li>
+				<li><strong>Company:</strong> Refers to {{ companyOperatorName }}, the operator of MixU AI, also referred to as "we," "us," or "our."</li>
 				<li><strong>Customer:</strong> An individual or organization that creates an account, subscribes, purchases credits, or otherwise uses the Service.</li>
 				<li><strong>Device:</strong> Any internet-connected device such as a computer, phone, tablet, or other device used to access the Service.</li>
 				<li><strong>Personal Data:</strong> Information that identifies or can reasonably identify a natural person, such as an email address, account identifier, IP address, or social login profile information.</li>
@@ -170,14 +177,22 @@
 
 		<div>
 			<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Contact Us</h2>
-			<p>If you have questions about this Privacy Policy or your personal data, please contact us through the in-product support channel or our official contact channel.</p>
-			<p>Updated at 2026-04-29</p>
+			<p>If you have questions about this Privacy Policy or your personal data, please contact us through {{ companyInfo.supportChannel }} or another official support entry made available in the Service.</p>
+			<p><strong>Operator:</strong> {{ companyOperatorName }}</p>
+			<p><strong>Registered Address:</strong> {{ companyInfo.registeredAddress }}</p>
+			<p><strong>Company Registration No.:</strong> {{ companyInfo.registrationNumber }}</p>
+			<p>Updated at 2026-05-09</p>
 		</div>
 	</LegalPageShell>
 </template>
 
 <script setup lang="ts">
+import { COMPANY_INFO, COMPANY_OPERATOR_NAME } from '@/utils/company'
+
 definePageMeta({
 	layout: 'legal',
 })
+
+const companyInfo = COMPANY_INFO
+const companyOperatorName = COMPANY_OPERATOR_NAME
 </script>

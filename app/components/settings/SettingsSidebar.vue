@@ -35,7 +35,7 @@
 		</div>
 
 		<!-- Footer -->
-		<div class="p-2">
+		<!-- <div class="p-2">
 			<a href="https://help.manus.im" target="_blank"
 				class="w-full flex items-center justify-between px-3 py-2 rounded-[8px] text-[14px] font-medium text-[var(--text-secondary)] hover:bg-[var(--fill-tsp-white-main)] hover:text-[var(--text-primary)] transition-colors">
 				<div class="flex items-center gap-3">
@@ -44,7 +44,7 @@
 				</div>
 				<ArrowUpRight :size="14" />
 			</a>
-		</div>
+		</div> -->
 	</div>
 </template>
 
