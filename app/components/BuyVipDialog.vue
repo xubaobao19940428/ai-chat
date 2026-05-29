@@ -116,14 +116,8 @@
                       ]"
                     >
                       <span class="flex items-start gap-3">
-                        <span class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--border-main)] bg-white shadow-sm">
-                          <img
-                            v-if="channel.icon_url"
-                            :src="channel.icon_url"
-                            :alt="channelTitle(channel)"
-                            class="h-8 w-8 object-contain"
-                          />
-                          <CreditCard v-else :size="22" class="text-[var(--text-secondary)]" />
+                        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[var(--border-main)] bg-[var(--background-white-main)] shadow-sm">
+                          <CreditCard :size="22" class="text-[var(--text-secondary)]" />
                         </span>
                         <span class="min-w-0 flex-1">
                           <span class="flex items-start justify-between gap-3">
