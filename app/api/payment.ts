@@ -70,5 +70,5 @@ export const createOrder = (data: CreateOrderParams) => {
 }
 
 export const queryOrder = (params: { trade_sn?: string }) => {
-  return request.get('/v1/pay/order/status', { params })
+  return request.get('/v1/pay/query', { params })
 }
