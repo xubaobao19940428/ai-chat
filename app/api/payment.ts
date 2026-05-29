@@ -66,7 +66,7 @@ export const getPayChannels = (params: { pid: number }) => {
 }
 
 export const createOrder = (data: CreateOrderParams) => {
-  return request.post('/v1/pay/order/create', data)
+  return request.post('/v1/pay/create', data)
 }
 
 export const queryOrder = (params: { trade_sn?: string }) => {
