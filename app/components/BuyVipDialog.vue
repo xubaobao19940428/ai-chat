@@ -91,22 +91,77 @@
                 </div>
 
                 <!-- Channel Selection -->
-                <div v-if="selectedProduct && payStore.payChannels.length" class="space-y-3">
+                <div v-if="selectedProduct" class="space-y-3">
                   <h4 class="text-sm font-medium text-[var(--text-secondary)]">{{ $t('payment.payment_method') }}</h4>
-                  <div class="flex flex-wrap gap-3">
+                  <div v-if="channelsLoading" class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div
+                      v-for="index in 2"
+                      :key="index"
+                      class="h-20 animate-pulse rounded-xl border border-[var(--border-main)] bg-[var(--bg-hover)]"
+                    ></div>
+                  </div>
+                  <div v-else-if="availableChannels.length" class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <button
-                      v-for="channel in payStore.payChannels"
+                      v-for="channel in availableChannels"
                       :key="channel.id"
-                      @click="selectedChannelId = channel.id"
+                      type="button"
+                      @click="selectChannel(channel)"
+                      :disabled="processing"
                       :class="[
-                        'px-4 py-2 rounded-lg border text-sm font-medium transition-all flex items-center gap-2',
+                        'min-h-24 rounded-xl border p-4 text-left transition-all',
                         selectedChannelId === channel.id
-                          ? 'border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400'
-                          : 'border-[var(--border-main)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
+                          ? 'border-blue-600 bg-blue-50 text-blue-700 ring-1 ring-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
+                          : 'border-[var(--border-main)] text-[var(--text-primary)] hover:border-blue-400 hover:bg-[var(--bg-hover)]',
+                        processing ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'
                       ]"
                     >
-                      <span class="capitalize">{{ channel.name }}</span>
+                      <span class="flex items-start gap-3">
+                        <span class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--border-main)] bg-white shadow-sm">
+                          <img
+                            v-if="channel.icon_url"
+                            :src="channel.icon_url"
+                            :alt="channelTitle(channel)"
+                            class="h-8 w-8 object-contain"
+                          />
+                          <CreditCard v-else :size="22" class="text-[var(--text-secondary)]" />
+                        </span>
+                        <span class="min-w-0 flex-1">
+                          <span class="flex items-start justify-between gap-3">
+                            <span class="min-w-0">
+                              <span class="block truncate text-base font-semibold text-[var(--text-primary)]">
+                                {{ channelTitle(channel) }}
+                              </span>
+                              <span v-if="channelSubtitle(channel)" class="mt-1 block truncate text-xs text-[var(--text-tertiary)]">
+                                {{ channelSubtitle(channel) }}
+                              </span>
+                            </span>
+                            <CheckCircle v-if="selectedChannelId === channel.id" :size="18" class="mt-0.5 shrink-0 text-blue-600" />
+                          </span>
+                          <span class="mt-3 flex items-end justify-between gap-3">
+                            <span class="flex min-w-0 flex-wrap items-center gap-2">
+                              <span
+                                v-if="channel.is_safe"
+                                class="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300"
+                              >
+                                Secure
+                              </span>
+                              <span
+                                v-if="channelDiscountText(channel)"
+                                class="rounded-full bg-red-50 px-2 py-0.5 text-xs font-semibold text-red-600 dark:bg-red-900/20 dark:text-red-300"
+                              >
+                                {{ channelDiscountText(channel) }}
+                              </span>
+                            </span>
+                            <span v-if="formatChannelPrice(channel)" class="shrink-0 text-sm font-bold text-[var(--text-primary)]">
+                              {{ formatChannelPrice(channel) }}
+                            </span>
+                          </span>
+                        </span>
+                      </span>
                     </button>
+                  </div>
+                  <div v-else class="rounded-xl border border-[var(--border-main)] px-4 py-3 text-sm text-[var(--text-tertiary)]">
+                    No payment channel available
                   </div>
                 </div>
 
@@ -138,8 +193,8 @@
 import { ref, computed, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
 import { usePayStore } from '../stores/pay'
-import { X, CheckCircle } from 'lucide-vue-next'
-import type { Product, OrderStatus } from '../utils/api'
+import { X, CheckCircle, CreditCard } from 'lucide-vue-next'
+import type { PayChannel, Product } from '../utils/api'
 
 const props = defineProps<{
   isOpen: boolean
@@ -150,9 +205,12 @@ const emit = defineEmits(['close', 'success'])
 const payStore = usePayStore()
 const selectedProduct = ref<Product | null>(null)
 const selectedChannelId = ref<number | null>(null)
+const availableChannels = ref<PayChannel[]>([])
+const channelsLoading = ref(false)
 const processing = ref(false)
 const pollingTimer = ref<any>(null)
 const activeTab = ref<'subscriptions' | 'coins'>('subscriptions')
+let channelRequestId = 0
 
 const subscriptionProducts = computed(() => payStore.products.subscriptions)
 const coinProducts = computed(() => payStore.products.coins)
@@ -165,7 +223,7 @@ const activeProducts = computed(() => (
   activeTab.value === 'subscriptions' ? subscriptionProducts.value : coinProducts.value
 ))
 
-const isValid = computed(() => Boolean(selectedProduct.value))
+const isValid = computed(() => Boolean(selectedProduct.value && selectedChannelId.value && !channelsLoading.value))
 
 const formatPrice = (product: Product) => {
   const currency = product.local_currency || product.currency || 'USD'
@@ -193,30 +251,75 @@ const productSummary = (product: Product) => {
   return parts.join(' · ') || product.product_id
 }
 
+const channelTitle = (channel: PayChannel) => {
+  return channel.description || channel.name || channel.channel
+}
+
+const channelSubtitle = (channel: PayChannel) => {
+  const parts = [
+    channel.name && channel.name !== channelTitle(channel) ? channel.name : '',
+    channel.currency
+  ].filter(Boolean)
+
+  return parts.join(' · ')
+}
+
+const formatChannelPrice = (channel: PayChannel) => {
+  const amount = Number(channel.currency_price || channel.price)
+  if (!amount || Number.isNaN(amount)) return ''
+
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: channel.currency || 'USD',
+      maximumFractionDigits: Number.isInteger(amount) ? 0 : 2
+    }).format(amount)
+  } catch (_) {
+    return `${channel.currency || ''} ${amount}`.trim()
+  }
+}
+
+const channelDiscountText = (channel: PayChannel) => {
+  const discount = Number(channel.discount || 0)
+  if (discount > 0 && discount < 100) {
+    return `-${100 - discount}%`
+  }
+
+  return ''
+}
+
 const closeModal = () => {
   stopPolling()
   emit('close')
 }
 
-const selectProduct = (product: Product) => {
+const selectChannel = (channel: PayChannel) => {
+  selectedChannelId.value = channel.id
+}
+
+const selectProduct = async (product: Product) => {
+  const requestId = ++channelRequestId
   selectedProduct.value = product
   selectedChannelId.value = null
-  payStore.payChannels = []
+  availableChannels.value = []
+  channelsLoading.value = true
+
+  const channels = await payStore.fetchChannels(product.id) as any
+  if (requestId !== channelRequestId || selectedProduct.value?.id !== product.id) return
+
+  availableChannels.value = channels
+  if (channels.length === 1) {
+    selectedChannelId.value = channels[0].id
+  }
+  channelsLoading.value = false
 }
 
 const handlePay = async () => {
-  if (!selectedProduct.value) return
+  if (!selectedProduct.value || !selectedChannelId.value) return
   
   processing.value = true
   try {
-    await payStore.fetchChannels(selectedProduct.value.id)
-    const channelId = payStore.payChannels[0]?.id
-    if (!channelId) {
-      throw new Error('No payment channel available')
-    }
-    selectedChannelId.value = channelId
-
-    const { pay_link, trade_sn } = await payStore.createPayOrder(selectedProduct.value.id, channelId)
+    const { pay_link, trade_sn } = await payStore.createPayOrder(selectedProduct.value.id, selectedChannelId.value)
     
     // Open payment link in new tab
     window.open(pay_link, '_blank')
@@ -277,10 +380,15 @@ watch(activeTab, async () => {
 
 watch(() => props.isOpen, (val) => {
   if (val) {
-    payStore.fetchProducts().then(selectDefaultProduct)
+    payStore.fetchProducts().then(() => {
+      if (props.isOpen) selectDefaultProduct()
+    })
   } else {
+    channelRequestId++
     selectedProduct.value = null
     selectedChannelId.value = null
+    availableChannels.value = []
+    channelsLoading.value = false
     activeTab.value = 'subscriptions'
     processing.value = false
     stopPolling()

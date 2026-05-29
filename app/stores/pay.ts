@@ -38,10 +38,13 @@ export const usePayStore = defineStore('pay', () => {
         isLoading.value = true
         try {
             const res: any = await getPayChannels({ pid })
-            payChannels.value = Array.isArray(res.data?.items) ? res.data.items : []
+            const channels = Array.isArray(res.data?.items) ? res.data.items : []
+            payChannels.value = channels
+            return channels as PayChannel[]
         } catch (error) {
             console.error('Fetch pay channels failed:', error)
             payChannels.value = []
+            return []
         } finally {
             isLoading.value = false
         }

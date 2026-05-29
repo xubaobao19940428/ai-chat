@@ -28,12 +28,17 @@ export interface ProductsResponse {
 export interface PayChannel {
   id: number
   name: string
+  description?: string
+  icon_url?: string
   channel: string
+  sub_channel?: string
   currency: string
-  price: number
+  price: number | string
   currency_price: number
   reward_coins: number
   reward_vip_days: number
+  discount?: number
+  is_safe?: 0 | 1 | boolean
 }
 
 export interface CreateOrderParams {
