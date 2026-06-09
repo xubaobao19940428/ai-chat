@@ -59,7 +59,7 @@
 
 		<div>
 			<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Refunds and Cancellation</h2>
-			<p>MixU provides digital AI services, credits, subscriptions, and instantly delivered model usage. Except where required by applicable law, all purchases are final and non-refundable. If duplicate charges occur, or if payment succeeds but benefits are not delivered, you may submit order information for review.</p>
+			<p>MixU provides digital AI services, credits, subscriptions, and instantly delivered model usage. If you have not used or consumed any purchased credits, subscriptions, or digital services, you may request a refund within fourteen (14) days from the date of purchase. Once any portion of the credits is consumed or any subscription benefits are accessed, the purchase becomes final and non-refundable. Except as stated above or where required by applicable law, all purchases are final and non-refundable. If duplicate charges occur, or if payment succeeds but benefits are not delivered, you may submit order information for review.</p>
 		</div>
 
 		<div>
