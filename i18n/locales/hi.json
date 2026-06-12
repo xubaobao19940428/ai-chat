@@ -411,7 +411,14 @@
 		"upgrade_plan": "योजना अपग्रेड करें",
 		"payment_method": "भुगतान विधि",
 		"processing": "प्रोसेस हो रहा है...",
-		"pay_now": "अभी भुगतान करें"
+		"pay_now": "अभी भुगतान करें",
+		"policy_confirm_prefix": "I have read and agree to the",
+		"terms_of_service": "Terms of Service",
+		"policy_confirm_middle": " and ",
+		"privacy_policy": "Privacy Policy",
+		"policy_confirm_refund_middle": ", and ",
+		"refund_policy": "Refund Policy",
+		"policy_confirm_suffix": ", including the subscription, cancellation, and restricted-region policies."
 	},
 	"project": {
 		"edit_project": "प्रोजेक्ट संपादित करें",

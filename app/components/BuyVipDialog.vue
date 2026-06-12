@@ -159,6 +159,60 @@
                   </div>
                 </div>
 
+                <!-- Policy Confirmation -->
+                <label
+                  v-if="selectedProduct"
+                  for="payment-policy-confirm"
+                  :class="[
+                    'flex items-start gap-3 rounded-xl border p-3 text-xs leading-5 transition-colors',
+                    policyAccepted
+                      ? 'border-[var(--border-main)] bg-[var(--background-white-main)] text-[var(--text-secondary)]'
+                      : 'border-[var(--border-main)] bg-[var(--bg-hover)] text-[var(--text-tertiary)]',
+                    processing ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'
+                  ]"
+                >
+                  <input
+                    id="payment-policy-confirm"
+                    v-model="policyAccepted"
+                    type="checkbox"
+                    :disabled="processing"
+                    class="mt-1 h-4 w-4 shrink-0 rounded border-[var(--border-main)] text-blue-600 focus:ring-blue-500"
+                  />
+                  <span>
+                    {{ policyConfirmPrefix }}
+                    <NuxtLink
+                      to="/terms-of-service"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="font-semibold text-[var(--text-primary)] underline underline-offset-2 hover:text-blue-600"
+                      @click.stop
+                    >
+                      {{ policyTermsLabel }}
+                    </NuxtLink>
+                    {{ policyConfirmMiddle }}
+                    <NuxtLink
+                      to="/privacy-policy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="font-semibold text-[var(--text-primary)] underline underline-offset-2 hover:text-blue-600"
+                      @click.stop
+                    >
+                      {{ policyPrivacyLabel }}
+                    </NuxtLink>
+                    {{ policyConfirmRefundMiddle }}
+                    <NuxtLink
+                      to="/refund-policy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="font-semibold text-[var(--text-primary)] underline underline-offset-2 hover:text-blue-600"
+                      @click.stop
+                    >
+                      {{ policyRefundLabel }}
+                    </NuxtLink>
+                    {{ policyConfirmSuffix }}
+                  </span>
+                </label>
+
                 <!-- Action Button -->
                 <button
                   @click="handlePay"
@@ -202,9 +256,11 @@ const selectedChannelId = ref<number | null>(null)
 const availableChannels = ref<PayChannel[]>([])
 const channelsLoading = ref(false)
 const processing = ref(false)
+const policyAccepted = ref(false)
 const pollingTimer = ref<any>(null)
 const activeTab = ref<'subscriptions' | 'coins'>('subscriptions')
 let channelRequestId = 0
+const { t, te } = useI18n()
 
 const subscriptionProducts = computed(() => payStore.products.subscriptions)
 const coinProducts = computed(() => payStore.products.coins)
@@ -217,7 +273,16 @@ const activeProducts = computed(() => (
   activeTab.value === 'subscriptions' ? subscriptionProducts.value : coinProducts.value
 ))
 
-const isValid = computed(() => Boolean(selectedProduct.value && selectedChannelId.value && !channelsLoading.value))
+const paymentText = (key: string, fallback: string) => te(key) ? t(key) : fallback
+const policyConfirmPrefix = computed(() => paymentText('payment.policy_confirm_prefix', 'I have read and agree to the'))
+const policyTermsLabel = computed(() => paymentText('payment.terms_of_service', 'Terms of Service'))
+const policyConfirmMiddle = computed(() => paymentText('payment.policy_confirm_middle', ' and '))
+const policyPrivacyLabel = computed(() => paymentText('payment.privacy_policy', 'Privacy Policy'))
+const policyConfirmRefundMiddle = computed(() => paymentText('payment.policy_confirm_refund_middle', ', and '))
+const policyRefundLabel = computed(() => paymentText('payment.refund_policy', 'Refund Policy'))
+const policyConfirmSuffix = computed(() => paymentText('payment.policy_confirm_suffix', ', including the subscription, cancellation, and restricted-region policies.'))
+
+const isValid = computed(() => Boolean(selectedProduct.value && selectedChannelId.value && policyAccepted.value && !channelsLoading.value))
 
 const formatPrice = (product: Product) => {
   const currency = product.local_currency || product.currency || 'USD'
@@ -309,7 +374,7 @@ const selectProduct = async (product: Product) => {
 }
 
 const handlePay = async () => {
-  if (!selectedProduct.value || !selectedChannelId.value) return
+  if (!selectedProduct.value || !selectedChannelId.value || !policyAccepted.value) return
   
   processing.value = true
   try {
@@ -374,6 +439,7 @@ watch(activeTab, async () => {
 
 watch(() => props.isOpen, (val) => {
   if (val) {
+    policyAccepted.value = false
     payStore.fetchProducts().then(() => {
       if (props.isOpen) selectDefaultProduct()
     })
@@ -383,6 +449,7 @@ watch(() => props.isOpen, (val) => {
     selectedChannelId.value = null
     availableChannels.value = []
     channelsLoading.value = false
+    policyAccepted.value = false
     activeTab.value = 'subscriptions'
     processing.value = false
     stopPolling()

@@ -527,7 +527,6 @@ import {
 	ArrowUpRight,
 	Sparkles,
 	Image,
-	Video,
 	AlignJustify,
 	PanelLeftClose,
 	Shapes,
@@ -593,7 +592,6 @@ import {
 	Medal,
 	Rocket,
 	Trophy,
-	Banana,
 } from 'lucide-vue-next'
 import { useConversationStore } from '../stores/conversation'
 import { useProjectStore } from '../stores/projects'
@@ -946,22 +944,11 @@ const sidebarNavItems = ref([
 		},
 		iconClass: 'text-[var(--text-primary)]',
 	},
-	{
-		id: 'nano-banana',
-		label: 'Nano Banana',
-		icon: markRaw(Banana),
-		handler: () => {
-			router.push('/nano-banana')
-		},
-		iconClass: 'text-[var(--text-primary)]',
-	},
 ])
 
 const moreItems = ref([
 	{ id: 'ai-bots', name: 'AI bots', icon: markRaw(Compass) },
 	// { id: 'ai-reading', name: 'AI Reading', icon: markRaw(BookOpen) },
-	{ id: 'ai-image', name: 'AI Image Generator', icon: markRaw(Image) },
-	{ id: 'ai-video', name: 'AI Video Generator', icon: markRaw(Video) },
 ])
 
 // ── Sidebar layout persistence (per user) ────────────────────────────────────
@@ -996,42 +983,12 @@ const NAV_DEFS: Record<string, any> = {
 	// 	},
 	// 	iconClass: 'text-[var(--text-secondary)]',
 	// },
-	'ai-image': {
-		id: 'ai-image',
-		label: 'AI Image Generator',
-		icon: markRaw(Image),
-		handler: () => {
-			router.push('/image-generation')
-		},
-		iconClass: 'text-[var(--text-primary)]',
-	},
-	'nano-banana': {
-		id: 'nano-banana',
-		label: 'Nano Banana',
-		icon: markRaw(Banana),
-		handler: () => {
-			router.push('/nano-banana')
-		},
-		iconClass: 'text-[var(--text-primary)]',
-	},
-	'ai-video': {
-		id: 'ai-video',
-		label: 'AI Video Generator',
-		icon: markRaw(Video),
-		handler: () => {
-			router.push('/video-generation')
-		},
-		iconClass: 'text-[var(--text-primary)]',
-	},
 }
 const MORE_DEFS: Record<string, any> = {
 	'ai-bots': { id: 'ai-bots', name: 'AI bots', icon: markRaw(Compass) },
 	// 'ai-reading': { id: 'ai-reading', name: 'AI Reading', icon: markRaw(BookOpen) },
-	'ai-image': { id: 'ai-image', name: 'AI Image Generator', icon: markRaw(Image) },
-	'ai-video': { id: 'ai-video', name: 'AI Video Generator', icon: markRaw(Video) },
 
 	library: { id: 'library', name: 'Library', icon: markRaw(Library) },
-	'nano-banana': { id: 'nano-banana', name: 'Nano Banana', icon: markRaw(Banana) },
 }
 
 const getNavItemDef = (id: string): any => NAV_DEFS[id]

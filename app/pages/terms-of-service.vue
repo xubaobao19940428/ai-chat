@@ -32,15 +32,21 @@
 			<p>You are responsible for all login, payment, upload, generation, download, sharing, and other activity under your account. Keep your account credentials secure and do not use your account for unlawful, infringing, abusive, evasive, or harmful activity.</p>
 		</div>
 
-		<div>
-			<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Restrictions</h2>
-			<p>You may not sell, rent, sublicense, resell, scrape, reverse engineer, attack, interfere with, or otherwise commercially exploit MixU without authorization. You may not remove, hide, or modify any copyright, trademark, attribution, or safety notices in the product.</p>
-		</div>
+			<div>
+				<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Restrictions</h2>
+				<p>You may not sell, rent, sublicense, resell, scrape, reverse engineer, attack, interfere with, or otherwise commercially exploit MixU without authorization. You may not remove, hide, or modify any copyright, trademark, attribution, or safety notices in the product.</p>
+			</div>
 
-		<div>
-			<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Prohibited Content</h2>
-			<p>You may not use MixU to upload, generate, or distribute unlawful content, infringing content, malware, scams, harassment, hateful content, exploitative sexual content, privacy violations, dangerous instructions, or other content that violates applicable law or platform rules.</p>
-		</div>
+			<div>
+				<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Sanctions and Restricted Regions</h2>
+				<p>You may not access, use, purchase, or receive the Service if doing so would violate applicable sanctions, export control, trade control, or anti-boycott laws and regulations. This includes use by any person or entity located in, resident in, organized under the laws of, or ordinarily operating from any country, region, or territory subject to comprehensive sanctions, embargoes, or similar trade restrictions imposed by the United Nations, the United States, the European Union, the United Kingdom, Hong Kong, or any other authority that applies to the Service, our operators, payment processors, infrastructure providers, or model providers.</p>
+				<p>You also may not use the Service if you are listed on, owned or controlled by a person listed on, or acting on behalf of a person listed on any applicable sanctions, denied-party, restricted-party, or export-prohibited list. We may block, suspend, terminate, or refuse service, payments, credits, downloads, or model access where required for sanctions, export control, compliance, provider policy, or risk-management reasons.</p>
+			</div>
+
+			<div>
+				<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Prohibited Content</h2>
+				<p>You may not use MixU to upload, generate, or distribute unlawful content, infringing content, malware, scams, harassment, hateful content, exploitative sexual content, privacy violations, dangerous instructions, or other content that violates applicable law or platform rules. We review and moderate content under our <NuxtLink to="/content-moderation" class="font-semibold text-[var(--text-primary)] underline underline-offset-2">Content Review and Moderation Mechanism</NuxtLink>.</p>
+			</div>
 
 		<div>
 			<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">AI Output Limitations</h2>
@@ -57,10 +63,11 @@
 			<p>MixU may offer free credits, memberships, subscriptions, credit purchases, feature packages, or other paid services. Different models and tasks may consume different amounts of credits. Package contents, pricing, credit rules, model availability, and feature scope may change over time. The rules shown at the time of purchase apply to that purchase.</p>
 		</div>
 
-		<div>
-			<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Refunds and Cancellation</h2>
-			<p>MixU provides digital AI services, credits, subscriptions, and instantly delivered model usage. If you have not used or consumed any purchased credits, subscriptions, or digital services, you may request a refund within fourteen (14) days from the date of purchase. Once any portion of the credits is consumed or any subscription benefits are accessed, the purchase becomes final and non-refundable. Except as stated above or where required by applicable law, all purchases are final and non-refundable. If duplicate charges occur, or if payment succeeds but benefits are not delivered, you may submit order information for review.</p>
-		</div>
+			<div>
+				<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Refunds and Cancellation</h2>
+				<p>MixU provides digital AI services, credits, subscriptions, and instantly delivered model usage. If you have not used or consumed any purchased credits, subscriptions, or digital services, you may request a refund within fourteen (14) days from the date of purchase. Once any portion of the credits is consumed or any subscription benefits are accessed, the purchase becomes final and non-refundable. Except as stated above or where required by applicable law, all purchases are final and non-refundable. For full refund terms, please review our <NuxtLink to="/refund-policy" class="font-semibold text-[var(--text-primary)] underline underline-offset-2">Refund Policy</NuxtLink>.</p>
+				<p>MixU currently does not provide a self-service subscription cancellation page. Some paid products may be fixed-term VIP packages or credit packages and may not automatically renew. If your payment channel shows an active recurring subscription, or if you need help cancelling a renewal, contact us at <a class="font-semibold text-[var(--text-primary)] underline underline-offset-2" :href="`mailto:${companyInfo.supportChannel}`">{{ companyInfo.supportChannel }}</a> with your account email and order details.</p>
+			</div>
 
 		<div>
 			<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Service Changes and Interruptions</h2>
@@ -97,15 +104,21 @@
 			<p>If your inputs, use of the service, unlawful activity, infringement, or violation of these terms causes third-party claims, regulatory action, or platform losses, you agree to reasonably indemnify MixU and its team, partners, and service providers.</p>
 		</div>
 
-		<div>
-			<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Termination</h2>
-			<p>If an account is involved in unlawful activity, infringement, attacks, abuse, limit evasion, malicious resource usage, payment risk, or harm to MixU or third-party rights, we may restrict, suspend, or terminate the relevant service without prior notice.</p>
-		</div>
+			<div>
+				<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Termination</h2>
+				<p>If an account is involved in unlawful activity, infringement, attacks, abuse, limit evasion, malicious resource usage, payment risk, or harm to MixU or third-party rights, we may restrict, suspend, or terminate the relevant service without prior notice.</p>
+			</div>
 
-		<div>
-			<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Updates to These Terms</h2>
-			<p>We may update these Terms of Service from time to time. Updated terms will be posted on this page. If you continue using MixU after an update, you accept the updated terms.</p>
-		</div>
+			<div>
+				<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Governing Law and Jurisdiction</h2>
+				<p>These Terms and any dispute, claim, or controversy arising from or relating to the Service are governed by the laws of the Hong Kong Special Administrative Region, without regard to conflict-of-law rules. Subject to any mandatory rights you may have under applicable consumer protection laws, the courts of Hong Kong have exclusive jurisdiction over disputes arising from or relating to these Terms or the Service.</p>
+				<p>If any provision of these Terms is found invalid or unenforceable, the remaining provisions will remain in full force and effect to the maximum extent permitted by law.</p>
+			</div>
+
+			<div>
+				<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Updates to These Terms</h2>
+				<p>We may update these Terms of Service from time to time. Updated terms will be posted on this page. If you continue using MixU after an update, you accept the updated terms.</p>
+			</div>
 
 		<div>
 			<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Contact Us</h2>

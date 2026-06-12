@@ -411,7 +411,14 @@
 		"upgrade_plan": "Обновить план",
 		"payment_method": "Способ оплаты",
 		"processing": "Обработка...",
-		"pay_now": "Оплатить сейчас"
+		"pay_now": "Оплатить сейчас",
+		"policy_confirm_prefix": "I have read and agree to the",
+		"terms_of_service": "Terms of Service",
+		"policy_confirm_middle": " and ",
+		"privacy_policy": "Privacy Policy",
+		"policy_confirm_refund_middle": ", and ",
+		"refund_policy": "Refund Policy",
+		"policy_confirm_suffix": ", including the subscription, cancellation, and restricted-region policies."
 	},
 	"project": {
 		"edit_project": "Редактировать проект",

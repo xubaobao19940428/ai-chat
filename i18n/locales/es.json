@@ -396,7 +396,14 @@
 		"upgrade_plan": "Mejorar plan",
 		"payment_method": "Método de pago",
 		"processing": "Procesando...",
-		"pay_now": "Pagar ahora"
+		"pay_now": "Pagar ahora",
+		"policy_confirm_prefix": "I have read and agree to the",
+		"terms_of_service": "Terms of Service",
+		"policy_confirm_middle": " and ",
+		"privacy_policy": "Privacy Policy",
+		"policy_confirm_refund_middle": ", and ",
+		"refund_policy": "Refund Policy",
+		"policy_confirm_suffix": ", including the subscription, cancellation, and restricted-region policies."
 	},
 	"project": {
 		"edit_project": "Editar proyecto",

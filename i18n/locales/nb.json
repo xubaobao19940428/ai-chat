@@ -411,7 +411,14 @@
 		"upgrade_plan": "Oppgrader abonnement",
 		"payment_method": "Betalingsmetode",
 		"processing": "Behandler...",
-		"pay_now": "Betal nå"
+		"pay_now": "Betal nå",
+		"policy_confirm_prefix": "I have read and agree to the",
+		"terms_of_service": "Terms of Service",
+		"policy_confirm_middle": " and ",
+		"privacy_policy": "Privacy Policy",
+		"policy_confirm_refund_middle": ", and ",
+		"refund_policy": "Refund Policy",
+		"policy_confirm_suffix": ", including the subscription, cancellation, and restricted-region policies."
 	},
 	"project": {
 		"edit_project": "Rediger prosjekt",

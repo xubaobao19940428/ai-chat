@@ -148,18 +148,10 @@
 			</ul>
 		</div>
 
-		<div>
-			<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Refund Policy</h2>
-			<p>MixU provides digital AI services, credits, subscriptions, and instantly delivered model usage. We offer a refund for unused purchases within a specified timeframe. If you have not used or consumed any subscription benefits, VIP privileges, or virtual credits after your purchase, you may request a full refund within fourteen (14) days from the date of purchase. Once you consume any credits or use/access any subscription benefits, the purchase becomes final and non-refundable. Except as stated above or where required by applicable law, all purchases are final and non-refundable.</p>
-			<ul class="list-disc space-y-2 pl-5">
-				<li><strong>Scope:</strong> This policy applies to credit purchases, memberships, subscriptions, feature packages, model usage, image generation, video generation, and other digital services provided by MixU.</li>
-				<li><strong>Refund Eligibility for Unused Services:</strong> You may request a full refund within 14 days of purchase only if you have not used any portion of the purchased digital services, credits, or subscription benefits. To request a refund, please contact us with your order details.</li>
-				<li><strong>Confirm Before Purchase:</strong> Please confirm the service details, pricing, account, regional availability, model capabilities, and your usage needs before payment. A successful payment means you confirm the purchase and accept this Refund Policy.</li>
-				<li><strong>Technical Exceptions:</strong> If duplicate charges occur, or if payment succeeds but the purchased credits or subscription benefits are not delivered, you may submit order information for review. If verified, we will prioritize restoring or issuing the missing benefits.</li>
-				<li><strong>Service Interruptions:</strong> Model providers, networks, payment channels, or third-party services may be temporarily unavailable. These interruptions generally do not qualify for a refund, but we will make reasonable efforts to restore service.</li>
-				<li><strong>Account Deletion:</strong> Deleting your account does not create a refund right for digital services, credits, or subscriptions once they have been used or after the 14-day refund window has expired, unless required by law.</li>
-			</ul>
-		</div>
+			<div>
+				<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">Billing and Refund References</h2>
+				<p>Purchases, refund eligibility, duplicate-charge handling, and subscription cancellation requests are governed by our separate <NuxtLink to="/refund-policy" class="font-semibold text-[var(--text-primary)] underline underline-offset-2">Refund Policy</NuxtLink>.</p>
+			</div>
 
 		<div>
 			<h2 class="mb-2 text-lg font-bold text-[var(--text-primary)]">GDPR and Data Subject Rights</h2>

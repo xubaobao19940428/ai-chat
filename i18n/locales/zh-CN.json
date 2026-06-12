@@ -411,7 +411,14 @@
 		"upgrade_plan": "升级套餐",
 		"payment_method": "支付方式",
 		"processing": "处理中...",
-		"pay_now": "立即支付"
+		"pay_now": "立即支付",
+		"policy_confirm_prefix": "我已阅读并同意",
+		"terms_of_service": "服务条款",
+		"policy_confirm_middle": "和",
+		"privacy_policy": "隐私政策",
+		"policy_confirm_refund_middle": "以及",
+		"refund_policy": "退款政策",
+		"policy_confirm_suffix": "，包括订阅、取消订阅和受限地区相关政策。"
 	},
 	"project": {
 		"edit_project": "编辑项目",

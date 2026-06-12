@@ -4,7 +4,7 @@ export const COMPANY_INFO = {
 	operatorNameZh: '魯班大師有限公司',
 	registrationNumber: '77607308',
 	registeredAddress: 'Flat 12A, 18/F, Prosperity Building, 88 Nathan Road, Tsim Sha Tsui, Kowloon, Hong Kong',
-	supportChannel: 'the in-product support channel',
+	supportChannel: 'support@mixu.ai',
 } as const
 
 export const COMPANY_OPERATOR_NAME = `${COMPANY_INFO.operatorNameEn} (${COMPANY_INFO.operatorNameZh})`

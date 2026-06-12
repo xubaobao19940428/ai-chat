@@ -411,7 +411,14 @@
 		"upgrade_plan": "Aggiorna Piano",
 		"payment_method": "Metodo di Pagamento",
 		"processing": "Elaborazione...",
-		"pay_now": "Paga Ora"
+		"pay_now": "Paga Ora",
+		"policy_confirm_prefix": "I have read and agree to the",
+		"terms_of_service": "Terms of Service",
+		"policy_confirm_middle": " and ",
+		"privacy_policy": "Privacy Policy",
+		"policy_confirm_refund_middle": ", and ",
+		"refund_policy": "Refund Policy",
+		"policy_confirm_suffix": ", including the subscription, cancellation, and restricted-region policies."
 	},
 	"project": {
 		"edit_project": "Modifica progetto",

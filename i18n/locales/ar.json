@@ -411,7 +411,14 @@
 		"upgrade_plan": "ترقية الخطة",
 		"payment_method": "طريقة الدفع",
 		"processing": "جارٍ المعالجة...",
-		"pay_now": "ادفع الآن"
+		"pay_now": "ادفع الآن",
+		"policy_confirm_prefix": "I have read and agree to the",
+		"terms_of_service": "Terms of Service",
+		"policy_confirm_middle": " and ",
+		"privacy_policy": "Privacy Policy",
+		"policy_confirm_refund_middle": ", and ",
+		"refund_policy": "Refund Policy",
+		"policy_confirm_suffix": ", including the subscription, cancellation, and restricted-region policies."
 	},
 	"project": {
 		"edit_project": "تعديل المشروع",

@@ -17,29 +17,10 @@
 							<span class="text-sm font-bold text-[var(--text-primary)]">{{ $t('settings.credits') }}</span>
 							<CircleHelp :size="14" class="text-[var(--text-tertiary)]" />
 						</div>
-						<div class="text-[13px] text-[var(--text-tertiary)] mt-0.5">{{ $t('settings.free_credits') }}</div>
 					</div>
 				</div>
 				<div class="text-right">
-					<div class="text-sm font-bold text-[var(--text-primary)]">1,000</div>
-					<div class="text-[13px] text-[var(--text-tertiary)] mt-0.5">1,000</div>
-				</div>
-			</div>
-
-			<!-- Daily Refresh -->
-			<div class="flex items-center justify-between">
-				<div class="flex items-start gap-2.5">
-					<Calendar :size="20" class="text-[var(--text-secondary)] mt-0.5" />
-					<div>
-						<div class="flex items-center gap-1.5">
-							<span class="text-sm font-bold text-[var(--text-primary)]">{{ $t('settings.daily_refresh_credits') }}</span>
-							<CircleHelp :size="14" class="text-[var(--text-tertiary)]" />
-						</div>
-						<div class="text-[13px] text-[var(--text-tertiary)] mt-0.5">{{ $t('settings.refresh_daily') }}</div>
-					</div>
-				</div>
-				<div class="text-right">
-					<div class="text-sm font-bold text-[var(--text-primary)]">300</div>
+					<div class="text-sm font-bold text-[var(--text-primary)]">{{ formattedRemainingCredits }}</div>
 				</div>
 			</div>
 		</div>
@@ -47,9 +28,16 @@
 </template>
 
 <script setup lang="ts">
-import { Sparkles, Calendar, CircleHelp } from 'lucide-vue-next'
+import { computed } from 'vue'
+import { Sparkles, CircleHelp } from 'lucide-vue-next'
+import { useUserStore } from '../../stores/user'
 
 defineEmits<{
 	upgrade: []
 }>()
+
+const userStore = useUserStore()
+
+const remainingCredits = computed(() => Number(userStore.userInfo?.remain_coins ?? 0))
+const formattedRemainingCredits = computed(() => remainingCredits.value.toLocaleString())
 </script>

@@ -364,7 +364,14 @@
 		"upgrade_plan": "Upgrade Plan",
 		"payment_method": "Payment Method",
 		"processing": "Processing...",
-		"pay_now": "Pay Now"
+		"pay_now": "Pay Now",
+		"policy_confirm_prefix": "I have read and agree to the",
+		"terms_of_service": "Terms of Service",
+		"policy_confirm_middle": " and ",
+		"privacy_policy": "Privacy Policy",
+		"policy_confirm_refund_middle": ", and ",
+		"refund_policy": "Refund Policy",
+		"policy_confirm_suffix": ", including the subscription, cancellation, and restricted-region policies."
 	},
 	"project": {
 		"edit_project": "Edit project",

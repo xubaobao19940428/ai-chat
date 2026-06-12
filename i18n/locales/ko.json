@@ -396,7 +396,14 @@
 		"upgrade_plan": "플랜 업그레이드",
 		"payment_method": "결제 방법",
 		"processing": "처리 중...",
-		"pay_now": "지금 결제"
+		"pay_now": "지금 결제",
+		"policy_confirm_prefix": "I have read and agree to the",
+		"terms_of_service": "Terms of Service",
+		"policy_confirm_middle": " and ",
+		"privacy_policy": "Privacy Policy",
+		"policy_confirm_refund_middle": ", and ",
+		"refund_policy": "Refund Policy",
+		"policy_confirm_suffix": ", including the subscription, cancellation, and restricted-region policies."
 	},
 	"project": {
 		"edit_project": "프로젝트 편집",
